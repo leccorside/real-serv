@@ -1,0 +1,63 @@
+﻿@model Models.Agendamento
+
+@{
+    ViewBag.Title = "Calendario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Breadcrumb{
+
+}
+
+
+<style>
+    #calendar
+    {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+</style>
+
+<div id='calendar'></div>
+
+
+@section scripts{
+    <link rel="stylesheet" href="~/Assets/js/fullcalendar/lib/cupertino/jquery-ui.min.css" />
+    <link href="~/Assets/js/fullcalendar/fullcalendar.css" rel="stylesheet" />
+    <link href="~/Assets/js/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+    <script src="~/Assets/js/fullcalendar/lib/moment.min.js"></script>
+    <script src="~/Assets/js/fullcalendar/lib/jquery.min.js"></script>
+    <script src="~/Assets/js/fullcalendar/fullcalendar.min.js"></script>
+    <script src="~/Assets/js/fullcalendar/lang-all.js"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+            var currentLangCode = 'pt-br';
+
+            function renderCalendar() {
+                $('#calendar').fullCalendar({
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month,agendaWeek,agendaDay'
+                    },
+                    defaultDate: moment(),
+                    lang: currentLangCode,
+                    buttonIcons: false, // show the prev/next text
+                    weekNumbers: true,
+                    editable: false,
+                    eventLimit: true, // allow "more" link when too many events
+                    events: '@Url.Content("~/Agendamento/Getevents/")',
+                    defaultView: 'agendaWeek'
+                });
+            }
+
+
+            renderCalendar();
+        });
+
+
+    </script>
+}
