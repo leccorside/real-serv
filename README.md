@@ -1,6 +1,6 @@
 # Real Serv - Docker Setup
 
-Este documento descreve como executar o projeto Real Serv conteinerizado em Docker, sendo que o banco de dados SQL Server permanece em execução na sua máquina Hospedeira (Local/Host).
+Este documento descreve como executar o projeto Real Serv conteinerizado em Docker, sendo que o banco de dados SQL Server permanece em execução na sua máquina Hospedeira (Local/Host). OBS: o projeto está apontado para o banco de dados de produção para melhor visualização. Caso necessite do banco local basta instalar o banco de dados SQL SERVER e configura-lo.
 
 ## Pré-requisitos
 
