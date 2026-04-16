@@ -42,16 +42,33 @@ Instale e gerencie o seu SQL Server normalmente fora do Docker (usando SQL Serve
 
 ```powershell
 # 1. Navegar até o diretório do projeto
-cd d:\0000000-PROJETOS\projetos_marcasite\real-serv
+cd c:\projetos\real-serv
 
-# 2. Build da imagem web
-docker-compose build
-
-# 3. Iniciar a aplicação
+# 2. Iniciar a aplicação
 docker-compose up -d
 
-# 4. Verificar logs do container Web
-docker-compose logs -f web
+# 3. Verificar logs do container Web
+docker-compose logs -f realserv_app
+```
+
+## Acessar a aplicação
+
+### URL
+
+```powershell
+http://localhost:8085/
+```
+
+### User
+
+```powershell
+thais@marcasite.com.br
+```
+
+### Pass
+
+```powershell
+123456
 ```
 
 ### Parar e Remover a Aplicação Docker
