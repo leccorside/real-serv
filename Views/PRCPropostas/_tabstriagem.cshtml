@@ -1,0 +1,33 @@
+﻿@model Models.PRCPropostaView
+
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+
+
+}
+
+
+
+<ul class="nav nav-tabs">
+
+
+    <li class="@(currentAction == "triagemeditar" ||currentAction == "triagemdesbloquear"  ? " active " : "")">
+        @Html.ActionLink("Dados Gerais", "triagemeditar", new { id = Model.PRCProposta.PRCPropostaId, tipo = Model.PRCProposta.PRCPropostaGUID }, new { @class = "" })
+    </li>
+
+    
+    <li class="@(currentAction == "triagemhistorico" ? " active " : "")">@Html.ActionLink("Histórico", "triagemhistorico", new { id = Model.PRCProposta.PRCPropostaId, tipo = Model.PRCProposta.PRCPropostaGUID }, new { @class = "" })</li>
+
+    
+
+
+
+
+
+</ul>
+
+
+

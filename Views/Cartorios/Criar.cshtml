@@ -1,0 +1,173 @@
+﻿@model Models.Cartorio
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.CartorioId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Cartório";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";   
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Cartórios", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "Cartorios", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        if (Model.CartorioId > 0)
+                        {
+                        @Html.Hidden("CartorioId", Model.CartorioId);
+                                                                    acao = "Alterar";
+                        }
+    
+       
+                        <div class="row">
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                @Html.LabelFor(model => model.CartorioNome)
+                                @Html.TextBoxFor(model => model.CartorioNome, new { @class = "form-control" })
+                            </div>
+                        
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+
+                                <div class="input-group">
+                                    @Html.TextBoxFor(model => model.CartorioCep, new { @class = "form-control" })
+                                    <span class="input-group-btn">
+                                        <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+
+
+                            </div>
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5">
+                                <label>Endereço</label>
+                                @Html.TextBoxFor(model => model.CartorioEndereco, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                <label>Número</label>
+                                @Html.TextBoxFor(model => model.CartorioNumero, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                <label>Complemento</label>
+                                @Html.TextBoxFor(model => model.CartorioComplemento, new { @class = "  form-control " })
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                <label>Bairro</label>
+                                @Html.TextBoxFor(model => model.CartorioBairro, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                <label>Cidade</label>
+                                @Html.TextBoxFor(model => model.CartorioCidade, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                <label>Estado</label>
+                                @Html.TextBoxFor(model => model.CartorioEstado, new { @class = "  form-control " })
+                            </div>
+                               <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Telefone</label>
+                                @Html.TextBoxFor(model => model.CartorioTelefone, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>E-Mail</label>
+                                @Html.TextBoxFor(model => model.CartorioEmail, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Site</label>
+                                @Html.TextBoxFor(model => model.CartorioSite, new { @class = "  form-control " })
+                            </div>
+
+                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Observações</label>
+                                @Html.TextAreaFor(model => model.CartorioSite, new { @class = "  form-control " })
+                            </div>
+                        </div>
+         
+                        <br />
+
+                        <div class="row-fluid">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+     @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    <script>
+        $("#CartorioNome").focus();
+
+        $('#CartorioTelefone').mask(maskBehavior, options);
+        $("#CartorioCep").mask("99999-999");
+        //cep
+        $('#buscar-cep').click(function () {
+            $('#CartorioCep').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading.cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading.cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                },
+                success: function (data) {
+                    $('#CartorioEndereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                    $('#CartorioBairro').val(data.bairro);
+                    $('#CartorioEstado').val(data.estado);
+                    $('#CartorioCidade').val(data.cidade);
+                    $('#CartorioNumero').focus();
+                }
+            });
+        });
+
+    </script>
+}

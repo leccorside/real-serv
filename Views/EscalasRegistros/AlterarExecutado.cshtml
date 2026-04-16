@@ -1,0 +1,136 @@
+﻿@model Models.EscalaRegistro
+
+@{
+    ViewBag.Title = "Alterar";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+}
+
+@section Styles{
+    <style>
+        .horario
+        {
+            font-size: 10px !important;
+        }
+
+        .opcional
+        {
+            background-color: lightyellow !important;
+        }
+    </style>
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(model => model.EscalaRegistroId)
+    @Html.HiddenFor(model => model.EscalaId)
+    @Html.HiddenFor(model => model.ServicoId)
+    @Html.HiddenFor(model => model.PessoaId)
+    @Html.HiddenFor(model => model.PostoDeServicoId)
+    @Html.HiddenFor(model => model.TipoEscalaId)
+    @Html.HiddenFor(model => model.EscalaRegistroSequencia)
+    @Html.HiddenFor(model => model.EscalaRegistroData)
+    @Html.HiddenFor(model => model.EscalaRegistroTipo)
+<div class="content animate-panel">
+        <div class="row">
+            <div class="col-lg-12" style="">
+
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você está alterando o <strong>executado</strong>.
+                </div>
+            
+
+
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Alteração de Escala @Model.EscalaRegistroData.ToString("dd/MM/yyyy")
+                    </div>
+                    <div class="panel-body">
+                        <!-- dados aqui-->
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <label>Situação atual</label><h6>@Html.GetLegendEscalasSituacoes(Model.Situacao)</h6></div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <label>Tipo atual</label><h6>@Model.PontoJornada</h6></div>
+                            
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div id="painel">
+                                        <label>Tipo</label>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            @Html.TextBoxFor(m => m.PontoInicio, new { @class = "col-lg-12 horario form-control" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                             @Html.TextBoxFor(m => m.PontoIntervalInicio, new { @class = "col-lg-12 horario opcional form-control" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            @Html.TextBoxFor(m => m.PontoIntervalFim, new { @class = "col-lg-12 horario opcional form-control" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            @Html.TextBoxFor(m => m.PontoFim, new { @class = "col-lg-12 horario form-control" })
+                                        </div>
+                                    </div>
+                                      
+                                    
+                                </div>
+
+                                
+
+
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <label>Observações:</label>
+                                <h6>@Model.PontoObservacoes</h6>
+                            </div>
+                            
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <input type="submit" value="Alterar" class="btn btn-primary" /></div>
+                        </div>
+
+                        <!-- ./ dados aqui-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+
+
+
+
+@section Scripts {
+    <script>
+
+        $("select#Situacao").change(function () {
+            var situacao = $("select#Situacao option:selected").attr('value');
+            if (situacao == "F" || situacao=="D" || situacao=="X") {
+                $("#painel").slideUp();
+            } else {
+                $("#painel").slideDown();
+            }
+        }).change();
+
+
+       
+    jQuery(function () {
+       
+        $(".horario").mask("99:99");
+    });
+
+    </script>
+}

@@ -1,0 +1,134 @@
+﻿@model IEnumerable<Models.Produto>
+
+@{
+    ViewBag.Title = "Produtos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";      
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Produtos", "Produtos", "Principal")</li>
+
+
+}
+
+
+<div class="row-fluid">
+    <div class="span12">
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+
+        <table class="table table-bordered table-striped table-highlight table-hover table-condensed ">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProdutoCodigo)
+                    </th>
+                    <th>Foto</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProdutoNome)
+                    </th>
+                    <th>Qtd. Estoque</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ValorUnitario)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Localizacao)
+                    </th>
+                    <th>Status
+                    </th>
+                    <th>Data de início
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            @foreach (var item in Model)
+            {
+                
+                
+                
+                <tbody>
+                    <tr>
+                        <td>
+                            @if (item.EstoqueAtual < item.EstoqueMin)
+                            {
+                                <span class="tip-right " title="Abaixo do estoque mínimo (@item.EstoqueMin)"><i class="fa fa-exclamation-circle text-error"></i></span>
+                            }
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProdutoCodigo)
+                        </td>
+                        <td>
+                            @if (item.FotoProduto != null && item.FotoProduto != "")
+                            {
+                                <img src="@Url.Content(item.FotoProduto.Replace(".jpg","thumb.jpg"))?@DateTime.Now.Second" style="height:30px; width:30px; min-width:30px;" data-src="holder.js/30x30" alt="@item.ProdutoNome">               
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProdutoNome)
+                        </td>
+                        <td>@item.EstoqueAtual <a href="~/ProdutosEstoque/Criar/@item.ProdutoId" class="btn-mini  pull-right">Atualizar <i class="fa fa-pencil-square-o"></i></a></td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorUnitario)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Localizacao)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProdutoStatusNome)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RegDtInicio)
+                        </td>
+                        <td>
+                            <a href="~/Produtos/Criar/@item.ProdutoId" class="btn btn-mini"><i class="icon-edit"></i>Alterar</a> | 
+            <a href="~/Produtos/Deletar/@item.ProdutoId" class="btn btn-mini"><i class="icon-trash"></i>Excluir</a>
+                        </td>
+                    </tr>
+                </tbody>
+            }
+
+        </table>
+
+
+        @{
+            //Controles de paginação
+            int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);
+        }
+        @Html.Paginacao(qtdPaginas)
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+        });
+    </script>
+
+
+
+}

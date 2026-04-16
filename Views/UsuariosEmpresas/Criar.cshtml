@@ -1,0 +1,254 @@
+@model Models.UsuarioEmpresa
+
+@{
+    
+    
+    var acao = "Cadastrar";
+    if (Model.UsuarioEmpresaId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+
+    ViewBag.Title = acao + " " + "Clientes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Breadcrumb{
+    
+        <li class="active"><span class="divider">/</span>    @Html.ActionLink("Clientes", "Index")</li>
+    
+}
+
+
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">Dados</a></li>
+    @if (Model.UsuarioEmpresaId > 0)
+    {
+        <li><a href="~/Clientes/Index/@Model.UsuarioEmpresaId">Usu&aacute;rios</a></li>
+    }
+</ul>
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    
+    if (Model.UsuarioEmpresaId > 0)
+    {
+    @Html.Hidden("UsuarioEmpresaId", Model.UsuarioEmpresaId);
+    }
+    <legend>Informa&ccedil;&otilde;es da Empresa</legend>
+    
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="editor-label">@Bll.Configuracoes.Carregar("label.codigo.legado")</div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.UsuarioEmpresaCodigoLegado, new { @class = "span2" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaCodigoLegado)*@
+            </div>
+        </div>
+    </div>
+    
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.UsuarioEmpresaDocumento)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.UsuarioEmpresaDocumento, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaDocumento)*@
+            </div>
+        </div>
+
+        <div class="span6">
+            <div class="editor-label ">
+                @Html.LabelFor(model => model.UsuarioEmpresaRazaoSocial)
+            </div>
+            <div class="editor-field ">
+                @Html.TextBoxFor(model => model.UsuarioEmpresaRazaoSocial, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaRazaoSocial)*@
+            </div>
+        </div>
+    </div>
+    
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.UsuarioEmpresaNomeFantasia)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.UsuarioEmpresaNomeFantasia, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaNomeFantasia)*@
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    
+    <legend>Dados de contato</legend>
+    
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="editor-label">
+                <label>Telefone</label>
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.UsuarioEmpresaCttTelDDD, new { @class = "input-mini" }) @Html.TextBoxFor(model => model.UsuarioEmpresaCttTel)
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaCttTel)*@  @Html.ValidationMessageFor(model => model.UsuarioEmpresaCttTel)
+            </div>
+        </div>
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.UsuarioEmpresaCttEmail)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.UsuarioEmpresaCttEmail, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaCttEmail)*@
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.UsuarioEmpresaSite)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.UsuarioEmpresaSite, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaSite)*@
+            </div>
+        </div>
+    </div>
+    
+  
+    <legend>Endere&ccedil;o</legend>
+    
+    
+    <div id="loading" style="display: none "><div class="progress progress-striped active">
+        <div style="width: 73%" class="bar">Buscando</div>
+    </div></div>
+    
+    <div class="row-fluid">
+        <div class="span2">
+            <div class="control-group">
+                <label>CEP </label>
+                @Html.TextBoxFor(model => model.UsuarioEmpresaCEP, new { @class = "input-small" }) <a href="#endereco" id="buscar-cep"><i class="icon-search"></i></a>
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaCEP)*@
+            </div>
+        </div>
+        <div class="span2">
+             <div class="control-group">
+             <label>Estado</label>
+                @Html.TextBoxFor(model => model.UsuarioEmpresaEstado, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaEstado)*@
+            </div>
+            </div>
+        <div class="span4">
+             <div class="control-group">
+            <label>Cidade</label>
+                @Html.TextBoxFor(model => model.UsuarioEmpresaCidade, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaCidade)*@
+            </div>
+        </div>
+        <div class="span4">
+             <div class="control-group">
+            <label>Bairro</label>
+                @Html.TextBoxFor(model => model.UsuarioEmpresaBairro, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaBairro)*@
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="control-group">
+            <label>Logradouro</label>
+                @Html.TextBoxFor(model => model.UsuarioEmpresaLogradouro, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaLogradouro)*@
+            </div>
+        </div>
+        <div class="span2">
+             <div class="control-group">
+            <label>N&uacute;mero</label>
+                @Html.TextBoxFor(model => model.UsuarioEmpresaNumero, new { @class = "span6" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaNumero)*@
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+            <label>Complemento</label>
+                @Html.TextBoxFor(model => model.UsuarioEmpresaComplemento, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.UsuarioEmpresaComplemento)*@
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    
+    <div class="form-actions">
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+    </div>
+}
+
+
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Assets/bootstrap/js/jquery-cep.js"></script>
+
+    <script>
+        $("#UsuarioEmpresaDocumento").mask("99.999.999/9999-99");
+
+        $("#UsuarioEmpresaCttTelDDD").mask("99");
+        $("#UsuarioEmpresaCttTel").mask("9999-9999?9");
+
+        $("#UsuarioEmpresaCEP").mask("99999-999");
+
+        
+
+        jQuery(function () {
+
+            $('#buscar-cep').click(function () {
+                $('#UsuarioEmpresaCEP').cep({
+                    load: function () {
+                        //Exibe a div loading
+                        $('#loading').show();
+                    },
+                    complete: function () {
+                        //Esconde a div loading
+                        $('#loading').hide();
+                    },
+                    error: function (msg) {
+                        //Exibe em alert a mensagem de erro retornada
+                        alert(msg);
+                        $('#UsuarioEmpresaCEP').focus();
+                    },
+                    success: function (data) {
+                        $('#UsuarioEmpresaLogradouro').val(data.tipoLogradouro + ' ' + data.logradouro);
+                        $('#UsuarioEmpresaBairro').val(data.bairro);
+                        $('#UsuarioEmpresaEstado').val(data.estado);
+                        $('#UsuarioEmpresaCidade').val(data.cidade);
+                        $('#UsuarioEmpresaNumero').focus();
+
+                    }
+                });
+            });
+
+        });
+
+
+    </script>
+
+
+
+
+}

@@ -1,0 +1,194 @@
+﻿@model Models.MedProdutoFavoritoItemView
+
+@{
+    ViewBag.Title = "Criar Produtos & Exames Favoritos > Produtos";
+
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    
+}
+@{
+    var bllMedProdutos = new BLL.MedProdutos();
+    var lista = bllMedProdutos.Listar();
+
+
+    var listaEventosGroup = lista
+    .GroupBy(u => u.MedProdutoCategoriaId)
+    .Select(grp => grp.ToList())
+    .ToList();
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Produtos & Exames Favoritos", "Index", new { id = 0 })</li>
+}
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+
+
+                <ul class="nav nav-tabs">
+                    <li><a href="@Url.Content("~/MedProdutosFavoritos/Criar/" + Model.MedProdutoFavorito.MedProdutoFavoritoId)">Dados Gerais</a></li>
+                    <li class="active"><a href="#">Produtos / Exames</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- conteuod aqui -->
+                            @using (Html.BeginForm("Produtos", "MedProdutosFavoritos", FormMethod.Post))
+                            {
+                                @Html.ValidationSummary(true)
+
+                                @Html.HiddenFor(m => m.MedProdutoFavoritoId);
+        
+                                <input type="hidden" value="produtos" id="destino" name="destino" />
+                                
+                                <div class="row">
+                                    <div class="form-group col-lg-2">
+                                        <label>Favorito n.</label>
+                                        <p class="form-control-static">@Model.MedProdutoFavoritoId</p>
+                                    </div>
+                                    <div class="form-group col-lg-10">
+                                        <label>Favorito</label>
+                                        <p class="form-control-static">@Model.MedProdutoFavorito.MedProdutoFavoritoNome</p>
+                                    </div>
+
+                                    <div class="form-group col-lg-12">
+                                        <label>Favorito</label>
+                                        <div class="input-append">
+
+                                            <div class="input-group">
+
+                                                <select id="MedProdutoFavoritoValue" name="MedProdutoFavoritoValue" class="form-control select2">
+                                                    @foreach (var itemGroup in listaEventosGroup)
+                                                    {
+                                                        var categoriaNome = itemGroup.FirstOrDefault().MedProdutoCategoriaNome;
+                                                        if (categoriaNome == null || categoriaNome == "")
+                                                        {
+                                                            categoriaNome = "Sem Categoria";
+                                                        }
+                                                        
+                                                        <optgroup label="@categoriaNome">
+                                                            <option value="cat-@itemGroup.FirstOrDefault().MedProdutoCategoriaId">=== Adicionar todos os produtos da categoria @categoriaNome ===</option>
+                                                            @foreach (var item in lista.Where(x => x.MedProdutoCategoriaId == itemGroup.FirstOrDefault().MedProdutoCategoriaId))
+                                                            {
+                                                                    <option value="@item.MedProdutoId">@item.MedProdutoNome</option>
+                                                            }
+
+                                                        </optgroup>
+                                                        
+                                                    }
+                                                </select>
+                                                <span class="input-group-btn">
+                                                    <button type="submit" id="btnaddprod" name="btnaddprod" class="btn btn-primary">Adicionar</button>
+                                                </span>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        
+                                        @if (Model.ListMedProdutoFavoritoItem.Count() > 0)
+                                        {
+                                            <a href="@Url.Content("~/MedProdutosFavoritos/ProdutosExcluir/" + Model.MedProdutoFavoritoId + "?eid=-500")"  onclick="return confirm('Deseja realmente apagar todos os produtos da lista?')" class="btn btn-outline btn-danger btn-xs pull-right"><i class="fa fa-trash"></i>Apagar tudo</a>    
+                                        }
+
+                                        </div>
+
+                                    <div class="col-lg-12">
+
+                                        <div class="table-responsive">
+                                            <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>Cód.</th>
+                                                        <th>Produto / Exame</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.ListMedProdutoFavoritoItem)
+                                                    {
+                    
+                                                        <tr>
+                                                            <td class="text-center"><a href="@Url.Content("~/MedProdutosFavoritos/ProdutosExcluir/" + Model.MedProdutoFavoritoId + "?eid=" + item.MedProdutoFavoritoItemId)" class="btn btn-outline btn-danger btn-xs"><i class="fa fa-trash"></i></a></td>
+                                                            <td>@item.MedProdutoCod</td>
+                                                            <td>
+                                                                @item.MedProdutoNome
+                                                            </td>
+                                                        </tr>	 
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                
+                                
+                                
+                            }
+
+                            <!-- ./conteudo aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/select2/js")
+    <script>
+        $('#MedProdutoFavoritoItem_MedProdutoId').trigger('chosen:activate');
+    </script>
+    <script type="text/javascript">
+            $('.select2').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+    </script>
+
+}
+

@@ -1,0 +1,69 @@
+﻿@model Models.TrjReqPag
+
+@{
+    ViewBag.Title = "Criar Guia > Produtos e Exames";
+
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+                        //Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    
+}
+@{
+    
+    
+    
+}
+
+
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    
+                        <legend>Dados da Requisição - <span class="badge @Model.Fonte">@Model.Fonte</span> @Model.TrjReqPagNumero</legend>
+                        <div class="row">
+                            <div class="table-responsive">
+                            <div class="col-lg-12">
+                                @Html.Raw(Model.TrjReqPagHtml)
+                            </div>
+                                </div>
+
+                       </div>
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+   
+
+
+
+
+@section Styles{
+ 
+}
+
+@section Scripts {
+
+}
+

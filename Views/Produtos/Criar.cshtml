@@ -1,0 +1,199 @@
+﻿@model Models.Produto
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.ProdutoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Produto";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Produtos", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#">Dados do Produto</a>
+        </li>
+        @if (Model.ProdutoId > 0)
+        {
+            <li><a href="~/ProdutosEstoque/Criar/@Model.ProdutoId">Estoque (@Model.EstoqueAtual)</a></li>        
+        }
+    </ul>
+
+    @using (Html.BeginForm("Criar", "Produtos", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.ProdutoId > 0)
+        {
+        @Html.Hidden("ProdutoId", Model.ProdutoId);
+        }
+        
+        <legend>Dados básicos</legend>
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ProdutoCodigo)
+                </div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.ProdutoCodigo)
+                    @Html.ValidationMessageFor(model => model.ProdutoCodigo)
+                </div>
+            </div>
+            <div class="span9">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ProdutoNome)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.ProdutoNome, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.ProdutoNome)
+                </div>
+            </div>
+        </div>
+        
+        <legend>Dados complementares</legend>
+        <div class="row-fluid">
+             <div class="span3">
+                <div class="editor-label">
+                    <label>Estoque Atual</label>
+                </div>
+                <div class="editor-field">
+                    @Model.EstoqueAtual
+                </div>
+            </div>
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.EstoqueMin)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBox("EstoqueMin", Model.EstoqueMin, new { @class = "number input-mini" })
+                    @Html.ValidationMessageFor(model => model.EstoqueMin)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.EstoqueMax)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBox("EstoqueMax", Model.EstoqueMax, new { @class = "number input-mini" })
+
+                    @Html.ValidationMessageFor(model => model.EstoqueMax)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ValorUnitario)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBox("ValorUnitario", string.Format("{0:n2}", Model.ValorUnitario), new { @class = "money input-mini" })
+
+                    @Html.ValidationMessageFor(model => model.ValorUnitario)
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ProdutoUnidadeId)
+                </div>
+                <div class="editor-field">
+                    @Html.DropDownListFor(model => model.ProdutoUnidadeId, (SelectList)ViewBag.DdlProdutosUnidades, "--Nenhuma--", new { @class = "chosen-select" })
+                    @Html.ValidationMessageFor(model => model.ProdutoUnidadeId)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="span3">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Marca)
+                    </div>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Marca)
+                        @Html.ValidationMessageFor(model => model.Marca)
+                    </div>
+
+                </div>
+            </div>
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Localizacao)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Localizacao, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.Localizacao)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.ProdutoStatusId)
+                </div>
+                <div class="editor-field">
+                    @Html.DropDownListFor(model => model.ProdutoStatusId, (SelectList)ViewBag.DdlProdutoStatus, "--Nenhuma--", new { @class = "chosen-select" })
+                    @Html.ValidationMessageFor(model => model.ProdutoStatusId)
+                </div>
+            </div>
+        </div>
+        
+        <div class="row-fluid">
+            <div class="span3">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.Consumivel) Consúmivel?
+                </label>
+            </div>
+        </div>
+        
+        <div class="row-fluid">
+            <div class="span9">
+                <div class="editor-label">
+                    <label for="Foto">Foto</label>
+                </div>
+                <div class="editor-field">
+
+                    @if (Model.FotoProduto != null && Model.FotoProduto != "")
+                    {
+                        <ul class="thumbnails">
+                            <li class="span12 thumbnail">
+                                <img src="@Url.Content(Model.FotoProduto)?@DateTime.Now.Second" style="width: 260px; height: 180px;" data-src="holder.js/260x180" alt="260x180">
+                                <a href="~/Produtos/RemoveFoto/@Model.ProdutoId" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir essa foto?')"><i class="icon-trash"></i>Remover</a>
+                            </li>
+                        </ul>    
+                               
+                    }
+                    else
+                    {  
+                        <input type="file" name="Arquivo" /><br />
+                    }
+
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  />
+
+        </div>
+    }
+
+
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

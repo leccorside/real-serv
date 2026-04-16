@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Models.Simulacao>
+
+
+@{
+    
+    
+    DateTime DataConsultaDe = Convert.ToDateTime(ViewBag.DataConsultaDe);
+    DateTime DataConsultaAte = Convert.ToDateTime(ViewBag.DataConsultaAte);
+    ViewBag.Title = "Lista Presença";
+    Layout = "~/Views/Shared/_Report.cshtml";
+
+    string dt = DateTime.MinValue.ToShortDateString();
+
+    var i = 0;
+    decimal vlDia = 0;
+    decimal vlTotal = 0;
+
+    var pessoas = new BLL.Pessoas();
+    var objPessoas = pessoas.Carregar(ViewBag.PessoaId);
+
+    var contador = Model.Count();
+    
+}
+
+    <table border="0" width="100%">
+        <tr>
+            <td>@objPessoas.Nome</td>
+            <td align="right">Relatório de Fechamento</td>
+        </tr>
+          <tr><td colspan="2"><br /><br /></td></tr>
+    </table>
+
+
+
+<table width="100%">
+    <tr>
+        <td><strong>Número do fechamento:</strong> @ViewBag.IdSimulacao</td>
+        <td align="right"><strong>Período:</strong> @ViewBag.DataConsultaDe até @ViewBag.DataConsultaAte</td>
+    </tr>
+
+</table>
+
+
+<table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="1">
+    @foreach (var item in Model)
+    {
+        if (dt != item.Inicio.ToShortDateString())
+        {
+            if (i > 0)
+            {//total
+        <tr>
+            <td colspan="4"><span class="pull-right">sub-total</span></td>
+            <td><span class="pull-right">@string.Format("{0:C}", vlDia)</span></td>
+        </tr>
+        <tr><td colspan="5">&nbsp;</td></tr>
+                vlDia = 0;
+            }   
+        <tr>
+            <td colspan="5">@item.Inicio.ToShortDateString()</td>
+        </tr>
+        }
+        
+        <tr>
+            <td>@item.Inicio.ToShortTimeString()</td>
+            <td>@item.Fim.ToShortTimeString()</td>
+            <td>@item.ServicoNome</td>
+            <td><label>@item.Nome &nbsp;&nbsp;&nbsp;<small>@item.Apelido</small></label></td>
+            <td><span class="pull-right">@string.Format("{0:C}", item.ValorPagar)</span></td>
+        </tr>
+        
+        
+        i++;
+        vlDia += item.ValorPagar;
+        vlTotal += item.ValorPagar;
+        dt = item.Inicio.ToShortDateString();
+
+        if (i == contador)
+        {
+            <tr>
+            <td colspan="4"><span class="pull-right">sub-total</span></td>
+            <td><span class="pull-right">@string.Format("{0:C}", vlDia)</span></td>
+        </tr>
+        }
+       
+    }
+
+    <tr>
+        <td colspan="4"><span class="pull-right">TOTAL GERAL</span></td>
+        <td><span class="pull-right">@string.Format("{0:C}", vlTotal)</span></td>
+    </tr>
+
+
+</table>

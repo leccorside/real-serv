@@ -1,0 +1,67 @@
+﻿@model Models.Pessoa
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+}
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <h4>Alterar sua senha</h4>
+
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+                     @using (Html.BeginForm("SuaSenha", "Associados", FormMethod.Post))
+            {
+                
+
+      
+                @Html.HiddenFor(model => model.PessoaID);
+                @Html.HiddenFor(model => model.PessoaGUID);
+
+     
+        
+       
+       
+                <div class="row">
+
+                    <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                        <label>Informe sua senha</label>
+                        @Html.PasswordFor(model => model.ContraSenha, new { @class = " form-control" })
+                    </div>
+
+                    <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                        <label>Confirme sua senha</label>
+                        @Html.PasswordFor(model => model.ContraSenhaConfirm, new { @class = " form-control" })
+                    </div>
+
+
+                </div>
+
+                   
+                        
+                <div class="row">
+                    <div class="col-lg-12">
+                        <input type="submit" value="Alterar" class="btn btn-primary btn-large" tabindex="11" />
+                    </div>
+
+                </div>
+            
+            }
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+
+           
+
+        </div>
+    </div>
+</div>

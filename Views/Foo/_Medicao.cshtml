@@ -1,0 +1,236 @@
+﻿@{
+    int id = 0;
+    var currentId = ViewContext.RouteData.Values["id"] as string ?? "0";
+    int.TryParse(currentId, out id);
+
+    var bll = new Bll.MedicoesRegistros();
+
+    var objModel = bll.CarregaDados(0, id);
+
+    var totalLcravado = objModel.ListaMedicaoRegistro.Select(c => c.LCravado).Sum();
+
+    var totalReap1 = objModel.ListaMedicaoRegistro.Select(c => c.Reap1).Sum();
+
+    var totalCortes = objModel.ListaMedicaoRegistro.Where(c => c.Cortes == true).Count();
+
+    var totalCompMed = objModel.ListaMedicaoRegistro.Select(c => c.CompMed).Sum();
+        
+}
+
+<div class="papel">
+    <table class="table table-striped table-condensed table-executada" id="table_executada">
+        <tr>
+            <th>Cliente</th>
+            <th>Obra</th>
+            <th>Operador Líder</th>
+            <th>Centro de Custo</th>
+            <th>Data Início / Data Fim</th>
+            <th>Data Medição</th>
+            <th>Funcionários</th>
+        </tr>
+        <tr>
+            <td>@objModel.UsuarioEmpresa.UsuarioEmpresaCodigoLegado - @objModel.UsuarioEmpresa.UsuarioEmpresaNomeFantasia</td>
+            <td>@objModel.DadosProjeto.ProjetoCentroCusto - @objModel.DadosProjeto.ProjetoNome</td>
+            <td>@objModel.Medicao.OperadorNome</td>
+            <td>@objModel.DadosProjeto.ProjetoCentroCusto</td>
+            <td>@objModel.DadosProjeto.ProjetoDtIni.ToShortDateString() / @objModel.DadosProjeto.ProjetoDtFim.ToShortDateString()</td>
+            <td>@Convert.ToDateTime(objModel.Medicao.EquipamentoDtEntrada).ToShortDateString()</td>
+            <td rowspan="6">
+                <table class="table table-striped table-condensed table-executada" id="">
+                    <thead>
+                        <tr>
+                            <th>Função</th>
+                            <th>Colaborador</th>
+                            <th>Horário</th>
+                            <th>Qtd.Horas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in objModel.ListaQuadroHorario)
+                        {
+                            <tr>
+                                <td>@item.UsuarioFuncaoNome</td>
+                                <td>@item.UsuarioNome</td>
+                                <td>@item.HorarioDe ~ @item.HorarioAte</td>
+                                <td>@item.QtdHoras</td>
+                            </tr>                            
+                        }
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Equipamento</th>
+            <th>Taxa Outros(R$)</th>
+            <th>Taxa Alojamento/Refeição</th>
+            <th>Horas Paradas</th>
+            <th>Horas Arrasto</th>
+            <th>Horas Mudança Interna</th>
+        </tr>
+
+
+        <tr>
+            <td>@objModel.Medicao.EquipamentoNome</td>
+            <td>@objModel.Medicao.TaxaOutros</td>
+            <td>@if (objModel.Medicao.MoradiaAlimentacao)
+                {
+                <small>@objModel.DadosProjeto.TaxaMoradiaAlimentacao</small>
+                }</td>
+            <td>@objModel.Medicao.HorasParadas</td>
+            <td>@objModel.Medicao.HorasArrasto</td>
+            <td>@objModel.Medicao.QtdMudancaInterna</td>
+        </tr>
+
+
+        <tr>
+            <th>Taxa Horas Parada</th>
+            <th>Taxa Horas Arrasto</th>
+            <th>CAPWAP</th>
+            <th>PDA</th>
+            <th colspan="2">Observações</th>
+        </tr>
+
+
+        <tr>
+            <td>@objModel.DadosProjeto.TaxaHoraParada</td>
+            <td>@objModel.DadosProjeto.TaxaHoraArrasto</td>
+            <td>@objModel.Medicao.QtdCapWap</td>
+            <td>@objModel.Medicao.QtdPda</td>
+            <td colspan="2">@objModel.Medicao.ObservacoesGerais</td>
+        </tr>
+
+    </table>
+    <br />
+    @if (objModel.Medicao.Instalacao)
+    {
+        <table class="table table-striped table-condensed table-executada" id="table_executada">
+            <caption>Taxa de Instalação</caption>
+        </table>
+    }
+
+    <table class="table table-striped table-condensed table-executada" id="table_executada">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Estaca</th>
+                <th>Etapa</th>
+                <th>Seção</th>
+                <th>Composição</th>
+                <th>Pré Furo (m)</th>
+                <th>Pt. Met. (m)</th>
+                <th>Reap. (m)</th>
+                <th>Cortes</th>
+                <th>Comp.Lev. (m)</th>
+                <th>Soldas</th>
+                <th>Supl. (m)</th>
+                <th>Sobra (m)</th>
+                <th>Nega (mm)</th>
+                <th>Quebra (m)</th>
+                <th>Alt.Qd. (m)</th>
+                <th>Obs.</th>
+                <th>LCravado (m)</th>
+                <th>Comp. Med. (m)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in objModel.ListaMedicaoRegistro)
+            {
+                <tr>
+                    <td>@item.MedicaoTipoNome</td>
+                    <td>@item.Estaca</td>
+                    <td>@item.Etapa</td>
+                    <td>@item.ProdutoSecaoNome</td>
+                    <td>@item.Comp1 - @item.Comp2 - @item.Comp3 - @item.Comp4 - @item.Comp5 - @item.Comp6
+                        @if (Bll.Configuracoes.Carregar("medicoes.estacas.qtd.composicao") == "8")
+                        {
+                            <span>- @item.Comp7 - @item.Comp8</span>
+                        }
+                    </td>
+                    <td>@item.PreFuro</td>
+                    <td>@item.PontaMetalica</td>
+                    <td>@item.Reap1</td>
+                    <td>@Convert.ToInt16(item.Cortes)</td>
+                    <td>@item.ComLevM</td>
+                    <td>@item.Soldas</td>
+                    <td>@item.Supl</td>
+                    <td>@item.Sobra</td>
+                    <td>@Convert.ToInt16(item.Nega)</td>
+                    <td>@item.QuebraQtd</td>
+                    <td>@item.AlturaQueda</td>
+                    <td>@item.Observacao</td>
+                    <td>@item.LCravado</td>
+                    <td>@item.CompMed</td>
+                </tr> 
+            }
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <p class="pull-right">Total do dia</p>
+                </td>
+                <td colspan="3"></td>
+                <td>@totalReap1</td>
+                <td>@totalCortes</td>
+                <td colspan="8"></td>
+                <td>@totalLcravado</td>
+                <td>@totalCompMed</td>
+            </tr>
+        </tfoot>
+    </table>
+
+
+
+
+    <div class="row-fluid">
+        <div class="span6">
+            @if (Model.Medicao.FiscalId == 0)
+            {
+                <blockquote>
+                    <p>Nome do Fiscal</p>
+                    <small>Data de Assinatura</small>
+                </blockquote>
+            }
+            else
+            {
+                <blockquote>
+                    <p>@Model.Medicao.FiscalNome</p>
+                    <small>@Model.Medicao.FiscalDtAssinatura</small>
+                </blockquote>
+            }
+        </div>
+        <div class="span6">
+            @if (Model.Medicao.EngenheiroId == 0)
+            {
+                <blockquote class="pull-right">
+                    <p>Nome do Engenheiro</p>
+                    <small>Data de Assinatura</small>
+                </blockquote>
+            }
+            else
+            {
+                <blockquote class="pull-right">
+                    <p>@Model.Medicao.EngenheiroNome</p>
+                    <small>@Model.Medicao.EngenheiroDtAssinatura</small>
+                </blockquote>
+            }
+        </div>
+    </div>
+
+
+    @if (objModel.Medicao.MotivoCancelamentoId != null)
+    {
+        <div class="tag">
+            <img src="~/Content/images/cancelado.png" /><br />
+            @objModel.Medicao.MotivoCancelamentoObservacoes
+
+        </div>
+     
+    }
+</div>
+
+
+<style>
+ 
+</style>

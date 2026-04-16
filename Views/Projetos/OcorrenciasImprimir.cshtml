@@ -1,0 +1,43 @@
+﻿@model Models.OcorrenciaView
+
+@{
+    ViewBag.Title = "Relatório de Ocorrências";
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+<table class="table table-striped table-condensed table-executada" id="table_executada">
+    <thead>
+        <tr>
+            <th colspan="2">Obra</th>
+            <th>Centro de Custo</th>
+            <th>Data Início / Data Fim</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="2">@Model.DadosProjeto.ProjetoNome</td>
+            <td>@Model.DadosProjeto.ProjetoCentroCusto</td>
+            <td>@Model.DadosProjeto.ProjetoDtIni.ToShortDateString() / @Model.DadosProjeto.ProjetoDtFim.ToShortDateString()</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Ocorrências</h3>
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaOcorrencias)
+        {
+            <tr>
+                <td nowrap><i class="@(item.OcorrenciaTipo == 0 ? "fa fa-android" : "fa fa-user")"></i> - @item.RegDtInicio - @item.UsuarioNome</td>
+                <td width="100%">@item.OcorrenciaDescricao</td>
+                
+            </tr>
+        }
+    </tbody>
+</table>

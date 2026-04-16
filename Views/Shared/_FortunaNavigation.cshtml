@@ -1,0 +1,670 @@
+﻿@{
+    var empresa = new BLL.Empresas();
+    var dadosEmpresa = empresa.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    int pessoaId = BLL.Usuarios.GetPessoaId();
+
+    //var foto = "~/Assets/_fortuna/images/semfoto.png";
+    var foto = "~/Assets/img/logointerno/" + BLL.Usuarios.GetEmpresaId() + "_" + BLL.Usuarios.GetFilialId() + "Interna.jpg?" + DateTime.Now.Second;
+    var semfoto = "~/Assets/_fortuna/images/semfoto.png";
+    if (BLL.Usuarios.GetFilialId() > 0)
+    {
+        foto = "~/Assets/img/logointerno/" + BLL.Usuarios.GetEmpresaId() + "_" + BLL.Usuarios.GetFilialId() + "Interna.jpg?" + DateTime.Now.Second;
+    }
+
+
+
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentTipo = ViewContext.RouteData.Values["tipo"] as string ?? "";
+
+    var currentId = ViewContext.RouteData.Values["id"] as string ?? "0";
+
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    currentTipo = currentTipo.ToLower();
+    var currentPage = (currentController + "-" + currentAction + currentTipo).ToLower();
+
+    var user = new BLL.Usuarios();
+    var controleAcesso = user.ControleAcesso(currentAction, currentController);
+
+    var dadosUser = user.Carregar(BLL.Usuarios.GetUsuarioId());
+
+    var _filialId = BLL.Usuarios.GetFilialId();
+    
+    var bllFiliais = new BLL.Filiais();
+    var bllUsuariosFiliais = new BLL.UsuariosFiliais();
+    SelectList listaFiliais;
+
+    listaFiliais = (SelectList)bllFiliais.ListarTipos(true);
+    if (BLL.Usuarios.GetVisualizaOutrasFiliais())
+    {
+        //filiaisSelecionadas
+        listaFiliais = (SelectList)bllUsuariosFiliais.ListarTiposAcessos(BLL.Usuarios.GetUsuarioId());
+    }
+
+    SelectListItem selected = listaFiliais.FirstOrDefault(x => x.Value == _filialId.ToString());
+    if (selected != null)
+    {
+        listaFiliais = new SelectList(listaFiliais, "value", "text", selected.Value);
+    }
+
+
+
+    var index_agendamento = user.ControleAcesso("index", "agendamento");
+    var pessoas_pesquisarapida = user.ControleAcesso("pesquisarapida", "pessoas");
+    var agenda_agendamento = user.ControleAcesso("agenda", "agendamento");
+    var calendario_agendamento = user.ControleAcesso("calendario", "agendamento");
+    var regras_nobreadcrumb = user.ControleAcesso("nobreadcrumb", "regras");
+
+    var largura = BLL.Utils.Funcoes.GetMaxWidth();
+
+    var urlPesquisa = "~/Pessoas/PesquisaRapida/?lightbox[iframe]=true&lightbox[width]=" + largura + "&lightbox[height]=520";
+
+    
+}
+
+
+@*<div id="navigation">
+    <div class="profile-picture">
+        <a href="@Url.Content("~/Principal/Perfil")">
+            <img src="@Url.Content(foto)" class="img-circle m-b"  style="max-height: 96px" alt="@BLL.Usuarios.GetUsuarioNome()">
+        </a>
+        <div class="stats-label text-color">
+            <span class="font-extra-bold font-uppercase">@BLL.Usuarios.GetUsuarioNome()</span>
+        </div>
+    </div>
+
+    
+    <br />
+    <br />
+</div>*@
+
+<div id="navigation">
+    <div class="profile-picture">
+        <a href="@Url.Content("~/Principal/Perfil/")">
+            <img src="@Url.Content(foto)" onerror="this.onerror=null;this.src='@Url.Content(semfoto)';" class="img-circle m-b" alt="logo" style="max-width: 95px;max-height: 95px;">
+        </a>
+
+        <div class="stats-label text-color">
+            <span class="font-extra-bold font-uppercase">@BLL.Usuarios.GetUsuarioNome()</span>
+
+            @if (listaFiliais.Count() > 0)
+            {
+                <div class="dropdown">
+
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                        @if (_filialId > 0)
+                        {
+                            <small class="text-muted">@listaFiliais.Where(x => x.Value == _filialId.ToString()).FirstOrDefault().Text <b class="caret"></b></small>
+                        }
+                        else
+                        {
+                            <small class="text-muted">Selecione a @BLL.Usuarios.GetEntidadeFilial()<b class="caret"></b></small>
+                        }
+                    </a>
+                    <ul class="dropdown-menu animated flipInX m-t-xs">
+
+
+
+                        @if (BLL.Usuarios.GetUtilizaFilial() && (BLL.Usuarios.GetFilialIDMaster() == 0 || BLL.Usuarios.GetVisualizaOutrasFiliais()))
+                        {
+
+                            foreach (var item in listaFiliais)
+                            {
+                            <li class="@(item.Value == _filialId.ToString() ? "active" : "")"><a href="@Url.Content("~/Acessos/SelecionarFilial/" + item.Value)">@item.Text</a></li>    
+                            }
+                            <li class="divider"></li>
+
+                        }
+
+                        <li><a href="#">Logout</a></li>
+                    </ul>
+                </div>
+            }
+
+
+        </div>
+
+
+
+    </div>
+
+
+    <ul class="nav" id="side-menu">
+
+
+        @if (index_agendamento || agenda_agendamento || calendario_agendamento)
+        {
+                        
+            <li>
+                <a href="#"><span class="nav-label">Agenda</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+
+                    @if (index_agendamento)
+                    {
+                        <li class="@(currentPage == "agendamento-programacaodia" ? "active" : "")"><a href="@Url.Content("~/Agendamento/ProgramacaoDia")"><span>Programa&ccedil;&atilde;o do Dia</span></a></li>
+                    }
+
+                    @if (agenda_agendamento)
+                    {
+                        <li class="@(currentPage == "agendamento-agenda" ? "active" : "")"><a href="@Url.Content("~/Agendamento/Agenda")"><span>Agenda Geral</span></a></li>
+                    }
+
+                    @if (calendario_agendamento)
+                    {
+                        <li class="@(currentPage == "agendamento-calendario" ? "active" : "")"><a href="@Url.Content("~/Agendamento/Calendario")"><span>Minha Agenda</span></a></li>
+                    }
+
+                </ul>
+            </li>
+        }
+
+
+        @if (user.ControleAcesso("index", "financeiro"))
+        {
+            <li>
+                <a href="#"><span class="nav-label">Financeiro</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+
+
+                    <li class="@(currentPage == "financeiro-index" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/")">Extrato</a></li>
+                    <li class="@(currentPage == "financeiro-indexr" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/R")">Contas a receber</a></li>
+                    <li class="@(currentPage == "financeiro-indexd" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/D")">Contas a pagar</a></li>
+                    <li class="@(currentPage == "financeiro-indext" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/T")">Transfer&ecirc;ncias</a></li>
+                    <li class="@(currentPage == "financeiro-visaogeral" ? "active" : "")"><a href="@Url.Content("~/Financeiro/VisaoGeral/")">Vis&atilde;o Geral</a></li>
+                    <li class="@(currentPage == "principal-integracoes" ? "active" : "")"><a href="@Url.Content("~/Principal/Integracoes/")">Integra&ccedil;&otilde;es</a></li>
+                </ul>
+            </li>
+        }
+
+
+        @if (user.ControleAcesso("index", "Contratos"))
+        {
+            <li class="@(currentController == "Contratos" ? "active" : "")"><a href="@Url.Content("~/Contratos/Index/0/")">Contratos</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "trj"))
+        {
+            <li class="@(currentController == "trj" ? "active" : "")"><a href="@Url.Content("~/Trj/Index/0/")">Requisi&ccedil;&otilde;es de Pagamentos</a></li>
+        }
+
+        @if (user.ControleAcesso("TriagemCaptura", "PRCPropostas"))
+        {
+            <li class="@(currentController == "PRCPropostas" ? "active" : "")"><a href="@Url.Content("~/PRCPropostas/TriagemCaptura")">Triagem</a></li>
+        }
+
+        @if (user.ControleAcesso("Find", "PRCPropostas"))
+        {
+            <li class="@(currentController == "PRCPropostas" ? "active" : "")"><a href="@Url.Content("~/PRCPropostas/Find/0/")">Localizar Propostas</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "PRCPropostas"))
+        {
+            <li class="@(currentController == "PRCPropostas" ? "active" : "")"><a href="@Url.Content("~/PRCPropostas/Index/0/")">Propostas</a></li>
+        }
+
+        @if (user.ControleAcesso("viewtriagem", "PRCPropostas"))
+        {
+            <li class="@(currentController == "PRCPropostas" ? "active" : "")"><a href="@Url.Content("~/PRCPropostas/TriagemIndex/0/")">Propostas em Triagem</a></li>
+        }
+
+
+        @if (user.ControleAcesso("index", "CSGPropostas"))
+        {
+            <li class="@(currentController == "CSGPropostas" ? "active" : "")"><a href="@Url.Content("~/CSGPropostas/Index/0/")">Propostas CSG</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "medguias"))
+        {
+            <li class="@(currentController == "MedGuias" ? "active" : "")"><a href="@Url.Content("~/MedGuias/Index/0/")">Guias</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "repasses"))
+        {
+            <li class="@(currentController == "Repasses" ? "active" : "")"><a href="@Url.Content("~/Repasses/Index/0/")">Repasses</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "postosdeservicos"))
+        {
+            <li class="@(currentController == "PostosDeServicos" ? "active" : "")"><a href="@Url.Content("~/PostosDeServicos/Index/0/")">Postos de Serviços</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "ocorrencias"))
+        {
+            <li class="@(currentController == "Ocorrencias" ? "active" : "")"><a href="@Url.Content("~/Ocorrencias/Index/0/")">Ocorr&ecirc;ncias</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "supervisoes"))
+        {
+            <li class="@(currentController == "supervisoes" ? "active" : "")"><a href="@Url.Content("~/Supervisoes/Index/0/")">Supervis&otilde;es</a></li>
+        }
+
+        @if (user.ControleAcesso("ImpressaoIndex", "PRCPropostas"))
+        {
+            <li class="@(currentController == "PRCPropostas" ? "active" : "")"><a href="@Url.Content("~/PRCPropostas/ImpressaoIndex/0/")">Fila de Impress&atilde;o</a></li>
+        }
+
+
+        @if (user.ControleAcesso("registrarvalores", "fichacadastral"))
+        {
+            <li class="@(currentController == "fichacadastral" ? "active" : "")"><a href="@Url.Content("~/fichacadastral/registrarvalores")">Fichas Cadastrais</a></li>
+        }
+
+        @if (user.ControleAcesso("index", "PessoasPlanosInscricoes"))
+        {
+            <li>
+                <a href="#"><span class="nav-label">INSCRI&Ccedil;&Otilde;ES</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+                    <li class="@(currentController == "PessoasPlanosInscricoes" ? "active" : "")"><a href="@Url.Content("~/PessoasPlanosInscricoes/index/?PessoaPlanoGrupoTipoId=0")">@(Html.GetLegendaPlanoGrupoTipo(0) + "s") </a></li>
+                    <li class="@(currentController == "PessoasPlanosInscricoes" ? "active" : "")"><a href="@Url.Content("~/PessoasPlanosInscricoes/index/?PessoaPlanoGrupoTipoId=1")">@(Html.GetLegendaPlanoGrupoTipo(1) + "s") </a></li>
+                </ul>
+            </li>
+        }
+
+
+        @if (user.ControleAcesso("index", "Galerias"))
+        {
+            var bllGalerias = new BLL.Galerias();
+            var listaGalerias = bllGalerias.ListarTudo();
+            <li>
+                <a href="#"><span class="nav-label">Galerias</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+                    @foreach (var item in listaGalerias)
+                    {
+                    <li class="@(currentController == "Galeri" ? "active" : "")"><a href="@Url.Content("~/GaleriasArquivos/index/?GaleriaId="+item.GaleriaId)">@item.GaleriaNome<small><br />@item.GaleriaAcessoTipoNome</small></a></li>    
+                    }
+                    
+                    
+                </ul>
+            </li>
+        }
+
+
+        @if (user.ControleAcesso("Index", "PessoasPlanosGrupos"))
+        {
+            <li class="@(currentController == "PessoasPlanosGrupos" ? "active" : "")"><a href="@Url.Content("~/PessoasPlanosGrupos/Index/0/")">Planos e Eventos</a></li>
+        }
+
+
+
+        @if (user.ControleAcesso("index", "pessoas"))
+        {
+            <li>
+                <a href="#"><span class="nav-label">Cadastros</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+                    @if (user.ControleAcesso("CriarC", "pessoas"))
+                    {
+                        <li class="@(currentPage == "pessoas-indexc" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/C")">@Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>
+                    }
+
+                    @if (user.ControleAcesso("CriarF", "pessoas"))
+                    {
+                        <li class="@(currentPage == "pessoas-indexf" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/F")">@Html.Raw(BLL.Usuarios.GetEntidadeFornecedor())</a></li>
+                    }
+
+                    @if (user.ControleAcesso("CriarO", "pessoas"))
+                    {
+                        <li class="@(currentPage == "pessoas-indexo" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/O")">@Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</a></li>
+                    }
+
+                    @if (user.ControleAcesso("modulo_atletas", "regras") && user.ControleAcesso("CriarA", "pessoas"))
+                    {
+                        <li class="@(currentPage == "pessoas-indexa" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/A")">@Html.Raw(BLL.Usuarios.GetEntidade4())</a></li>
+                    }
+
+
+                    @if (user.ControleAcesso("Index", "Planos"))
+                    {
+                        <li class="@(currentPage == "pessoas-indexf" ? "active" : "")"><a href="@Url.Content("~/Planos/Index/")">Matr&iacute;cula</a></li>
+                    }
+
+                    @if (user.ControleAcesso("PreCadastroIndex", "Pessoas"))
+                    {  
+                        <li class="@(currentPage == "pessoas-indexc" ? "active" : "")"><a href="@Url.Content("~/Pessoas/PreCadastroIndex/0")"><i>Pr&eacute;-Cadastro @Html.Raw(BLL.Usuarios.GetEntidadeCliente())</i></a></li>
+   
+                    }
+
+
+                </ul>
+            </li>
+        }
+
+        
+        @if (user.ControleAcesso("BaseDeConhecimento", "Principal"))
+        {
+            <li class="@(currentController == "BaseDeConhecimento" ? "active" : "")"><a href="@Url.Content("~/Principal/BaseDeConhecimento/0/")">Base de Conhecimento</a></li>
+        }
+
+
+
+        @if (user.ControleAcesso("index", "produtos"))
+        {
+            <li>
+                <a href="#"><span class="nav-label">Produtos</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+                    <li class="@(currentPage == "produtos-index" ? "active" : "")"><a href="@Url.Content("~/Produtos/Index/0")"><span>Listar produtos</span></a></li>
+                    @if (user.ControleAcesso("index", "produtosstatus"))
+                    {
+                        <li class="@(currentController == "produtosstatus" ? "active" : "")"><a href="@Url.Content("~/ProdutosStatus/Index/0/")">Status de Produto</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "produtosunidades"))
+                    {
+                        <li class="@(currentController == "produtosunidades" ? "active" : "")"><a href="@Url.Content("~/ProdutosUnidades/Index/0/")">Unid. Med. Produto</a></li>
+                    }
+                </ul>
+            </li>
+                              
+                            
+        }
+
+        @if (BLL.Usuarios.VerificaAcessoPorControle("relatorios"))
+        {
+            <li>
+
+                <a href="#"><span class="nav-label">Relat&oacute;rios</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+
+                    @if (user.ControleAcesso("Report_PeriodoNegociador", "Metas"))
+                    {
+                        <li><a href="@Url.Content("~/Metas/Report_PeriodoNegociador/?PerfilId=0&UsuarioId=0&Entidade=PRCPropostas")">A&ccedil;&otilde;es Por Per&iacute;odo / Negociador</a></li>
+                    }
+
+
+                    @if (user.ControleAcesso("AgendaProfissional", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/AgendaProfissional/")">Agenda @Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</a></li>
+                    }
+
+                    @if (user.ControleAcesso("ListaPresencaProfissional", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/ListaPresencaProfissional/")">Lista de presen&ccedil;a</a></li>
+                    }
+
+                    @if (user.ControleAcesso("Fechamento", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/Fechamento/")">Fechamento</a></li>
+                    }
+
+                    @if (user.ControleAcesso("FechamentoFinanceiro", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/FechamentoFinanceiro/")">Fechamento Financeiro</a></li>
+                    }
+
+                    @if (user.ControleAcesso("RelatorioFichas", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/RelatorioFichas/")">Relatório Fichas</a></li>
+                    }
+
+                    @if (user.ControleAcesso("RelatorioClientes", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/RelatorioClientes/")">@Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>
+                    }
+
+                    @if (user.ControleAcesso("RelatorioAniversariantes", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/RelatorioAniversariantes/")">Aniversariantes</a></li>
+                    }
+
+                    @if (user.ControleAcesso("ListaPresencaAluno", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/ListaPresencaAluno/")">Presença - @Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>
+                    }
+
+                    @if (user.ControleAcesso("MedGuiasReembolsos", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/MedGuiasReembolsos/")">Guias - Reembolsos</a></li>
+                    }
+
+                    @if (user.ControleAcesso("MedGuiasReembolsosStatus", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/MedGuiasReembolsosStatus/")">Guias - Status</a></li>
+                    }
+
+                    @if (user.ControleAcesso("MultiplusAcumulos", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/MultiplusAcumulos/")">Multiplus - Acúmulos</a></li>
+                    }
+
+
+                    @if (user.ControleAcesso("MultiplusResgates", "relatorios"))
+                    {
+                        <li><a href="@Url.Content("~/Relatorios/MultiplusResgates/")">Multiplus - Resgates</a></li>
+                    }
+
+                    <li><a href="@Url.Content("~/Relatorios/PontoEletronico.aspx")">Ponto Eletr&ocirc;nico</a></li>
+
+                </ul>
+            </li>
+        }
+
+
+        @if (user.ControleAcesso("index", "cupons") || user.ControleAcesso("Multiplus", "principal"))
+        {
+            <li>
+                <a href="#"><span class="nav-label">Fidelidade</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+
+                    @if (user.ControleAcesso("index", "cupons"))
+                    {
+                        <li class="@(currentController == "cupons" ? "active" : "")"><a href="@Url.Content("~/Cupons/Index")">Cupons</a></li>
+                    }
+
+                    @if (user.ControleAcesso("Multiplus", "principal"))
+                    {
+                        <li class="@(currentController == "Multiplus" ? "active" : "")"><a href="@Url.Content("~/Principal/Multiplus")">Multiplus</a></li>
+                    }
+
+                </ul>
+            </li>
+        }
+
+
+
+
+        @if (user.ControleAcesso("configuracoes", "principal"))
+        {
+            <li>
+                <a href="#"><span class="nav-label">Configura&ccedil;&otilde;es</span><span class="fa arrow"></span> </a>
+                <ul class="nav nav-second-level collapse" aria-expanded="false">
+                    
+                    @if (user.ControleAcesso("Index", "PRCPropostasIndicesTipos"))
+                    {
+                        <li><a href="@Url.Content("~/PRCPropostasIndicesTipos/Index")">Tipos de &Iacute;ndices</a></li>
+                    }
+
+                    @if (user.ControleAcesso("Index", "PRCPropostasIndices"))
+                    {
+                        <li><a href="@Url.Content("~/PRCPropostasIndices/Select")">Propostas / &Iacute;ndices</a></li>
+                    }
+
+                    @if (user.ControleAcesso("Index", "PRCPropostasIndicesFormulas"))
+                    {
+                        <li><a href="@Url.Content("~/PRCPropostasIndicesFormulas/Index")">F&oacute;rmulas / &Iacute;ndices</a></li>
+                    }
+
+                    @if (user.ControleAcesso("entidades", "metas"))
+                    {
+                        <li class="@(currentController == "metas" ? "active" : "")">@Html.ActionLink("Metas", "Entidades", "Metas")</li>
+                    }
+
+                    @if (user.ControleAcesso("entidades", "notificacoes"))
+                    {
+                        <li class="@(currentController == "notificacoes" ? "active" : "")">@Html.ActionLink("Notifica&ccedil;&otilde;es", "Entidades", "Notificacoes")</li>
+                    }
+
+                    @if (user.ControleAcesso("criar", "contas"))
+                    {
+                        <li class="@(currentController == "contas" ? "active" : "")">@Html.ActionLink("Contas banc&aacute;rias", "Index", "Contas")</li>}
+                    @if (user.ControleAcesso("criar", "contatipos"))
+                    {
+                        <li class="@(currentController == "contatipos" ? "active" : "")"><a href="@Url.Content("~/ContaTipos/Index/")">Tipos de contas</a></li>}
+                    @if (user.ControleAcesso("criar", "servicos"))
+                    {
+                        <li class="@(currentController == "servicos" ? "active" : "")"><a href="@Url.Content("~/Servicos/Index/")">Servi&ccedil;os</a></li>}
+                    @if (user.ControleAcesso("criar", "categorias"))
+                    {
+                        <li class="@(currentController == "categorias" ? "active" : "")"><a href="@Url.Content("~/Categorias/Index/")">Categorias</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "convenios"))
+                    {
+                        <li class="@(currentController == "convenios" ? "active" : "")"><a href="@Url.Content("~/Convenios/Index/")">Conv&ecirc;nios</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "medprodutos"))
+                    {
+                        <li class="@(currentController == "medprodutos" ? "active" : "")"><a href="@Url.Content("~/MedProdutos/Index/")">Produtos & Exames</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "medprodutoscategorias"))
+                    {
+                        <li class="@(currentController == "medprodutoscategorias" ? "active" : "")"><a href="@Url.Content("~/MedProdutosCategorias/Index/")">Categorias de Produtos</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "medprodutosfavoritos"))
+                    {
+                        <li class="@(currentController == "medprodutosfavoritos" ? "active" : "")"><a href="@Url.Content("~/MedProdutosFavoritos/Index/")">Produtos &amp; Exames Favoritos</a></li>
+                    }
+
+                    @if (BLL.Usuarios.GetModuloPlanoContas())
+                    {
+                        if (user.ControleAcesso("criar", "planocontas"))
+                        {
+                        <li class="@(currentController == "planocontas" ? "active" : "")"><a href="@Url.Content("~/PlanoContas/Index/")">Plano de Contas</a></li>}
+                    }
+                    @if (user.ControleAcesso("criar", "salas"))
+                    {
+                        <li class="@(currentController == "salas" ? "active" : "")"><a href="@Url.Content("~/Salas/Index/")">Salas</a></li>}
+                    @if (user.ControleAcesso("criar", "pagamentotipos"))
+                    {
+                        <li class="@(currentController == "salas" ? "active" : "")"><a href="@Url.Content("~/PagamentoTipos/Index/")">Tipos de pagamento</a></li>}
+                    @if (user.ControleAcesso("criar", "midias"))
+                    {
+                        <li class="@(currentController == "midias" ? "active" : "")"><a href="@Url.Content("~/Midias/Index/")">M&iacute;dias</a></li>}
+                    @if (user.ControleAcesso("criar", "feriados"))
+                    {
+                        <li class="@(currentController == "feriados" ? "active" : "")"><a href="@Url.Content("~/Feriados/Index/")">Feriado</a></li>}
+
+                    @if (user.ControleAcesso("criar", "usuarios"))
+                    {
+                        <li class="@(currentController == "usuarios" ? "active" : "")"><a href="@Url.Content("~/Usuarios/Index/")">Usu&aacute;rios</a></li>}
+
+                    @if (user.ControleAcesso("criar", "filiais") && BLL.Usuarios.GetFilialIDMaster() == 0)
+                    {
+                        <li class="@(currentController == "filiais" ? "active" : "")"><a href="@Url.Content("~/Filiais/Index/")">Filiais</a></li>
+                    }
+                    @if (user.ControleAcesso("index", "tiposanexos"))
+                    {
+                        <li class="@(currentController == "usuarios" ? "active" : "")"><a href="@Url.Content("~/TiposAnexos/Index/")">Tipos Anexos</a></li>}
+                    @if (user.ControleAcesso("index", "turmas"))
+                    {
+                        <li class="@(currentController == "turmas" ? "active" : "")"><a href="@Url.Content("~/Turmas/Index/0/")">Turmas</a></li>}
+
+                    @if (user.ControleAcesso("index", "sindicatos"))
+                    {
+                        <li class="@(currentController == "sindicatos" ? "active" : "")"><a href="@Url.Content("~/Sindicatos/Index/0/")">Sindicatos</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "cartorios"))
+                    {
+                        <li class="@(currentController == "cartorios" ? "active" : "")"><a href="@Url.Content("~/Cartorios/Index/0/")">Cart&oacute;rios</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "templatesmensagens"))
+                    {
+                        <li class="@(currentController == "templatesmensagens" ? "active" : "")"><a href="@Url.Content("~/templatesmensagens/Index/0/")">Templates mensagens</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "tiposconversoes"))
+                    {
+                        <li class="@(currentController == "tiposconversoes" ? "active" : "")"><a href="@Url.Content("~/TiposConversoes/Index/0/")">Tipos de Convers&otilde;es</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "companhias"))
+                    {
+                        <li class="@(currentController == "companhias" ? "active" : "")"><a href="@Url.Content("~/Companhias/Index/0/")">Companhias</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "Funcoes"))
+                    {
+                        <li class="@(currentController == "Funcoes" ? "active" : "")"><a href="@Url.Content("~/Funcoes/Index/0/")">Fun&ccedil;&otilde;es</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "OcorrenciasTipos"))
+                    {
+                        <li class="@(currentController == "OcorrenciasTipos" ? "active" : "")"><a href="@Url.Content("~/OcorrenciasTipos/Index/0/")">Tipos de Ocorr&ecirc;ncias</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "cuponstipos"))
+                    {
+                        <li class="@(currentController == "cuponstipos" ? "active" : "")"><a href="@Url.Content("~/CuponsTipos/Index/0/")">Cupons Tipos</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "Perfis"))
+                    {
+                        <li class="@(currentController == "Perfis" ? "active" : "")"><a href="@Url.Content("~/Perfis/Index/0/")">Perfis de Acesso</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "EntidadesNomes"))
+                    {
+                        <li class="@(currentController == "EntidadesNomes" ? "active" : "")"><a href="@Url.Content("~/EntidadesNomes/Index/0/")">Entidades</a></li>
+                    }
+
+                    @if (user.ControleAcesso("entidades", "EntidadesStatus"))
+                    {
+                        <li class="@(currentController == "EntidadesStatus" ? "active" : "")"><a href="@Url.Content("~/EntidadesStatus/Entidades/0/")">Status</a></li>
+                    }
+
+
+                    @if (user.ControleAcesso("index", "SupervisoesTipos"))
+                    {
+                        <li class="@(currentController == "SupervisoesTipos" ? "active" : "")"><a href="@Url.Content("~/SupervisoesTipos/Index/0/")">Itens Supervis&atilde;o</a></li>
+                    }
+
+
+                    @if (user.ControleAcesso("index", "DocumentosLayouts"))
+                    {
+                        <li class="@(currentController == "DocumentosLayouts" ? "active" : "")"><a href="@Url.Content("~/DocumentosLayouts/Index/0/")">Layout Base de Documentos</a></li>
+                    }
+                    @if (user.ControleAcesso("index", "DocumentosTemplates"))
+                    {
+                        <li class="@(currentController == "DocumentosTemplates" ? "active" : "")"><a href="@Url.Content("~/DocumentosTemplates/Index/0/")">Templates de Documentos</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "ConveniosFaixasFatoresFiliais"))
+                    {
+                        <li class="@(currentController == "ConveniosFaixasFatoresFiliais" ? "active" : "")"><a href="@Url.Content("~/ConveniosFaixasFatoresFiliais/Index/0/")">Defini&ccedil;&atilde;o de Fatores por @BLL.Usuarios.GetEntidadeFilial()</a></li>
+                    }
+
+                    @if (user.ControleAcesso("index", "Galerias"))
+                    {
+                        <li class="@(currentController == "Galerias" ? "active" : "")"><a href="@Url.Content("~/Galerias/Index/0/")">Galerias</a></li>
+                    }
+
+
+                    @if (user.ControleAcesso("index", "Configuracoes"))
+                    {
+
+                        <li class="@(currentController == "Configuracoes" ? "active" : "")"><a href="@Url.Content("~/Configuracoes/Index/0/")">Variáveis do Sistema</a></li>
+                    }
+
+
+                    @if (user.ControleAcesso("index", "Logs"))
+                    {
+                        <li class="@(currentController == "Logs" ? "active" : "")"><a href="@Url.Content("~/Logs/Index/0/")">Logs do Sistema</a></li>
+                    }
+                </ul>
+            </li>
+        }
+
+
+        <li><a href="#" class="logoff"><span class="nav-label">Sair</span></a></li>
+
+    </ul>
+</div>

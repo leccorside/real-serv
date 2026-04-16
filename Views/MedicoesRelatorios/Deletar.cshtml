@@ -1,0 +1,66 @@
+﻿@model Models.MedicaoRelatorioCancelamento
+
+@{
+    ViewBag.Title = "Excluíndo Medição";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+
+
+@section Styles{
+
+   
+}
+
+
+@section Breadcrumb{
+    <li><span class="divider">/</span><a href="~/Projetos/Index">Obras</a></li>
+    <li><span class="divider">/</span><a href="~/Projetos/Criar/@Model.DadosProjeto.ProjetoId">@Model.DadosProjeto.ProjetoNome</a></li>
+    <li><span class="divider">/</span><a href="~/MedicoesRelatorios/Index/@Model.DadosProjeto.ProjetoId">Relatórios Medição</a></li>
+}
+
+
+
+<div class="alert">
+
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+
+
+
+@Html.Partial("~/Views/Foo/_MedicaoRelatorio.cshtml")
+
+
+@using (Html.BeginForm())
+{
+    
+    @Html.HiddenFor(model => model.MedicaoRelatorioId)
+    @Html.HiddenFor(model => model.ProjetoId)
+
+    <div class="row-fluid">
+        <div class="span3">
+            <label>Motivo</label>
+            @Html.DropDownListFor(model => model.MotivoCancelamentoId, (SelectList)ViewBag.ddlMotivos)
+            @*@Html.ValidationMessageFor(model => model.MotivoCancelamentoId)*@
+        </div>
+        <div class="span9">
+            <label>Observações</label>
+            @Html.TextAreaFor(model => model.MotivoCancelamentoObservacoes, new { @class = "span12" })
+            @*@Html.ValidationMessageFor(model => model.MotivoCancelamentoObservacoes)*@
+
+        </div>
+    </div>
+    
+
+    <p class="pull-right">
+        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+    </p>
+
+    <p class="pull-left">
+        <a href="~/MedicoesRelatorios/Index/@Model.DadosProjeto.ProjetoId">Voltar</a>
+    </p>
+}
+
+

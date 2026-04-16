@@ -1,0 +1,99 @@
+<style>
+    label {
+        margin-left: 0px;
+        text-align: left;
+        font-size: 15px;
+        text-transform: uppercase;
+    }
+    
+    input[type="checkbox"] {
+        margin-right: 10px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #a70c0c;
+        border-radius: 1px;
+        box-sizing: border-box;
+        position: relative;
+        box-sizing: content-box;
+        border-width: 0;
+        transition: all .3s linear;
+    }
+    
+    input[type="checkbox"]:checked {
+        background-color: #2ECC71;
+    }
+    
+    input[type="checkbox"]:focus {
+        outline: 0 none;
+        box-shadow: none;
+    }
+</style>
+<div id="divtopo"></div>
+<div class="header-clear">
+</div>
+<div class="content-strip">
+    <div class="strip-content">
+        <h1>Check-in/out</h1>
+    </div>
+    <div class="overlay"></div> <img src="images/pictures/Sobre.png" alt="img"> </div>
+<div class="content">
+
+    <!-- erro -->
+    <div ng-show="error" class="static-notification bg-red-dark">
+        <h6><i class="fa fa-times-circle static-notification-icon"></i>Ooops!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{ errormsg }}
+        </p>
+    </div>
+
+
+    <!-- sucesso -->
+    <div ng-show="sucesso" class="static-notification bg-green-dark">
+        <h6><i class="fa fa-check static-notification-icon"></i>Tudo certo!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{sucessomsg}}
+        </p>
+    </div>
+
+    <div >
+
+        <form name="checkinoutForm" role="form" novalidate >
+
+            <div class="formFieldWrap">
+                <h5>Local</h5>
+                <small>Carregando localização</small>
+            </div>
+
+            <br>
+            
+            <div class="one-half-responsive last-column">
+                    <div class="one-half">
+                        <h3>Check-In</h3>
+                        12:57
+                    </div>
+                    <div class="one-half last-column">
+                        <h3>Check-Out</h3>
+                        --Aguardando--
+                    </div> 
+                </div>
+
+            <br>
+            
+            <div class="formFieldWrap">
+                <h5>Observações Check-Out</h5>
+                <textarea class="textarea-field green-field" rows="4" ng-model="SupervisaoDescricao"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="login-button button button-l button-green button-fullscreen full-bottom" ng-click="Registrar()">Check-Out</button>
+            
+            </div>
+
+        </form>
+        
+
+    </div>
+
+</div>

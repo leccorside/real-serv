@@ -1,0 +1,183 @@
+﻿@model Models.MedicaoView
+
+@{    
+    
+    var acao = "Cadastrar";
+    if (Model.Medicao.MedicaoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+    ViewBag.Title = acao + " " + "Boletim Diário";
+    Layout = "~/Views/Shared/_LayoutFull.cshtml";
+
+
+    
+}
+
+@section Breadcrumb{
+    <li><span class="divider">/</span><a href="~/Projetos/Index">Obras</a></li>
+    <li><span class="divider">/</span><a href="~/Projetos/Criar/@Model.DadosProjeto.ProjetoId">@Model.DadosProjeto.ProjetoNome</a></li>
+    <li><span class="divider">/</span><a href="~/Medicoes/Index/@Model.DadosProjeto.ProjetoId">Relatórios Diários</a></li>
+}
+
+
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">Dados</a></li>
+    @if (Model.Medicao.MedicaoId > 0)
+    {
+        <li><a href="~/Medicoes/QuadroHorario/@Model.Medicao.MedicaoId">Quadro Funcionários</a></li>
+        <li><a href="~/Medicoes/Estacas/0?MedicaoId=@Model.Medicao.MedicaoId">Estacas Executadas</a></li>
+        <li><a href="~/Medicoes/Assinar/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId">Assinar</a></li>
+        <li class="pull-right"><a href="~/Medicoes/Imprimir/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId" class="btn btn-mini"><i class="icon-print"></i>Imprimir</a></li>
+    }
+    else
+    {
+        <li><a href="#" class="muted">Quadro Funcionários</a></li>
+        <li><a href="#" class="muted">Estacas Executadas</a></li>
+        <li><a href="#" class="muted">Assinar</a></li>
+        <li class="pull-right"><a href="#" class="btn btn-mini disabled"><i class="icon-print"></i>Imprimir</a></li>
+    }
+
+</ul>
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+    @Html.Hidden("Medicao.ProjetoId", Model.DadosProjeto.ProjetoId)
+    @Html.HiddenFor(m => m.Medicao.Contador)
+    @Html.HiddenFor(m => m.Medicao.FiscalId)
+    @Html.HiddenFor(m => m.Medicao.EngenheiroId)
+    @Html.HiddenFor(m => m.Medicao.FiscalDtAssinatura)
+    @Html.HiddenFor(m => m.Medicao.EngenheiroDtAssinatura)
+    
+    
+    if (Model.Medicao.MedicaoId > 0)
+    {
+    @Html.HiddenFor(m => m.Medicao.MedicaoId)
+    }
+    
+    <fieldset>
+
+
+        <legend>Relatório diário de acompanhamento de obra</legend>
+        <div class="row-fluid">
+            <div class="span3">
+                <label>Equipamento</label>
+                @Html.DropDownListFor(model => model.Medicao.EquipamentoId, (SelectList)ViewBag.ddlEquipamentos, "--Selecione--", new { @class="chosen-select" })
+                @*@Html.ValidationMessageFor(model => model.Medicao.EquipamentoId)*@
+            </div>
+            <div class="span3">
+                <label>Operador Líder</label>
+                @Html.DropDownListFor(model => model.Medicao.OperadorId, (SelectList)ViewBag.ddlOperadores, new { @class="chosen-select" })
+            </div>
+            <div class="span2">
+                <label>Data</label>
+                @Html.TextBox("Medicao.EquipamentoDtEntrada", @String.Format("{0:dd/MM/yyyy}", Model.Medicao.EquipamentoDtEntrada), new { @class = "datepicker span6 ", value = @DateTime.Now })
+                @*@Html.ValidationMessageFor(model => model.Medicao.EquipamentoDtEntrada)*@
+            </div>
+            
+            <div class="span2">
+                <label>Taxa de Instalação</label>
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.Medicao.Instalacao) <i class="fa fa-wrench "></i>
+                </label>
+            </div>
+
+            
+            <div class="span2">
+                <label>Alojamento/Refeição</label>
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.Medicao.MoradiaAlimentacao) <i class="fa fa-home"></i> <i class="fa fa-cutlery"></i>
+                </label>    
+            </div>
+
+        </div>
+
+
+        <div class="row-fluid">
+
+            <div class="span3">
+                <label>Taxa Outros</label>
+                @Html.TextBox("Medicao.TaxaOutros", string.Format("{0:n2}", Model.Medicao.TaxaOutros), new { @class = "money span6" })
+                @*@Html.ValidationMessageFor(model => model.Medicao.EquipamentoMartelo)*@
+            </div>
+            
+            
+            <div class="span3">
+                <label>Horas paradas</label>
+                @Html.TextBoxFor(model=>model.Medicao.HorasParadas , new { @class = "number span6" })
+            </div>
+            <div class="span3">
+                <label>Horas arrasto</label>
+                @Html.TextBoxFor(model=>model.Medicao.HorasArrasto , new { @class = "number span6" })
+            </div>
+            <div class="span3">
+                <label>Qtd. Mudanças Interna</label>
+                @Html.TextBoxFor(model=>model.Medicao.QtdMudancaInterna , new { @class = "number span6" })
+                @*@Html.ValidationMessageFor(model => model.Medicao.HorasMudancaInterna)*@
+            </div>
+        </div>
+        <legend>Outras informações</legend>
+        <div class="row-fluid">
+            <div class="span3">
+                <label>CAPWAP</label>
+                @Html.TextBoxFor(model => model.Medicao.QtdCapWap, new { @class = "span6 numeric" })
+                @*@Html.ValidationMessageFor(model => model.Medicao.QtdCapWap)*@
+            </div>
+
+            <div class="span3">
+                <label>PDA</label>
+                @Html.TextBoxFor(model => model.Medicao.QtdPda, new { @class = "span6 numeric" })
+                @*@Html.ValidationMessageFor(model => model.Medicao.QtdPda)*@
+            </div>
+        </div>
+
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Observações</label>
+                @Html.TextAreaFor(model => model.Medicao.ObservacoesGerais, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.Medicao.ObservacoesGerais)*@
+            </div>
+        </div>
+
+
+
+
+
+        @if (!Model.Medicao.Assinado)
+        {
+            <p>
+                <input type="submit" value="Salvar" class="btn btn-large btn-primary" />
+            </p>}
+    </fieldset>
+}
+
+<div>
+    <a href="~/Medicoes/Index/@Model.DadosProjeto.ProjetoId">Voltar</a>
+</div>
+
+
+
+@section Scripts {
+
+
+    <script>
+        $("#EquipamentoDtEntrada").mask("99/99/9999");
+
+
+        //desabilida modo de edicao, pois foi assinado
+        @if (Model.Medicao.Assinado)
+        {
+        @:$(document.body).find('input, textarea, button, select').attr('disabled', 'disabled'); 
+        }
+        
+
+
+    </script>
+
+}

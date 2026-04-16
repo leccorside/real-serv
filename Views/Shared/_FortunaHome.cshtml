@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Page title -->
+    <title>@ViewBag.Title</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    @RenderSection("css", required: false)
+
+
+    <!-- Primary vendor style -->
+    @Styles.Render("~/bundles/font-awesome/css")
+    @Styles.Render("~/bundles/animate/css")
+    @Styles.Render("~/bundles/bootstrap/css")
+    @Styles.Render("~/bundles/peicon7stroke/css")
+
+    <!-- mensagens de erros -->
+    @Styles.Render("~/bundles/sweetAlert/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+    <!-- Localization Tool -->
+    @Styles.Render("~/bundles/localizationTool/css")
+
+    <!-- Add local styles, mostly for plugins css file -->
+    @if (IsSectionDefined("Styles"))
+    {@RenderSection("Styles", required: false)}
+
+    <!-- Primary HOMER style -->
+    @Styles.Render("~/bundles/homer/css")
+    @Styles.Render("~/bundles/homer/custom")
+    @Styles.Render("~/bundles/fancybox/css")
+</head>
+<body class="blank">
+
+    <!-- Simple splash screen-->
+    <div class="splash">
+        <div class="color-line"></div>
+        <div class="splash-title">
+            
+            <p>Carregando recursos do sistema</p>
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    <!--[if lt IE 7]>
+<p class="alert alert-danger">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+    <div class="color-line"></div>
+
+    <!--<div class="back-link">
+        <a href="index.html" class="btn btn-primary">Back to Dashboard</a>
+    </div>-->
+    
+
+
+    @RenderBody()
+
+    
+
+
+    @*<script src="~/Assets/_fortuna/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="~/Assets/_fortuna/vendor/jquery-ui/jquery-ui.min.js"></script>
+    <script src="~/Assets/_fortuna/vendor/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="~/Assets/_fortuna/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/Assets/_fortuna/vendor/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="~/Assets/_fortuna/vendor/iCheck/icheck.min.js"></script>
+    <script src="~/Assets/_fortuna/vendor/sparkline/index.js"></script>*@
+
+    <!-- Section for main scripts render -->
+    @Scripts.Render("~/bundles/jquery/js")
+    @Scripts.Render("~/bundles/bootstrap/js")
+    @Scripts.Render("~/bundles/homer/js")
+
+    <!-- mensagens de erros -->
+    @Scripts.Render("~/bundles/sweetAlert/js")
+    
+    <!-- Localization Tool -->
+    @Scripts.Render("~/bundles/localizationTool/js")
+
+    <!-- mask -->
+    @Scripts.Render("~/bundles/mask/js")
+
+    <!-- input file -->
+    @Scripts.Render("~/bundles/filestyle/js")
+
+    @Scripts.Render("~/bundles/maxlenght/js")
+    
+
+
+
+    <!-- App scripts -->
+    <script src="~/Assets/_fortuna/scripts/homer.js"></script>
+
+    @Scripts.Render("~/bundles/sweetAlert/js")
+    
+    <script>
+        $(".logoff").click(function () {
+            swal({ title: "Logoff", text: "Deseja realmente sair do sistema?", type: "warning", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { parent.location = "@Url.Content("~/Home/Logoff/" + BLL.Usuarios.GetEmpresaId())"; });
+        });
+
+
+        function cubeeConfirm(titulo, texto, url) {
+            swal({
+                title: titulo,
+                text: texto,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim",
+                cancelButtonText: "Não, cancelar",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    window.location.href = url;
+                } else {
+                    return false;
+                }
+            });
+        }
+
+        // input file style
+        $(":file").filestyle({ input: false, buttonText: "Localizar Arquivo" });
+
+        //Masks Celular
+        var SPMask = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '00000-0000' : '0000-00009';
+        },
+        spOptions = {
+            onKeyPress: function (val, e, field, options) {
+                field.mask(SPMaskBehavior.apply({}, arguments), options);
+            }
+        };
+
+
+        var SPMaskBehavior = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        },
+        spOptions = {
+            onKeyPress: function (val, e, field, options) {
+                field.mask(SPMaskBehavior.apply({}, arguments), options);
+            }
+        };
+
+        //Traducoes do site
+        //var lang_json = {
+        //    'class:labelCidade': {
+        //        'pt_BR': 'Cidade',
+        //        'en_GB': 'City',
+        //    },
+        //};
+        //$.getJSON('collocarUrlAqui', function (json) {
+        //    lang_json = json;
+        //});
+        //$('#widget_language').localizationTool({
+        //    'defaultLanguage': 'pt_BR', 
+        //    'showFlag': true,           
+        //    'showCountry': false,       
+        //    'showLanguage': true,
+        //    'strings': lang_json
+        //});
+
+    </script>
+    <!-- Handler for local scripts -->
+    @Scripts.Render("~/bundles/fancybox/js")
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $(".fancybox").fancybox();
+
+            $(".various").fancybox({
+                maxWidth: 800,
+                maxHeight: 600,
+                fitToView: false,
+                width: '70%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+
+            $(".fancybox_recarrega").fancybox({
+                fitToView: true,
+                autoSize: true,
+                closeClick: false,
+                openEffect: 'elastic',
+                closeEffect: 'elastic',
+                beforeClose: function () {
+                    RecarregaPagina();
+                },
+
+            });
+
+
+        });
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+</script>
+    @RenderSection("scripts", required: false)
+
+    @Html.Partial("~/Views/Foo/_FortunaRenderErros.cshtml")
+
+</body>
+</html>

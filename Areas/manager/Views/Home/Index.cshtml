@@ -1,0 +1,27 @@
+﻿@model Models.AutenticationModel
+@{
+    ViewBag.Title = "Log in";
+    Layout = "~/Areas/manager/Views/Shared/_LayoutLogin.cshtml";
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+}
+
+<div class="container">
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-signin" }))
+    {
+            <h2 class="form-signin-heading">Manager</h2>
+        
+        @Html.TextBoxFor(model => model.LoginOrEmail, null, new { @class = "input-block-level", placeholder = "Seu login ou e-mail", required = "preencha o campo", autofocus = "" })
+        
+        @Html.PasswordFor(model => model.UsuarioSenha, new { @class = "input-block-level", placeholder = "Sua senha", required = "", autofocus = "" })
+        
+        
+        <input type="submit" value="Log in" class="btn btn-large btn-primary" />
+        @if (_copyright == "" || _copyright == "true")
+                    {
+        <p class="muted credit pull-right">Powered by <a href="http://www.e-bee.com.br" target="blank">EBEE</a></p>
+        }
+    }
+     
+</div>
+

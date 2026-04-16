@@ -1,0 +1,183 @@
+﻿@model Models.PRCPropostaView
+
+
+@{
+    var _possuiParentes = (Model.ListPessoaDependente.Count > 0);
+
+    var urlFonte = "#";
+    switch (Model.Precatorio.Fonte.ToLower())
+    {
+        case "trf1":
+            urlFonte = "https://processual.trf1.jus.br/consultaProcessual/processo.php?proc=" + Model.Precatorio.TrjReqPagNumero + "&secao=TRF1&pg=1&enviar=Pesquisar";
+            break;
+        case "trf2":
+            urlFonte = "http://portal.trf2.jus.br/portal/consulta/cons_procs.asp?NumProc=" + Model.Precatorio.TrjReqPagNumero;
+            break;
+        case"trf5":
+            urlFonte = "http://www.trf5.jus.br/cp/cp.do?tipo=xmlproc&filtro=" + Model.Precatorio.TrjReqPagNumero;
+            break;
+        default:
+            break;
+    }
+    
+}
+
+
+<div class="hpanel ">
+    <div class="panel-heading ">
+        <div class="panel-tools">
+            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+        </div>
+        <i class="fa fa-diamond" aria-hidden="true"></i>Informações Precatório
+    </div>
+    <div class="panel-body">
+        <div class="row">
+
+
+            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                <label>Fonte</label>
+                <p class="form-control-static"><span class="badge @Model.PRCProposta.Fonte">@Model.PRCProposta.Fonte</span></p>
+            </div>
+
+            <div class="form-group col-lg-7 col-md-7 col-sm-7">
+                <label>Número &nbsp;&nbsp;<a href="@urlFonte" target="_blank" class="btn btn-outline btn-primary btn-xs @(urlFonte == "#" ? "invisible" : "")"><i class="fa fa-globe"></i> Processo</a></label>
+                <p class="form-control-static"><a href="@Url.Content("~/Trj/View/0/?Protocolo=" + Model.Precatorio.TrjReqPagNumero + "")" class="fancybox fancybox.iframe "><i class="fa fa-search"></i>@Model.Precatorio.TrjReqPagNumero</a> </p>
+            </div>
+            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                <label>
+                    <abbr title="Ano Proposta">Ano</abbr>
+                </label>
+                <p class="form-control-static">@Model.Precatorio.TrjReqPagMesAno</p>
+            </div>
+
+            @if (Model.PRCProposta.Fonte == "TJ-SP" && Model.Precatorio.TrjReqPagIdPai > 0)
+            {
+                var bllTrjReqsPags = new BLL.TrjReqsPags();
+                var prc = bllTrjReqsPags.Carregar(Model.Precatorio.TrjReqPagIdPai);
+                
+                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                    <label>Cabeça</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagRequerentes</small></p>
+                </div>   
+                
+                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                    <label>Advogado</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagAdvogado</small></p>
+                </div>   
+                
+                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                    <label>Requerido</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagRequerido</small></p>
+                </div>   
+                
+                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                    <label>Processo</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagNumero</small></p>
+                </div>   
+                
+                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                    <label>Depre</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagDepre</small></p>
+                </div>   
+                                
+                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                    <label>Exec</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagExec</small></p>
+                </div> 
+                
+                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                    <label>Ep</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagEp</small></p>
+                </div> 
+                
+                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                    <label>Oc</label>
+                    <p class="form-control-static"><small>@prc.TrjReqPagOc</small></p>
+                </div> 
+
+            }
+
+            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                <label>Requerido</label>
+                <p class="form-control-static"><small>@Model.Precatorio.TrjReqPagRequerido</small></p>
+            </div>
+            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                <label>Valor Solicitado</label>
+                <h5 class="text-info">R$ @string.Format("{0:N2}", Model.Precatorio.TrjReqPagValorSolicitado)</h5>
+            </div>
+            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                <label>
+                    <abbr title="Data Protocolo">Dt.Protoc.</abbr>
+                </label>
+                <p class="form-control-static"><small>@Model.Precatorio.TrjReqPagDtProtocolo</small></p>
+            </div>
+
+
+
+        </div>
+        
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <div class="col-lg-12">
+                <p class="form-control-static">
+
+                    
+
+                    @if (Model.Precatorio.TrjReqPagHtml != null && Model.Precatorio.TrjReqPagHtml != "")
+                    {
+                                                
+                        <a href="@Url.Content("~/Trj/HtmlCode/0/?Protocolo=" + Model.Precatorio.TrjReqPagNumero + "")" class="fancybox fancybox.iframe pull-right"><i class="fa fa-code" aria-hidden="true"></i><small>Trecho da página</small></a>
+                    }
+                    else
+                    {
+                        <small>Sem conteúdo HTML</small>
+                    }
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="hpanel ">
+    <div class="panel-heading ">
+        <div class="panel-tools">
+            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+        </div>
+        <i class="fa fa-file-text" aria-hidden="true"></i>Informações Proposta
+    </div>
+    <div class="panel-body">
+        <div class="row">
+
+            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                <label>Status</label>
+                <h4 class="">@Model.PRCProposta.StatusNome</h4>
+                <small>@Model.PRCProposta.StatusInstrucoes</small>
+
+                @foreach (var badge in Model.PRCProposta.ListEntidadeStatusSubStatus)
+                {
+                 
+                    <span class="label label-info">@badge</span> 
+                
+                }
+
+                @if (Model.PRCProposta.EntidadeStatusHistoricoData != null)
+                {
+                    <h3><small><i class="fa fa-list" aria-hidden="true"></i>TO-DO</small> @String.Format("{0:dd/MM/yyyy}", (DateTime)Model.PRCProposta.EntidadeStatusHistoricoData)</h3>
+                }
+
+
+
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <small>@Model.PRCProposta.TriagemObservacao</small>
+            </div>
+        </div>
+    </div>
+    
+</div>

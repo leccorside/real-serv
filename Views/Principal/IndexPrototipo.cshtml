@@ -1,0 +1,182 @@
+﻿@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    var user = new BLL.Usuarios();
+
+}
+
+
+@section Breadcrumb{
+
+
+
+}
+
+
+
+
+<div class="color-blocks">
+
+
+
+
+
+
+
+
+    <div class="row-fluid">
+
+
+
+        <div class="span6">
+
+            <div class="c-block">
+                <!-- Alerta -->
+                <div class="col-l b-red">
+                    <a href="@Url.Content("~/Principal/Alertas")">
+                        <i class=" icon-bell"></i>
+                        <span class="badge badge-inverse">13</span> Alertas
+                    </a>
+                </div>
+                <!-- Usuário -->
+                @if (user.ControleAcesso("perfil", "principal"))
+                {
+                    <div class="col-r b-purple">
+                        <a href="@Url.Content("~/Principal/Perfil")">
+                            <i class=" icon-user"></i>
+                            @Html.Raw(@BLL.Usuarios.GetUsuarioNome())
+                        </a>
+                    </div>
+                }
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="c-block">
+                <!-- Arquitetos -->
+                @if (user.ControleAcesso("index", "pessoas"))
+                {
+                    <div class="col-l b-orange">
+                        <a href="@Url.Content("~/Pessoas/Index/0/O")">
+                            <i class="icon-pencil"></i>
+                            @Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())
+
+                        </a>
+                    </div>
+                }
+                <!--
+                @if (user.ControleAcesso("index", "pessoas"))
+                {
+
+                    <div class="col-r b-green">
+                        <a href="@Url.Content("~/Pessoas/Index/0/F")">
+                            <i class=" icon-user"></i>
+                            @Html.Raw(BLL.Usuarios.GetEntidadeFornecedor())
+                        </a>
+                    </div>
+                }
+
+                //-->
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+
+            <div class="c-block">
+
+
+                <div class="col-l b-green">
+                    <a href="@Url.Content("~/Pessoas/Index/0/C")">
+                        <i class="icon-group"></i>
+                        @Html.Raw(BLL.Usuarios.GetEntidadeCliente())
+                    </a>
+                </div>
+
+                <div class="col-r b-blue">
+                    <a href="@Url.Content("~/EdificioUnidade/")">
+                        <i class=" icon-home"></i> Edifício/Unidade
+                    </a>
+                </div>
+
+
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                <div class="col-l b-lblue">
+                    <a href="@Url.Content("~/Projetos/")">
+                        <i class=" icon-briefcase"></i> Projetos
+                    </a>
+                </div>
+
+                <div class="col-r b-red">
+                    <!-- Link -->
+                    <a href="@Url.Content("~/Processos/Index/")">
+                        <!-- Icon -->
+                        <i class="icon-folder-open"></i>
+                        <!-- Text -->
+                        Processos
+                    </a>
+                </div>
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+    </div>
+    <br />
+    <div class="row-fluid">
+
+        <div class="span6">
+            <div class="c-block">
+            </div>
+        </div>
+
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                <div class="col-r b-black alignright">
+                    <a href="@Url.Content("~/Home/Logoff/")" onclick="return confirm('Deseja realmente sair do sistema?')">
+                        <i class="icon-off"></i>
+                        Sair
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </div>
+
+    <br />
+
+</div>

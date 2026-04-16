@@ -1,0 +1,112 @@
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentTipo = ViewContext.RouteData.Values["tipo"] as string ?? "";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    currentTipo = currentTipo.ToLower();
+    var currentPage = (currentController + "-" + currentAction + currentTipo).ToLower();
+
+
+    var bllAcessos = new Bll.Acessos();
+    var listaMenu = bllAcessos.ListarItensMenu(0);
+}
+
+<div class="sidebar-nav">
+    <ul class="nav nav-list">
+        <li>
+            <a href="@Url.Content("~/Principal")">
+                <i class="fa fa-home fa-lg"></i>
+                <span>Home</span>
+            </a>
+        </li>
+
+        @foreach (var item in listaMenu)
+        {
+            var subBllacessos = new Bll.Acessos();
+            var listaMenuSub = subBllacessos.ListarItensMenu(item.AcessoId);
+            <li class="accordion-menu">
+
+                <a href="#@item.AcessoId" data-toggle="collapse" class="accordion-toggle"><i class="@item.Icone"></i><span>@item.Menu  <i class="icon-chevron-down pull-right"></i></span></a>
+                <div class="accordion-body collapse dropdown" id="@item.AcessoId">
+                    <div class="accordion-inner">
+                        <ul class="nav nav-list">
+                            @foreach (var subitem in listaMenuSub)
+                            {
+                                var subBllacessos3 = new Bll.Acessos();
+                                var listaMenuSub3 = subBllacessos3.ListarItensMenu(subitem.AcessoId);
+                                var nivel3 = listaMenuSub3.Count();
+
+                                var menu = subitem.Menu;
+                                menu = (menu == null) ? "" : menu;
+
+
+                                // verifica se possui 3 nivel
+                                if (nivel3 == 0)
+                                {
+                                    // nao possui
+                                    if (subitem.Acao == null || subitem.Acao == "")
+                                    {
+
+                                <li class="nav-header">@menu</li>
+                                    }
+                                    else
+                                    {
+                                <li ><a href="~/@subitem.Controle/@subitem.Acao/0">@menu</a></li>    
+                                    }
+                                }
+                                else
+                                {
+                                    // 3 Nível
+                                <li class="accordion-menu">
+                                    <a  style="font-size:12px" href="#sub_@subitem.AcessoId" data-toggle="collapse" class="accordion-toggle">@menu <i class="icon-chevron-down pull-right"></i></a>
+                                    <div class="accordion-body collapse dropdown" id="sub_@subitem.AcessoId">
+                                        <div class="accordion-inner">
+
+                                            <ul class="nav nav-list">
+
+
+
+
+                                                @foreach (var subitem3 in listaMenuSub3)
+                                                {
+
+                                                    if (subitem3.Acao == null || subitem3.Acao == "")
+                                                    {
+                                            
+                                                    <li><a tabindex="-1"><small>@subitem3.Menu</small></a></li>
+                                                    }
+                                                    else
+                                                    {
+                                                    <li><a tabindex="-1" style="font-size:9px"  href="~/@subitem3.Controle/@subitem3.Acao/0">@subitem3.Menu</a></li>
+                                                    }
+
+
+
+                                                }
+
+
+                                            </ul>
+
+                                        </div>
+                                    </div>
+                                </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+
+
+
+
+            </li>
+        }
+
+
+
+    </ul>
+    <div class='togglemenuleft'>@*<a class='toggle-menu'><i class="icon-circle-arrow-left icon-white"></i></a>*@</div>
+</div>
+

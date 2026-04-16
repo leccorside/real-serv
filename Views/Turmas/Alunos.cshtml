@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Models.Pessoa>
+
+@{
+    ViewBag.Title = BLL.Usuarios.GetEntidadeCliente();
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+   
+}
+
+
+<h2>@BLL.Usuarios.GetEntidadeCliente()</h2>
+
+<table class="table table-bordered table-striped">
+
+
+    <tr>
+        <th></th>
+        <td>Apelido</td>
+        <td>Nome Completo</td>
+        <td>Contato</td>
+        <td>Dt.Nascimento</td>
+    </tr>
+    @foreach (var item in Model)
+    {
+
+         BLL.Erro alerta = BLL.UTILS.IsAniversariante(item.DataNascimento);
+                        
+                        <tr class="@(alerta.NUMERO == BLL.Erro.Tipo.ComErro ? "warning" : "")">
+                            <td>@if (alerta.NUMERO == BLL.Erro.Tipo.ComErro)
+                                {<span class="tip-right" title="@alerta.MENSAGEM"><i class="icon-info-sign"></i></span>}</td>
+            <td><small>@item.Apelido</small></td>
+            <td><a href="@Url.Content("~/Pessoas/DadosAluno/"+item.PessoaID)?lightbox[iframe]=true&lightbox[width]=550&lightbox[height]=380" class="ui-lightbox"><small>@item.Nome</small></a></td>
+        <td><small>@item.Telefone<br />@item.Celular<br />@item.Email</small></td>
+                             <td>@if (item.DataNascimento != null)
+                                {
+                                <span>@Convert.ToDateTime(item.DataNascimento).ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                <i class="fa fa-frown-o"></i>
+                                }
+
+                            </td>
+    </tr>
+    }
+    
+</table>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    @*<script src="~/Content/themes/base/js/Gallery.js"></script>*@
+
+    }   

@@ -1,0 +1,94 @@
+﻿@model Models.PostoDeServicoEscalaGerarView
+
+@{
+    ViewBag.Title = "Gerar Escala";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+@section Styles{
+    
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Posto de Serviço", "Index", new { id = 0 })</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Alterar Posto de Serviço", "Criar", new { id = Model.PostoDeServico.PostoDeServicoId })</li>
+}
+
+
+
+<div class="cwell">
+
+    @Html.Partial("~/Views/PostosDeServicos/_Navtabs.cshtml", Model.PostoDeServico)
+
+    @*using (Html.BeginForm(null, null, FormMethod.Post, new { @id="ajax_form", @name="ajax_form" }))*@
+    
+    <form method="post" action="" id="ajax_form" name="ajax_form">
+
+    
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.PostoDeServico.PostoDeServicoId)
+        
+        
+        <div class="row-fluid">
+            <legend>Informa as datas e clique em processar</legend>
+            <label>O processamento pode demorar alguns segundos</label>
+            <div class="span12">
+                @Html.TextBoxFor(m => m.DataDe, "{0:dd/MM/yyyy}", new { @class = "datepickerDe input-small" })
+                <div class="input-append">
+                    @Html.TextBoxFor(m => m.DataAte, "{0:dd/MM/yyyy}", new { @class = "datepickerDe input-small" });
+              <button type="submit" class="btn">Processar</button>
+                    
+                </div>
+            </div>
+        </div>
+    
+    </form>
+
+
+    <div>
+        <a href="~/PostosDeServicos/Escalas/@Model.PostoDeServico.PostoDeServicoId">Voltar</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(function () {
+            $("#DataDe").mask("99/99/9999");
+            $("#DataAte").mask("99/99/9999");
+        });
+    </script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('#ajax_form').submit(function () {
+                
+                var dados = jQuery(this).serialize();
+                
+                
+                jQuery.ajax({
+                    type: "POST",
+                    url: "@Url.Content("~/PostosDeServicos/GerarEscalaResult")",
+                    data:dados,
+                    success: function (data) {
+                        
+                        if (data.Resultado == true) {
+                            parent.location = "@Url.Content("~/PostosDeServicos/VisualizarEscala/")" + data.ResultadoId;
+                        } else {
+                            alert(data.Mensagem);
+                        }
+
+                    },
+                    error: function (data) {
+                        alert(data.Mensagem);
+                    }
+                });
+
+                return false;
+            });
+        });
+	</script> 
+
+    
+}

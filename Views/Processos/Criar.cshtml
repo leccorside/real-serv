@@ -1,0 +1,324 @@
+﻿@{
+    ViewBag.Title = "Criar";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> Processos</li>
+}
+
+
+<div class="cwell">
+    <legend>Processo</legend>
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Ano - Número -dv </label>
+            @Html.TextBox("Ano", "", new { @class = "input-mini ", placeholder = "ano" }) - @Html.TextBox("Numero", "", new { @class = "input-small ", placeholder = "número" }) - @Html.TextBox("dv", "", new { @class = "input-mini ", placeholder = "dv" })
+        </div>
+
+
+        <div class="span3">
+            <label>Projeto </label>
+            <select class="chosen-select" name="projeto" id="projeto">
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Empresa @i</option>
+                }
+            </select>
+
+
+
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Interessado</label>
+            <select class="chosen-select" name="interessado" id="interessado">
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Cliente @i</option>
+                }
+            </select>
+
+
+
+        </div>
+
+        <div class="span4">
+            <label>Observadores</label>
+            <select data-placeholder="Selecione os observadores..." class="chosen-select" name="observadores" id="observadores" multiple>
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Observador @i</option>
+                }
+            </select>
+
+
+
+        </div>
+
+        <div class="span4">
+            <label>Arquitetos</label>
+            <select data-placeholder="Selecione os arquitetos..." class="chosen-select" name="Arquitetos" id="Arquitetos" multiple>
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Arquiteto @i</option>
+                }
+            </select>
+
+
+
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Tipo de solicitação</label>
+            <select class="chosen-select" name="interessado" id="interessado">
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Tipo @i</option>
+                }
+            </select>
+
+
+
+        </div>
+
+        <div class="span4">
+            <label>Unidade</label>
+            <select class="chosen-select" name="observadores" id="observadores">
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Unidade @i</option>
+                }
+            </select>
+
+
+
+        </div>
+
+        <div class="span4">
+            <label>Assunto</label>
+            <select class="chosen-select" name="observadores" id="observadores">
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Assunto @i</option>
+                }
+            </select>
+
+
+
+        </div>
+    </div>
+
+    <br />
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Situação</label>
+            <select class="chosen-select" name="interessado" id="interessado">
+                @for (int i = 0; i < 20; i++)
+                {
+                            
+                    <option value="@i">Situacao @i</option>
+                }
+            </select>
+
+
+
+        </div>
+
+        <div class="span8">
+            <label>Observação</label>
+
+            <textarea class="span8"></textarea>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                <!-- Title with experience details. -->
+                <legend><i class="icon-book"></i>Biblioteca Virtual</legend>
+            </a>
+        </div>
+        <div style="height: auto;" id="collapseOne" class="accordion-body in collapse">
+            <div class="accordion-inner" style="min-height: 300px;">
+
+                <div class="row-fluid">
+                    <div class="span3">
+                        <label>Tipo</label><select class="chosen-select">
+                            <option>Planta Baixa</option>
+                            <option>Planta padrão</option>
+                            <option>Contrato</option>
+
+                        </select>
+                    </div>
+                    <div class="span9">
+                        <label>Arquivo</label>
+                        <input type="file" class="btn-link">
+                        <button class="btn " type="submit" name="submitButton" value="Upload"><i class="icon-upload"></i>Upload</button>
+                    </div>
+                </div>
+
+                <br />
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Tipo</th>
+                            <th>Arquivo</th>
+                            <th>Versão</th>
+                            <th>Usuário</th>
+                            <th>Data de Início</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            <tr>
+                                <td nowrap><a href="#" class="btn btn-inverse"><i class="icon-download "></i>Download</a></td>
+                                <td width="100%">Planta Baixa @i</td>
+                                <td nowrap>Nome do arquivo @(i + 10)</td>
+                                <td nowrap>1.@i</td>
+                                <td nowrap>Usuário @(i + 123)</td>
+                                <td nowrap>@DateTime.Now.AddDays(i).ToShortDateString()</td>
+                            </tr>    
+                        }
+
+                    </tbody>
+                </table>
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Micro blog -->
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                <!-- Title with experience details. -->
+                <legend><i class="icon-comment"></i>Micro Blog</legend>
+            </a>
+        </div>
+        <div style="height: auto;" id="collapseOne" class="accordion-body in collapse">
+            <div class="accordion-inner" style="min-height: 300px;">
+
+                <div class="row-fluid">
+
+
+
+                    <div class="span3">
+                        <label>Tipo</label><select class="chosen-select">
+                            <option>Comentário</option>
+                            <option>Ata de reunião</option>
+                            <option>Pendência</option>
+
+                        </select>
+                    </div>
+
+                    <div class="span3">
+                        <label>Descrição</label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="span3">
+                        <label>Interessados</label>
+                        <select data-placeholder="Selecione os interessados..." class="chosen-select" name="observadores" id="observadores" multiple>
+                            @for (int i = 0; i < 20; i++)
+                            {
+                            
+                                <option value="@i">Interessado @i</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="span3">
+                        <label><i class="icon-calendar"></i>Lembrete</label>
+                        <div class="input-append">
+                            <input class="datepicker input-small" id="appendedInputButton" type="text">
+                            <button class="btn" type="button">Gravar</button>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+                <br />
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Interessados</th>
+                            <th>Lembrete</th>
+                            <th>Usuário</th>
+                            <th>Data de Cadastro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            <tr>
+                                
+                                <td nowrap>Comentário</td>
+                                <td  width="100%">Suco de cevadiss, é um leite divinis, qui tem lupuliz, matis, aguis e fermentis.</td>
+                                <td>Interessado1, Interessado2, Interessado2</td>
+                                <td nowrap><small>@DateTime.Now.AddDays(i+30).ToShortDateString()</small></td>
+                                <td nowrap>Usuário @(i + 123)</td>
+                                <td nowrap>@DateTime.Now.AddDays(i).ToShortDateString()</td>
+                            </tr>    
+                        }
+
+                    </tbody>
+                </table>
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="form-actions">
+
+
+        <input type="submit" value="Salvar" class="btn btn-primary  btn-large" />
+
+
+
+
+
+    </div>
+
+
+    <div>
+        <a href="@Url.Content("~/Agendamento/ProgramacaoDia")">Voltar</a>
+    </div>
+</div>
+

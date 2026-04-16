@@ -1,0 +1,76 @@
+﻿@model IEnumerable<Models.Modal>
+
+
+@{
+    ViewBag.Title = "Modais";
+    
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+
+
+    <p>
+        @Html.ActionLink("+ Nova Modal", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+    </p>
+
+
+  <table class="table table-bordered table-striped table-highlight">
+            <thead>
+                <tr>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.Titulo)
+                    </th>
+                    <th nowrap>
+                        @Html.DisplayNameFor(model => model.RegDtInicio)
+                    </th>
+                    <th nowrap>@Html.ActionLink("Desativar todos", "Ativar", new { id = 0 }, new { @class = "btn btn-mini", onclick = "return confirm('Deseja realmente desativar todas as Modais?')" })</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count() == 0)
+                {
+                    <tr class="info">
+                        <td colspan="20"><small class="muted">Nenhum registro localizado</small></td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td width="100%">
+                            @Html.DisplayFor(modelItem => item.Titulo)
+                        </td>
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.RegDtInicio)
+                        </td>
+                        <td nowrap>
+
+                            @if (item.Ativo)
+                            {
+                                <i class="icon-checkmark"></i> <small>Ativo</small>
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Ativar", "Ativar", new { id = item.ModalId }, new { @class = "btn btn-mini" })    
+                            }
+
+                        </td>
+                        <td nowrap>
+                            @Html.ActionLink("Alterar", "Criar", new { id = item.ModalId }, new { @class = "btn btn-mini" }) |
+            @Html.ActionLink("Excluir", "Deletar", new { id = item.ModalId }, new { @class = "btn btn-mini" })
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+
+
+        </table>

@@ -1,0 +1,115 @@
+﻿@model Models.PRCPropostaView
+
+@{
+    ViewBag.Title = "Buscando contatos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading ">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <i class="fa fa-search" aria-hidden="true"></i>Busca de Contatos
+                </div>
+                <div class="panel-body">
+
+                    <h1 class="text-center"><i id="icon" class="fa fa-spinner fa-pulse fa-fw"></i><span id="h1">Aguarde, localizando contatos</span></h1>
+                    <h6 id="info">Iniciando</h6>
+                    <div class="m">
+                        <div class="progress m-t-xs full progress-striped active">
+                            <div id="barra_progresso" style="width: 5%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="90" role="progressbar" class=" progress-bar progress-bar-success">
+                                <span id="info_progresso">5%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+@section Scripts {
+    <script>
+        function LocalizaParentes() {
+
+            
+            var url = "@Url.Content("~/PRCPropostas/" + Model.Rota + "Editar/" + Model.PRCProposta.PRCPropostaId + "/" + Model.PRCProposta.PRCPropostaGUID + "/")";
+
+            CarregaProgesso(30, "Carregando informações do Parente");
+
+
+
+            $.getJSON("@Url.Content("~/PRCPropostas/CapturaParentesTelefonesJSON/")", { id: '@Model.PRCProposta.PRCPropostaId', tipo: '@Model.PRCProposta.PRCPropostaGUID', pdid:'@Model.PessoaDependente.PessoaDependenteId' }, function (result) {
+
+              
+
+                CarregaProgesso(50, "Analisando Dados");
+
+
+         
+
+
+            })
+                .success(function (result) {
+
+                    console.log(result);
+
+                    if (result.NUMERO == "999") {
+                        //erro
+                       
+                        swal({ title: "Atencão!", text: result.MENSAGEM, type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: false }, function () { parent.location = "@Url.Content("~/PRCPropostas/Editar/" + Model.PRCProposta.PRCPropostaId + "/" + Model.PRCProposta.PRCPropostaGUID + "/")"; });
+                    } else if (result.NUMERO == "10") {
+                        // alerta
+                        
+                        swal({ title: "Atenção", text: "Desculpe! Não conseguimos localizar os dados do parente", type: "warning", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Entendi", closeOnConfirm: false }, function () { parent.location = url; });
+
+
+                    } else {
+                        // Sucesso
+                        CarregaProgesso(100, "Pronto! Aguarde! Direcionando para a proposta já com os dados de contato do parente");
+                        $("#h1").html("Pronto!");
+
+                        
+                        swal({ title: "Tudo certo!", text: "Proposta Atualizada com dados de contato do parente", type: "success", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: false }, function () { parent.location = url; });
+                    }
+
+
+
+
+                })
+                .error(function () {
+                    CarregaProgesso(0, "Ocorreu um erro... Tente novamente mais tarde");
+                    $("#icon").removeClass("fa fa-spinner fa-pulse fa-fw");
+                    $("#icon").addClass("fa fa-exclamation-circle");
+                    $("#h1").html("Oooops!");
+
+                });
+
+        }
+
+
+        setTimeout(function () { LocalizaParentes(); }, 3000);
+
+
+
+        function CarregaProgesso(valor, info) {
+            $("#barra_progresso").css({ 'width': valor + "%" })
+            $("#info_progresso").html(valor + "%");
+            $("#info").html(info);
+
+
+        }
+
+    </script>
+}

@@ -1,0 +1,203 @@
+﻿@model Models.MedicaoQuadroHorarioView
+
+@{
+    ViewBag.Title = "Quadro Funcionários";
+    Layout = "~/Views/Shared/_LayoutFull.cshtml";
+}
+
+
+
+@section Breadcrumb{
+    <li><span class="divider">/</span><a href="~/Projetos/Index">Obras</a></li>
+    <li><span class="divider">/</span><a href="~/Projetos/Criar/@Model.DadosProjeto.ProjetoId">@Model.DadosProjeto.ProjetoNome</a></li>
+    <li><span class="divider">/</span><a href="~/Medicoes/Index/@Model.DadosProjeto.ProjetoId">Relatórios Diários</a></li>
+
+}
+
+
+
+<ul class="nav nav-tabs">
+    <li><a href="~/Medicoes/Criar/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId">Dados</a></li>
+    <li class="active"><a href="~/Medicoes/QuadroHorario/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId">Quadro Funcionários</a></li>
+    <li><a href="~/Medicoes/Estacas/0?MedicaoId=@Model.Medicao.MedicaoId">Estacas Executadas</a></li>
+    <li><a href="~/Medicoes/Assinar/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId">Assinar</a></li>
+    <li class="pull-right"><a href="~/Medicoes/Imprimir/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId" class="btn btn-mini"><i class="icon-print"></i>Imprimir</a></li>
+</ul>
+
+
+
+@if (!Model.Medicao.Assinado)
+{
+    using (Html.BeginForm("QuadroHorario", "Medicoes", FormMethod.Post))
+    {
+    @Html.ValidationSummary(true)
+    
+    
+    @Html.Hidden("MedicaoQuadroHorario.MedicaoId", Model.MedicaoQuadroHorario.MedicaoId);
+  
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="control-group">
+                <label><strong>Função</strong></label>
+                <div class="input-append">
+                    @Html.DropDownList("MedicaoQuadroHorario.FuncaoId", (SelectList)ViewBag.ddlUsuariosFuncoes, new { @class = "chosen-select" })
+                </div>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                <label><strong>Colaborador</strong></label>
+                <div class="input-append">
+                    @Html.DropDownList("MedicaoQuadroHorario.UsuarioId", (SelectList)ViewBag.ddlUsuarios, new { @class = "chosen-select" })
+                </div>
+            </div>
+        </div>
+        <div class="span2">
+            <div class="control-group">
+                <label><strong>Horário de</strong></label>
+                <div class="input-append">
+                    @Html.TextBoxFor(m => m.MedicaoQuadroHorario.HorarioDe, new { @class = "input-mini" })
+                </div>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+                <label><strong>Até</strong></label>
+                <div class="input-append">
+                    @Html.TextBoxFor(m => m.MedicaoQuadroHorario.HorarioAte, new { @class = "input-mini" })
+                    <button id="btnAdicionar" type="submit" class="btn"><i class="icon-plus"></i>Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    }
+}
+
+@if (!Model.Medicao.Assinado)
+{
+<span data-toggle='tooltip' class='tip-top' data-placement='right' title='Buscar Equipe de Medição Anterior'><a href="~/Medicoes/QuadroHorarioAddEquipe/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId" class="btn btn-mini" onclick="return confirm('Deseja realmente adicionar equipe da medição anterior?')"><i class="fa  fa-retweet"></i></a></span>    
+}
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>Função</th>
+            <th>Colaborador</th>
+            <th>Horário</th>
+            <th>Qtd.Horas</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaMedicaoQuadroHorario)
+        {
+            <tr>
+                <td nowrap>@item.UsuarioFuncaoNome</td>
+                <td nowrap>@item.UsuarioNome</td>
+                <td nowrap>@item.HorarioDe ~ @item.HorarioAte</td>
+                <td nowrap>@item.QtdHoras</td>
+                <td nowrap>
+
+                    @if (!Model.Medicao.Assinado)
+                    {
+                        <a href="~/Medicoes/QuadroHorarioDeletar/@item.MedicaoQuadroHorarioId?pid=@item.MedicaoId" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir esse registro?')"><i class="fa fa-times"></i>Excluir</a>
+                    }
+                </td>
+            </tr>
+           
+        }
+    </tbody>
+</table>
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+    <script src="~/Assets/dashboardV3/js/jquery.ui.timepicker.js"></script>
+
+    <script>
+
+
+        jQuery(function () {
+            $("#MedicaoQuadroHorario_HorarioDe").mask("99:99");
+            $('#MedicaoQuadroHorario_HorarioDe').timepicker(
+                {
+                    hourText: 'Hora',             // Define the locale text for "Hours"
+                    minuteText: 'Minutos',         // Define the locale text for "Minute"
+                    amPmText: ['AM', 'PM'],       // Define the locale text for periods
+                    myPosition: 'left top',
+
+                    // custom hours and minutes
+                    hours: {
+                        starts: 0,                // First displayed hour
+                        ends: 23                  // Last displayed hour
+                    },
+                    minutes: {
+                        starts: 0,                // First displayed minute
+                        ends: 45,                 // Last displayed minute
+                        interval: 15,              // Interval of displayed minutes
+                        manual: []                // Optional extra entries for minutes
+                    },
+
+                }
+                );
+
+            $("#MedicaoQuadroHorario_HorarioAte").mask("99:99");
+            $('#MedicaoQuadroHorario_HorarioAte').timepicker(
+                {
+                    hourText: 'Hora',             // Define the locale text for "Hours"
+                    minuteText: 'Minutos',         // Define the locale text for "Minute"
+                    amPmText: ['AM', 'PM'],       // Define the locale text for periods
+                    myPosition: 'left top',
+
+                    // custom hours and minutes
+                    hours: {
+                        starts: 0,                // First displayed hour
+                        ends: 23                  // Last displayed hour
+                    },
+                    minutes: {
+                        starts: 0,                // First displayed minute
+                        ends: 45,                 // Last displayed minute
+                        interval: 15,              // Interval of displayed minutes
+                        manual: []                // Optional extra entries for minutes
+                    },
+
+                }
+                );
+
+
+        });
+
+        //desabilida modo de edicao, pois foi assinado
+        @if (Model.Medicao.Assinado)
+        {
+        @:$(document.body).find('input, textarea, button, select').attr('disabled', 'disabled'); 
+                }
+
+
+        $('#MedicaoQuadroHorario_UsuarioId option[value=-1]').each(function (i, item) {
+            item.disabled = true;
+        });
+
+         @foreach (var item in Model.ListaMedicaoQuadroHorario)
+         {
+        @:$('#MedicaoQuadroHorario_UsuarioId option[value=@item.UsuarioId]').each(function (i, item) {
+                     @:    item.disabled = true;
+                     @:
+         @:});     
+                 }
+    
+
+        $('#MedicaoQuadroHorario_UsuarioId').trigger("chosen:updated");
+
+    </script>
+
+</script>
+
+}

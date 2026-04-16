@@ -1,0 +1,52 @@
+﻿@{
+    
+    var user = new Bll.Usuarios();
+
+    var dadosUser = user.Carregar(Bll.Usuarios.GetUsuarioId());
+
+   
+     
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    <!-- Le styles -->
+    <!-- bootstrap css -->
+
+    <link href="@Server.MapPath("~/Assets/bootstrap/css/bootstrap.css")" rel="stylesheet" />
+
+    <link href="@Server.MapPath("~/Assets/font-awesome-4.3.0/css/font-awesome.css")" rel="stylesheet" />
+
+    @RenderSection("Styles", false)
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span4">
+                <img src="@VirtualPathUtility.ToAbsolute("~/Content/images/logotipos/" + Bll.Usuarios.GetEmpresaId() + "-Report.png")" class="img-responsive" />
+            </div>
+            <div class="span4">
+                <p class="text-center"><strong>@ViewBag.Title</strong></p>
+            </div>
+            <div class="span4">
+                <p class="pull-right">
+                    <small>Gerado em @DateTime.Now<br />Por @dadosUser.UsuarioNome</small>
+                </p>
+            </div>
+        </div>
+
+
+        @RenderBody()
+    </div>
+</body>
+</html>
+
+
+
+
+

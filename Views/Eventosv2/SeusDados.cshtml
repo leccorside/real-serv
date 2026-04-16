@@ -1,0 +1,328 @@
+﻿@model Models.PessoaPlanoGrupoView
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.EmpresaId);
+
+    var associe_seusdados_termos = BLL.Configuracoes.CarregarPorEmpresaId("associe_seusdados_termos", Model.EmpresaId);
+    var associe_seusdados_termos2 = BLL.Configuracoes.CarregarPorEmpresaId("associe_seusdados_termos2", Model.EmpresaId);
+
+
+    //var total = Model.PessoaPlano.PessoaPlanoVlr + Model.PessoaPlano.PessoaPlanoVlrInscricao;
+
+    var associe_seusdados_maxlen_pessoa_nome = BLL.Configuracoes.CarregarPorEmpresaId("associe_seusdados_maxlen_pessoa_nome", Model.EmpresaId) ?? "";
+    associe_seusdados_maxlen_pessoa_nome = (associe_seusdados_maxlen_pessoa_nome == "" ? "200" : associe_seusdados_maxlen_pessoa_nome);
+
+                    //var dtDe = (Model.PessoaPlano.PessoaPlanoGrupoDtInicio == null ? "" : Convert.ToDateTime(Model.PessoaPlano.PessoaPlanoGrupoDtInicio).ToShortDateString());
+                    //var dtAte = (Model.PessoaPlano.PessoaPlanoGrupoDtFim == null ? "" : Convert.ToDateTime(Model.PessoaPlano.PessoaPlanoGrupoDtFim).ToShortDateString());
+                                    
+   
+}
+
+<div class="content-boxed">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho)
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+                    <div class="row">
+
+
+
+                        <div class="col-lg-12">
+                            @using (Html.BeginForm("SeusDados", "EventosV2", FormMethod.Post, new { @id = "form" }))
+                            {
+                                
+                                       
+                                @Html.HiddenFor(x => x.Campanha.CampanhaId)
+                                @Html.HiddenFor(x => x.Campanha.CampanhaSlug)
+                                
+                                @Html.HiddenFor(x => x.Pessoa.PessoaID);
+                                @Html.HiddenFor(x => x.Pessoa.EmpresaId);
+                                
+                                @Html.HiddenFor(x => x.Pessoa.Lead);
+                                @Html.HiddenFor(x => x.EmpresaId);
+                                
+                                
+                                
+                                
+                                @Html.Hidden("Pessoa.PessoaCategoria", "C");
+                                @Html.Hidden("Pessoa.PessoaTipo", "PJ");
+                                @Html.Hidden("PessoaPlano.TermoAceite", "True");
+                                                                       
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <legend>Dados Empresa</legend>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>CNPJ</label><label id="loading_cpf" style="display: none"><i class="fa fa-spinner fa-spin"></i></label><label id="ok_cpf" style="display: none"><i class="fa fa-check" style="color: #18a516"></i></label>
+                                        @Html.TextBox("Pessoa.Documento", Model.Pessoa.Documento, new { @class = " form-control " })
+                                    </div>
+
+                                    <div class="form-group col-lg-9">
+                                        <label>RAZÃO SOCIAL</label>
+                                        @Html.TextBoxFor(x => x.Pessoa.Nome, new { @class = "form-control max", maxlength = associe_seusdados_maxlen_pessoa_nome })
+                                    </div>
+
+
+                                    <div class="col-lg-12">
+                                        <legend>Dados Contato</legend>
+                                    </div>
+
+                                    <div class="form-group col-lg-5">
+                                        <label>Nome Contato</label>
+                                        @Html.TextBoxFor(x => x.Pessoa.AdmNome, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group col-lg-4">
+                                        <label>E-Mail</label>
+                                        @Html.TextBoxFor(x => x.Pessoa.Email, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group col-lg-3">
+                                        <label>Celular</label>
+                                        @Html.TextBoxFor(x => x.Pessoa.Celular, new { @class = "form-control" })
+                                    </div>
+
+
+
+
+                                    <div class="col-lg-12">
+                                        <legend>Endereço</legend>
+                                    </div>
+
+
+                                    <div class="form-group col-lg-3">
+                                        <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(model => model.Pessoa.Cep, new { @class = "form-control" })
+                                            <span class="input-group-btn">
+                                                <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                            </span>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label>Endereço</label>
+                                        @Html.TextBoxFor(model => model.Pessoa.Endereco, new { @class = "  form-control " })
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Número</label>
+                                        @Html.TextBoxFor(model => model.Pessoa.Numero, new { @class = "  form-control " })
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Complemento</label>
+                                        @Html.TextBoxFor(model => model.Pessoa.Complemento, new { @class = "  form-control " })
+                                    </div>
+                                    <div class="form-group col-lg-5">
+                                        <label>Bairro</label>
+                                        @Html.TextBoxFor(model => model.Pessoa.Bairro, new { @class = "  form-control " })
+                                    </div>
+                                    <div class="form-group col-lg-5">
+                                        <label>Cidade</label>
+                                        @Html.TextBoxFor(model => model.Pessoa.Cidade, new { @class = "  form-control " })
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Estado</label>
+                                        @Html.TextBoxFor(model => model.Pessoa.Estado, new { @class = "  form-control " })
+                                    </div>
+
+
+
+
+                                </div>
+                                
+                                
+                                
+                                
+                                <div class="text-center">
+                                    <button class="btn btn btn-primary btn-lg">Próximo</button>
+                                    <a href="@Url.Content("~/Associe_se/Index/" + Model.Pessoa.EmpresaId)" class="btn btn-default btn-lg">Cancelar</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            @Html.Raw(associe_rodape)
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+
+    <style>
+        .div_termo
+        {
+            overflow-y: auto;
+            max-height: 150px;
+            border: 1px dashed black;
+            background-color: #fffdeb;
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    </style>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+    <script>
+
+
+
+
+
+        $("#Pessoa_Documento").mask("99.999.999/9999-99");
+
+
+
+        $('#Pessoa_Celular').mask(maskBehavior, options);
+        $('#Pessoa_Telefone').mask(maskBehavior, options);
+        $("#MedCarteiraValidade").mask("99/99/9999");
+        $("#MedGuiaData").mask("99/99/9999");
+        $("#Pessoa_Cep").mask("99999-999");
+        $("#Pessoa_DataNascimento").mask("99/99/9999");
+        $("#Pessoa_DataInicio").mask("99/99/9999");
+        $("#Pessoa_FormacaoAnoInicio").mask("99/99/9999");
+        $("#Pessoa_FormacaoAnoConclusao").mask("99/99/9999");
+
+
+
+
+
+
+
+        $("#btnerrado").click(function () {
+            $("#btnerrado").attr("style", "display:none");
+            $("#Pessoa_Nome").prop("readOnly", false);
+            $("#Pessoa_Documento").prop("readOnly", false);
+            limpar();
+            $("#Pessoa_Documento").val('');
+            $("#Pessoa_Documento").focus();
+        });
+
+
+
+
+        //cep
+        $('#buscar-cep').click(function () {
+            PesquisaCep();
+        });
+
+        $("#Pessoa_Cep").focusout(function () {
+            PesquisaCep();
+        });
+
+        function PesquisaCep() {
+            $('#Pessoa_Cep').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading_cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading_cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                },
+                success: function (data) {
+                    $('#Pessoa_Endereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                    $('#Pessoa_Bairro').val(data.bairro);
+                    $('#Pessoa_Estado').val(data.estado);
+                    $('#Pessoa_Cidade').val(data.cidade);
+                    $('#Pessoa_Pais').val('Brasil');
+                    $('#Pessoa_Numero').focus();
+                }
+            });
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+
+        $('.ano').mask('0000');
+        $('.max').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+        function moedaParaNumero(valor) {
+            return isNaN(valor) == false ? parseFloat(valor) : parseFloat(valor.replace("R$", "").replace(".", "").replace(",", "."));
+        }
+        function numeroParaMoeda(n, c, d, t) {
+            c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+            return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+        }
+
+
+
+    </script>
+
+    <script>
+        function SelecionarTudo(id) {
+
+
+
+            //$("#" + id + " > option").prop("selected", "selected");// Select All Options
+            //$("#" + id).trigger("chosen:updated");// Trigger change to select 2
+            //$("#" + id).trigger("change.select2");// Trigger change to select 2
+
+            $("#" + id).select2('destroy').find('option').prop('selected', 'selected').end().select2()
+
+        }
+        function DesmarcarTudo(id) {
+            //$("#" + id + " > option").removeAttr("selected");
+            //$("#" + id).trigger("change");// Trigger change to select 2
+
+
+            $("#" + id).select2('destroy').find('option').prop('selected', false).end().select2()
+        }
+    </script>
+
+
+}
+

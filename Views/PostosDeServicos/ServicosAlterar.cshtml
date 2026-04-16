@@ -1,0 +1,174 @@
+﻿@model Models.PostoDeServicoServicoView
+
+@{
+    ViewBag.Title = "Alterar Serviços";
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+}
+
+@section Styles{
+    <style>
+        .horario
+        {font-size:10px !important;
+        }
+
+        .opcional
+        {
+            background-color:lightyellow !important;
+        }
+    </style>
+    }
+
+
+<div class="cwell">
+
+    
+    @using (Html.BeginForm("ServicosAlterar", "PostosDeServicos", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.DadosPostoDeServico.PostoDeServicoId);
+        @Html.HiddenFor(model => model.PostoDeServicoServico.PostoDeServicoServicoId);
+        
+        @Html.Hidden("PostoDeServicoServico.PostoDeServicoId", Model.DadosPostoDeServico.PostoDeServicoId);
+  
+        <div class="row-fluid">
+            <div class="span6">
+                <div class="control-group">
+                    <label><strong>Serviços</strong></label>
+                        @Html.DropDownList("PostoDeServicoServico.ServicoId", (SelectList)ViewBag.ddlServicos, "--Selecione--", new { @class = "chosen-select span12" })
+                    
+                </div>
+            </div>
+            <div class="span6">
+                <div class="control-group">
+                    <label><strong>Escala</strong></label>
+                        @Html.DropDownList("PostoDeServicoServico.TipoEscalaId", (SelectList)ViewBag.ddlTipoEscalas, new { @class = "chosen-select span12" })
+                </div>
+            </div>
+        </div>
+        <!--<small>*Os campos marcados em amarelo (intervalo) são de preenchimento opcional</small>
+        <div class="row-fluid">
+            <div class="span3"><label><strong>Tipo</strong></label><label>Descrição</label><br /><label>Qtd.Horas</label></div>
+            <div class="span3"><label><strong>Turno extendito 1</strong></label> @Html.TextBoxFor(model => model.PostoDeServicoServico.M1inicio, new { @class = "span3 horario" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.M1IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBoxFor(model => model.PostoDeServicoServico.M1IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.M1Fim, new { @class = "span3 horario" }) <br /> @Html.TextBoxFor(model => model.PostoDeServicoServico.M1horasStr, new { @class = "span6" })</div>
+            <div class="span3"><label><strong>Turno extendito 2</strong></label> @Html.TextBoxFor(model => model.PostoDeServicoServico.M2inicio, new { @class = "span3 horario" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.M2IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBoxFor(model => model.PostoDeServicoServico.M2IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.M2Fim, new { @class = "span3 horario" }) <br /> @Html.TextBoxFor(model => model.PostoDeServicoServico.M2horasStr, new { @class = "span6" })</div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="span3"><label><strong>Tipo</strong></label><label>Descrição</label><br /><label>Qtd.Horas</label></div>
+            <div class="span3"><label><strong>Turno 1</strong></label> @Html.TextBoxFor(model => model.PostoDeServicoServico.T1inicio, new { @class = "span3 horario" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.T1IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBoxFor(model => model.PostoDeServicoServico.T1IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.T1Fim, new { @class = "span3 horario" }) <br /> @Html.TextBoxFor(model => model.PostoDeServicoServico.T1horasStr, new { @class = "span6" })</div>
+            <div class="span3"><label><strong>Turno 2</strong></label> @Html.TextBoxFor(model => model.PostoDeServicoServico.T2inicio, new { @class = "span3 horario" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.T2IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBoxFor(model => model.PostoDeServicoServico.T2IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.T2Fim, new { @class = "span3 horario" }) <br /> @Html.TextBoxFor(model => model.PostoDeServicoServico.T2horasStr, new { @class = "span6" })</div>
+            <div class="span3"><label><strong>Turno 3</strong></label> @Html.TextBoxFor(model => model.PostoDeServicoServico.T3inicio, new { @class = "span3 horario" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.T3IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBoxFor(model => model.PostoDeServicoServico.T3IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBoxFor(model => model.PostoDeServicoServico.T3Fim, new { @class = "span3 horario" }) <br /> @Html.TextBoxFor(model => model.PostoDeServicoServico.T3horasStr, new { @class = "span6" })</div>
+        </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.PostoDeServicoServico.ExcetoSabado) Exceto Sábado
+                </label>
+            </div>
+            <div class="span3">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.PostoDeServicoServico.ExcetoDomingo) Exceto Domingo
+                </label>
+            </div>
+            <div class="span3">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.PostoDeServicoServico.ExcetoFeriado) Exceto Feriado
+                </label>
+            </div>
+        </div>--><br /><br /><br /><br />
+    <button id="btnAdicionar" type="submit" class="btn">Alterar</button>
+    
+    }
+
+
+    
+    
+</div>
+
+@section Scripts {
+    <script>
+        $("#PostoDeServicoInteressado\\.PessoaId").focus();
+        //M1
+        $("#PostoDeServicoServico_M1inicio").mask("99:99");
+        $("#PostoDeServicoServico_M1IntervalInicio").mask("99:99");
+        $("#PostoDeServicoServico_M1IntervalFim").mask("99:99");
+        $("#PostoDeServicoServico_M1Fim").mask("99:99");
+        $("#PostoDeServicoServico_M1horasStr").mask("99:99");
+        //M2
+        $("#PostoDeServicoServico_M2inicio").mask("99:99");
+        $("#PostoDeServicoServico_M2IntervalInicio").mask("99:99");
+        $("#PostoDeServicoServico_M2IntervalFim").mask("99:99");
+        $("#PostoDeServicoServico_M2Fim").mask("99:99");
+        $("#PostoDeServicoServico_M2horasStr").mask("99:99");
+        //T1
+        $("#PostoDeServicoServico_T1inicio").mask("99:99");
+        $("#PostoDeServicoServico_T1IntervalInicio").mask("99:99");
+        $("#PostoDeServicoServico_T1IntervalFim").mask("99:99");
+        $("#PostoDeServicoServico_T1Fim").mask("99:99");
+        $("#PostoDeServicoServico_T1horasStr").mask("99:99");
+        //T2
+        $("#PostoDeServicoServico_T2inicio").mask("99:99");
+        $("#PostoDeServicoServico_T2IntervalInicio").mask("99:99");
+        $("#PostoDeServicoServico_T2IntervalFim").mask("99:99");
+        $("#PostoDeServicoServico_T2Fim").mask("99:99");
+        $("#PostoDeServicoServico_T2horasStr").mask("99:99");
+        //T3
+        $("#PostoDeServicoServico_T3inicio").mask("99:99");
+        $("#PostoDeServicoServico_T3IntervalInicio").mask("99:99");
+        $("#PostoDeServicoServico_T3IntervalFim").mask("99:99");
+        $("#PostoDeServicoServico_T3Fim").mask("99:99");
+        $("#PostoDeServicoServico_T3horasStr").mask("99:99");
+
+
+
+
+        $("#PostoDeServicoServico_TipoEscalaId").change(function () {
+
+            
+
+            $.getJSON('@Url.Content("~/TipoEscalas/GetTipoEscalasDados/")', { id: $(this).val() }, function (data) {
+                alert(data.TipoEscalaNome + ':' + data.TipoEscalaDescricao);
+                //M1
+                $("#PostoDeServicoServico_M1inicio").val(data.DefaultM1inicio);
+                $("#PostoDeServicoServico_M1IntervalInicio").val(data.DefaultM1IntervalInicio);
+                $("#PostoDeServicoServico_M1IntervalFim").val(data.DefaultM1IntervalFim);
+                $("#PostoDeServicoServico_M1Fim").val(data.DefaultM1Fim);
+                $("#PostoDeServicoServico_M1horasStr").val(data.DefaultM1horasStr);
+                //M2
+                $("#PostoDeServicoServico_M2inicio").val(data.DefaultM2inicio);
+                $("#PostoDeServicoServico_M2IntervalInicio").val(data.DefaultM2IntervalInicio);
+                $("#PostoDeServicoServico_M2IntervalFim").val(data.DefaultM2IntervalFim);
+                $("#PostoDeServicoServico_M2Fim").val(data.DefaultM2Fim);
+                $("#PostoDeServicoServico_M2horasStr").val(data.DefaultM2horasStr);
+                //T1
+                $("#PostoDeServicoServico_T1inicio").val(data.DefaultT1inicio);
+                $("#PostoDeServicoServico_T1IntervalInicio").val(data.DefaultT1IntervalInicio);
+                $("#PostoDeServicoServico_T1IntervalFim").val(data.DefaultT1IntervalFim);
+                $("#PostoDeServicoServico_T1Fim").val(data.DefaultT1Fim);
+                $("#PostoDeServicoServico_T1horasStr").val(data.DefaultT1horasStr);
+                //T2
+                $("#PostoDeServicoServico_T2inicio").val(data.DefaultT2inicio);
+                $("#PostoDeServicoServico_T2IntervalInicio").val(data.DefaultT2IntervalInicio);
+                $("#PostoDeServicoServico_T2IntervalFim").val(data.DefaultT2IntervalFim);
+                $("#PostoDeServicoServico_T2Fim").val(data.DefaultT2Fim);
+                $("#PostoDeServicoServico_T2horasStr").val(data.DefaultT2horasStr);
+                //T3
+                $("#PostoDeServicoServico_T3inicio").val(data.DefaultT3inicio);
+                $("#PostoDeServicoServico_T3IntervalInicio").val(data.DefaultT3IntervalInicio);
+                $("#PostoDeServicoServico_T3IntervalFim").val(data.DefaultT3IntervalFim);
+                $("#PostoDeServicoServico_T3Fim").val(data.DefaultT3Fim);
+                $("#PostoDeServicoServico_T3horasStr").val(data.DefaultT3horasStr);
+
+                $("#PostoDeServicoServico_ExcetoSabado").prop('checked', (data.ExcetoSabado));
+                $("#PostoDeServicoServico_ExcetoDomingo").prop('checked', (data.ExcetoDomingo));
+                $("#PostoDeServicoServico_ExcetoFeriado").prop('checked', (data.ExcetoFeriado));
+
+
+            });
+
+        });
+    </script>
+
+    
+
+}

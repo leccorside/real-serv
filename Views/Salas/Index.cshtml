@@ -1,0 +1,98 @@
+﻿@model IEnumerable<Models.Sala>
+
+@{
+    ViewBag.Title = "Salas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";      
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    
+
+}
+
+
+<div class="row-fluid">
+    <div class="span12">
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+        <table class=" footable table-bordered table-striped">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.SalaNome)
+                            </th>
+                            <th data-hide="phone,tablet">
+                                @Html.DisplayNameFor(model => model.SalaCapacidade)
+                            </th>
+                            <th data-hide="phone,tablet">
+                                @Html.DisplayNameFor(model => model.RegDtInicio)
+                            </th>
+                            <th data-hide="phone,tablet">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td width="100%">
+                                    @Html.DisplayFor(modelItem => item.SalaNome)
+                                </td>
+                                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                                    @Html.DisplayFor(modelItem => item.SalaCapacidade)
+                                </td>
+                                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                                    @Html.DisplayFor(modelItem => item.RegDtInicio)
+                                </td>
+                                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                                    @Html.ActionLink("Alterar", "Criar", new { id = item.SalaId }, new { @class = "btn btn-mini" }) |
+                                    @Html.ActionLink("Excluir", "Deletar", new { id = item.SalaId }, new { @class = "btn btn-mini" })
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+
+
+                </table>
+
+
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+        });
+    </script>
+
+
+
+}

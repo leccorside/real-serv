@@ -1,0 +1,85 @@
+﻿@model Models.PessoaPlanoInscricaoView
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.EmpresaId);
+
+
+    var evento_obrigado_texto = BLL.Configuracoes.CarregarPorEmpresaId("evento_obrigado_texto", Model.EmpresaId);
+    var evento_obrigado_urlredirect = BLL.Configuracoes.CarregarPorEmpresaId("evento_obrigado_urlredirect", Model.EmpresaId);
+}
+
+<div class="content-boxed">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho)
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+
+                    <div class="row">
+
+                        <div class="col-lg-12" style="">
+
+                            <div class="text-center m-b-xl">
+                                @evento_obrigado_texto
+                            </div>
+
+                            
+
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+           @Html.Raw(associe_rodape)
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+
+        <script>
+            var delay = 8000;
+            setTimeout(function () { window.location = "@evento_obrigado_urlredirect"; }, delay);
+        </script>        
+
+
+
+}
+

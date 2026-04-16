@@ -1,0 +1,76 @@
+@model IEnumerable<Models.Configuracao>
+
+@{
+    ViewBag.Title = "Vari&aacute;veis do Sistema";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configura&ccedil;&otilde;es", "Configuracoes", "Principal")</li>
+}
+
+@section Styles {
+@Html.Partial("_TableStyles")
+@Styles.Render("~/bundles/datatables/css")
+}
+
+<div class="ponto-container">
+    <div class="ponto-header">
+        <div class="ponto-title"><h2><i class="pe-7s-config"></i> Configura&ccedil;&otilde;es do Sistema</h2></div>
+        <div style="display:flex; gap:12px; align-items:center;">
+            <a target="_blank" class="btn-alterar fancybox fancybox.iframe"
+               href="@Url.Content("~/ApiIntegracao/EmailTesteEnvio/" + BLL.Usuarios.GetEmpresaId())">
+                <i class="fa fa-play"></i> Testar E-mail
+            </a>
+            @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn-create" })
+        </div>
+    </div>
+    <div class="ponto-table-container">
+        <table class="ponto-table dataTable" id="table_configuracoes">
+            <thead>
+                <tr>
+                    <th>Descri&ccedil;&atilde;o</th>
+                    <th>Valor</th>
+                    <th style="width:140px">A&ccedil;&otilde;es</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="2" style="text-align:center;padding:24px;color:#64748b;">Nenhum registro encontrado</td></tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td width="100%">
+                            <strong>@item.Variavel</strong> @if (item.Editor) { <i class="fa fa-edit" style="color:#2563eb"></i> }
+                            <small>@item.Descricao</small>
+                        </td>
+                        <td nowrap>
+                            <div class="actions-cell">
+                                <a href="~/Configuracoes/Criar/@item.ConfiguracaoId" class="btn-alterar">Alterar</a>
+                                <a href="~/Configuracoes/Deletar/@item.ConfiguracaoId" class="btn-excluir">Excluir</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+@Scripts.Render("~/bundles/datatables/js")
+@Scripts.Render("~/bundles/datatablesBootstrap/js")
+<script>
+    $('.dataTable').dataTable({
+        pageLength: 50, paging: true, ordering: true, bLengthChange: true, bFilter: true, info: true,
+        language: {
+            sEmptyTable:"Nenhum registro encontrado", sInfo:"Mostrando de _START_ at&eacute; _END_ de _TOTAL_ registros",
+            sInfoEmpty:"Mostrando 0 até 0 de 0 registros", sLengthMenu:"_MENU_ resultados por página",
+            sZeroRecords:"Nenhum registro encontrado", sSearch:"Pesquisar ",
+            oPaginate:{ sNext:"Pr&oacute;ximo", sPrevious:"Anterior", sFirst:"Primeiro", sLast:"&Uacute;ltimo" }
+        }
+    });
+</script>
+}

@@ -1,0 +1,80 @@
+﻿@model Models.ContaTipo
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.ContaTipoId>0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Tipos de conta";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+@section Breadcrumb{
+    
+  <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span>@Html.ActionLink("Tipos de Conta", "Index", "ContaTipos")</li>
+}
+
+
+
+
+ <div class="cwell">
+        @using (Html.BeginForm("Criar", "ContaTipos", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+            if (Model.ContaTipoId > 0)
+            {
+            @Html.Hidden("ContaTipoId", Model.ContaTipoId);
+                                                          acao = "Alterar";
+            }
+
+     
+            <div class="control-group">
+                @Html.LabelFor(model => model.ContaTipoCd, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.ContaTipoCd)
+                    @Html.ValidationMessageFor(model => model.ContaTipoCd)
+                </div>
+            </div>
+            <div class="control-group">
+                @Html.LabelFor(model => model.ContaTipoNome, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.ContaTipoNome)
+                    @Html.ValidationMessageFor(model => model.ContaTipoNome)
+                </div>
+            </div>
+        
+    
+    
+      
+
+            <div class="form-actions">
+
+
+                <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+            </div>
+            
+        }
+     <div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+    </div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

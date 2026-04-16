@@ -1,0 +1,140 @@
+﻿@model Models.Configuracao
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.ConfiguracaoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Variável do Sistema";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Variáveis do Sistema", "Index", new { id = 0 })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "Configuracoes", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                       
+    @Html.ValidationSummary(true)
+
+                        if (Model.ConfiguracaoId > 0)
+                        {
+    @Html.Hidden("ConfiguracaoId", Model.ConfiguracaoId);
+
+                                                        acao = "Alterar";
+
+                                                        if (Model.EmpresaId > 0)
+                                                        {
+                                                  @Html.Hidden("EmpresaId", BLL.Usuarios.GetEmpresaId());
+                                                        }
+                                                        else
+                                                        {
+                                                   @Html.HiddenFor(model => model.EmpresaId);
+                                                        }
+
+                        }
+                        else
+                        {
+        @Html.Hidden("EmpresaId", BLL.Usuarios.GetEmpresaId());
+                        }
+    
+    
+    
+    
+       
+                        <div class="row-fluid">
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                @Html.LabelFor(model => model.Variavel)
+                                @Html.TextBoxFor(model => model.Variavel, new { @class = "form-control" })
+                            </div>
+                        
+                            
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Descrição</label>
+                                @Html.TextBoxFor(model => model.Descricao, new { @class = "  form-control " })
+                            </div>
+
+
+                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Valor</label>
+                                @Html.TextAreaFor(model => model.Valor, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <div class="checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.Editor) Habilitar Editor HTML <i class="fa fa-edit"></i>
+                                                </label>
+                                            </div></div>
+
+                        </div>
+         
+                        <br />
+
+                        <div class="row-fluid">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+@section Scripts {
+
+    @Styles.Render("~/redactor/redactor.css")
+    @Scripts.Render("~/redactor/redactor.min.js")
+
+    @if (Model.Editor)
+    {
+        <script type="text/javascript">
+            $(function () {
+                $('#Valor').redactor({
+                    focus: true,
+                    imageUpload: '@Url.Content("~/Redactor/ImageUpload")'
+                });
+            });
+        </script>    
+    }
+
+}

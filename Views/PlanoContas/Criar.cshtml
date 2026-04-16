@@ -1,0 +1,81 @@
+﻿@model Models.PlanoConta
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.PlanoContaId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Plano Conta";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+
+
+
+@section Breadcrumb{
+      <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+<li class="active"><span class="divider">/</span>    @Html.ActionLink("PlanoContas", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+        @using (Html.BeginForm("Criar", "PlanoContas", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+            if (Model.PlanoContaId > 0)
+            {
+            @Html.Hidden("PlanoContaId", Model.PlanoContaId);
+                                                          acao = "Alterar";
+            }
+       
+             
+     
+            <div class="control-group">
+                @Html.LabelFor(model => model.Nivel, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.Nivel)
+                    @Html.ValidationMessageFor(model => model.Nivel)
+                </div>
+            </div>
+     
+            <div class="control-group">
+                @Html.LabelFor(model => model.PlanoContaNome, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.PlanoContaNome)
+                    @Html.ValidationMessageFor(model => model.PlanoContaNome)
+                </div>
+            </div>
+        
+    
+      
+
+            <div class="form-actions">
+
+
+                <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+            </div>
+            
+        }
+    <div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+    </div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

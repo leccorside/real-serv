@@ -1,0 +1,311 @@
+﻿@{
+    int id = 0;
+    int ProjetoId = 0;
+    var currentId = ViewContext.RouteData.Values["id"] as string ?? "0";
+    var currentProjetoId = Request["ProjetoId"] as string ?? ")";
+    int.TryParse(currentId, out id);
+    int.TryParse(currentProjetoId, out ProjetoId);
+
+
+    var bll = new Bll.MedicoesRelatorios();
+    var bllMedicoesRelatoriosResumo = new Bll.MedicoesRelatoriosResumo();
+
+    var Model = bll.CarregaDadosMedicaoRelatorio(id, ProjetoId);
+
+    var listaIndices = bllMedicoesRelatoriosResumo.Listar(Model.MedicaoRelatorio.MedicaoRelatorioId);
+        
+}
+
+<div class="papel">
+
+    <legend>Dados da Obra</legend>
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                <label>Nome da Obra</label>
+            </div>
+            <div class="editor-field">
+                @Model.DadosProjeto.ProjetoNome
+            </div>
+        </div>
+         <div class="span3">
+            <div class="editor-label">
+                <label>Situação</label>
+            </div>
+            <div class="editor-field">
+                @Model.DadosProjeto.ProjetoStatusNome
+            </div>
+        </div>
+
+        <div class="span3">
+            <div class="editor-label">
+                <label>Data de início</label>
+            </div>
+            <div class="editor-field">
+                @Model.DadosProjeto.ProjetoDtIni.ToShortDateString()
+            </div>
+        </div>
+
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Data de fim</label>
+            </div>
+            <div class="editor-field ">
+                @Model.DadosProjeto.ProjetoDtFim.ToShortDateString()
+            </div>
+        </div>
+    </div>
+    <br />
+  
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Período Medição</label>
+            </div>
+            <div class="editor-field ">
+                @Convert.ToDateTime(Model.MedicaoRelatorio.MedicaoDtDe).ToShortDateString() até @Convert.ToDateTime(Model.MedicaoRelatorio.MedicaoDtAte).ToShortDateString()
+            </div>
+        </div>
+       
+         <div class="span3">
+            <div class="editor-label ">
+                <label>Horas Paradas</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.HorasParadas
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Horas Arrasto</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.HorasArrasto
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Horas Mudança Interna</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.HorasMudancaInterna
+            </div>
+        </div>
+
+
+    </div>
+    <br />
+    <div class="row-fluid">
+        
+
+          <div class="span3">
+            <div class="editor-label ">
+                <label>Qtd. CAPWAP</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.QtdCapWap
+            </div>
+        </div>
+
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Qtd. PDA</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.QtdPda
+            </div>
+        </div>
+
+         <div class="span3">
+            <div class="editor-label ">
+                <label>Qtd. Instalações</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.QtdInstalacao
+            </div>
+        </div>
+
+       <div class="span3">
+            <div class="editor-label ">
+                <label>Qtd. Alojamento/Refeição</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.QtdInstalacao
+            </div>
+        </div>
+
+
+       
+        
+    </div>
+    <br />
+
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Taxa CAPWAP</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.TaxaCAPWAP.ToString("c2")
+            </div>
+        </div>
+
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Taxa PDA</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.TaxaPDA.ToString("c2")
+            </div>
+        </div>
+
+         <div class="span3">
+            <div class="editor-label ">
+                <label>Total Instalações</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.TaxaInstalacao.ToString("c2")
+            </div>
+        </div>
+
+      <div class="span3">
+            <div class="editor-label ">
+                <label>Taxa Alojamento/Refeição</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.TaxaMoradiaAlimentacao.ToString("c2")
+            </div>
+        </div>
+    </div>
+    <br />
+
+
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Taxa Outros</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.TaxaOutros.ToString("c2")
+            </div>
+        </div>
+
+
+        <div class="span3">
+            <div class="editor-label ">
+                <label>Taxa Mudança Interna</label>
+            </div>
+            <div class="editor-field ">
+                @Model.MedicaoRelatorio.TaxaMudancaInterna.ToString("c2")
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <legend>Medição de @Convert.ToDateTime(Model.MedicaoRelatorio.MedicaoDtDe).ToShortDateString() até @Convert.ToDateTime(Model.MedicaoRelatorio.MedicaoDtAte).ToShortDateString()</legend>
+    <table class="table table-bordered table-striped table-condensed table-highlight">
+        <thead>
+            <tr>
+                <th>Seção</th>
+                <th>Comp. Med. (m)</th>
+                <th>Reaproveitamento</th>
+                <th>Soldas</th>
+                <th>Pré Furo (m)</th>
+                <th>Ponta Metálica</th>
+                <th>Suplemento</th>
+                <th>Total Suplemento</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ListaMedicaoRelatorioRegistro)
+            {
+                <tr>
+                    <td>@item.ProdutoNome</td>
+                    <td>@item.CompMed</td>
+                    <td>@item.Reap1</td>
+                    <td>@item.Soldas</td>
+                    <td>@item.PreFuro</td>
+                    <td>@item.PontaMetalica</td>
+                    <td>@item.Supl</td>
+                    <td>@item.SuplTotal</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <legend>Resumo</legend>
+    <table class="table table-bordered table-striped table-condensed table-highlight">
+        <thead>
+            <tr>
+                <th>Seção</th>
+                <th>Estimado</th>
+                <th>Executado (assinado)</th>
+                <th>Medido</th>
+                <th>Enviado</th>
+                <th>Saldo Enviados</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in listaIndices)
+            {
+                var saldo = item.TotalEnviado - item.TotalExecutadoAssinado;
+            <tr>
+                <td>@item.ProdutoSecaoNome</td>
+                <td>@item.TotalEstimado.ToString("N2")</td>
+                <td>@item.TotalExecutadoAssinado.ToString("N2")</td>
+                <td>@item.TotalMedido.ToString("N2")</td>
+                <td>@item.TotalEnviado.ToString("N2")</td>
+                <td>@saldo</td>
+            </tr>    
+            }
+        </tbody>
+    </table>
+
+    <div class="row-fluid">
+        <div class="span6">
+            @if (Model.MedicaoRelatorio.FiscalId == 0)
+            {
+                <blockquote>
+                    <p>Nome do Fiscal</p>
+                    <small>Data de Assinatura</small>
+                </blockquote>
+            }
+            else
+            {
+                <blockquote>
+                    <p>@Model.MedicaoRelatorio.FiscalNome</p>
+                    <small>@Model.MedicaoRelatorio.FiscalDtAssinatura</small>
+                </blockquote>
+            }
+        </div>
+        <div class="span6">
+            @if (Model.MedicaoRelatorio.EngenheiroId == 0)
+            {
+                <blockquote class="pull-right">
+                    <p>Nome do Engenheiro</p>
+                    <small>Data de Assinatura</small>
+                </blockquote>
+            }
+            else
+            {
+                <blockquote class="pull-right">
+                    <p>@Model.MedicaoRelatorio.EngenheiroNome</p>
+                    <small>@Model.MedicaoRelatorio.EngenheiroDtAssinatura</small>
+                </blockquote>
+            }
+        </div>
+    </div>
+
+
+    @if (Model.MedicaoRelatorio.MotivoCancelamentoId != null)
+    {
+        <div class="tag">
+            <img src="~/Content/images/cancelado.png" /><br />
+            @Model.MedicaoRelatorio.MotivoCancelamentoObservacoes
+        </div>
+     
+    }
+
+</div>
+
+

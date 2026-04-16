@@ -1,0 +1,201 @@
+﻿@model Models.PostoDeServico
+
+
+@{
+    var user = new BLL.Usuarios();
+
+
+    var acao = "Cadastrar";
+    if (Model.PostoDeServicoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Posto de Serviço";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Posto de Serviço", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="cwell">
+    @Html.Partial("~/Views/PostosDeServicos/_Navtabs.cshtml")
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+        if (Model.PostoDeServicoId > 0)
+        {
+        @Html.HiddenFor(model => model.PostoDeServicoId);
+        }
+        
+    
+        <div class="row-fluid">
+            <div class="span6">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PessoaId)
+                </div>
+                <div class="editor-field">
+                    @Html.DropDownList("PessoaId", (SelectList)ViewBag.ddlPessoas, "--Selecione--", new { @class = "chosen-select span12" })
+                    @Html.ValidationMessageFor(model => model.PessoaId)
+                </div>
+            </div>
+            <div class="span6">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoNome)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoNome, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.PostoDeServicoNome)
+                </div>
+            </div>
+        </div>
+        
+        
+
+        <a name="endereco"></a><legend>Endereço</legend>
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoCep)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoCep, new { @class = "input-small" }) <a href="#endereco" id="buscar-cep"><i class="icon-search"></i></a>
+                    <label id="loading" style="display: none"><small>Buscando...</small></label>
+                    <br />@Html.ValidationMessageFor(model => model.PostoDeServicoCep)
+                </div>
+            </div>
+            <div class="span6">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoEndereco)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoEndereco, new { @class = "span12" })
+                    <br />@Html.ValidationMessageFor(model => model.PostoDeServicoEndereco)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoNumero)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoNumero, new { @class = "span12" })
+                    <br />@Html.ValidationMessageFor(model => model.PostoDeServicoNumero)
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoComplemento)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoComplemento, new { @class = "span12" })
+                    <br />@Html.ValidationMessageFor(model => model.PostoDeServicoComplemento)
+                </div>
+            </div>
+            <div class="span4">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoBairro)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoBairro, new { @class = "span12" })
+                    <br />@Html.ValidationMessageFor(model => model.PostoDeServicoBairro)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoCidade)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoCidade, new { @class = "span12" })
+                    <br />@Html.ValidationMessageFor(model => model.PostoDeServicoCidade)
+                </div>
+            </div>
+            <div class="span2">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoEstado)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoEstado, new { @class = "span12" })
+                    <br />@Html.ValidationMessageFor(model => model.PostoDeServicoEstado)
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.PostoDeServicoObservacao)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.PostoDeServicoObservacao, new { @class = "span12" })
+                    @Html.ValidationMessageFor(model => model.PostoDeServicoObservacao)
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="form-actions">
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+        </div>
+    
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.cep-1.0.min.js"></script>
+    <script>
+
+        $("#PostoDeServicoCep").mask("99999-999");
+
+        $("input[data-val-length-max]").each(function (index, element) {
+            var length = parseInt($(this).attr("data-val-length-max"));
+            $(this).prop("maxlength", length);
+        });
+
+
+
+        jQuery(function () {
+
+            $('#buscar-cep').click(function () {
+                $('#PostoDeServicoCep').cep({
+                    load: function () {
+                        //Exibe a div loading
+                        $('#loading').show();
+                    },
+                    complete: function () {
+                        //Esconde a div loading
+                        $('#loading').hide();
+                    },
+                    error: function (msg) {
+                        //Exibe em alert a mensagem de erro retornada
+                        alert(msg);
+                    },
+                    success: function (data) {
+                        $('#PostoDeServicoEndereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                        $('#PostoDeServicoBairro').val(data.bairro);
+                        $('#PostoDeServicoEstado').val(data.estado);
+                        $('#PostoDeServicoCidade').val(data.cidade);
+                    }
+                });
+            });
+
+        });
+
+    </script>
+}

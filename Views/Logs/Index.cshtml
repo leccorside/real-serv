@@ -1,0 +1,138 @@
+﻿@model IEnumerable<Models.Log>
+
+
+
+@{
+    ViewBag.Title = "Logs";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+
+        
+
+
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+    
+                    
+                        
+                        
+                    <div class="table-responsive">
+                        
+
+
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Controle)
+                    </th>
+                    <th data-hide="phone,tablet">
+                        @Html.DisplayNameFor(model => model.Acao)
+                    </th>
+                    <th data-hide="phone,tablet">
+                        @Html.DisplayNameFor(model => model.Historico)
+                    </th>
+                    <th data-hide="phone,tablet">
+                        @Html.DisplayNameFor(model => model.EmpresaId)
+                    </th>
+                    <th data-hide="phone,tablet">
+                        @Html.DisplayNameFor(model => model.RegIdInicio)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegDtInicio)
+                    </th>
+
+                </tr>
+            </thead>
+
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><small>
+                        @Html.DisplayFor(modelItem => item.Controle)</small>
+                    </td>
+                    <td><small>
+                        @Html.DisplayFor(modelItem => item.Acao)</small>
+                    </td>
+                    <td>
+                        <small>
+                            @item.Historico.Replace(",", Environment.NewLine)
+                        </small>
+                    </td>
+                    <td><small>
+                        @Html.DisplayFor(modelItem => item.EmpresaId)</small>
+                    </td>
+                    <td><small>
+                        @Html.DisplayFor(modelItem => item.RegIdInicio)</small>
+                    </td>
+                    <td><small>
+                        @Html.DisplayFor(modelItem => item.RegDtInicio)</small>
+                    </td>
+
+                </tr>
+            }
+
+        </table>
+                    </div>
+                        
+                    
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

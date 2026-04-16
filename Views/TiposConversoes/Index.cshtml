@@ -1,0 +1,84 @@
+﻿@model PetaPoco.Page<Models.TipoConversao>
+
+@{
+    ViewBag.Title = "Tipos de Conversões";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+    
+    
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+                            </div>
+                            <div class="col-lg-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+                                    <th>#</th>
+                                    <th>Nome</th>
+                                    <th data-hide="phone,tablet">Alterar / Excluir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.Items)
+                                {
+                                  
+                                    
+                                    <tr>
+                                        <td nowrap>@item.TipoConversaoId</td>
+                                        <td>@item.TipoConversaoNome</td>
+                                        <td nowrap>
+
+                                            @Html.ActionLink("Alterar", "Criar", new { id = item.TipoConversaoId }, new { @class = "btn btn-outline btn-primary btn-xs" })&nbsp;
+                                    @Html.ActionLink("Excluir", "Deletar", new { id = item.TipoConversaoId }, new { @class = "btn btn-outline btn-danger btn-xs" })
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+services:
+  realserv_app:
+    image: mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2022
+    container_name: realserv_app_container
+
+    environment:
+      APP_CONNECTION_STRING: "Server=host.docker.internal,1433;Database=gruporealserv;User Id=sa;Password=YourSecurePassword123!@#"
+      APP_ENV: "prod"
+
+    ports:
+      - "8085:80"
+      - "8445:443"
+
+    volumes:
+      - type: bind
+        source: .\Logs
+        target: C:\inetpub\wwwroot\AppLogs
+
+      - type: bind
+        source: .
+        target: C:\inetpub\wwwroot
+
+    networks:
+      - realserv_isolated_net
+
+    restart: always
+
+networks:
+  realserv_isolated_net:
+    name: realserv_isolated_net_v1
+    driver: nat

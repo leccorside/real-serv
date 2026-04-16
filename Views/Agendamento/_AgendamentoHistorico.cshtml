@@ -1,0 +1,14 @@
+﻿@model IEnumerable<Models.AgendamentoHistorico>
+
+
+<div class="row-fluid">
+    <div class="sapn12">
+        <label><i class="fa fa-clock-o"></i>Histórico</label>
+        <ul style="font-size: 10px">
+            @foreach (var item in Model)
+            {
+                <li>@item.RegDtInicio - @item.AgendamentoObservacoes por <strong>@item.UsuarioNome</strong></li>
+            }
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,373 @@
+﻿@model Models.Projeto
+
+@{
+    ViewBag.Title = "Criar Projetos";
+}
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Projetos", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+
+    <a name="endereco"></a><legend>Dados do Cliente</legend>
+    <!-- Button to trigger modal -->
+
+    <div class="row-fluid">
+        <div class="span12">
+            <label>Cliente</label>
+            <div class="input-append">
+
+                <button onclick="$('#myModal').modal('show')" role="button" class="btn" data-toggle="modal"><i class="icon-search"></i>Selecionar Cliente</button>
+                <input class="span12" id="appendedInputButton" type="text" disabled="disabled">
+            </div>
+            <br />
+
+            <div class="input-append">
+
+                <button onclick="$('#myModalEdifUnid').modal('show')" role="button" class="btn" data-toggle="modal"><i class="icon-search"></i>Selecionar Edifício/Unidade</button>
+                <input class="span12" id="appendedInputButton" type="text" disabled="disabled">
+            </div>
+        </div>
+
+
+    </div>
+
+    <br />
+    <a name="endereco"></a><legend>Descrição / Situação</legend>
+    <div class="row-fluid">
+        <div class="span12">
+            <label>Nome do Projeto</label>
+            @Html.TextBoxFor(model => model.ProjetoNome)
+        </div>
+    </div><br />
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Situação</label>
+            <select class="chosen-select">
+                <option>Andamento</option>
+                <option>Em análise</option>
+                <option>Outros..</option>
+
+            </select>
+
+        </div>
+        <div class="span4">
+            <label>Responsáveis RA5</label>
+            <select class="chosen-select" name="interessado" id="interessado">
+                @for (int i = 0; i < 20; i++)
+                {
+
+                    <option value="@i">Usuário @i</option>
+                }
+            </select>
+
+
+
+        </div>
+        <div class="span4">
+            <label>Responsáveis Cliente</label>
+            <select class="chosen-select" name="interessado" id="interessado">
+                @for (int i = 0; i < 20; i++)
+                {
+
+                    <option value="@i">Cliente @i</option>
+                }
+            </select>
+
+
+
+        </div>
+    </div><br />
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Identificação no Cliente</label>
+            <select class="chosen-select">
+                <option>CCO</option>
+                <option>ID de Projeto</option>
+                <option>Outros..</option>
+
+            </select>
+
+        </div>
+        <div class="span4">
+            <label>CCO</label>
+            <input type="text" class="input-small" />
+
+
+
+        </div>
+        <div class="span4">
+            <label>PCC</label>
+            <input type="text" class="input-small" />
+
+
+
+
+        </div>
+    </div>
+    <br />
+
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                <!-- Title with experience details. -->
+                <legend><i class="icon-book"></i>Biblioteca Virtual</legend>
+            </a>
+        </div>
+        <div style="height: auto;" id="collapseOne" class="accordion-body in collapse">
+            <div class="accordion-inner" style="min-height: 300px;">
+
+                <div class="row-fluid">
+                    <div class="span3">
+                        <label>Tipo</label><select class="chosen-select">
+                            <option>Planta Baixa</option>
+                            <option>Planta padrão</option>
+                            <option>Contrato</option>
+
+                        </select>
+                    </div>
+                    <div class="span9">
+                        <label>Arquivo</label>
+                        <input type="file" class="btn-link">
+                        <button class="btn " type="submit" name="submitButton" value="Upload"><i class="icon-upload"></i>Upload</button>
+                    </div>
+                </div>
+
+                <br />
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Tipo</th>
+                            <th>Arquivo</th>
+                            <th>Versão</th>
+                            <th>Usuário</th>
+                            <th>Data de Início</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            <tr>
+                                <td nowrap><a href="#" class="btn btn-inverse"><i class="icon-download "></i>Download</a></td>
+                                <td width="100%">Planta Baixa @i</td>
+                                <td nowrap>Nome do arquivo @(i + 10)</td>
+                                <td nowrap>1.@i</td>
+                                <td nowrap>Usuário @(i + 123)</td>
+                                <td nowrap>@DateTime.Now.AddDays(i).ToShortDateString()</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Micro blog -->
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse2">
+                <!-- Title with experience details. -->
+                <legend><i class="icon-comment"></i>Micro Blog</legend>
+            </a>
+        </div>
+        <div style="height: auto;" id="collapse2" class="accordion-body in collapse">
+            <div class="accordion-inner" style="min-height: 300px;">
+
+                <div class="row-fluid">
+
+
+
+                    <div class="span3">
+                        <label>Tipo</label><select class="chosen-select">
+                            <option>Comentário</option>
+                            <option>Ata de reunião</option>
+                            <option>Pendência</option>
+
+                        </select>
+                    </div>
+
+                    <div class="span3">
+                        <label>Descrição</label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="span3">
+                        <label>Interessados</label>
+                        <select data-placeholder="Selecione os interessados..." class="chosen-select" name="observadores" id="observadores" multiple>
+                            @for (int i = 0; i < 20; i++)
+                            {
+
+                                <option value="@i">Interessado @i</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="span3">
+                        <label><i class="icon-calendar"></i>Lembrete</label>
+                        <div class="input-append">
+                            <input class="datepicker input-small" id="appendedInputButton" type="text">
+                            <button class="btn" type="button">Gravar</button>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+                <br />
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Interessados</th>
+                            <th>Lembrete</th>
+                            <th>Usuário</th>
+                            <th>Data de Cadastro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            <tr>
+
+                                <td nowrap>Comentário</td>
+                                <td width="100%">Suco de cevadiss, é um leite divinis, qui tem lupuliz, matis, aguis e fermentis.</td>
+                                <td>Interessado1, Interessado2, Interessado2</td>
+                                <td nowrap><small>@DateTime.Now.AddDays(i + 30).ToShortDateString()</small></td>
+                                <td nowrap>Usuário @(i + 123)</td>
+                                <td nowrap>@DateTime.Now.AddDays(i).ToShortDateString()</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-actions">
+
+
+        <input type="submit" value="Salvar" class="btn btn-primary  btn-large" />
+
+
+
+
+
+    </div>
+
+
+    <div>
+        <a href="@Url.Content("~/Projetos/Index")">Voltar</a>
+    </div>
+
+</div>
+
+<!-- Modal Pesquisa Edifício/Unidade-->
+<div id="myModalEdifUnid" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <legend id="myModalLabel">Pesquisar Edifício/Unidade</legend>
+    </div>
+    <div class="modal-body">
+
+        <div class="input-append">
+            <input class="span4" id="appendedInputButton" type="text" placeholder="Nome do Edifício/Unidade...">
+            <button class="btn" type="button">Pesquisar</button>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Nro.</th>
+                    <th>Nome</th>
+                    <th>Referência</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 5; i++)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>Edif/Unidade @i</td>
+                        <td>@(i + 393232)</td>
+                        <td><a href="#" class="btn btn-primary"><i class="icon-ok"></i></a></td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+    </div>
+</div>
+
+
+<!-- Modal Pesquisa Cliente-->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <legend id="myModalLabel">Pesquisar Clientes</legend>
+    </div>
+    <div class="modal-body">
+
+        <div class="input-append">
+            <input class="span4" id="appendedInputButton" type="text" placeholder="Nome do cliente...">
+            <button class="btn" type="button">Pesquisar</button>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Nro.</th>
+                    <th>Nome</th>
+                    <th>Documento</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 5; i++)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>Cliente @i</td>
+                        <td>@(i + 393232)</td>
+                        <td><a href="#" class="btn btn-primary"><i class="icon-ok"></i></a></td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Fechar</button>
+    </div>
+</div>

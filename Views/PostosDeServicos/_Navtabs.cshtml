@@ -1,0 +1,42 @@
+﻿@model Models.PostoDeServico
+
+
+@{
+    
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    
+}
+
+<div class="hpanel">
+    <div class="panel-body">
+        <h2 class="font-light m-b-xs">Posto de serviço: @Model.PostoDeServicoNome</h2>
+    </div>
+</div>
+
+
+<ul class="nav nav-tabs">
+    <li class="@(currentAction == "criar" ? " active " : "")"><a href="~/PostosDeServicos/Criar/@Model.PostoDeServicoId">Dados</a></li>
+    @if (Model.PostoDeServicoId > 0)
+    {
+        <li class="@(currentAction == "servicos" || currentAction.IndexOf("servicos") >= 0 ? " active " : "")"><a href="~/PostosDeServicos/Servicos/@Model.PostoDeServicoId">Serviços</a></li>
+        <li class="@(currentAction == "produtos" || currentAction.IndexOf("produtos") >= 0 ? " active " : "")"><a href="~/PostosDeServicos/Produtos/@Model.PostoDeServicoId">Produtos</a></li>
+        <li class="@(currentAction == "pessoas" || currentAction.IndexOf("pessoas") >= 0 ? " active " : "")"><a href="~/PostosDeServicos/Pessoas/@Model.PostoDeServicoId">@Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</a></li>
+        <li class="@(currentAction == "interessados" || currentAction.IndexOf("interessados") >= 0 ? " active " : "")"><a href="~/PostosDeServicos/Interessados/@Model.PostoDeServicoId">@Html.Raw(BLL.Usuarios.GetEntidade4())</a></li>
+        <li class="@(currentAction == "escala" || currentAction.IndexOf("escala") >= 0 ? " active " : "")"><a href="~/PostosDeServicos/Escalas/@Model.PostoDeServicoId">Escalas</a></li>
+    }
+    else
+    {
+        <li class="muted"><a href="#" class="muted">Serviços</a></li>
+        <li class="muted"><a href="#" class="muted">Produtos</a></li>
+        <li class="muted"><a href="#" class="muted">@Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</a></li>
+        <li class="muted"><a href="#" class="muted">@Html.Raw(BLL.Usuarios.GetEntidade4())</a></li>
+        <li class="muted"><a href="#" class="muted">Escalas</a></li>
+        
+        
+        
+    }
+</ul>
+

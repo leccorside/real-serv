@@ -1,0 +1,99 @@
+﻿@model Models.AgendamentoPresencaAlterar
+
+@{
+    ViewBag.Title = "Alterar Lista Presença";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    var bllagendamento = new BLL.Agendamentos();
+
+    var agendamento = bllagendamento.Carregar(Model.AgendamentoId);
+
+    var possuiDisponibilidade = bllagendamento.PossuiDisponibilidadeSala(agendamento);
+    
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>  <a href="@Url.Content("~/Agendamento/ListaPresenca/"+Model.AgendamentoId)">Lista de Presença</a></li>
+}
+
+
+@if (possuiDisponibilidade)
+{
+    <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <h4>Ok!</h4>Essa sala ainda possui disponibilidade!
+          </div>
+}
+else
+{
+    <div class="alert alert-block">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <h4>Atenção!</h4>Essa sala já está com ocupação máxima!
+          </div>
+}
+
+
+
+<div class="cwell">
+
+    <div class="row-fluid">
+        <div class="span12">
+            @using (Html.BeginForm())
+            {
+                @Html.Hidden("AgendamentoId", Model.AgendamentoId);
+                <label>@BLL.Usuarios.GetEntidadeCliente()</label>
+                @Html.DropDownListFor(model => model.PessoaID, (SelectList)Model.ListaClientes, "--Selecione--", new { @class = "chosen-select " });
+           
+
+
+            <input type="submit" value="Incluir" class="btn btn-primary" />
+            }
+
+        </div>
+
+    </div>
+
+    <div class="row-fluid">
+        <div class="span12">
+            <table class="table table-bordered table-striped">
+                <caption>@BLL.Usuarios.GetEntidadeCliente() que estão na lista de presença</caption>
+                <tr>
+                    <th width="100%">Nome
+                    </th>
+                    
+                    <th>Telefone</th>
+                    <th></th>
+                    <th>Excluir</th>
+                </tr>
+
+                @foreach (var item in Model.ListaPresenca)
+                {
+                    <tr>
+                        <td width="100%">
+                            @Html.DisplayFor(modelItem => item.Nome)
+                        </td>
+                        
+                        <td nowrap>@Html.DisplayFor(modelItem => item.Telefone)</td>
+                        <td nowrap>@item.Presenca</td>
+                        <td nowrap>
+                            @if (item.Presenca=="P"||item.Presenca=="F")
+                            {
+                            <a href="#" class="btn btn-mini disabled" onclick="return confirm('Para apagar esse registro, cancele o agendamento?')" >Excluir</a>
+                            }
+                            else
+                            {
+                            <a href="~/Agendamento/DeletarPessoaListaPresenca/@item.AgendamentoID/?key=@item.AgendamentoPessoaID" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir @item.NomeCompleto do agendamento?')" >Excluir</a>    
+                            }
+                            
+                            </td>
+                    </tr>
+                }
+
+
+            </table>
+        </div>
+          <a href="@Url.Content("~/Agendamento/ListaPresenca/"+Model.AgendamentoId)">Voltar</a>
+    </div>
+
+
+</div>

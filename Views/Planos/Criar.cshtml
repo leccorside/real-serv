@@ -1,0 +1,122 @@
+﻿@model Models.Plano
+
+@{
+   // ViewBag.Title = "Criar";
+   // Layout = "~/Views/Shared/_desenv.cshtml";
+    var user = new BLL.Usuarios();
+
+    System.Reflection.PropertyInfo[] pis = Model.GetType().GetProperties();
+    
+    var acao = "Matricular";
+
+    if (Model.PlanoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+   // var alunos = ViewBag.alunos;
+    
+}
+
+@{
+    ViewBag.Title = acao ;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+@section Breadcrumb{
+    
+}
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        <div class="row-fluid">
+            <div class="span2">@BLL.Usuarios.GetEntidadeCliente():</div>
+            @Html.DropDownList("PessoaId", (SelectList)ViewBag.alunos, "--Selecione--", new { @class = "chosen-select " })
+        </div>
+                <br/>
+        <div class="row-fluid">
+            <div class="span2">Serviço:</div>
+            @Html.DropDownList("ServicoId", (SelectList)ViewBag.servicos, "--Selecione--", new { @class = "chosen-select " })
+        </div>
+                <br/>
+        <div class="row-fluid">
+            <div class="span2">Tipo de Plano:</div>
+            @Html.DropDownList("PlanoTipoId", (SelectList)ViewBag.planotipos, "--Selecione--" , new { @class = "chosen-select ", @onchange = "Select(this.value);" })
+        </div>
+        <br/>
+        <div class="row-fluid" id="credito">
+            <div class="span2">
+                Quantidade de Créditos:
+                
+            </div>
+            @Html.EditorFor(model => model.CreditoAtual)
+        </div>
+
+        <div class="row-fluid" id="plano">
+            <div class="span2">
+                Data de Vencimento:
+                
+            </div>
+            @Html.TextBox("VencimentoPlanoData", @String.Format("{0:dd/MM/yyyy}", ""), new { @class = "datepicker", value = @DateTime.Now })
+        </div>
+                <br/>
+        
+                <div class="row-fluid">
+            <div class="span2">
+
+                <input type="submit" value="@acao" class="btn btn-primary btn-large" tabindex=10 />
+
+            </div>
+        </div>
+
+    }
+
+    <div>
+
+        @Html.ActionLink("Voltar", "Index", new { })
+
+
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function Select(jtipo) {
+
+             //alert(jtipo);
+
+            if (jtipo == 2) {
+                $("#plano").slideUp();
+                $("#credito").slideDown();
+
+
+            }
+
+            if (jtipo== 1 ) {
+
+                $("#plano").slideDown();
+                $("#credito").slideUp();
+
+            }
+
+            if (jtipo == 'ini') {
+
+                $("#plano").slideUp();
+                $("#credito").slideUp();
+
+            }
+
+
+        }
+
+
+
+        Select('ini');
+
+    </script>
+}
+

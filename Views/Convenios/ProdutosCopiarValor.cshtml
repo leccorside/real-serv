@@ -1,0 +1,111 @@
+﻿@model Models.ConvenioValoresCopy
+
+
+@{
+    
+    ViewBag.Title = "ProdutosCopiarValor";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    var bllConvenios = new BLL.Convenios();
+    var convenio = bllConvenios.Carregar(Model.ConvenioIdDestino);
+
+}
+
+@section Styles{
+    @Styles.Render("~/Assets/css/chosen.css")
+    <link href="~/Assets/plugins/bootstrap-datepicker-1.4.0-dist/css/bootstrap-datepicker.css" rel="stylesheet" />
+
+}
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <h3>@convenio.ConvenioNome @Model.ConvenioIdDestino </h3>
+                    
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.ConvenioIdDestino)
+                        <div class="row">
+                            <legend>Copiar valor de outro convênio</legend>
+                            <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                <label>@BLL.Usuarios.GetEntidadeFilialPlural()</label><br />
+                                @Html.DropDownListFor(model => model.FililIdOrigem, (SelectList)ViewBag.ddlFiliais, new { @class = "chosen-select form-control " })
+                            </div>
+                            <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                <label>Convênio</label><br />
+                                <select data-placeholder="Selecione um convênio..." class="chosen-select form-control " data-val="true" data-val-required="O campo Convênio é obrigatório" id="ConvenioIdOrigem" name="ConvenioIdOrigem"></select>
+
+                            </div>
+                            <div class="col-form col-lg-12">
+                                <button type="submit" class="btn btn-primary">Atualizar</button>
+                            </div>
+
+                        </div>    
+                    }
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br />
+
+
+</div>
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/Assets/plugins/bootstrap-datepicker-1.4.0-dist/js/bootstrap-datepicker.js")
+    @Scripts.Render("~/Assets/plugins/bootstrap-datepicker-1.4.0-dist/locales/bootstrap-datepicker.pt-BR.min.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/jquery.maskedinput.js")
+    @Scripts.Render("~/Assets/js/jquery.maskMoney.js")
+    @Scripts.Render("~/Assets/js/custom.js?v=1")
+
+
+    <script>
+
+
+        $('#FililIdOrigem').on('change', function () {
+            carregaPlanos($(this).val(), null);
+        });
+
+
+        function carregaPlanos(FilialId, ConvenioId) {
+
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetConveniosPorFilial/")", { id: FilialId }, function (result) {
+                data = $.map(result, function (item, a) {
+                    var select = (ConvenioId == item.Value) ? " selected='selected' " : "";
+                    return "<option value=" + item.Value + " " + select + ">" + item.Text + "</option>";
+                });
+                $("#ConvenioIdOrigem").empty();
+
+                $("#ConvenioIdOrigem").append(data.join(""));
+
+                $("#ConvenioIdOrigem").val(ConvenioId).trigger('chosen:updated');
+            });
+
+        }
+    </script>
+}
+

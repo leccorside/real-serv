@@ -1,0 +1,92 @@
+﻿@model Models.OcorrenciaView
+
+@{
+    ViewBag.Title = "Ocorrências";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@section Styles {
+
+}
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Obras", "Index")</li>
+
+}
+
+@Html.Partial("~/Views/Projetos/_Navtabs.cshtml", Model.DadosProjeto)
+
+
+
+
+@using (Html.BeginForm("Ocorrencias", "Projetos", FormMethod.Post))
+{
+    @Html.ValidationSummary(true)
+    
+    @Html.Hidden("Ocorrencia.OcorrenciaTipo", "1");
+    @Html.HiddenFor(model => model.Ocorrencia.ProjetoId);
+  
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="control-group">
+                <div class="input-append">
+                    @Html.TextBoxFor(m => m.Ocorrencia.OcorrenciaDescricao, new { @class = "span10", @placeholder = "Digite aqui" })
+                    <button id="btnAdicionar" type="submit" class="btn"><i class="icon-plus"></i>Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+}
+
+<div class="row-fluid">
+    <div class="span12">
+        <a href="~/Projetos/OcorrenciasImprimir/@Model.DadosProjeto.ProjetoId"  class="btn btn-mini"><i class="icon-print"></i>Imprimir</a>
+    </div>
+</div>
+
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaOcorrencias)
+        {
+            <tr>
+                <td nowrap><i class="@(item.OcorrenciaTipo == 0 ? "fa fa-android" : "fa fa-user")"></i> - @item.RegDtInicio - @item.UsuarioNome</td>
+                <td width="100%">@item.OcorrenciaDescricao</td>
+                <td nowrap>
+                    @if (item.OcorrenciaTipo == 1)
+                    {
+                        <a href="~/Projetos/OcorrenciasDeletar/@Model.DadosProjeto.ProjetoId?pid=@item.OcorrenciaId" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir esse registro?')"><i class="fa fa-times"></i>Excluir</a>    
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+    <script>
+        $("#ProjetoProduto\\.ProdutoId").focus();
+    </script>
+
+}

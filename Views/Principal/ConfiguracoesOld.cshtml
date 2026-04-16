@@ -1,0 +1,244 @@
+﻿@{
+    ViewBag.Title = "Configurações";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = new BLL.Usuarios();
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+
+<div class="color-blocks">
+    <div class="row-fluid">
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                <div class="col-l b-black">
+                    <a href="@Url.Content("~/Principal/Index/")">
+                        <i class="icon-home"></i>
+                        Home
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+
+
+    </div>
+    <br />
+    <div class="row-fluid">
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                @if (user.ControleAcesso("index", "contas"))
+                {
+                    <div class="col-l b-green">
+                        <a href="@Url.Content("~/Contas/Index/")">
+                            <i class="icon-credit-card"></i>
+                            Contas bancárias
+                        </a>
+                    </div> }
+
+                <!-- Left column with color background -->
+                @if (user.ControleAcesso("index", "contatipos"))
+                {
+                    <div class="col-r b-orange">
+                        <!-- Link -->
+                        <a href="@Url.Content("~/ContaTipos/Index/")">
+                            <!-- Icon -->
+                            <i class="icon-tag"></i>
+                            <!-- Text -->
+                            Tipos de contas
+                        </a>
+                    </div>}
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="c-block">
+
+
+                @if (user.ControleAcesso("index", "servicos"))
+                {
+                    <div class="col-l b-blue">
+                        <a href="@Url.Content("~/Servicos/Index/")">
+                            <i class="icon-tasks"></i>
+                            Serviços
+                        </a>
+                    </div>
+                }
+
+                @if (user.ControleAcesso("index", "categorias"))
+                {
+                    <div class="col-r b-lblue">
+
+                        <a href="@Url.Content("~/Categorias/Index/")">
+                            <i class="icon-sitemap"></i>
+                            Categorias
+                        </a>
+                    </div>}
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+
+    </div>
+    <br />
+    <div class="row-fluid">
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                @if (user.ControleAcesso("index", "salas"))
+                {
+                    <div class="col-l b-purple">
+                        <a href="@Url.Content("~/Salas/Index/")">
+                            <i class="icon-pushpin"></i>
+                            Salas
+                        </a>
+                    </div>}
+
+                @if (user.ControleAcesso("index", "pagamentotipos"))
+                {
+                    <div class="col-r b-red">
+                        <a href="@Url.Content("~/PagamentoTipos/Index/")">
+                            <i class=" icon-qrcode"></i>
+                            Tipos de pagamento
+                        </a>
+                    </div>}
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="c-block">
+
+
+                @if (user.ControleAcesso("index", "midias"))
+                {
+                    <div class="col-l b-lblue">
+                        <a href="@Url.Content("~/Midias/Index/")">
+                            <i class="icon-comments"></i>
+                            Mídias
+                        </a>
+                    </div>}
+
+                @if (user.ControleAcesso("index", "usuarios"))
+                {
+                    <div class="col-r b-lblue">
+
+                        <a href="@Url.Content("~/Usuarios/Index/")">
+                            <i class="icon-group"></i>
+                            Usuários
+                        </a>
+                    </div>}
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+
+    </div>
+    <br />
+    <div class="row-fluid">
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                @if (user.ControleAcesso("index", "turmas"))
+                {
+                    <div class="col-l b-orange">
+                        <a href="@Url.Content("~/Turmas/Index/0/")">
+                            <i class="icon-group"></i>
+                            Turmas
+                        </a>
+                    </div>}
+
+                @if (user.ControleAcesso("index", "planocontas"))
+                {
+                    <div class="col-r b-green">
+
+                        <a href="@Url.Content("~/PlanoContas/Index/")">
+                            <i class="icon-align-left"></i>
+                            Plano de Contas
+                        </a>
+                    </div>}
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="c-block">
+
+
+                @if (user.ControleAcesso("index", "tiposanexos"))
+                {
+                    <div class="col-l b-purple">
+                        <a href="@Url.Content("~/TiposAnexos/Index/")">
+                            <i class="icon-file"></i>
+                            Tipos de Anexos
+                        </a>
+                    </div>}
+
+                
+
+                 @if (user.ControleAcesso("index", "filiais"))
+                {
+                    <div class="col-r b-green">
+
+                        <a href="@Url.Content("~/Filiais/Index/")">
+                            <i class="icon-sitemap"></i>
+                            Filiais
+                        </a>
+                    </div>}
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+    </div>
+</div>

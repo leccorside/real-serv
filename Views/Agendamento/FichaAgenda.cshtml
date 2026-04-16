@@ -1,0 +1,254 @@
+﻿@model Models.Agendamento
+
+@{
+    ViewBag.Title = "Criar";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var idx = 0;
+
+    var agenda_presenca_cancelar = user.ControleAcesso("agenda_presenca_cancelar", "Regras");
+
+    var agenda_alterar_lista = user.ControleAcesso("agenda_alterar_lista", "Regras");
+
+    var agenda_alterar_agendamento = user.ControleAcesso("agenda_alterar_agendamento", "Regras");
+
+    var Agendamento_AgendamentoSeguro = user.ControleAcesso("AgendamentoSeguro", "Agendamento");
+}
+
+
+<div class="cwell">
+
+
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="row-fluid">
+                <div class="span3">
+                    <label>@Html.LabelFor(model => model.Inicio)</label>
+                    @String.Format("{0:dd/MM/yyyy}", Model.Inicio) <a href="@Url.Content("~/Agendamento/Alterar/" + Model.AgendamentoId)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox"><i class="fa fa-edit"></i></a>
+                </div>
+                <div class="span9">
+                    <label>Horário</label>
+                    @String.Format("{0:t}", Model.Inicio) até @String.Format("{0:t}", Model.Fim) <a href="@Url.Content("~/Agendamento/Alterar/" + Model.AgendamentoId)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox"><i class="fa fa-edit"></i></a>
+                </div>
+            </div>
+            <br />
+            <div class="row-fluid">
+                <div class="span3">
+                    <label>@Html.LabelFor(model => model.ServicoId)</label>
+                    @try
+                    {
+                        @Model.ServicoTipos.Where(x => x.Value.ToString() == Model.ServicoId.ToString()).FirstOrDefault().Text
+                    }
+                    catch (Exception ex)
+                    {
+                        var bllservico = new BLL.Servicos();
+                        var servico = bllservico.Carregar(Convert.ToInt16(Model.ServicoId));
+                        if (servico != null)
+                        {
+                        <p class="text-error">@servico.ServicoNome (n/d)</p>    
+                        }
+                        else
+                        {
+                        <p class="text-error">Serviço não informado</p>        
+                        }
+                        
+                    } <a href="@Url.Content("~/Agendamento/Alterar/" + Model.AgendamentoId)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox"><i class="fa fa-edit"></i></a>
+                </div>
+                <div class="span9">
+                    <label>@BLL.Usuarios.GetEntidadeFuncionarioSingular()</label>
+                    @Model.FuncionarioList.Where(x => x.Value == Model.PessoaID.ToString()).First().Text <a href="@Url.Content("~/Agendamento/Alterar/" + Model.AgendamentoId)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox"><i class="fa fa-edit"></i></a>
+                </div>
+
+
+            </div>
+
+
+        </div>
+        <div class="span6">
+            <div class="row-fluid">
+                <div class="span12">
+                    <label>Observações:</label>
+                    @Html.Raw(Model.ObservacoesView)
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+        @Html.Partial("~/Views/Agendamento/_AgendamentoHistorico.cshtml", Model.ListAgendamentoHistorico)
+
+    <br />
+
+
+
+
+    <div class="row-fluid">
+
+        <div class="span12">
+
+            <table class="footable table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>@BLL.Usuarios.GetEntidadeClienteSingular()</th>
+                        <th data-hide="phone,tablet">Status</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.AgendamentoPessoa)
+                    {
+                        using (Html.BeginForm("FichaAgenda","Agendamento"))
+                        {
+                                
+                        @Html.Hidden("AgendamentoId", Model.AgendamentoId);
+                        @Html.Hidden("AgendamentoPessoaID", item.AgendamentoPessoaID);
+                            
+                        <tr>
+                            <td style="width: auto"><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox"><i class="fa fa-search"></i></a>@item.Nome<br />@item.Email<br />@item.Celular<br />@item.Telefone</td>
+                            <td data-hide="phone,tablet" style="display: table-cell">
+
+                                @if (item.RegDtPresenca != null)
+                                {
+                                    <label>Registrado por</label>
+                                    <p>@item.UsuarioNome em @item.RegDtPresenca</p>
+                                        
+                                }
+
+                                <label>Status</label>
+                                <select class="chosen-select" id="Presenca" name="Presenca">
+                                    <option value="">--Selecione o status--</option>
+                                    <option value="P" @(item.Presenca == "P" ? " selected " : "") >P-Presente</option>
+                                    <option value="F" @(item.Presenca == "F" ? " selected " : "") >F-Faltou</option>
+                                    <option value="C" @(item.Presenca == "C" ? " selected " : "") >C-Cancelou</option>
+                                </select>
+                                <br />
+                                <label>Observações</label>
+                                <textarea class="span12" rows="4" id="Observacao" name="Observacao">@item.Observacao</textarea><br />
+
+                                @if (Agendamento_AgendamentoSeguro)
+                                {
+                                    @Html.Partial("~/Views/Usuarios/_ConfirmLogin.cshtml")            
+                                }
+        
+
+                                <button type="submit"><i class="fa fa-floppy-o"></i>Salvar</button>
+                                <br />
+
+                            </td>
+
+                        </tr>
+                        <tr>
+                        </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+    <div class="row-fluid">
+        <div class="span9">
+            @if (user.ControleAcesso("programacaodia", "agendamento"))
+            {
+                <a href="~/Agendamento/ProgramacaoDia" class="btn"><i class="icon-calendar"></i>Voltar para Programação do dia</a>
+            
+            }
+
+
+            @if (user.ControleAcesso("calendario", "agendamento"))
+            {
+                <a href="~/Agendamento/Calendario" class="btn"><i class="icon-tasks"></i>Voltar para o seu calendário</a>
+            
+            }
+
+            @if (user.ControleAcesso("agenda", "agendamento"))
+            {
+                <a href="~/Agendamento/Agenda" class="btn"><i class="icon-tasks"></i>Voltar para agenda geral</a>
+            
+            }
+        </div>
+
+        <div class="span3">
+            @if (user.ControleAcesso("deletar", "agendamento"))
+            {
+
+                if (Model.AgendamentoId > 0)
+                {
+                    if (Model.AgendamentoPessoa.Where(x => x.Presenca == "P" || x.Presenca == "F").Count() > 0)
+                    {
+                <small class="pull-right">Para apagar, cancele todas as presenças </small>
+                <br />
+                <button class="btn btn-danger pull-right disabled">Deletar</button>
+                    }
+                    else
+                    {
+                @Html.ActionLink("Apagar", "Deletar", new { id = Model.AgendamentoId }, new { @class = "btn btn-danger pull-right" })
+                    }
+                }
+
+            }
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/content/themes/base/js/application.js"></script>
+    @*<script src="~/content/themes/base/js/gallery.js"></script>
+    *@
+    <script src="~/Assets/themes/metro/js/footable.js?v=2-0-1"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+        });
+
+
+        $("body").on("click", ".jquery-lightbox-overlay", function () {
+            window.location.reload(true);
+        });
+        
+        $("body").on("click", ".jquery-lightbox-button-close", function () {
+            window.location.reload(true);
+        });
+
+
+    
+    
+        
+    </script>
+
+
+
+}
+
+

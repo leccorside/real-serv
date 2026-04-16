@@ -1,0 +1,378 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!--JQuery-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+    <script src="/Scripts/pesquisa-cliente.js"></script>
+    <link rel="stylesheet" href="../Content/bootstrap-theme.css">
+    <link rel="stylesheet" href="../Content/bootstrap.min.css">
+    <link rel="stylesheet" href="../Content/AdminLTE.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@1.5.4/src/loadingoverlay.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@1.5.4/extras/loadingoverlay_progress/loadingoverlay_progress.min.js"></script>
+    <script src="/Html/js/UrlsDeRequisicao.js" type="text/javascript"></script>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="animated fadeIn">
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div align="center">
+                                <img class="ant-menu-item" src="https://rdacrm.blob.core.windows.net/imagens/GrupoReal1.jpeg" width="147" height="131" border="0">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label for="condominio" class="">Condomínio</label>
+                                        <input id="condominio" disabled="" placeholder="Condomínio: " type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label for="endereco" class="">Endereço</label>
+                                        <input id="endereco" disabled="" placeholder="Endereço: " type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label for="cidade" class="">Cidade</label>
+                                        <input id="cidade" disabled="" placeholder="Cidade: " type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label for="nome" class="">Nome </label>
+                                        <input id="nome" disabled="" placeholder="Nome" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label for="perfil" class="">Perfil </label>
+                                        <input id="perfil" disabled="" placeholder="Perfil " type="text" class="form-control">
+                                    </div>
+                                </div>-->
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <label for="email" class="">E-mail </label>
+                                        <input id="email" disabled="" placeholder="E-mail " type="email" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div align="center">Sua resposta é muito importante para nós, por isso gostariámos que respondesse com os seguintes critérios:</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img class="ant-menu-item" src="https://rdacrm.blob.core.windows.net/imagens/PesquisaImg.png" width="600" height="142" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                             
+                            <hr id="portariahr">
+                            <div class="row" id="portaria">
+                                <div class="col-lg-12 col-md-12 col-sm-12" >
+                                    <div class="form-group" align="center" >
+                                        <h4>Serviço de portaria.</h4>
+                                        
+                                        <label class="radio-inline">
+                                            <input type="radio" value="1" id="1" name="portaria" checked>Péssimo 
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="portaria">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="portaria">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4" name="portaria">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="portaria">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta1" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr id="limpezahr">
+                            <div class="row" id="limpeza">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <h4>Serviço de limpeza.</h4>
+
+                                        <label class="radio-inline">
+                                            <input type="radio" value="1" id="1" name="limpeza" checked>Péssimo
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="limpeza">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="limpeza">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4" name="limpeza">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="limpeza">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta2" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr id="zeladoriahr">
+                            
+                            
+                            <div class="row" id="zeladoria">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <h4>Serviço de zeladoria.</h4>
+
+                                        <label class="radio-inline">
+                                            <input type="radio" value="1" id="1" name="zeladoria" checked>Péssimo
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="zeladoria">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="zeladoria">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4"  name="zeladoria">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="zeladoria">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta3" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            
+                            <hr id="supervisaohr">
+
+                            <div class="row" id="supervisao">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <h4>Serviço de supervisão (atendimento da empresa por parte dos supervisores).</h4>
+
+                                        <label class="radio-inline">
+                                            <input type="radio" value="1" id="1" name="supervisao" checked>Péssimo
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="supervisao">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="supervisao">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4" name="supervisao">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="supervisao">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta4" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>  
+                            <hr id="atendimentooperadoreshr">
+
+
+                            <div class="row" id="atendimentooperadores">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <h4>Atendimento operadores.</h4>
+
+                                        <label class="radio-inline">
+                                            <input type="radio" value="1" id="1" name="operadores" checked>Péssimo
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="operadores">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="operadores">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4" name="operadores">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="operadores">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta5" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr id="atendimentotecnicohr">
+
+
+                            <div class="row" id="atendimentotecnico">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <h4>Atendimento técnico.</h4>
+
+                                        <label class="radio-inline">
+                                            <input type="radio" value="1" id="1" name="tecnico" checked>Péssimo
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="tecnico">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="tecnico">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4" name="tecnico">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="tecnico">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta6" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr id="aplicativohr">
+
+
+                            <div class="row" id="aplicativo">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <h4>Aplicativo.</h4>
+
+                                        <label class="radio-inline">
+                                            <input type="radio" value="1" id="1" name="aplicativo" checked>Péssimo
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="aplicativo">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="aplicativo">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4" name="aplicativo">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="aplicativo">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta7" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr id="servicoportariaremotahr">
+
+                            <div class="row" id="servicoportariaremota">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <h4>Serviço Portaria Remota.</h4>
+
+                                        <label class="radio-inline">
+                                            <input type="radio"  value="1" id="1" name="remota" checked>Péssimo
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="2" id="2" name="remota">Ruim
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="3" id="3" name="remota">Regular
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="4" id="4" name="remota">Bom
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" value="5" id="5" name="remota">Excelente
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4">
+                                    <div class="form-group">
+                                        <div align="center">
+                                            <img id="pergunta8" src="https://rdacrm.blob.core.windows.net/imagens/PesqSatisfacao.png" width="80" height="80" border="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group" align="center">
+                                        <label for="obs" class="">Observação</label>
+                                        <textarea name="obs" id="obs" rows="4" placeholder="Por favor nos informe a sua crítica e ou sugestão" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12" align="center">
+                    <button id="upload-button" class="btn btn-lg btn-primary" onclick="enviarFileFromStream()">
+                    <i class="fas fa-cloud-upload-alt"></i> Enviar</button>
+                </div>
+            </div>
+            <hr/>
+        </div>
+
+    </div>
+</body>
+</html>

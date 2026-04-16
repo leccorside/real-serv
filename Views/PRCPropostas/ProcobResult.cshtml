@@ -1,0 +1,161 @@
+﻿@model Models.PRCPropostaView
+
+@{
+    ViewBag.Title = "Contatos Localizados";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+}
+
+
+
+
+<div class="content animate-panel">
+    @using (Html.BeginForm("ProcobResult", "PRCPropostas", FormMethod.Post, new { @id = "", @class = "" }))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(m => m.PRCProposta.PRCPropostaId);
+        @Html.HiddenFor(m => m.PRCProposta.PRCPropostaGUID);
+        @Html.HiddenFor(m => m.PRCProposta.EmpresaId);
+
+
+        <div class="row">
+            <div class="col-lg-12" style="">
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Contatos Homônimos Localizados (@Model.PRCProposta.JsonResult_Rootobject.content.cpf.Count())
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <label>Requerente</label>
+                                <p class="form-control-static">@Model.PRCProposta.RequerenteNome</p>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <label>Juízo de origem</label><br />
+                                @Model.Precatorio.TrjReqPagJuizoOrigem
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <label>Nome original no processo</label>
+                                <p class="form-control-static">@Model.Precatorio.TrjReqPagRequerentes</p>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="table-responsive">
+                            <table class="table table-hover table-condensed table-striped dataTable">
+
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Documento</th>
+                                        <th>Nome</th>
+                                        <th>Dt.Nasc.</th>
+                                        <th>Idade</th>
+                                        <th>Cidade</th>
+                                        <th>UF</th>
+                                        <th>Sexo</th>
+                                        <th>Óbito</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var item in Model.PRCProposta.JsonResult_Rootobject.content.cpf)
+                                    {
+                                        var selecionado = (Model.Requerente.Documento.Contains(item.documento));
+                                    
+                                        <tr class=" @(selecionado ? "success" : "")">
+                                            <td>
+                                                <button type="submit" name="btnSelecionar" value="@(item.documento + "|" + item.nome)" style="display: @(selecionado ? "none" : "block")" class="btn btn-outline btn-primary btn-xs">Selecionar</button></td>
+                                            <td>@item.documento</td>
+                                            <td>@item.nome</td>
+                                            <td>@item.data_nascimento</td>
+                                            <td>@item.idade</td>
+                                            <td>@item.cidade</td>
+                                            <td>@item.uf</td>
+                                            <td>@item.sexo</td>
+                                            <td>@item.obito</td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+
+
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section css{
+    @Styles.Render("~/bundles/datatables/css")
+
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+
+
+
+    <script>
+
+        // Initialize Example 2
+        $('.dataTable').dataTable({
+            "pageLength": 100,
+            "paging": true,
+            "ordering": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "info": true,
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar ",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+        });
+
+
+
+
+
+
+    </script>
+
+
+
+
+
+}

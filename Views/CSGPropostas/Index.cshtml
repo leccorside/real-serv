@@ -1,0 +1,177 @@
+﻿@model List<Models.CSGProposta>
+
+@{
+    ViewBag.Title = "Propostas CSG";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "CSGPropostas/Index";
+
+    //ViewBag.SearchAction = strUrl;
+    //ViewBag.SearchPlaceHolder = "Pesquisar por Precatório ";
+    //ViewBag.SearchMethod = "get";
+
+
+
+    var _regraVisualizaOutras = true;
+
+    string outrosCampos = Convert.ToString(ViewBag.Campos);
+    if (outrosCampos == null)
+    {
+        outrosCampos = "";
+    }
+
+   
+}
+
+
+
+
+@section Breadcrumb{
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                
+
+                
+
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        @Html.Partial("~/Views/CSGPropostas/_PropostasRegistros.cshtml", Model)
+                    </div>
+
+                    @*@Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages), outrosCampos)*@
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/datatables/css")
+    @Styles.Render("~/bundles/fancybox/css") @Styles.Render("~/bundles/select2/css")
+
+}
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables/js")@Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+    @Scripts.Render("~/bundles/fancybox/js")
+
+    <script type="text/javascript">
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+    </script>
+    <script>
+
+        // Initialize Example 2
+        $('.dataTable').dataTable({
+            "pageLength": 50,
+            "paging": true,
+            "ordering": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "info": true,
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar ",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+        });
+
+
+
+
+
+
+    </script>
+
+    <script>
+        $("#de").mask("99/99/9999");
+        $("#ate").mask("99/99/9999");
+        $('#telefone').mask(maskBehavior, options);
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+        $("#StatusNome").val('@Request["StatusNome"]').trigger('chosen:updated');
+        $("#StatusNome").val('@Request["StatusNome"]').trigger('change.select2');
+
+        $("#TipoConversaoId").val('@Request["TipoConversaoId"]').trigger('chosen:updated');
+        $("#TipoConversaoId").val('@Request["TipoConversaoId"]').trigger('change.select2');
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,210 @@
+﻿@model Models.Supervisao
+
+@{
+    ViewBag.Title = "Criar Supervisão";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";  
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var bllAnexos = new BLL.SupervisoesAnexos();
+    var listaAnexos = bllAnexos.Listar(Model.SupervisaoId);
+
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Supervisões", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">Dados Gerais</a></li>
+        <li><a href="#" id="btn-blog">Histórico</a></li>
+    </ul>
+
+
+
+    @using (Html.BeginForm("Criar", "Supervisoes", FormMethod.Post, new { @id = "form-criar", enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(m => m.SupervisaoId);
+        @Html.HiddenFor(m => m.Modal);
+        @Html.HiddenFor(m => m.RegStatus);
+        
+        <input type="hidden" value="criar" id="destino" name="destino" />
+        
+        <div class="row-fluid">
+            <div class="span2">
+                <label>Supervisão n.</label>
+                <span class="black">@Model.SupervisaoId</span>
+            </div>
+
+            <div class="span2">
+                <label>Data</label>
+                <span class="black">@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</span>
+            </div>
+
+            <div class="span2">
+                <label>Data</label>
+                <span class="black">@string.Format("{0:HH:mm}", Model.RegDtInicio)</span>
+            </div>
+
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Posto de Serviço</label>
+                @Html.DropDownListFor(model => model.PostoDeServicoId, (SelectList)ViewBag.ddlPostosDeServicos, "--Selecione--", new { @class = "chosen-select span12 " })
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Checklist</label>
+                @for (int i = 0; i < Model.ListSupervisaoItemView.Count(); i++)
+                {
+                    <label class="checkbox">
+                        @Html.CheckBox("ListSupervisaoItemView[" + i + "].Checado", Model.ListSupervisaoItemView[i].Checado, new { id = "ListSupervisaoItemView" + i + "__Checado", @class = "" }) @Model.ListSupervisaoItemView[i].SupervisaoTipoNome
+                    </label>   
+                    @Html.Hidden("ListSupervisaoItemView[" + i + "].SupervisaoTipoId", Model.ListSupervisaoItemView[i].SupervisaoTipoId)
+                }
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Descrição</label>
+                @Html.TextAreaFor(m => m.SupervisaoDescricao, new { @class = "span12", @rows = "5" })
+            </div>
+        </div>
+        <br />
+        
+        <div class="row-fluid">
+            <div class="span12">
+                <legend><i class="fa fa-paperclip"></i>Anexos</legend>
+                <input id="arquivo" type="file" multiple="multiple" name="arquivo" />
+                <ul class="gallery-container">
+
+                    @foreach (var itemAnexo in listaAnexos)
+                    {
+                        var total_dias = (itemAnexo.Validade - DateTime.Now.Date).TotalDays;
+                        var classe = (total_dias < 1) ? "text-error" : "text-success";      
+                        <li>
+
+
+                            @if (itemAnexo.PathThumb != null)
+                            {
+                                <a href="@Url.Content(itemAnexo.Path)" class="ui-lightbox">
+                                    <img style="height: 146px; max-height:146px;" src="@Url.Content(itemAnexo.PathThumb)" alt="@itemAnexo.FileName" />
+                                </a><a href="@Url.Content(itemAnexo.Path)" class="preview"></a>
+                                <br />
+                            }
+                            else
+                            {
+                                <div style="height: 146px; max-height: 146px;">@itemAnexo.ContentType.ToString()<br />
+                                    <br />
+                                    <br />
+                                    <small>Sem visualização</small>
+                                </div>
+                            }
+
+
+                            <small>Formato: @itemAnexo.ContentType.ToString()</small><br />
+                            <small>Nome: @itemAnexo.FileName.ToString()</small><br />
+                            <small>Peso: @(itemAnexo.ContentLength / 1000) kb</small><br />
+                            <a href="@Url.Content("~/Supervisoes/DownloadAnexo/0/0/?Guid=" + itemAnexo.Guid)" class="btn btn-mini pull-left">Download</a>&nbsp;
+                        <a href="@Url.Content("~/Supervisoes/RemoveAnexo/" + Model.SupervisaoId + "/?Guid=" + itemAnexo.Guid)" class="btn btn-mini pull-right" onclick="return confirm('Deseja realmente excluir esse anexo?')">Excluir</a>
+
+                        </li>                            
+                    }
+
+
+
+
+                </ul>
+            </div>
+        </div>
+
+        
+        <br />
+        
+        
+    
+        <div class="form-actions">
+
+            <div class="row-fluid">
+                <div class="span6">
+                    @if (!Model.Modal)
+                    {
+                        <button name="salvarfechar" value="true" type="submit" class="btn btn-primary  btn-large ">Salvar e fechar</button>    
+                    }
+
+
+                    <button name="salvar" value="true" type="submit" class="btn btn-primary  btn-large ">Salvar</button>
+
+
+                </div>
+                <div class="span6">
+                    @if (Model.Modal)
+                    {
+                        <a href="@Url.Content("~/Supervisoes/Deletar/" + Model.SupervisaoId + "?modal=" + Model.Modal + "")" class="btn btn-danger pull-right">Apagar</a>    
+                    }
+
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+    }
+
+    @if (Model.Modal == false)
+    {
+        <div>
+            <a href="~/Supervisoes/Index" class="btn">Voltar</a>
+        </div>
+    }
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $('#btn-blog').click(function () {
+                $('#destino').val("Blog");
+                $('#form-criar').submit();
+            });
+        });
+    </script>
+}
+
+

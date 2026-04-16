@@ -1,0 +1,341 @@
+﻿@model Models.Conta
+
+
+@{
+    ViewBag.Title = "Alterando conta bancária";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Financeiro", "Index", "Financeiro")</li>
+    <li class="active">@Html.ActionLink("Contas", "Index", "Contas")</li>
+}
+
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Editar", "Contas", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                         @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.ContaId)
+        @Html.HiddenFor(model => model.ContaInicioData)
+        @Html.Hidden("RegIdInicio", (string)BLL.Usuarios.GetUsuarioId().ToString())
+        @Html.HiddenFor(model => model.LancamentoId)
+       
+                       <div class="row">
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label class="control-label" for="ContaTipoId">@BLL.Usuarios.GetEntidadeFilial():</label>
+                                @Html.DropDownListFiliais(Model.ContaId, "FilialId", Model.FilialID.ToString(), false, " chosen-select form-control ")
+                            </div>
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.ContaTipoId)
+                                @Html.DropDownListFor(model => model.ContaTipoId, (SelectList)Model.ContaTipos, "--Selecione--", new { @class = "form-control chosen-select" })
+                            </div>
+
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.ContaNome)
+                                @Html.TextBoxFor(model => model.ContaNome, new { @class = " form-control" })
+                            </div>
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.ContaInicioSaldo)
+                                @Html.TextBox("ContaInicioSaldo", string.Format("{0:n2}", Model.ContaInicioSaldo), new { @class = "moeda form-control" })
+                            </div>
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.ContaInicioData)
+                                @Html.TextBox("ContaInicioData", @String.Format("{0:dd/MM/yyyy}", DateTime.Now), new { @class = "datepicker  form-control", value = @DateTime.Now })
+
+                            </div>
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Conta Utilizada para Boleto ?</label><br />
+
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.FlgBoleto, new { onchange = "Select($(this).is(':checked'));" }) Sim</label>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                        
+                        <legend>Boleto Simples</legend>
+                        <div class="row">
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.BoletoSimplesEmail)
+                                @Html.TextBoxFor(model => model.BoletoSimplesEmail, new { @class = " form-control" })
+                            </div>
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.BoletoSimplesToken)
+                                @Html.TextBoxFor(model => model.BoletoSimplesToken, new { @class = " form-control" })
+                            </div>
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.BoletoSimplesContaId)
+                                @Html.TextBoxFor(model => model.BoletoSimplesContaId, new { @class = " form-control" })
+                            </div>
+
+                        </div>
+                        
+                        <div id="camposboleto">
+                            <legend>Campos complementares Boleto</legend>
+                            <div class="row">
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.ContaEmail)
+                                    @Html.TextBoxFor(model => model.ContaEmail, new { @class = "  form-control" })
+
+                                </div>
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.NomeCedente)
+                                    @Html.TextBoxFor(model => model.NomeCedente, new { @class = "  form-control" })
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.CodigoCedente)
+                                    @Html.TextBoxFor(model => model.CodigoCedente, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.CNPJ)
+                                    @Html.TextBoxFor(model => model.CNPJ, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.CodigoBanco)
+                                    @Html.TextBoxFor(model => model.CodigoBanco, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.Agencia)
+                                    @Html.TextBoxFor(model => model.Agencia, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.NumConta)
+                                    @Html.TextBoxFor(model => model.NumConta, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.DigConta)
+                                    @Html.TextBoxFor(model => model.DigConta, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.CedenteCarteira)
+                                    @Html.TextBoxFor(model => model.CedenteCarteira, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.CedenteEspecie)
+                                    @Html.DropDownListCedenteEspecie("CedenteEspecie", Model.CedenteEspecie, true, " chosen-select form-control ")
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.InstrucaoBancaria)
+                                    @Html.TextBoxFor(model => model.InstrucaoBancaria, new { @class = "  form-control" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.NumConvenio)
+                                    @Html.TextBoxFor(model => model.NumConvenio, new { @class = "  form-control" })
+
+                                </div>
+                            </div>
+
+                            <legend>Endereço</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+                                <div class="input-group">
+                                    @Html.TextBoxFor(model => model.ContaCEP, new { @class = "form-control" })
+                                    <span class="input-group-btn">
+                                        <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>Logradouro</label>
+                                @Html.TextBoxFor(model => model.ContaLogradouro, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Endereço</label>
+                                @Html.TextBoxFor(model => model.ContaEndereco, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Número</label>
+                                @Html.TextBoxFor(model => model.ContaNumero, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>Complemento</label>
+                                @Html.TextBoxFor(model => model.ContaComplemento, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Bairro</label>
+                                @Html.TextBoxFor(model => model.ContaBairro, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Cidade</label>
+                                @Html.TextBoxFor(model => model.ContaCidade, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>UF</label>
+                                @Html.TextBoxFor(model => model.ContaUF, new { @class = "form-control" })
+                            </div>
+                            
+                        </div>
+
+                        </div>
+                        
+                        
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+
+                    <!-- ./conteudo aqui -->
+                
+                    }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+    
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/fancybox/css")
+    <style>
+        .listAnexos
+        {
+            list-style: none;
+            font-size: 10px;
+            margin-left: 0px;
+        }
+    </style>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+
+        @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+@Scripts.Render("~/bundles/fancybox/js")
+
+    <script>
+
+        $("#ContaCEP").mask("99999-999");
+
+
+        //cep
+        $('#buscar-cep').click(function () {
+            $('#ContaCEP').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading_cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading_cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                    $('#ContaCEP').focus();
+                },
+                success: function (data) {
+                    $('#ContaLogradouro').val(data.tipoLogradouro);
+                    $('#ContaEndereco').val(data.logradouro);
+                    $('#ContaBairro').val(data.bairro);
+                    $('#ContaUF').val(data.estado);
+                    $('#ContaCidade').val(data.cidade);
+                    //$('#ContaPais').val('Brasil');
+                    $('#ContaNumero').focus();
+                }
+            });
+        });
+
+
+    </script>
+
+    <script>
+        function Select(jtipo) {
+
+            // alert(jtipo);
+
+            if (jtipo == true) {
+                $("#camposboleto").slideDown();
+
+
+            } else {
+                $("#camposboleto").slideToggle();
+
+            }
+
+
+        }
+
+
+
+        Select($('#FlgBoleto').is(':checked'));
+
+    </script>
+    <script>
+
+
+        $("#CNPJ").mask("99.999.999/9999-99");
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+}

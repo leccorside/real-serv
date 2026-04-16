@@ -1,0 +1,28 @@
+﻿@model Models.MedGuia
+@{
+    ViewBag.Title = "Quitado";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+}
+
+
+<div class="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+            <div class="panel-body">
+                <h3>Guia @Model.MedGuiaId alterada para status:</h3>
+              @if (Model.Quitado)
+{
+    <h4><i class="fa fa-check-square-o" aria-hidden="true"></i> Quitado</h4>
+}
+else
+{
+    <h4><i class="fa fa-square-o" aria-hidden="true"></i> Aberto</h4>
+}
+
+            </div>
+            
+        </div>
+        </div>
+    </div>
+</div>

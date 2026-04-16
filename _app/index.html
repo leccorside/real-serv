@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <title>RealServ</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/menu.css">
+    <link rel="stylesheet" type="text/css" href="styles/framework.css">
+    <link rel="stylesheet" type="text/css" href="styles/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="styles/custom.css">
+
+    <script>
+        //var html5Mode = false;
+
+    </script>
+    <script type="text/javascript" src="scripts/jquery.js"></script>
+    <script type="text/javascript" src="scripts/plugins.js"></script>
+    <script type="text/javascript" src="scripts/custom.js"></script>
+    <!-- angularjs -->
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-resource/angular-resource.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/services.js"></script>
+    <script type="text/javascript" src="js/controllers.js"></script>
+
+</head>
+
+<body class="has-cover" ng-app="RealServApp" ng-controller="NavCtrl">
+
+    <div class="gallery-fix"></div>
+    <!-- Fix Gallery next/prev error on Android -->
+    <div class="sidebar-tap-close"></div>
+    <!-- Overlay for content to close Sidebar -->
+    
+    
+    
+    <div class="header-fixed header-light">
+        <a href="#" class="header-icon-1 open-left-sidebar" ng-show="Logado()"><i class="fa fa-navicon"></i></a>
+    </div>
+
+    <div class="sidebar-left sidebar-light">
+        <div class="sidebar-scroll">
+            <div class="sidebar-header">
+                <a href="#!/principal" class="sidebar-logo"></a>
+            </div>
+            <div class="sidebar-menu">
+                <a class="menu-item border-menu-sun {{isActive('/principal') ? 'active-item' : ''}}" href="#!/principal"> <i class="fa fa-home"></i> Principal <i class="fa fa-circle"></i> </a>
+                <a class="menu-item border-menu-orange {{isActive('/registroponto') ? 'active-item' : ''}}" href="#!/registroponto"> <i class="fa fa-list-ul"></i> Registro de Ponto <i class="fa fa-circle"></i> </a>
+                <a class="menu-item border-menu-pink {{isActive('/supervisaoindex') ? 'active-item' : ''}}" href="#!/supervisaoindex"> <i class="fa fa-location-arrow"></i> Supervisão <i class="fa fa-circle"></i> </a>
+                <a class="menu-item border-menu-teal" href="#!logoff"> <i class="fa fa-times"></i> Sair <i class="fa fa-circle"></i> </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="page-content">
+        
+        <div id="page-content-scroll">
+
+            <!--<div class="content">-->
+            <div ng-view>
+            </div>
+            <div class="decoration"></div>
+            <!--</div>-->
+            <div class="footer footer-light">
+                <div class="footer-content">
+                    <a href="#" class="footer-logo"></a>
+                    <p class="footer-text"> Grupo Real Serv - Prestação de Serviços </p>
+                </div>
+                <div class="footer-socials">
+
+
+                    <a ng-click="GotoLink('https://pt-br.facebook.com/pages/Grupo-Real-Serv/369441569853768')" class="scale-hover facebook-color"><i class="fa fa-facebook"></i></a>
+                    <a ng-click="GotoLink('https://www.linkedin.com/company/grupo-real-serv')" class="scale-hover twitter-color"><i class="fa fa-linkedin"></i></a>
+                    <a href="tel:(13)3227-7556" class="scale-hover phone-color"><i class="fa fa-phone"></i></a>
+                    <a href="#" class="scale-hover bg-night-dark back-to-top"><i class="fa fa-angle-up"></i></a>
+                    <div class="clear"></div>
+                </div>
+                <p class="footer-strip">
+                    Powered by EBee <i class="fa fa-cube"></i><br>Copyright 2017. All Rights Reserved
+                </p>
+            </div>
+            <div class="footer-clear disabled"></div>
+        </div>
+        <!--<a href="#" class="back-to-top-badge"><i class="fa fa-caret-up"></i>Voltar para o topo</a>--></div>
+    <div class="clear"></div>
+
+</body>

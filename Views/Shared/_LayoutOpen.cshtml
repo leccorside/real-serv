@@ -1,0 +1,88 @@
+﻿@{
+
+
+    var logotipo = Url.Content("/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png");
+    var semlogotipo = Url.Content("/Assets/img/logotipos/semlogo.png");
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<!-- Stylesheets -->
+  <link href="~/Assets/themes/metro/style/bootstrap.css" rel="stylesheet" />
+    <link href="~/Assets/themes/metro/style/bootstrap-responsive.css" rel="stylesheet">
+    <link href="~/Assets/themes/metro/style/font-awesome.css" rel="stylesheet" />
+    <link href="~/Assets/themes/metro/css/font-awesome.css" rel="stylesheet" />
+     @RenderSection("Styles", false)
+<body>
+
+
+    <!-- Begin page content -->
+    <div class="container-fluid">
+        
+        <div style="display:none;">
+@RenderSection("breadcrumb", required: false)
+            </div>
+
+        @RenderBody()
+        <br />
+            @if (!@Html.ViewData.ModelState.IsValid)
+            {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-error" id="alert-error">
+                            <h4>Ooops... alguns erros ocorreram</h4>
+                            <br />
+                            @Html.ValidationSummary("", new { @class = "unstyled" })
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (TempData["message"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-success" id="alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Sucesso!</h4>
+                        @Html.Raw(TempData["message"])
+                    </div>
+                </div>
+            </div>
+            }
+            @if (TempData["error"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-danger" id="alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @Html.Raw(TempData["error"])
+                    </div>
+                </div>
+            </div>
+            }
+
+            @if (TempData["alert"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-block" id="alert-block">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @Html.Raw(TempData["alert"])
+                    </div>
+                </div>
+            </div>
+            }
+
+    </div>
+
+
+</body>
+</html>
+    @Scripts.Render("~/Assets/themes/metro/js/jquery.js")
+    @Scripts.Render("~/Assets/themes/metro/js/bootstrap.js")
+
+@RenderSection("scripts", required: false)
+

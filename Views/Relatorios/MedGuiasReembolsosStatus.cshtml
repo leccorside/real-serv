@@ -1,0 +1,60 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    var datas = BLL.Utils.Funcoes.GetDataIniFim(DataConsulta);
+    ViewBag.Title = "Relatório de Guias - Status";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Relatórios", "Relatorios", "Principal")</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        <div class="row-fluid">
+            <div class="span2">
+                <label>De</label>
+                <input type="text" name="dataDe" title="Data para consulta da agenda" class="datepicker input-small input-small" value="@String.Format("{0:dd/MM/yyyy}", datas.DataInicial)" />
+            </div>
+            <div class="span2">
+                <label>Até</label>
+                <input type="text" name="dataAte" title="Data para consulta da agenda" class="datepicker input-small input-small" value="@String.Format("{0:dd/MM/yyyy}", datas.DataFim)" />
+            </div>
+            <div class="span4">
+                <label>Status</label>
+                @Html.DropDownList("EntidadeStatusId", (SelectList)ViewBag.ddlEntidadeStatusId, null, new { @class = "chosen-select" })
+            </div>
+            <div class="span4">
+                <label>Tipo</label>
+                <select id="tipo" name="tipo">
+                    <option value="statussintetico">Sintético</option>
+                    <option value="statusanalitico">Analítico</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <input type="submit" value="Gerar" class="btn btn-primary  btn-large" />
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Relatorios", "Principal")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

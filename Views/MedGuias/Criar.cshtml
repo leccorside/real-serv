@@ -1,0 +1,815 @@
+﻿@model Models.MedGuia
+
+@{
+    ViewBag.Title = "Criar Guia > Dados Gerais";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    bool podeAlterar = (Model.RegStatus == "P" && Model.PacienteId == 0) ? true : false;
+
+    var bllMedGuias = new BLL.MedGuias();
+    var _PodeAlterar = bllMedGuias.PodeAlterar(Model);
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Guias", "Index", new { id = 0 })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            @if (!_PodeAlterar)
+            {
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Essa Guia não pode ser mais alterada. Caso seja necessário, entre em contato com o administrador do sistema
+                </div>
+            }
+            <div class="hpanel">
+                @Html.Partial("~/Views/MedGuias/_tabs.cshtml", Model)
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- conteudo aqui -->
+                            @using (Html.BeginForm("Criar", "MedGuias", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                            {
+                                @Html.ValidationSummary(true)
+
+                                @Html.HiddenFor(m => m.MedGuiaId);
+                                @Html.HiddenFor(m => m.Modal);
+                                @Html.HiddenFor(m => m.NotaFiscal);
+                                @Html.HiddenFor(m => m.TotalProdutos);
+                                @Html.HiddenFor(m => m.RegStatus);
+                                @Html.HiddenFor(m => m.RegDtInicio);
+                                @Html.HiddenFor(m => m.FilialID);
+                                <input type="hidden" value="produtos" id="destino" name="destino" />
+                                @Html.HiddenFor(m => m.PacienteId)
+                                <legend>Dados Paciente</legend>
+                                <div class="row">
+
+
+
+                                    <div class="form-group col-lg-1">
+                                        <label>Guia n.</label>
+                                        <p class="form-control-static">@Model.MedGuiaId</p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Data do Exame</label>
+                                        @Html.TextBox("MedGuiaData", String.Format("{0:dd/MM/yyyy}", Model.MedGuiaData), new { @class = "datepicker maskdate form-control", value = DateTime.Now })
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>CPF Paciente</label><label id="loading_cpf" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+                                        @Html.TextBox("PacienteCpf", Model.PacienteCpf, new { @class = " form-control " })
+                                    </div>
+                                    <div class="form-group col-lg-7">
+                                        <label id="lblNomePaciente">Nome do paciente</label>
+                                        @Html.TermoAceiteStatus(Model.PacienteTermoAceite)
+
+
+                                        <div class="input-group m-b" style="width: 100%">
+
+                                            @if (Model.PacienteId > 0)
+                                            {
+                                            <span class="input-group-btn">
+                                                <a href="@Url.Content("~/Pessoas/DadosAluno/" + Model.PacienteId)" class="fancybox_full fancybox.iframe btn btn-outline btn-default"><i class="fa fa-search"></i></a>
+                                            </span>    
+                                            }
+                                            
+
+                                            @Html.TextBox("PacienteNome", Model.PacienteNome, new { @class = "form-control max", maxlength = "200" })
+                                            @if (_PodeAlterar)
+                                            {
+                                                <span class="input-group-btn">
+                                                    <button type="button" id="btnerrado" name="btnerrado" style="display: @(podeAlterar ? "none" : "block")" class="btn btn-default">Limpar</button>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div id="div_ExibirCheckDependente" style="display: none">
+                                        <div class="form-group-mini col-lg-12">
+                                            <div class="checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.PacienteResponsavel) Realizar exame em dependente sem CPF
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="div_PacienteResponsavel">
+                                        <div class="form-group col-lg-12">
+                                            <label>Paciente</label>
+
+                                            <div class="input-group">
+                                                <select data-placeholder="Selecione um dependente..." class="form-control chosen-select " data-val="true" id="PessoaDependenteId" name="PessoaDependenteId"></select>
+                                                <span class="input-group-btn">
+                                                    <button type="button" onclick="callFancyBox()" class="btn btn-outline btn-primary">
+                                                        Dependentes
+                                                    </button>
+                                                    <a id="hiddenclicker" class="fancybox_reload fancybox.iframe"></a>
+                                                </span>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                    </div>
+
+                                    <div class="form-group col-lg-2">
+                                        <label>Celular</label>
+                                        @if (Model.PacienteId > 0 && Model.PacienteCelular != null)
+                                        {
+                                            <a href="@Url.Content("~/TemplatesMensagens/Enviar/?PessoaId=" + Model.PacienteId + "&MedGuiaId=" + Model.MedGuiaId)" class="fancybox_full fancybox.iframe btn btn-outline btn-success btn-xs pull-right"><i class="fa fa-whatsapp"></i><small>Conversar</small></a>    
+                                        }
+
+                                        @Html.TextBoxFor(model => model.PacienteCelular, new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Tel.Fixo</label>
+
+
+                                        @Html.TextBoxFor(model => model.PacienteTelefone, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group col-lg-2">
+                                        <label>Dt. Nascimento</label>
+                                        @Html.TextBox("PacienteDataNascimento", Model.PacienteDataNascimentoStr, new { @class = " datepicker_year maskdate form-control " })
+                                    </div>
+                                    <div class="form-group col-lg-6">
+                                        <label>Email</label>
+                                        @Html.TextBox("PacienteEmail", Model.PacienteEmail, new { @class = " form-control ", maxlength = "150" })
+                                    </div>
+                                </div>
+
+                                <legend>Dados bancários</legend>
+                                <div class="row">
+
+                                    <div class="form-group col-lg-3">
+                                        <label>Código do Banco</label>
+                                        @Html.TextBoxFor(model => model.BancoCod, new { @class = "form-control", maxlength = "10" })
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Nome do Banco</label>
+                                        @Html.TextBoxFor(model => model.BancoNome, new { @class = "form-control", maxlength = "50" })
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Agência</label>
+                                        @Html.TextBoxFor(model => model.BancoAgencia, new { @class = "form-control", maxlength = "20" })
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Conta</label>
+                                        @Html.TextBoxFor(model => model.BancoConta, new { @class = "form-control", maxlength = "20" })
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading" role="tab" id="headingOne">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="collapsed">Dados Complementares e Endereço
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" aria-expanded="false" style="height: 0px;">
+                                                <div class="panel-body">
+                                                    <legend>Dados complementares</legend>
+                                                    <div class="row">
+                                                        <div class="form-group col-lg-2">
+                                                            <label>@BLL.Usuarios.GetEntidadeClienteSingular() desde</label>
+                                                            @Html.TextBox("PacienteDataInicio", Model.PacienteDataInicioStr, new { @class = " datepicker maskdate form-control " })
+                                                        </div>
+
+                                                        <div class="form-group col-lg-3">
+                                                            <label>Sexo</label>
+                                                            @Html.DropDownListSexo("PacienteSexo", Model.PacienteSexo, true, " form-control ", "")
+                                                        </div>
+
+                                                        <div class="form-group col-lg-3">
+                                                            <label>RG</label>
+                                                            @Html.TextBox("PacienteRG", Model.PacienteRG, new { @class = "  form-control ", maxlength = "40" })
+                                                        </div>
+
+                                                        <div class="form-group col-lg-4">
+                                                            <label>Estado Civil</label>
+                                                            @Html.DropDownListEstadoCivil("PacienteEstadoCivil", Model.PacienteEstadoCivil, true, " form-control ", "")
+                                                        </div>
+                                                    </div>
+
+                                                    <legend>Endereço</legend>
+                                                    <div class="row">
+
+                                                        <div class="form-group col-lg-3">
+                                                            <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+
+                                                            <div class="input-group">
+                                                                @Html.TextBoxFor(model => model.PacienteCep, new { @class = "form-control" })
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                                                </span>
+                                                            </div>
+
+
+                                                        </div>
+                                                        <div class="form-group col-lg-4">
+                                                            <label>Endereço</label>
+                                                            @Html.TextBoxFor(model => model.PacienteEndereco, new { @class = "  form-control " })
+                                                        </div>
+                                                        <div class="form-group col-lg-2">
+                                                            <label>Número</label>
+                                                            @Html.TextBoxFor(model => model.PacienteNumero, new { @class = "  form-control " })
+                                                        </div>
+                                                        <div class="form-group col-lg-3">
+                                                            <label>Complemento</label>
+                                                            @Html.TextBoxFor(model => model.PacienteComplemento, new { @class = "  form-control " })
+                                                        </div>
+
+                                                        <div class="form-group col-lg-4">
+                                                            <label>Bairro</label>
+                                                            @Html.TextBoxFor(model => model.PacienteBairro, new { @class = "  form-control " })
+                                                        </div>
+                                                        <div class="form-group col-lg-3">
+                                                            <label>Cidade</label>
+                                                            @Html.TextBoxFor(model => model.PacienteCidade, new { @class = "  form-control " })
+                                                        </div>
+                                                        <div class="form-group col-lg-2">
+                                                            <label>Estado</label>
+                                                            @Html.TextBoxFor(model => model.PacienteEstado, new { @class = "  form-control " })
+                                                        </div>
+                                                        <div class="form-group col-lg-3">
+                                                            <label>País</label>
+                                                            @Html.TextBoxFor(model => model.PacientePais, new { @class = "  form-control " })
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                                
+
+                                <legend>Dados Convênio </legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" id="copyDadosPessoa" name="copyDadosPessoa" /> Copiar dados do paciente
+                                                </label>
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                    <div class="form-group col-lg-3">
+                                        <label>CPF Titular</label><label id="loading_cpftitular" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+                                        @Html.TextBoxFor(model => model.MedCarteiraTitularCpf, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group col-lg-7">
+                                        <label>Nome Titular</label>
+                                        @Html.TextBoxFor(model => model.MedCarteiraTitularNome, new { @class = "form-control", maxlength = "200" })
+                                    </div>
+
+                                    <div class="form-group col-lg-2">
+                                        <label>Dt. Nascimento</label>
+                                        @Html.TextBox("MedCarteiraTitularDataNascimento", @String.Format("{0:dd/MM/yyyy}", Model.MedCarteiraTitularDataNascimento), new { @class = "datepicker form-control", value = @DateTime.Now })
+                                    </div>
+
+                                    <div class="form-group col-lg-3">
+                                        <label>Carteira Convênvio</label>
+                                        @Html.TextBoxFor(model => model.MedCarteiraConvenio, new { @class = "form-control", maxlength = "200" })
+                                    </div>
+
+                                    <div class="form-group col-lg-2">
+                                        <label>Validade</label>
+                                        @Html.TextBox("MedCarteiraValidade", @String.Format("{0:dd/MM/yyyy}", Model.MedCarteiraValidade), new { @class = "datepicker maskdate form-control", value = @DateTime.Now })
+                                    </div>
+
+                                    <div class="form-group col-lg-7">
+                                        <label>Nome Mãe</label>
+                                        @Html.TextBoxFor(model => model.MedCarteiraTitularNomeMae, new { @class = "form-control", maxlength = "200" })
+                                    </div>
+
+
+                                    <div class="form-group col-lg-12">
+                                        <label>Dados Complementares</label>
+                                        @Html.TextAreaFor(model => model.MedCarteiraTitular, new { @class = "form-control input-large", @rows = "4", maxlength = "4000" })
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-lg-3">
+                                        <label>Médico</label>
+                                        @Html.DropDownListFor(model => model.MedicoId, (SelectList)ViewBag.ddlMedicos, new { @class = "chosen-select form-control " })
+                                    </div>
+
+                                    <div class="form-group col-lg-3">
+                                        <label>Convênio</label>
+                                        @Html.DropDownListFor(model => model.ConvenioId, (SelectList)ViewBag.ddlConvenios, new { @class = "chosen-select form-control " })
+                                        @if (Model.RegStatusConvenios == "E")
+                                        {
+                                            <p class="form-control-static"><i class="fa  fa-exclamation-triangle"></i>@Model.ConvenioNome <small>(Excluído)</small></p>
+                                        }
+                                    </div>
+
+                                    <div class="form-group col-lg-3">
+                                        <label>Plano</label>
+                                        <select data-placeholder="Selecione um convênio..." class="form-control chosen-select " data-val="true" data-val-required="O campo Plano é obrigatório" id="ConvenioPlanoId" name="ConvenioPlanoId"></select>
+                                        @if (Model.RegStatusConveniosPlanos == "E")
+                                        {
+                                            <p class="form-control-static"><i class="fa  fa-exclamation-triangle"></i>@Model.ConvenioPlanoNome <small>(Excluído)</small></p>
+                                        }
+                                    </div>
+
+                                    <div class="form-group col-lg-3">
+                                        <label>Reembolso</label>
+                                        @Html.TextBox("ConvenioPlanoValor", string.Format("{0:F2}", Model.ConvenioPlanoValor), new { @class = "moeda form-control select-all" })
+                                    </div>
+
+
+                                    <div class="text-center">
+
+                                        <a href="javascript:;" class=" btn-submit-direciona btn btn-primary  bypassChanges" data-val="criar">Salvar <i class="fa fa-save"></i></a>
+
+                                        @Html.Partial("~/Views/MedGuias/_tabsbuttons.cshtml", Model)
+                                    </div>
+                                </div>
+                            }
+                            <!-- ./conteudo aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    <style>
+        .form-group-mini .checkbox
+        {
+            margin-top: -10px !important;
+            margin-bottom: 15px !important;
+        }
+    </style>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+
+    <script>
+
+        function UpdateElementOfParent(id) {
+            // your code
+            console.log("deu certo " + id);
+            carregaDependentes($("#PacienteId").val(), id);
+
+            //$('#PessoaDependenteId').val(id);
+            //$("#PessoaDependenteId").val(id).trigger('chosen:updated');
+            //$("#PessoaDependenteId").val(id).trigger('change.select2');
+
+            $.fancybox.close();
+        }
+
+        function callFancyBox() {
+            var PacienteId = $("#PacienteId").val();
+            $("#hiddenclicker").attr("href", "@(Url.Content("~/PessoasDependentes/Index/"))" + PacienteId)
+            $('#hiddenclicker').trigger('click');
+        }
+
+        $(".fancybox_reload").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+
+            },
+        });
+
+
+    </script>
+
+    <script>
+
+
+
+
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+
+
+        $(document).ready(function () {
+
+            $('.btn-submit-direciona').click(function () {
+                $('#destino').val($(this).data('val'));
+                $('#form-criar').submit();
+            });
+
+        });
+
+        $('#PacienteNome').keyup(function () {
+            this.value = this.value.toLocaleUpperCase();
+        });
+
+        $('#MedCarteiraConvenio').keyup(function () {
+            this.value = this.value.toLocaleUpperCase();
+        });
+
+        $('#MedCarteiraTitular').keyup(function () {
+            this.value = this.value.toLocaleUpperCase();
+        });
+
+        $('#BancoNome').keyup(function () {
+            this.value = this.value.toLocaleUpperCase();
+        });
+
+
+
+        $("#PacienteCpf").mask("999.999.999-99");
+        $("#MedCarteiraTitularCpf").mask("999.999.999-99");
+
+
+        //$("#PacienteCelular").mask("(99)9999-9999?9");
+        $('#PacienteCelular').mask(maskBehavior, options);
+        $('#PacienteTelefone').mask(maskBehavior, options);
+        $("#MedCarteiraValidade").mask("99/99/9999");
+        $("#MedGuiaData").mask("99/99/9999");
+
+        $("#PacienteCep").mask("99999-999");
+        $("#PacienteDataNascimento").mask("99/99/9999");
+        $("#PacienteDataInicio").mask("99/99/9999");
+
+        $("#MedCarteiraTitularDataNascimento").mask("99/99/9999");
+
+        @if (!podeAlterar)
+        {
+		 @:$("#PacienteCpf").prop("readOnly", true);
+                                                                         @:$("#btnerrado").attr("style", "display:show");
+	}
+
+
+
+
+        $("#PacienteCpf").focusout(function () {
+            $('#loading_cpf').css('display', 'inline');
+            $.getJSON('@Url.Content("~/Pessoas/GetPessoas/")', { tipo: 'c', stype: 'Cpf', key: $(this).val() }, function (data) {
+
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "positionClass": "toast-top-center",
+                    "closeButton": true,
+                    "toastClass": "animated fadeInDown",
+                };
+
+
+                if (data.codigo == 200) {
+                    // CPF VALIDO
+                    if (data.Objeto[0] != null) {
+                        $("#PacienteNome").prop("readOnly", false);
+                        $("#PacienteNome").val(data.Objeto[0].Nome);
+                        $("#PacienteId").val(data.Objeto[0].PessoaID);
+                        //$("#PacienteNome").prop("readOnly", true);
+                        $("#PacienteCpf").prop("readOnly", true);
+                        //dados convenio
+                        $("#PacienteCelular").val(data.Objeto[0].Celular);
+                        $("#PacienteTelefone").val(data.Objeto[0].Telefone);
+                        $("#MedCarteiraConvenio").val(data.Objeto[0].MedCarteiraConvenio);
+                        $("#MedCarteiraValidade").val(data.Objeto[0].MedCarteiraValidadeStr);
+                        $("#MedCarteiraTitular").val(data.Objeto[0].MedCarteiraTitular);
+
+                        $("#ConvenioId").val(data.Objeto[0].ConvenioId).trigger('chosen:updated');
+                        carregaPlanos(data.Objeto[0].ConvenioId, data.Objeto[0].ConvenioPlanoId);
+                        $("#ConvenioPlanoValor").val(data.Objeto[0].ConvenioPlanoValor);
+
+
+                        //dados banco
+                        $("#BancoCod").val(data.Objeto[0].BancoCod);
+                        $("#BancoNome").val(data.Objeto[0].BancoNome);
+                        $("#BancoAgencia").val(data.Objeto[0].BancoAgencia);
+                        $("#BancoConta").val(data.Objeto[0].BancoConta);
+
+                        $("#btnerrado").attr("style", "display:show");
+                        $("#BancoCod").focus();
+
+                        // outros dados
+                        $("#PacienteDataInicio").val(data.Objeto[0].DataInicioStr);
+                        $("#PacienteDataNascimento").val(data.Objeto[0].datanascimentostr);
+                        $("#PacienteSexo").val(data.Objeto[0].Sexo).trigger('chosen:updated');
+                        $("#PacienteRG").val(data.Objeto[0].RG);
+                        $("#PacienteEstadoCivil").val(data.Objeto[0].EstadoCivil).trigger('chosen:updated');
+                        $("#PacienteEmail").val(data.Objeto[0].Email);
+                        $("#PacienteCep").val(data.Objeto[0].Cep);
+                        $("#PacienteEndereco").val(data.Objeto[0].Endereco);
+                        $("#PacienteNumero").val(data.Objeto[0].Numero);
+                        $("#PacienteComplemento").val(data.Objeto[0].Complemento);
+                        $("#PacienteBairro").val(data.Objeto[0].Bairro);
+                        $("#PacienteCidade").val(data.Objeto[0].Cidade);
+                        $("#PacienteEstado").val(data.Objeto[0].Estado);
+                        $("#PacientePais").val(data.Objeto[0].Pais);
+
+                        $("#div_ExibirCheckDependente").slideDown();
+
+                        carregaDependentes(data.Objeto[0].PessoaID, 0);
+
+
+                    } else {
+                        $("#PacienteNome").focus();
+
+                        $("#PacienteCpf").prop("readOnly", true);
+                        $("#btnerrado").attr("style", "display:show");
+                        $("#div_ExibirCheckDependente").slideUp();
+                    }
+                    $('#PacienteCpf').css('background-color', '#fff');
+                    $('#loading_cpf').css('display', 'none');
+                } else {
+
+                    toastr.error(data.mensagem)
+                    $("#PacienteCpf").val('');
+                    $("#MedGuiaData").focus();
+                    $('#PacienteCpf').css('background-color', '#ffcaca');
+                    $('#loading_cpf').css('display', 'none');
+                }
+
+
+
+            });
+        });
+
+
+
+        $("#MedCarteiraTitularCpf").focusout(function () {
+
+            $('#loading_cpftitular').css('display', 'inline');
+            $.getJSON('@Url.Content("~/ApiIntegracao/ValidaCpf/")', { documento: $(this).val() }, function (data) {
+
+                    toastr.options = {
+                        "debug": false,
+                        "newestOnTop": false,
+                        "positionClass": "toast-top-center",
+                        "closeButton": true,
+                        "toastClass": "animated fadeInDown",
+                    };
+
+                    if (data) {
+                        // CPF VALIDO
+                        $('#MedCarteiraTitularCpf').css('background-color', '#fff');
+                        $('#loading_cpftitular').css('display', 'none');
+                    } else {
+                        toastr.error("CPF TITULAR INVÁLIDO")
+                        $('#MedCarteiraTitularCpf').css('background-color', '#ffcaca');
+                        $('#loading_cpftitular').css('display', 'none');
+                    }
+
+
+
+
+
+
+
+
+                });
+
+
+
+        });
+
+
+            $("#btnerrado").click(function () {
+                $("#btnerrado").attr("style", "display:none");
+                $("#PacienteNome").prop("readOnly", false);
+                $("#PacienteCpf").prop("readOnly", false);
+                limpar();
+                $("#PacienteCpf").val('');
+                $("#PacienteCpf").focus();
+            });
+
+
+
+
+            //cep
+            $('#buscar-cep').click(function () {
+                $('#PacienteCep').cep({
+                    load: function () {
+                        //Exibe a div loading
+                        $('#loading_cep').css('display', 'inline');
+                    },
+                    complete: function () {
+                        //Esconde a div loading
+                        $('#loading_cep').css('display', 'none');
+                    },
+                    error: function (msg) {
+                        //Exibe em alert a mensagem de erro retornada
+                        alert(msg);
+                    },
+                    success: function (data) {
+                        $('#PacienteEndereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                        $('#PacienteBairro').val(data.bairro);
+                        $('#PacienteEstado').val(data.estado);
+                        $('#PacienteCidade').val(data.cidade);
+                        $('#PacientePais').val('Brasil');
+                        $('#PacienteNumero').focus();
+                    }
+                });
+            });
+
+
+
+    </script>
+    <script>
+
+
+        function limpar() {
+
+            $("#PacienteNome").val('');
+            $("#PacienteId").val('0');
+            //dados convenio
+            $("#PacienteCelular").val('');
+            $("#PacienteTelefone").val('');
+            $("#MedCarteiraConvenio").val('');
+            $("#MedCarteiraValidade").val('');
+            $("#MedCarteiraTitular").val('');
+
+            $("#ConvenioId").val('').trigger('chosen:updated');
+            carregaPlanos(0, 0);
+            $("#ConvenioPlanoValor").val('');
+
+            //dados banco
+            $("#BancoCod").val('');
+            $("#BancoNome").val('');
+            $("#BancoAgencia").val('');
+            $("#BancoConta").val('');
+
+            //outros dados
+            $("#PacienteDataInicio").val('');
+            $("#PacienteDataNascimento").val('');
+            $("#PacienteSexo").val('');
+            $("#PacienteRG").val('');
+            $("#PacienteEstadoCivil").val('');
+            $("#PacienteEmail").val('');
+            $("#PacienteCep").val('');
+            $("#PacienteEndereco").val('');
+            $("#PacienteNumero").val('');
+            $("#PacienteComplemento").val('');
+            $("#PacienteBairro").val('');
+            $("#PacienteCidade").val('');
+            $("#PacienteEstado").val('');
+            $("#PacientePais").val('');
+            $("#div_ExibirCheckDependente").slideUp();
+            $("#PacienteResponsavel").prop('checked', false);
+
+            verifica($("#PacienteResponsavel").is(':checked'));
+
+        }
+
+        $('#ConvenioId').on('change', function () {
+            carregaPlanos($(this).val(), null);
+        });
+
+
+        function carregaPlanos(ConvenioId, ConvenioPlanoId) {
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetConveniosPlanos/")", { id: ConvenioId, FilialId: "@BLL.Usuarios.GetFilialId()" }, function (result) {
+                data = $.map(result.ListConvenioPlano, function (item, a) {
+                    var select = (ConvenioPlanoId == item.ConvenioPlanoId) ? " selected='selected' " : "";
+                    return "<option value=" + item.ConvenioPlanoId + " " + select + ">" + item.ConvenioPlanoNome + "</option>";
+                });
+                $("#ConvenioPlanoId").empty();
+                $('#ConvenioPlanoId').append($('<option>', {
+                    value: 0,
+                    text: '--Selecione--'
+                }));
+                $("#ConvenioPlanoId").append(data.join(""));
+
+                $("#ConvenioPlanoId").val(ConvenioPlanoId).trigger('chosen:updated');
+                $("#ConvenioPlanoId").val(ConvenioPlanoId).trigger('change.select2');
+
+            });
+        }
+
+        function carregaDependentes(PessoaId, PessoaDependenteId) {
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetDependentes/")", { id: PessoaId }, function (result) {
+                data = $.map(result, function (item, a) {
+                    var select = (PessoaDependenteId == item.PessoaDependenteId) ? " selected='selected' " : "";
+                    return "<option value=" + item.PessoaDependenteId + " " + select + ">" + item.PessoaDependenteNome + "</option>";
+                });
+                $("#PessoaDependenteId").empty();
+                $('#PessoaDependenteId').append($('<option>', {
+                    value: 0,
+                    text: '--Selecione--'
+                }));
+                $("#PessoaDependenteId").append(data.join(""));
+
+                $("#PessoaDependenteId").trigger('chosen:updated');
+                $("#PessoaDependenteId").trigger('change.select2');
+
+            });
+        }
+
+
+
+         @if (Model.RegStatus == "P")
+         {
+		    @:$("#MedGuiaData").focus();
+	     }
+         else
+         {
+             @:$("#MedCarteiraTitular").focus();
+	     }
+
+        //inicializador
+        carregaPlanos('@Model.ConvenioId', '@Model.ConvenioPlanoId');
+
+        
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+
+            $(".datepicker_year").datepicker({
+                startView: 2,
+                language: 'pt-BR', format: 'dd/mm/yyyy',
+                
+            });
+
+        });
+    </script>
+
+    <script>
+
+        verifica($("#PacienteResponsavel").is(':checked'));
+
+        //recarrega o combo de depentens
+        if ($("#PacienteId").val() > 0) {
+            $("#div_ExibirCheckDependente").slideDown();
+            carregaDependentes($("#PacienteId").val(), "@Model.PessoaDependenteId")
+        }
+
+        function verifica(checado) {
+            if (checado) {
+                $("#div_PacienteResponsavel").slideDown();
+                $("#lblNomePaciente").text("Responsável");
+            } else {
+                $("#div_PacienteResponsavel").slideUp();
+                $("#lblNomePaciente").text("Nome do Paciente");
+            }
+        }
+
+        $('#PacienteResponsavel').change(function () {
+            verifica(this.checked);
+        });
+
+        $('#copyDadosPessoa').change(function () {
+            console.log(this.checked);
+            if (this.checked) {
+                $("#MedCarteiraTitularCpf").val($("#PacienteCpf").val());
+                $("#MedCarteiraTitularNome").val($("#PacienteNome").val());
+                $("#MedCarteiraTitularDataNascimento").val($("#PacienteDataNascimento").val());
+            }
+        });
+    </script>
+
+}
+

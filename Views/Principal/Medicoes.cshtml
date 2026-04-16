@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Models.Medicao>
+
+
+@{
+    ViewBag.Title = "Relatório Diários Não Assinados";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var listaMedicoes = from medicao in Model
+                        where medicao.MotivoCancelamentoId == null
+                        select medicao;
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>Projeto</th>
+            <th>#</th>
+            <th>Medição</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in listaMedicoes)
+        {
+            <tr class="@(item.MotivoCancelamentoId != null ? " muted error disabled " : "")">
+                <td>@item.ProjetoNome</td>
+                <td>@item.Contador</td>
+                <td>@item.EquipamentoDtEntrada</td>
+                <td><a data-original-title="Validate" class="btn btn-small " href="~/Medicoes/Assinar/@item.MedicaoId?ProjetoId=@item.ProjetoId">
+                    <i class="icon-share-alt"></i>
+                </a>
+                </td>
+            </tr>    
+        }
+    </tbody>
+</table>
+
+@Html.Paginacao((int)ViewBag.qtdPaginas)
+

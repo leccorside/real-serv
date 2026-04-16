@@ -1,0 +1,302 @@
+﻿@model Models.PessoaPlanoGrupoView
+
+@{
+    ViewBag.Title = "Eventos";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.EmpresaId);
+
+    var associe_index_texto = BLL.Configuracoes.CarregarPorEmpresaId("associe_index_texto", Model.EmpresaId);
+}
+
+<div class="content-boxed">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho)
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+
+                    <div class="row">
+
+                        <div class="col-lg-12" style="">
+
+                            <div class="text-center m-b-xl">
+                                @associe_index_texto
+
+                            </div>
+
+                            <ul class="row" style="list-style: none; margin: 0px !important; padding: 0px !important;">
+                                @foreach (var item in Model.PagePessoaPlanoGrupo.Items)
+                                {
+                                    var dtDe = (item.PessoaPlanoGrupoDtInicio == null ? "" : Convert.ToDateTime(item.PessoaPlanoGrupoDtInicio).ToShortDateString());
+                                    var dtAte = (item.PessoaPlanoGrupoDtFim == null ? "" : Convert.ToDateTime(item.PessoaPlanoGrupoDtFim).ToShortDateString());
+                                    
+
+                                    
+                                    <li class="hpanel blog-box col-lg-3">
+                                        <div class="panel-heading">
+                                            <div class="media clearfix">
+                                                <div class="media-body">
+                                                    @if (item.PessoaPlanoGrupoDtIndeterminado)
+                                                    {
+                                                        <small>Indeterminado</small>
+                                                    }
+                                                    else
+                                                    {
+                                                        <small class="text-muted">@dtDe até @dtAte</small>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <a href="blog_details.html">
+                                                <h4>@item.PessoaPlanoGrupoNome</h4>
+                                            </a>
+                                            <p>
+                                                @Html.Raw(item.PessoaPlanoGrupoDescricao)
+                                            </p>
+                                        <br />
+                                            Público:
+                                            <ul>
+                                                @foreach (var item_b in item.ListPessoaPlano)
+                                                {
+                                                    <li>@item_b.PessoaCategoriaSubNome</li>
+                                                }
+                                            </ul>
+                                            <br />
+                                            <a href="@Url.Content("~/Eventos/Identifique_se/" + item.PessoaPlanoGrupoId + "/" + item.PessoaPlanoGrupoGUID + "/?eid=" + item.EmpresaId)" class="btn btn-primary btn-xs">Inscrição</a>
+                                        </div>
+                                        @*<div class="panel-footer">
+                                            <span class="pull-right">
+                                                <i class="fa fa-comments-o"></i>56 comments
+                                            </span>
+                                            <i class="fa fa-eye"></i>144 views
+                                        </div>*@
+                                    </li>
+                                    
+                                }
+
+
+
+
+                            </ul>
+
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            @Html.Raw(associe_rodape)
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+<style>
+    .blog-box
+    {
+        min-height:300px;
+    }
+</style>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+    <script>
+
+
+
+
+
+        $("#Pessoa_Documento").mask("999.999.999-99");
+
+
+
+        $('#Pessoa_Celular').mask(maskBehavior, options);
+        $('#Pessoa_Telefone').mask(maskBehavior, options);
+        $("#MedCarteiraValidade").mask("99/99/9999");
+        $("#MedGuiaData").mask("99/99/9999");
+        $("#Pessoa_Cep").mask("99999-999");
+        $("#Pessoa_DataNascimento").mask("99/99/9999");
+        $("#Pessoa_DataInicio").mask("99/99/9999");
+
+
+
+
+        $("#Pessoa_Documento").focusout(function () {
+            $('#ok_cpf').css('display', 'none');
+            $('#loading_cpf').css('display', 'inline');
+            $.getJSON('@Url.Content("~/Pessoas/GetPessoas/")', { tipo: 'c', stype: 'Cpf', key: $(this).val() }, function (data) {
+
+
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "positionClass": "toast-top-center",
+                    "closeButton": true,
+                    "toastClass": "animated fadeInDown",
+                };
+
+
+
+                if (data.codigo == 200) {
+                    // CPF VALIDO
+                    if (data.Objeto[0] != null) {
+                        $("#Pessoa_NomeCompleto").prop("readOnly", false);
+                        $("#Pessoa_NomeCompleto").val(data.Objeto[0].Nome);
+                        $("#Pessoa_Id").val(data.Objeto[0].PessoaID);
+                        //$("#Pessoa_Nome").prop("readOnly", true);
+                        $("#Pessoa_Documento").prop("readOnly", true);
+                        //dados convenio
+                        $("#Pessoa_Celular").val(data.Objeto[0].Celular);
+                        $("#Pessoa_Telefone").val(data.Objeto[0].Telefone);
+                        $("#MedCarteiraConvenio").val(data.Objeto[0].MedCarteiraConvenio);
+                        $("#MedCarteiraValidade").val(data.Objeto[0].MedCarteiraValidadeStr);
+                        $("#MedCarteiraTitular").val(data.Objeto[0].MedCarteiraTitular);
+
+                        $("#ConvenioId").val(data.Objeto[0].ConvenioId).trigger('chosen:updated');
+                        carregaPlanos(data.Objeto[0].ConvenioId, data.Objeto[0].ConvenioPlanoId);
+                        $("#ConvenioPlanoValor").val(data.Objeto[0].ConvenioPlanoValor);
+
+
+                        //dados banco
+                        $("#BancoCod").val(data.Objeto[0].BancoCod);
+                        $("#BancoNome").val(data.Objeto[0].BancoNome);
+                        $("#BancoAgencia").val(data.Objeto[0].BancoAgencia);
+                        $("#BancoConta").val(data.Objeto[0].BancoConta);
+
+                        $("#btnerrado").attr("style", "display:show");
+                        $("#BancoCod").focus();
+
+                        // outros dados
+                        $("#Pessoa_DataInicio").val(data.Objeto[0].DataInicioStr);
+                        $("#Pessoa_DataNascimento").val(data.Objeto[0].datanascimentostr);
+                        $("#Pessoa_Sexo").val(data.Objeto[0].Sexo).trigger('chosen:updated');
+                        $("#Pessoa_RG").val(data.Objeto[0].RG);
+                        $("#Pessoa_EstadoCivil").val(data.Objeto[0].EstadoCivil).trigger('chosen:updated');
+                        $("#Pessoa_Email").val(data.Objeto[0].Email);
+                        $("#Pessoa_Cep").val(data.Objeto[0].Cep);
+                        $("#Pessoa_Endereco").val(data.Objeto[0].Endereco);
+                        $("#Pessoa_Numero").val(data.Objeto[0].Numero);
+                        $("#Pessoa_Complemento").val(data.Objeto[0].Complemento);
+                        $("#Pessoa_Bairro").val(data.Objeto[0].Bairro);
+                        $("#Pessoa_Cidade").val(data.Objeto[0].Cidade);
+                        $("#Pessoa_Estado").val(data.Objeto[0].Estado);
+                        $("#Pessoa_Pais").val(data.Objeto[0].Pais);
+
+                        $("#div_ExibirCheckDependente").slideDown();
+
+                        carregaDependentes(data.Objeto[0].PessoaID, 0);
+
+
+                    } else {
+                        $("#Pessoa_Nome").focus();
+
+                        $("#Pessoa_Documento").prop("readOnly", true);
+                        $("#btnerrado").attr("style", "display:show");
+                        $("#div_ExibirCheckDependente").slideUp();
+                    }
+                    $('#Pessoa_Documento').css('background-color', '#fff');
+                    $('#loading_cpf').css('display', 'none');
+                    $('#ok_cpf').css('display', 'inline');
+                } else {
+
+                    toastr.error(data.mensagem)
+                    $("#Pessoa_Documento").val('');
+                    $("#MedGuiaData").focus();
+                    $('#Pessoa_Documento').css('background-color', '#ffcaca');
+                    $('#loading_cpf').css('display', 'none');
+                    $('#ok_cpf').css('display', 'none');
+                }
+
+
+
+            });
+        });
+
+
+
+
+        $("#btnerrado").click(function () {
+            $("#btnerrado").attr("style", "display:none");
+            $("#Pessoa_Nome").prop("readOnly", false);
+            $("#Pessoa_Documento").prop("readOnly", false);
+            limpar();
+            $("#Pessoa_Documento").val('');
+            $("#Pessoa_Documento").focus();
+        });
+
+
+
+
+        //cep
+        $('#buscar-cep').click(function () {
+            $('#Pessoa_Cep').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading_cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading_cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                },
+                success: function (data) {
+                    $('#Pessoa_Endereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                    $('#Pessoa_Bairro').val(data.bairro);
+                    $('#Pessoa_Estado').val(data.estado);
+                    $('#Pessoa_Cidade').val(data.cidade);
+                    $('#Pessoa_Pais').val('Brasil');
+                    $('#Pessoa_Numero').focus();
+                }
+            });
+        });
+
+
+
+    </script>
+
+    <script type="text/javascript">
+
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+
+    </script>
+
+
+
+}
+

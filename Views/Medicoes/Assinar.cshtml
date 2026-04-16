@@ -1,0 +1,114 @@
+﻿@model Models.MedicaoAssinar
+
+@{
+    ViewBag.Title = "Assinar Relatório Diário";
+    Layout = "~/Views/Shared/_LayoutFull.cshtml";
+
+    var bllMedicao = new Bll.Medicoes();
+}
+
+
+@section Styles{
+
+    <style>
+        .table-executada
+        {
+            font-size: 8px;
+        }
+
+        .editor-label label
+        {
+            font-size: 9px;
+        }
+
+        .editor-field input
+        {
+            font-size: 10px;
+        }
+    </style>
+}
+
+
+@section Breadcrumb{
+     @if (Bll.Usuarios.AccessControl("Criar", "Medicoes"))
+    {
+    <li><span class="divider">/</span><a href="~/Projetos/Index">Obras</a></li>
+    <li><span class="divider">/</span><a href="~/Projetos/Criar/@Model.DadosProjeto.ProjetoId">@Model.DadosProjeto.ProjetoNome</a></li>
+    <li><span class="divider">/</span><a href="~/Medicoes/Index/@Model.DadosProjeto.ProjetoId">Relatórios Diários</a></li>
+     }
+}
+
+
+
+<ul class="nav nav-tabs">
+    @if (Bll.Usuarios.AccessControl("Criar", "Medicoes"))
+    {
+    <li><a href="~/Medicoes/Criar/@Model.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId">Dados</a></li>
+    <li><a href="~/Medicoes/QuadroHorario/@Model.Medicao.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId">Quadro Funcionários</a></li>
+    <li><a href="~/Medicoes/Estacas/0?MedicaoId=@Model.MedicaoId">Estacas Executadas</a></li>    
+    }
+    
+    <li class="active"><a href="~/Medicoes/Assinar/@Model.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId">Assinar</a></li>
+    <li class="pull-right"><a href="~/Medicoes/Imprimir/@Model.MedicaoId?ProjetoId=@Model.DadosProjeto.ProjetoId" class="btn btn-mini"><i class="icon-print"></i>Imprimir</a></li>
+</ul>
+
+
+@Html.Partial("~/Views/Foo/_Medicao.cshtml")
+
+
+
+<div class="row-fluid">
+    <div class="span6">
+        
+
+        @if (Model.Medicao.FiscalId == 0 && Bll.Usuarios.IsFiscal())
+        {
+            using (Html.BeginForm())
+            {
+            <legend>Assinar</legend>
+            @Html.HiddenFor(model => model.MedicaoId)
+            @Html.HiddenFor(model => model.ProjetoId)
+            @Html.Hidden("UsuarioFiscal", true);
+            @Html.Hidden("UsuarioEngenheiro", false); 
+            <label>Seu e-mail</label>
+            @Html.TextBoxFor(model => model.login, null, new { placeholder = "Seu e-mail", required = "preencha o campo", autofocus = "" })
+            
+            <label>Senha</label><div class="input-append">
+                @Html.PasswordFor(model => model.senha, new { placeholder = "Sua senha", required = "", autofocus = "" })
+                
+                <input type="submit" value="Assinar" class="btn" />
+            </div>
+            }
+        }
+        
+
+
+    </div>
+    
+    <div class="span6" >
+        @if (Model.Medicao.EngenheiroId == 0 && Bll.Usuarios.IsEngenheiro())
+        {
+            using (Html.BeginForm())
+            {
+            <legend>Assinar</legend>
+            @Html.HiddenFor(model => model.MedicaoId)
+            @Html.HiddenFor(model => model.ProjetoId)
+            @Html.Hidden("UsuarioFiscal", false);
+            @Html.Hidden("UsuarioEngenheiro", true); 
+            <label>Seu e-mail</label>
+            @Html.TextBoxFor(model => model.login, null, new { placeholder = "Seu e-mail", required = "preencha o campo", autofocus = "" })
+            <label>Senha</label><div class="input-append">
+                @Html.PasswordFor(model => model.senha, new { placeholder = "Sua senha", required = "", autofocus = "" })
+                <input type="submit" value="Assinar" class="btn" />
+            </div>
+            }
+        }
+    </div>
+</div>
+
+<br />
+
+<p class="pull-left">
+    @Html.ActionLink("Voltar", "Index")
+</p>
+

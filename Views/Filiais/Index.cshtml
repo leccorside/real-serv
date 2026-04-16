@@ -1,0 +1,109 @@
+@model IEnumerable<Models.Filial>
+
+@{
+    ViewBag.Title = "Filiais";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var user = new BLL.Usuarios();
+    var Filiais_Form_Imposto_Repasse = user.ControleAcesso("Form_Imposto_Repasse", "Filiais");
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active"> @Html.ActionLink("Configura&ccedil;&otilde;es", "Configuracoes", "Principal")</li>
+
+
+}
+
+
+<div class="content animate-panel">
+
+    <div class="row">
+        <div class="col-lg-12">
+            @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+        </div>
+    </div>
+
+        <div class="row projects">
+            <ul data-pagination-limit="12" style="list-style: none; margin: 0px !important; padding: 0px !important;">
+                @foreach (var item in Model)
+                {
+                    var repasse_config = (item.FilialRepasse == 0 || item.FilialRepasseTeto == 0) ? false : true;
+                <li class="col-lg-6" style="">
+                    <div class="hpanel hblue hfilial">
+                        <div class="panel-body">
+                            <span class=" pull-right">@item.FilialID</span>
+                            <div class="row">
+                                <div class="col-sm-7" style="">
+                                    <h4><a href="@Url.Content("~/Filiais/Criar" + item.FilialID)">@item.FilialNome</a></h4>
+                                    <h6>@item.FilialDocumento</h6>
+                                    <p>@item.FilialEndereco @item.FilialNumero @item.FilialComplemento</p>
+                                    <p>@item.FilialBairro @item.FilialCep @item.FilialCidade @item.FilialEstado</p>
+                                    <div class="row">
+                                        <div class="col-sm-6" style="">
+                                            <div class="project-label">Contato</div>
+                                            <small>@item.FilialContato</small>
+                                        </div>
+                                        <div class="col-sm-6" style="">
+                                            <div class="project-label">Telefone</div>
+                                            <small>@item.FilialCelular</small>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-sm-5 project-info" style="">
+                                    <div class="project-action m-t-md">
+                                        <div class="btn-group">
+                                            @Html.ActionLink("Alterar", "Criar", new { id = item.FilialID }, new { @class = "btn btn-xs btn-outline btn-primary" })
+                                            @*<a class="btn btn-xs btn-default" href="@Url.Content("~/Acessos/SelecionarFilial/"+ item.FilialID)">Selecionar</a>*@
+                                            @Html.ActionLink("Excluir", "Deletar", new { id = item.FilialID }, new { @class = "btn btn-xs btn-outline btn-danger" })
+                                        </div>
+                                    </div>
+                                    @if (Filiais_Form_Imposto_Repasse)
+                                    {
+                                    <div class="project-value">
+                                        <h2 class="text-success">@string.Format("{0:F2}", item.FilialImposto) %</h2>
+                                    </div>    
+                                    }
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            @if (item.FilialSmsSend)
+                            {
+                                <i class="fa fa-comments"></i> <small>@item.FilialSmsRemetente: @item.FilialSmsText</small>
+                            }
+                            else
+                            {
+                                <small>&nbsp;</small>  
+                            }
+                             @if (!repasse_config)
+                                                {
+                                                    <small><strong><i class="fa fa-exclamation-triangle text-warning"></i> Aten&ccedil;&atilde;o:</strong> Par&acirc;metros de repasse n&atilde;o configurados.</small>
+                                                    
+                                                }
+                        </div>
+                    </div>
+                </li>
+                }
+            </ul>
+        </div>
+
+    
+    </div>
+
+
+
+
+@section styles {
+    @Html.Partial("_TableStyles")
+    <style>
+        .hfilial { min-height: 300px; }
+    </style>
+}
+

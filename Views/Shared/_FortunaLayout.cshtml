@@ -1,0 +1,401 @@
+﻿﻿
+@{
+    
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentTipo = ViewContext.RouteData.Values["tipo"] as string ?? "";
+
+    var currentId = ViewContext.RouteData.Values["id"] as string ?? "0";
+
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    currentTipo = currentTipo.ToLower();
+    var currentPage = (currentController + "-" + currentAction + currentTipo).ToLower();
+
+    var user = new BLL.Usuarios();
+    var controleAcesso = user.ControleAcesso(currentAction, currentController);
+
+    var dadosUser = user.Carregar(BLL.Usuarios.GetUsuarioId());
+
+    
+    var _copyright = BLL.Configuracoes.Carregar("copyright");
+    var _copyright_infos = BLL.Configuracoes.Carregar("copyright.infos");
+    
+    var nobreadcrumb = ViewBag.nobreadcrumb;
+
+    var layout_body_class = BLL.Configuracoes.Carregar("layout.body.class");
+}
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Page title -->
+    <title>@Html.Raw(ViewBag.Title)</title>
+
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    @RenderSection("css", required: false)
+
+
+    <!-- Primary vendor style -->
+    @Styles.Render("~/bundles/font-awesome/css")
+    @Styles.Render("~/bundles/animate/css")
+    @Styles.Render("~/bundles/bootstrap/css")
+    @Styles.Render("~/bundles/peicon7stroke/css")
+
+    <!-- mensagens de erros -->
+    @Styles.Render("~/bundles/sweetAlert/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+    <!-- Localization Tool -->
+    @Styles.Render("~/bundles/localizationTool/css")
+
+    <!-- Add local styles, mostly for plugins css file -->
+    @if (IsSectionDefined("Styles"))
+    {@RenderSection("Styles", required: false)}
+
+    <!-- Primary HOMER style -->
+    @Styles.Render("~/bundles/homer/css")
+    @Styles.Render("~/bundles/homer/custom")
+    @Styles.Render("~/bundles/fancybox/css")
+
+    @Html.Raw(BLL.Configuracoes.CarregarPorEmpresaId("layout.head", BLL.Usuarios.GetEmpresaId()))
+
+
+
+</head>
+<body class="fixed-navbar @ViewBag.body_class @layout_body_class ">
+
+    <!-- Simple splash screen-->
+    <div class="splash">
+        <div class="color-line"></div>
+        <div class="splash-title">
+            <h1></h1>
+            <p>Carregando recursos do Sistema</p>
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    <!--[if lt IE 7]>
+<p class="alert alert-danger">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+    <!-- Header -->
+    <div id="header">
+        @Html.Partial("_FortunaHeader")
+    </div>
+
+    <!-- Navigation -->
+    <aside id="menu">
+        @Html.Partial("_FortunaNavigation")
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div id="wrapper" >
+        
+        @if (nobreadcrumb!="true")
+        {
+         
+            
+        <div class="small-header transition animated fadeIn">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <div id="hbreadcrumb" class="pull-right">
+                        <ol class="hbreadcrumb breadcrumb">
+                            <li><a href="@Url.Action("Index", "Principal")">Home</a></li>
+                            @RenderSection("breadcrumb", required: false)
+                            <li class="active">
+                                <span>@Html.Raw(ViewBag.Title)</span>
+                            </li>
+                        </ol>
+                    </div>
+                    <h2 class="font-light m-b-xs">
+                        @Html.Raw(ViewBag.Title)
+                    </h2>
+                    @Html.Raw(ViewBag.InfoAdicional)
+                    <small>@Html.Raw(ViewBag.Resumo)</small>
+                </div>
+            </div>
+        </div>}
+        <p>&nbsp;</p>
+          
+        
+
+            @if (dadosUser.AcessoRestrito == true && Request.UserHostAddress.Trim() != dadosUser.AcessoIP.Trim())
+            {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-warning">
+                            <h4>Ooops... Parece que seu perfil possui restrição de acesso ao sistema</h4>
+
+                            <h6>Qual o motivo para restrição de acesso:</h6>
+                            Você não está acessando do IP: @dadosUser.AcessoIP<br />
+                            Seu IP atual: @Request.UserHostAddress<br />
+                            <small>Se você acha que essa mensagem não se aplica à você, entre em contato.</small>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (dadosUser.AcessoRestritoMacAddress == true && BLL.Utils.Funcoes.GetMacAddress() != dadosUser.AcessoMacAddress.Trim())
+            {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-warning">
+                            <h4>Ooops... Parece que seu perfil possui restrição de acesso ao sistema</h4>
+
+                            <h6>Qual o motivo para restrição de acesso:</h6>
+                            Você não está acessando do MAC ADDRESS: @dadosUser.AcessoMacAddress<br />
+                            Seu MAC ADDRESS atual: @BLL.Utils.Funcoes.GetMacAddress()<br />
+                            <small>Se você acha que essa mensagem não se aplica à você, entre em contato.</small>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                if (controleAcesso)
+                {
+                @RenderBody()
+                }
+                else
+                {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-error" id="alert-error">
+                            <h4>Ooops... Você não possui acesso à este módulo</h4>
+                            <br />
+                            @currentController / @currentAction
+                        </div>
+                    </div>
+                </div>
+                }
+            }
+
+
+
+       
+
+
+        <!-- Footer-->
+        <footer class="footer">
+
+
+            @if (_copyright == "")
+            {
+                <span class="muted pull-right">@DateTime.Today.ToString("yyyy") &copy; Powered By <a href="http://www.e-bee.com.br" target="_blank" style="color: #ff7518; font-weight: bold">E-Bee</a>    </span>
+            }
+            else
+            {
+                <div>
+                    <span class="pull-right">
+                        @Html.Raw(_copyright_infos)
+                    </span>
+                    @DateTime.Today.ToString("yyyy") &copy; @Html.Raw(_copyright)
+                </div>
+            }
+
+        </footer>
+
+    </div>
+
+    <!-- Section for main scripts render -->
+    @Scripts.Render("~/bundles/jquery/js")
+    @Scripts.Render("~/bundles/bootstrap/js")
+    @Scripts.Render("~/bundles/homer/js")
+
+    <!-- mensagens de erros -->
+    @Scripts.Render("~/bundles/sweetAlert/js")
+    @Scripts.Render("~/bundles/toastr/js")
+    
+
+    <!-- Localization Tool -->
+    @Scripts.Render("~/bundles/localizationTool/js")
+
+    <!-- mask -->
+    @Scripts.Render("~/bundles/mask/js")
+
+    <!-- input file -->
+    @Scripts.Render("~/bundles/filestyle/js")
+    
+
+    <script>
+        $(".logoff").click(function () {
+            swal({ title: "Logoff", text: "Deseja realmente sair do sistema?", type: "warning", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { parent.location = "@Url.Content("~/Home/Logoff/" + BLL.Usuarios.GetEmpresaId())"; });
+        });
+
+ 
+
+        function cubeeConfirm(titulo, texto, url) {
+            swal({
+                title: titulo,
+                text: texto,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim",
+                cancelButtonText: "Não, cancelar",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    window.location.href = url;
+                } else {
+                    return false;
+                }
+            });
+        }
+
+        function cubeeFormConfirm(titulo, texto, obj) {
+            swal({
+                title: titulo,
+                text: texto,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim",
+                cancelButtonText: "Não, cancelar",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    console.log(obj);
+
+                    var el = document.getElementById(obj);
+                    if (el) { el.submit(); }
+
+
+                } else {
+                    return false;
+                }
+            });
+        }
+
+        // input file style
+        $(":file").filestyle({ input: false, buttonText: "Localizar Arquivo" });
+
+        //Masks Celular
+        var SPMask = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '00000-0000' : '0000-00009';
+        },
+        spOptions = {
+            onKeyPress: function (val, e, field, options) {
+                field.mask(SPMaskBehavior.apply({}, arguments), options);
+            }
+        };
+
+
+        var SPMaskBehavior = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        },
+        spOptions = {
+            onKeyPress: function (val, e, field, options) {
+                field.mask(SPMaskBehavior.apply({}, arguments), options);
+            }
+        };
+
+        //Traducoes do site
+        //var lang_json = {
+        //    'class:labelCidade': {
+        //        'pt_BR': 'Cidade',
+        //        'en_GB': 'City',
+        //    },
+        //};
+        //$.getJSON('collocarUrlAqui', function (json) {
+        //    lang_json = json;
+        //});
+        //$('#widget_language').localizationTool({
+        //    'defaultLanguage': 'pt_BR', 
+        //    'showFlag': true,           
+        //    'showCountry': false,       
+        //    'showLanguage': true,
+        //    'strings': lang_json
+        //});
+
+    </script>
+    <!-- Handler for local scripts -->
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+    
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+
+            
+
+        });
+
+        function abrePagina(url) {
+            console.log(url);
+            
+            $.fancybox({
+                fitToView: true,
+                autoSize: true,
+                closeClick: false,
+                openEffect: 'elastic',
+                closeEffect: 'elastic',
+                type: 'iframe',
+                href: url,
+                beforeClose: function () {
+                    RecarregaPagina();
+                },
+
+            });
+
+
+        }
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+        $("#EntidadeStatusId").on("change", function () { $.getJSON("@Url.Content("~/EntidadesStatus/GetSubStatus")", { id: $(this).val() }, function (t) { if ($("#div_substatus_checkbox").empty(), null == t || "" == t) $("#div_substatus").css("display", "none"); else { $("#div_substatus").css("display", "block"); for (var s = [], e = 0; e < t.length; e++) s.push('<label class="checkbox-inline"><input type="checkbox" value=\'' + t[e] + '\' name="EntidadeStatusSubStatus">' + t[e] + "</label>"); $("#div_substatus_checkbox").append($(s.join(""))) } }) });
+
+        $("#EntidadeStatusId").on("change", function () {
+
+            if ($(this).find(':selected').attr('data-val-sendmail')=="True") {
+                $("#div_StatusEmailEnviar").css("display", "block");
+                $("#span_StatusEmailAssunto").text($(this).find(':selected').attr('data-val-sendmailsubject'));
+                span_StatusEmailAssunto
+            } else {
+                $("#div_StatusEmailEnviar").css("display", "none");
+                $('#StatusEmailEnviar').prop('checked', false); // Unchecks it
+            }
+
+
+        });
+
+    </script>
+    @RenderSection("scripts", required: false)
+
+    @Html.Partial("~/Views/Foo/_FortunaRenderErros.cshtml")
+
+    <script>
+        $('.btn_mais_menos').click(function () { //you can give id or class name here for $('button')
+            $(this).text(function (i, old) {
+                return old == '+' ? '-' : '+';
+            });
+        });
+    </script>
+   
+
+
+</body>
+</html>

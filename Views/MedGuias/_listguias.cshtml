@@ -1,0 +1,440 @@
+﻿@model PetaPoco.Page<Models.MedGuia>
+
+
+@{
+    var user = new BLL.Usuarios();
+
+    var bllMedGuias = new BLL.MedGuias();
+
+
+    var _MedGuiasTools = BLL.Usuarios.VerificaAcesso("Tools", "MedGuias");
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+
+    var _MedGuiasDeletar = BLL.Usuarios.VerificaAcesso("Deletar", "MedGuias");
+
+    var _MedGuiasHistorico = BLL.Usuarios.VerificaAcesso("Historico", "MedGuias");
+
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    
+    var _MedGuiasAnexos = BLL.Usuarios.VerificaAcesso("Anexos", "MedGuias");
+
+    var _MedGuiasStatus = BLL.Usuarios.VerificaAcesso("Status", "MedGuias");
+
+    var _PessoasDadosAluno = BLL.Usuarios.VerificaAcesso("DadosAluno", "Pessoas");
+
+    var _MedGuiasPrecoCusto = BLL.Usuarios.VerificaAcesso("PrecoCusto", "MedGuias");
+
+    var _MedGuiasVisualizar = BLL.Usuarios.VerificaAcesso("Visualizar", "MedGuias");
+
+    var _MedGuiasView = BLL.Usuarios.VerificaAcesso("View", "MedGuias");
+
+    var _MedGuiasBoletos = BLL.Usuarios.VerificaAcesso("Boletos", "MedGuias");
+
+    var _MedGuiasViewTotalProdutos = BLL.Usuarios.VerificaAcesso("ViewTotalProdutos", "MedGuias");
+    var _MedGuiasViewTotalProdutosCusto = BLL.Usuarios.VerificaAcesso("ViewTotalProdutosCusto", "MedGuias");
+    var _MedGuiasViewTotalReembolso = BLL.Usuarios.VerificaAcesso("ViewTotalReembolso", "MedGuias");
+    var _MedGuiasViewTotalLucro = BLL.Usuarios.VerificaAcesso("ViewTotalLucro", "MedGuias");
+    var _MedGuiasViewTotalLucroLiquido = BLL.Usuarios.VerificaAcesso("ViewTotalLucroLiquido", "MedGuias");
+    var _MedGuiasViewNF = BLL.Usuarios.VerificaAcesso("ViewNF", "MedGuias");
+
+    var _MedGuiasRelatorios = BLL.Usuarios.VerificaAcesso("Relatorios", "MedGuias");
+
+    string outrosCampos = Convert.ToString(ViewBag.Campos);
+    if (outrosCampos == null)
+    {
+        outrosCampos = "";
+    }
+
+
+
+    String localAtual = HttpContext.Current.Request.Url.LocalPath;
+
+    bool EstaNaPaginaDoLink = localAtual.Contains("Pessoas/DadosAluno");
+
+    bool exibeFuncoes = false;
+
+    if (_MedGuiasVisualizar || _FinanceiroLancamento || _MedGuiasCriar || _MedGuiasGuiaNF || _MedGuiasHistorico || _MedGuiasAnexos || _MedGuiasDeletar || _MedGuiasStatus)
+    {
+        exibeFuncoes = true;
+    }
+    
+   
+
+         
+    
+}
+
+
+
+<div class="row">
+    <div class="col-lg-6"></div>
+</div>
+
+
+
+<div class="hpanel forum-bpox">
+    <div class="panel-heading">
+        <span class="f">Total de Registros: @Model.TotalItems - Exibindo nesta página: @Model.Items.Count() </span>
+    </div>
+    @foreach (var item in Model.Items)
+    {
+        var _PodeAlterar = bllMedGuias.PodeAlterar(item);
+
+        var tr_status = "";
+        
+       
+        
+        var icon = "";
+        var tempoPassado = "";
+        if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+        {
+            tr_status = "warning";
+            icon = "fa fa-bell-o";
+            tempoPassado = "<i class='fa fa-clock-o'></i> " + item.StatusTempoPassado + " hrs";
+        }
+            
+        <div class="panel-body div_guia @tr_status">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <span class="label label-warning pull-right">@item.StatusInstrucoes</span>
+                </div>
+            </div>
+
+
+            <div class="row">
+                
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button class=" btn btn-outline btn-primary dropdown-toggle" data-toggle="dropdown" type="button" aria-expanded="true"><i class="pe-7s-tools fa-2x"></i><span class="caretx"></span></button>
+                            <ul class="dropdown-menu ">
+
+                                @if (_MedGuiasRelatorios)
+                                {
+
+                                    if ((_MedGuiasAdministrador || _MedGuiasGuiaNF) && item.NotaFiscal != null && item.NotaFiscal != "")
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/ViewGuia/" + item.MedGuiaId + "?")" class="fancybox_full fancybox.iframe " data-toggle="tooltip" data-original-title="Imprimir Guia"  title="Imprimir Guia" data-placement="top">Imprimir Guia</a></li>
+                                    }
+                                    <li><a href="@Url.Content("~/MedGuias/ViewPedidoMedico/" + item.MedGuiaId + "?")" class="fancybox_full fancybox.iframe " data-toggle="tooltip" data-original-title="Imprimir Pedido"  title="Imprimir Pedido" data-placement="top">Imprimir Pedido</a></li>
+                                    <li class="divider"></li>
+                                
+                                }
+
+
+                                @if ((_PodeAlterar || exibeFuncoes) && _MedGuiasTools)
+                                {
+
+
+                                    if (_MedGuiasVisualizar)
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/Visualizar/" + item.MedGuiaId + "/medguias/?filialid=" + item.FilialID)" class="fancybox_full fancybox.iframe " data-toggle="tooltip" data-original-title="Visualizar"  title="Visualizar" data-placement="top">Visualizar</a></li>    
+                                    }
+
+                                    if (_PodeAlterar && _MedGuiasCriar)
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/Criar/" + item.MedGuiaId)" target="_top" class="" data-toggle="tooltip" data-original-title="Alterar"  title="Alterar" data-placement="top">Alterar</a></li>
+                                    }
+
+                                    if (_MedGuiasDeletar)
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/Deletar/" + item.MedGuiaId)" target="_top"  class="" data-toggle="tooltip" data-original-title="Excluir"  title="Excluir" data-placement="top">Excluir</a></li>    
+                                    }
+
+                                        
+
+                                    <li class="divider"></li>
+
+                                    if (_FinanceiroLancamento)
+                                    {
+                                    <li><a href="@Url.Content("~/Financeiro/Lancamento/" + item.MedGuiaId + "/medguias/?&filialid=" + item.FilialID)" class="fancybox fancybox.iframe " data-toggle="tooltip" data-original-title="Lançar recebimentos"  title="Lançar recebimentos" data-placement="top">Lançar Recebimentos</a></li>    
+                                    }
+
+
+                                    if (_MedGuiasGuiaNF)
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/GuiaNf/" + item.MedGuiaId)" target="_top" class="" data-toggle="tooltip" data-original-title="Alterar"  title="Alterar" data-placement="top">@(_MedGuiasPrecoCusto ? "Valor /" : "")NF</a></li>
+                                    }
+
+                                    if (_MedGuiasHistorico)
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/Historico/" + item.MedGuiaId)" target="_top" class="" data-toggle="tooltip" data-original-title="Histórico"  title="Histórico" data-placement="top">Histórico</a></li>
+                                    }
+
+                                    if (_MedGuiasProdutos)
+    {
+                                    <li><a href="@Url.Content("~/MedGuias/Produtos/" + item.MedGuiaId)" target="_top" class="" data-toggle="tooltip" data-original-title="Histórico"  title="Histórico" data-placement="top">Produtos/Exames</a></li>
+    }
+
+                                    
+                                    if (_MedGuiasAnexos)
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/Anexos/" + item.MedGuiaId)" target="_top" class="" data-toggle="tooltip" data-original-title="Anexos"  title="Anexos" data-placement="top">Documentos</a></li>
+                                    }
+
+
+
+                                    if (_MedGuiasStatus)
+                                    {
+                                    <li><a href="@Url.Content("~/MedGuias/Status/" + item.MedGuiaId + "/?")" class=" fancybox_full fancybox.iframe" data-toggle="tooltip" data-original-title="Status"  title="Status" data-placement="top">Status</a></li>    
+                                    }
+                                    <li class="divider"></li>
+                                    
+                                    if (_MedGuiasAdministrador)
+                                    {
+                                        if (!item.Quitado)
+                                        {
+                                            <li><a href="#!" onclick="registraQuitado(@item.MedGuiaId, true)"><i class="fa fa-square-o" aria-hidden="true"></i> Marcar como Quitado</a></li>    
+                                        }
+                                        else
+                                        {
+                                            <li><a href="#!" onclick="registraQuitado(@item.MedGuiaId, false)"><i class="fa fa-check-square-o" aria-hidden="true"></i> Desmarcar Quitado</a></li>    
+                                        }
+                                        
+                                    <li class="divider"></li>
+                                    }
+                                    
+                                    if (_MedGuiasBoletos)
+                                    {
+                                        <li><a href="@Url.Content("~/MedGuias/Boletos/" + item.MedGuiaId + "/?")" class=" fancybox_recarrega fancybox.iframe" data-toggle="tooltip" data-original-title="Status"  title="Status" data-placement="top">Boletos</a></li>        
+                                    }
+                                    
+                                    <li class="divider"></li>
+                            
+                                }
+                                @if (_MedGuiasAdministrador)
+                                {
+                                    @Html.CubeeListAnexos("Pessoas", item.PacienteId, "", true, true, true, false, "li_acoes")
+                                }
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <label>Guia</label><br />@item.MedGuiaId
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Data</label><br />@item.MedGuiaData.ToShortDateString()
+                        </div>
+
+                        @if (!item.PacienteResponsavel)
+                        {
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                            <label>Paciente</label> @Html.TermoAceiteStatus(item.PacienteTermoAceite)<br />
+
+                            <p class="form-control-static plus">@item.PacienteNome @if (!EstaNaPaginaDoLink && _PessoasDadosAluno)
+                                                                              {<a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PacienteId)" class="fancybox_full fancybox.iframe btn btn-outline btn-primary btn-xs"><i class="fa fa-search"></i></a>}
+                                @if (item.PacienteId > 0 && item.PacienteCelular != null)
+                                        {
+                                            
+                                    <a href="@Url.Content("~/TemplatesMensagens/Enviar/?PessoaId=" + item.PacienteId + "&MedGuiaId=" + item.MedGuiaId)" class="fancybox_full fancybox.iframe btn btn-outline btn-success btn-xs"><i class="fa fa-whatsapp"></i></a>    
+                                        }
+                            </p>    
+
+                            
+
+
+                        </div>
+                        }
+                        else
+                        {
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                            <label>Paciente</label><br />
+
+                            <p class="form-control-static plus">@item.PessoaDependenteNome <small class="text-muted">@item.GrauParentescoNome</small></p>
+                            
+                            
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                            <label>Responsável</label> @Html.TermoAceiteStatus(item.PacienteTermoAceite)<br />
+
+                            <p class="form-control-static ">@item.PacienteNome @if (!EstaNaPaginaDoLink && _PessoasDadosAluno)
+                                                                              {<a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PacienteId)" class="fancybox_full fancybox.iframe btn btn-outline btn-primary btn-xs"><i class="fa fa-search"></i></a>}</p>    
+                            
+                            
+
+
+                        </div>
+                        }
+
+                        
+
+                    </div>
+
+            <!-- detalhes-->
+            
+            <div class="collapse @(item.Quitado ? "" : " in ")" id="@("collapse_" + item.MedGuiaId)">
+              <div class="row">
+                            <div class="col-lg-1  col-md-1 col-sm-1">
+                   
+                                 @if (_MedGuiasBoletos) { 
+                                    <br />
+                                <a class="btn btn-outline @(item.Quitado?"btn-success":"btn-warning") fancybox_recarrega fancybox.iframe" type="button" aria-expanded="true" href="@Url.Content("~/MedGuias/Boletos/" + item.MedGuiaId + "/?")"><i class="pe-7s-cash fa-2x"></i><br /><small>Boleto(s)</small> @if (item.Quitado){<br /><span class="label label-success ">Quitado</span>}</a>
+
+                                }
+
+                            </div>
+                            <div class="col-lg-11 col-md-11 col-sm-11">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <label>Médico</label><br /><small><strong>@item.FilialNome</strong></small><br />@item.MedicoNome
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <label>Convênio</label><br />
+                                        <p class="form-control-static plus"><span class="@(item.RegStatusConvenios == "E" ? "text-error" : "")">@item.ConvenioNome</span></p>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <label>Plano</label><br />
+                                        <p class="form-control-static plus"><span class="@(item.RegStatusConveniosPlanos == "E" ? "text-error" : "")">@item.ConvenioPlanoNome</span></p>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    @if ((_MedGuiasVisualizar && _MedGuiasViewTotalProdutos))
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>Total</label><br />
+                                            R$ @string.Format("{0:F2}", item.TotalProdutos)  
+                                        </div>
+                                    }
+                                    @if (_MedGuiasPrecoCusto || (_MedGuiasVisualizar && _MedGuiasViewTotalProdutosCusto))
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>Custo</label><br />
+                                            <p class="form-control-static">R$ @string.Format("{0:F2}", item.TotalProdutosCusto) @if (_MedGuiasPrecoCusto){<a href="@Url.Content("~/MedGuias/PrecoCusto/" + item.MedGuiaId + "/?")" class="fancybox_recarrega fancybox.iframe btn btn-outline btn-primary btn-xs"><i class="fa fa-edit"></i></a>}</p>
+                                        </div>
+                                    }
+                                    @if ( (_MedGuiasVisualizar && _MedGuiasViewTotalReembolso))
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>Reembolso</label><br />
+                                            <p class="form-control-static">R$ @string.Format("{0:F2}", item.TotalReembolso) @if (_FinanceiroLancamento)
+                                                                                                                            {<a  href="@Url.Content("~/Financeiro/Lancamento/" + item.MedGuiaId + "/medguias/?&filialid=" + item.FilialID)" class="fancybox_recarrega fancybox.iframe btn btn-outline btn-primary btn-xs"><i class="fa fa-edit"></i></a>}</p>
+                                        </div>}
+                                    @if ((_MedGuiasVisualizar && _MedGuiasViewTotalLucro))
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>Lucro</label><br />
+                                            R$ @string.Format("{0:F2}", item.TotalLucro)
+                                        </div>}
+
+                                    @if ((_MedGuiasVisualizar && _MedGuiasViewTotalLucroLiquido))
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>Imposto</label><br />
+                                            R$ @string.Format("{0:F2}", item.TotalImposto)
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>Lucro Líquido</label><br />
+                                            R$ @string.Format("{0:F2}", item.TotalLucroLiquido)
+                                        </div>
+                                    }
+
+
+
+                                </div>
+                                <div class="row">
+                                    @if (_MedGuiasGuiaNF)
+                                    {
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>NF #</label><br />
+                                            @item.NotaFiscal
+                                        </div>
+                            
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>NF Data</label><br />
+                                            @if (item.NotaFiscalData != null)
+                                            {      
+                                                <span>@string.Format("{0:dd/MM/yyyy}", item.NotaFiscalData)</span>
+                                            }
+                                            else
+                                            {<span>-</span>}
+                                        </div>
+                            
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <label>NF Arquivo</label><br />
+                                            @Html.CubeeListAnexos("MedGuiasNF", item.MedGuiaId, " listAnexos ", false, true)
+                                        </div> 
+                                    }
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <label>Status</label><br />
+
+                                        <p class="form-control-static">@item.StatusNome @if (_MedGuiasStatus)
+                                                                                        {<a href="@Url.Content("~/MedGuias/Status/" + item.MedGuiaId + "/?")" class="fancybox_recarrega fancybox.iframe btn btn-outline btn-primary btn-xs"><i class="fa fa-edit"></i></a>}</p>
+                                        @if (tempoPassado != "")
+                                        {
+                                            <small>Tempo nesse status: @Html.Raw(tempoPassado)</small>    
+                                        }
+
+                            
+                                              @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                            {
+                                      
+                                List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                                foreach (var badge in badges)
+                                {
+                                    <span class="label label-info">@badge</span>
+                                }
+                            }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+            <a class="btn_mais_menos btn btn-sm btn-outline btn-primary" data-toggle="collapse" href="@("#collapse_" + item.MedGuiaId)" role="button" aria-expanded="@(item.Quitado ? "false" : "true")" >@(item.Quitado ? "+" : "-")</a>
+            <!-- ./ detalhes-->
+        </div>
+    }
+</div>
+
+
+@Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages), outrosCampos)
+<br />
+
+
+
+ <script>
+
+        function registraQuitado(medguiaid, quitado) {
+            $.getJSON('@Url.Content("~/MedGuias/Quitado/")', { id: medguiaid, tipo: quitado }, function (data) {
+
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "positionClass": "toast-top-center",
+                    "closeButton": true,
+                    "toastClass": "animated fadeInDown",
+                };
+
+                console.log(data);
+
+                if (data.NUMERO==100) {
+                    window.location.reload();
+                } else {
+                    toastr.error(data.mensagem)
+                }
+
+
+
+               
+
+
+
+            });
+        }
+
+        
+    </script>
+    

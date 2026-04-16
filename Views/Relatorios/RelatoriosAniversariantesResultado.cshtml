@@ -1,0 +1,124 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório de Clientes";
+    Layout = "~/Views/Shared/_Report.cshtml";
+    
+}
+
+
+@{
+    
+    var tipo_report = Request["tipo_report"];
+    var mes = Request["mes"];
+    var tipo_info = Request["tipo_info"];
+    
+    var bllPessoas = new BLL.Pessoas();
+    var objPessoas = bllPessoas.ListarAniversariantes(tipo_report, mes);
+
+    
+    
+    var qtd = 0;
+    var titulo = "";
+
+    switch (tipo_report)
+    {
+        case"month":
+            DateTime dt = new DateTime(DateTime.Now.Year, int.Parse(mes), 1);
+            titulo = "Aniversariantes do mês - " + dt.ToString("MMMM/yy");
+            break;
+        case "week":
+
+            titulo = "Aniversariantes da semana"; 
+            break;
+        default:
+            break;
+    }
+       
+    
+}
+
+   <table border="0" width="100%">
+        <tr>
+            <td align="center">@titulo</td>
+        </tr>
+         <tr><td><br /><br /></td></tr>
+    </table>
+
+
+
+
+<table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="1">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Nome</th>
+            <th>Dia</th>
+            @if (tipo_info=="col-visible")
+            {
+                <th>Dt.Nascimento</th>
+            <th class="controle-coluna-@tipo_info">Apelido</th>
+            <th class="controle-coluna-@tipo_info">Email</th>
+            <th class="controle-coluna-@tipo_info">Telefone</th>    
+            <th class="controle-coluna-@tipo_info">Idade</th>
+            <th class="controle-coluna-@tipo_info">Turma</th>
+            }
+
+            
+            
+            
+        </tr>
+    </thead>
+    <tbody>
+        
+        @foreach (var cli in objPessoas)
+        {
+
+            var DataNascimento = cli.DataNascimento.ToString();
+            var DtInicio = cli.RegDtInicio.ToString();
+            var DtTermino = cli.RegDtTermino.ToString();
+            <tr>
+                <td>@cli.PessoaCategoriaNome</td>
+
+                <td>@cli.Nome</td>
+                <td>@if (cli.DataNascimento != null)
+                                {
+                                <span>@Convert.ToDateTime(cli.DataNascimento).ToString("dd")</span>
+                                }
+                                else
+                                {
+                                <i class="fa fa-frown-o"></i>
+                                }</td>
+
+                @if (tipo_info=="col-visible")
+                {
+                   <td>@if (cli.DataNascimento != null)
+                                {
+                                <span>@Convert.ToDateTime(cli.DataNascimento).ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                <i class="fa fa-frown-o"></i>
+                                }</td> 
+                <td class="controle-coluna-@tipo_info">@cli.Apelido</td>
+                <td class="controle-coluna-@tipo_info">@cli.Email</td>
+                <td class="controle-coluna-@tipo_info">@cli.Celular @(cli.Telefone != null ? " / "+cli.Telefone : "")</td>
+                
+                <td class="controle-coluna-@tipo_info">@if (cli.DataNascimento != null)
+                                {
+                                <span>@BLL.Utils.Funcoes.CalculaIdade(cli.DataNascimento)</span>
+                                }
+                                else
+                                {
+                                <i class="fa fa-frown-o"></i>
+                                }</td>
+
+                <td class="controle-coluna-@tipo_info">@cli.TurmaNome</td>
+                }
+            </tr>
+                                               
+            qtd++;
+        }
+
+    </tbody>
+</table>
+Quantidade: @qtd Registros

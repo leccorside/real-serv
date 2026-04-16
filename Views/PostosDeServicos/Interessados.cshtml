@@ -1,0 +1,72 @@
+﻿@model Models.PostoDeServicoInteressadoView
+
+@{
+    ViewBag.Title = "Alterar Interessados";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Posto de Serviço", "Index", new { id = 0 })</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Alterar Posto de Serviço", "Criar", new { id = Model.DadosPostoDeServico.PostoDeServicoId })</li>
+}
+
+<div class="cwell">
+
+    @Html.Partial("~/Views/PostosDeServicos/_Navtabs.cshtml", Model.DadosPostoDeServico)
+
+    @using (Html.BeginForm("Interessados", "PostosDeServicos", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.DadosPostoDeServico.PostoDeServicoId);
+        
+        @Html.Hidden("PostoDeServicoInteressado.PostoDeServicoId", Model.DadosPostoDeServico.PostoDeServicoId);
+  
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label><strong>@Html.Raw(BLL.Usuarios.GetEntidade4())</strong></label>
+                    <div class="input-append">
+                        @Html.DropDownList("PostoDeServicoInteressado.PessoaId", (SelectList)ViewBag.ddlPessoas, "--Selecione--", new { @class = "chosen-select span12" })
+                        <button id="btnAdicionar" type="submit" class="btn"><i class="icon-plus"></i>Adicionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    
+    }
+
+
+    <table class="table table-bordered table-striped table-highlight">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Pessoa</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ListaPostoDeServicoInteressado)
+            {
+                <tr>
+                    <td nowrap>@item.PessoaId</td>
+                    <td nowrap>@item.PessoaNome</td>
+                    <td nowrap><a href="~/PostosDeServicos/InteressadosDeletar/@Model.DadosPostoDeServico.PostoDeServicoId?pid=@item.PostoDeServicoInteressadoId" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir esse registro?')"><i class="fa fa-times"></i>Excluir</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#PostoDeServicoInteressado\\.PessoaId").focus();
+    </script>
+}

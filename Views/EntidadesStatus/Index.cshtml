@@ -1,0 +1,290 @@
+﻿@model IEnumerable<Models.EntidadeStatus>
+
+@{
+    ViewBag.Title = "Status";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+
+    var tipo = Url.RequestContext.RouteData.Values["tipo"];
+
+
+    var listaEventosGroup = Model
+    .GroupBy(u => u.TabelaAux1Value)
+    .Select(grp => grp.ToList())
+    .ToList();
+
+    var bll = new BLL.EntidadesStatus();
+
+    var listaTodos = Model.ToList();
+
+    int i = 0;
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li>@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li>@Html.ActionLink("Entidades", "Entidades", "EntidadesStatus")</li>
+
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @Html.ActionLink("+ Criar", "Criar", new { id = 0, @tipo = tipo }, new { @class = "btn btn-primary" })
+                            <br />
+                            
+                                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+                                    
+
+                                    @foreach (var itemgroup in listaEventosGroup)
+                                    {
+                                        var _tabelaAux1id = 0;
+                                        int.TryParse(itemgroup.FirstOrDefault().TabelaAux1Id.ToString(), out _tabelaAux1id);
+                                    
+                                                          
+                                        
+                                        
+                                         <div class="panel panel-default">
+                                            <div class="panel-heading" role="tab" id="@("heading" + itemgroup.FirstOrDefault().TabelaAux1Id)">
+                                                <h4 class="panel-title">
+                                                    <a data-toggle="collapse" data-parent="#accordion" href="@("#collapse" + itemgroup.FirstOrDefault().TabelaAux1Id)" aria-expanded="true" aria-controls="@("collapse" + itemgroup.FirstOrDefault().TabelaAux1Id)" >  @(listaEventosGroup.Count() == 1 ? "Status" : itemgroup.FirstOrDefault().TabelaAux1Value)</a>
+                                                </h4>
+                                            </div>
+                                            <div id="@("collapse" + itemgroup.FirstOrDefault().TabelaAux1Id)" class="panel-collapse collapse" role="tabpanel" aria-labelledby="@("heading" + itemgroup.FirstOrDefault().TabelaAux1Id)" aria-expanded="false" style="@(listaEventosGroup.Count() > 1 ? "height: 0px;" : "")">
+                                                <div class="panel-body">
+                                                    <!-- conteudo -->
+                                                    <table class="table table-bordered table-striped">
+                                                        <caption>
+                                                            <h3 class="text-center">@itemgroup.FirstOrDefault().TabelaAux1Value</h3>
+                                                        </caption>
+                                                        <thead>
+                                                            <tr style="font-size: 12px;">
+                                                                <th>Sequência</th>
+                                                                <th>Prioridade</th>
+                                                                <th>Status
+                                                                </th>
+                                                                <th>Ações</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                            @foreach (var item in Model.Where(x => x.TabelaAux1Value == itemgroup.FirstOrDefault().TabelaAux1Value).OrderBy(x => x.StatusSequencia).ThenBy(x => x.StatusPrioridade))
+                                                            {
+                                                                var listaFilter = new List<Models.EntidadeStatus>();
+                                                                if (item.StatusMultiIds != "" && item.StatusMultiIds != null)
+                                                                {
+                                                                    var statusHabilitados = item.StatusMultiIds.Split(',').Select(int.Parse).ToList();
+
+                                                                    //monta a lista filtrada
+                                                                    listaFilter = listaTodos.Where(r => statusHabilitados.Contains(r.EntidadeStatusId)).ToList();
+                                                                }
+
+                                                                var icon = "fa fa-road";
+                                                                switch (item.StatusTipo.ToString())
+                                                                {
+                                                                    case "1":
+                                                                        icon = "fa fa-play";
+                                                                        break;
+                                                                    case "2":
+                                                                        icon = "fa fa-check";
+                                                                        break;
+                                                                    case "3":
+                                                                        icon = "fa fa-exclamation-circle";
+                                                                        break;
+                                                                    default:
+                                                                        icon = "fa fa-road";
+                                                                        break;
+                                                                }
+                                            
+                                                                <tr>
+                                                                    <td>@item.StatusSequencia</td>
+                                                                    <td>@Html.GetLegendaPrioridade(item.StatusPrioridade)</td>
+                                                                    <td width="100%">
+
+                                                                        <div class="row">
+
+                                                                            <div class="col-lg-9">
+
+                                                                                <h4><i class="@icon"></i>@item.StatusNome</h4>
+                                                                                @item.TabelaAux1Id
+                                                                                <small>@item.EntidadeStatusId</small>
+
+
+                                                                                @if (item.StatusTempoMaximo > 0)
+                                                                                {
+                                                                                    <br />
+                                                                                    <i class="fa fa-bell-o"></i> <small>Após @item.StatusTempoMaximo hora(s), exibe alerta. @(item.StatusInstrucoes != "" ? " Instrução: " + item.StatusInstrucoes : "")</small>
+                                                                                }
+
+                                                                            </div>
+                                                                            <div class="col-lg-3">
+                                                                                <label>Tipo de Fluxo</label><br />
+                                                                                @item.StatusRegistroNome
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <br />
+                                                                        @if (listaFilter.Count() > 0)
+                                                                        {
+                                                                            <label>Status associados</label>
+                                                                            <ul>
+                                                                                @foreach (var st in listaFilter)
+                                                                                {
+                                                                                    <li>@st.StatusNome</li>
+                                                                                }
+                                                                            </ul>    
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <strong class="text-danger">Nenhum status associado</strong>
+                                                                        }
+
+                                                                        <br />
+                                                                        @if (item.StatusTagsPipe != null && item.StatusTagsPipe != "")
+                                                                        {
+                                                                            List<string> badges = item.StatusTagsPipe.Split(',').ToList();
+                                                                            foreach (var badge in badges)
+                                                                            {
+                                                                            <span class="label label-info">@badge</span>
+                                                                            }
+                                                                        }
+
+
+
+                                                                    </td>
+                                                                    <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                                                                        <i class="fa fa-envelope fa-2x @(item.StatusEmailEnviar ? "text-success" : "muted")"></i><i class="fa fa-comment fa-2x  @(item.StatusSmsSend ? "text-success" : "muted")"></i><i class="fa fa-trello fa-2x  @(item.StatusTrelloCreate ? "text-success" : "muted")"></i> <i class="fa fa-cogs fa-2x  @(item.EntidadeStatusProcedureId > 0 ? "text-success" : "muted")"></i>
+
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.ActionLink("Alterar", "Criar", new { id = item.EntidadeStatusId }, new { @class = "btn btn-outline btn-primary btn-xs" })
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.ActionLink("Excluir", "Deletar", new { id = item.EntidadeStatusId }, new { @class = "btn btn-outline btn-danger btn-xs" })
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                        </tbody>
+
+                                                    </table>
+                                                    <!--./ conteudo -->
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                           
+                                        
+                                        
+                                    }
+                                </div>    
+                         
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+@section Styles{
+
+    @Styles.Render("~/bundles/fancybox/css")
+
+    <style>
+        i.muted
+        {
+            color: #eaeaea;
+        }
+    </style>
+}
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+
+    <script type="text/javascript">
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '80%%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+        $(".fancybox_full").fancybox({
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+
+    </script>
+
+
+
+}
+

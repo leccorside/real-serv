@@ -1,0 +1,391 @@
+﻿@{ 
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentTipo = ViewContext.RouteData.Values["tipo"] as string ?? "";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    currentTipo = currentTipo.ToLower();
+    var currentPage = (currentController + "-" + currentAction + currentTipo).ToLower();
+
+    var user = new Bll.Usuarios();
+    var controleAcesso = user.ControleAcesso(currentAction, currentController);
+
+    var dadosUser = user.Carregar(Bll.Usuarios.GetUsuarioId());
+
+    var empresa = new Bll.Empresas();
+    var dadosEmpresa = empresa.Carregar(Bll.Usuarios.GetEmpresaId());
+
+    var bllModal = new Bll.Modais();
+
+
+    var modal = bllModal.CarregarAtivo();
+    
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <!-- bootstrap css -->
+    <link href="~/Assets/dashboardV3/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- base css -->   
+    <link class="links-css" href="~/Assets/dashboardV3/css/base.css" rel="stylesheet" />
+    <link class="links-css" href="~/Assets/bootstrap/css/custom.css" rel="stylesheet" />
+    <link class="links-css"  href="~/Assets/dashboardV3/css/jquery-ui-bootstrap-1.8.16.custom.css" rel="stylesheet" />
+
+    <!-- Calendar css -->
+    <link class="links-css" href="~/Assets/dashboardV3/css/calendarIcon.css" rel="stylesheet" /> 
+
+    <!-- home page css -->
+    <style type="text/css">
+        body
+        {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav
+        {
+            padding: 9px 0;
+        }
+
+    </style>
+    
+    <!-- responsive css -->
+    <link href="~/Assets/dashboardV3/css/bootstrap-responsive.css" rel="stylesheet" />
+
+    <!-- media query css -->
+    <link href="~/Assets/dashboardV3/css/media-fluid.css" rel="stylesheet" />
+
+    <!-- datepicker css -->
+    @*<link href="~/Assets/dashboardV3/css/datepicker.css" rel="stylesheet" />*@
+
+    <!-- outros-->
+    <link href="~/Assets/dashboardV3/css/home-page.css" rel="stylesheet" />
+    <link href="~/Assets/bootstrap/css/chosen.css" rel="stylesheet" />
+    <link href="~/Assets/bootstrap/css/bootstrap-tagsinput.css" rel="stylesheet" />
+    <link href="~/Assets/font-awesome-4.3.0/css/font-awesome.css" rel="stylesheet" />
+    
+    @RenderSection("Styles", false)
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+</head>
+
+<body>
+
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class="brand" href="@Url.Content("~/Principal")">
+                    <img src="@VirtualPathUtility.ToAbsolute("~/Content/images/logotipos/" + Bll.Usuarios.GetEmpresaId() + "-small.png")" class="img-responsive" /></a>
+                @*<ul class="nav pull-right bar-root">
+                    <li class="divider-vertical"></li>
+                    <li><a href="chat.html"><i class="icon-comment icon-white"></i><span class="label label-important">6</span></a> </li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown"><i class="icon-envelope icon-white"></i><span class="label label-important">5 new</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="inbox.html">
+                                <img src="img/small/thumb1.png" alt="" />
+                                Subject : Project
+                                <p class='help-block'><small>From: ab.alhyane@gmail.com</small></p>
+                                <span class="label">23/09/2012</span></a></li>
+                            <li class="divider"></li>
+                            <li><a href="inbox.html">
+                                <img src="img/small/thumb2.png" alt="" />
+                                Subject : Film
+                                <p class='help-block'><small>From: ab.alhyane@gmail.com</small></p>
+                                <span class="label">21/04/2012</span> </a></li>
+                            <li class="divider"></li>
+                            <li><a href="inbox.html">
+                                <img src="img/small/thumb3.png" alt="" />
+                                Subject : Meeting
+                                <p class='help-block'><small>From: ab.alhyane@gmail.com</small></p>
+                                <span class="label">20/02/2012</span></a></li>
+                            <li class="divider"></li>
+                            <li><a href="inbox.html">
+                                <img src="img/small/thumb4.png" alt="" />
+                                Subject : Tasks
+                                <p class='help-block'><small>From: ab.alhyane@gmail.com</small></p>
+                                <span class="label">19/01/2012</span></a></li>
+                            <li class="divider"></li>
+                            <li class="active"><a href="inbox.html">Show All </a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown"><i class="icon-refresh icon-white"></i><span class="label label-info">3 Updates</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Theme </a></li>
+                            <li><a href="#">Components</a></li>
+                            <li><a href="#">Plugins</a></li>
+                            <li class="divider"></li>
+                            <li class="active"><a href="#">Show All </a></li>
+                        </ul>
+                    </li>
+                </ul>*@
+                <div class="group-menu nav-collapse">
+
+                    <ul class="nav pull-right">
+                        @*<li>
+                            <div id="figure" class="figure">
+                                <div class="header">
+                                    <script>
+                                        var day = new Date().getDay();
+                                        week = new Array('Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado');
+
+                                        document.write(week[day]);
+                                    </script>
+                                </div>
+                                <div class="section">
+                                    <script>
+                                        document.write(new Date().getDate());
+                                    </script>
+                                </div>
+                            </div>
+                        </li>*@
+                        @*<li class=""><a href="~/Agendas/Index/0" class=""><i class="icon-calendar icon-white"></i> Agenda</a></li>*@
+                        <li class="divider-vertical"></li>
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" href="#"><i class="icon-user icon-white"></i>@Bll.Usuarios.GetUsuarioNome() <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>
+
+                                    <div class="modal-header">
+
+                                        <h3>@Bll.Usuarios.GetUsuarioNome()</h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="span1">
+                                                @if (dadosUser.UsuarioFoto == "" || dadosUser.UsuarioFoto == null)
+                                                {
+                                                    <img src="~/Assets/dashboardV3/img/avatar/photo.png" />
+                                                }
+                                                else
+                                                {
+                                                    <img src="@Url.Content(dadosUser.UsuarioFoto.Replace(".jpg", "thumb.jpg"))?@DateTime.Now.Second" />
+                                                }
+
+                                            </div>
+                                            <div class="span3 pull-right">
+                                                <h5>@Bll.Usuarios.GetUsuarioEmail()</h5>
+                                                <a href="~/Perfil/SuaSenha" class="link-modal">Sua senha</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @if (Bll.Usuarios.AccessControl("acessos_backoffice","Regras"))
+                                        {
+                                            <li><a href="~/Perfil/SeusDados" class="btn btn-info pull-left">Seus dados</a></li>
+                                        }
+
+                                        <a href="@Url.Content("~/Home/Logoff/" + dadosEmpresa.EmpresaId + "/" + dadosEmpresa.EmpresaCodigo)" onclick="return confirm('Deseja realmente sair do sistema?')" class="btn btn-info">Sair</a>
+
+                                    </div>
+
+                                </li>
+                            </ul>
+
+                        </li>
+                    </ul>
+
+                    
+                        @using (Html.BeginForm("Buscar", "Projetos", FormMethod.Post, new {@class="navbar-search pull-right" }))
+                        {
+                            <input type="text" id="Entidade" name="Entidade" placeholder="Entidade Obra" class="search-query span2">
+                        }
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+
+           @* @if (Bll.Acessos.ListarQtdItensMenu() > 0)
+            {
+                <div id="menu-left" class="span3">
+
+                    @Html.Partial("~/Views/Foo/_MenuSistema.cshtml")
+
+                </div>    
+            }*@
+
+
+
+            <div id="content" class="span12 section-body">
+
+                <br />
+                
+                <blockquote>
+                    <h3>@ViewBag.Title</h3>
+                </blockquote>
+
+                <ul class="breadcrumb">
+                    <li><a href="@Url.Content("~/Principal")" title="Ir para Home" class="tip-bottom"><i class="fa fa-home"></i> Home</a></li>
+
+                    @RenderSection("breadcrumb", required: false)
+
+                    @if (currentPage != "principal-index")
+                    {
+                        <li class="active"><span class="divider">/</span> @ViewBag.Title</li>
+                    }
+
+                </ul>
+
+
+                @Html.Partial("~/Views/Foo/_RenderErros.cshtml")
+
+
+                @if (dadosUser == null)
+                {
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="alert alert-error" id="alert-error">
+                                <h4>Ooops... Parece que sua sessão foi encerrada</h4>
+
+
+                                <small>Entre novamente com seu login e senha. <a href="@Url.Content("~/Manager/Home/Logoff")">Clique aqui</a></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: none;">
+                        @RenderBody()
+                    </div>
+                }
+                else if (dadosUser.AcessoRestrito == true && Request.UserHostAddress.Trim() != dadosUser.AcessoIP.Trim())
+                {
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="alert alert-error" id="alert-error">
+                                <h4>Ooops... Parece que seu perfil possui restrição de acesso ao sistema</h4>
+
+                                <h6>Qual o motivo para restrição de acesso:</h6>
+                                Você não está acessando do IP: @dadosUser.AcessoIP<br />
+                                Seu IP atual: @Request.UserHostAddress<br />
+                                <small>Se você acha que essa mensagem não se aplica à você, entre em contato.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: none;">
+                        @RenderBody()
+                    </div>
+               
+                }
+                else
+                {
+                    if (controleAcesso)
+                    {
+                
+           
+               
+                        
+                    <div class="row-fluid">
+                        <div class="span12">
+                            @RenderBody()
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                        
+
+            
+                    }
+                    else
+                    {
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="alert alert-error" id="alert-error">
+                                <h4>Ooops... Você não possui acesso à este módulo</h4>
+                                <br />
+                                @currentController / @currentAction
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: none;">
+                        @RenderBody()
+                    </div>
+                    }
+                }
+                <!-- ./renderBody-->
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+
+        </div>
+        @Html.Partial("~/Views/Foo/_Footer.cshtml")
+
+    </div>
+    <!--/.fluid-container-->
+
+    <!-- Le javascript
+        ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="~/Assets/dashboardV3/js/jquery.min.js"></script>
+    <script src="~/Assets/dashboardV3/js/bootstrap.min.js"></script>
+    <script src="~/Assets/dashboardV3/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script src="~/Assets/dashboardV3/js/jquery-ui.min.js"></script>
+    <script src="~/Assets/dashboardV3/js/jquery.maskedinput.js"></script>
+    <script src="~/Assets/dashboardV3/js/jquery.maskMoney.js"></script>
+    <script src="~/Assets/bootstrap/js/chosen.jquery.js"></script>
+    <script src="~/Assets/bootstrap/js/angular.min.js"></script>
+    <script src="~/Assets/bootstrap/js/bootstrap-tagsinput.js"></script>
+    <script src="~/Assets/bootstrap/js/bootstrap-tagsinput-angular.js"></script>
+    <script src="~/Assets/bootstrap/js/custom.js"></script>
+    
+    @*@Scripts.Render("~/bundles/jquery") *@
+    
+    @RenderSection("scripts", required: false)
+
+
+
+    @if (modal != null)
+    {
+
+        if (Session["modalView_" + modal.ModalId] != "true")
+        {
+        <!-- Modal -->
+        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">@modal.Titulo</h3>
+            </div>
+            <div class="modal-body">
+                @Html.Raw(modal.Conteudo)
+            </div>
+        </div>
+        <script>$('#myModal').modal('show')</script>
+
+            Session["modalView_" + modal.ModalId] = "true";
+        }
+    }
+
+</body>
+</html>
+
+
+
+
+

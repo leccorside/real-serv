@@ -1,0 +1,129 @@
+﻿@model Models.PessoaProdutoView
+
+@{
+    var id = ViewContext.RouteData.Values["id"];
+    var currentTipo = ViewContext.RouteData.Values["tipo"];
+    var pagina = Request["pagina"];
+    var paginaAtual = (pagina == "" || pagina == null) ? 1 : int.Parse(pagina);
+    var qtdPaginas = ViewBag.qtdPaginas;
+
+    var ordenacao = Request["tipoordenacao"];
+    var tipoordenacao = (ordenacao == "" || pagina == null) ? "asc" : ordenacao;
+    tipoordenacao = (tipoordenacao == "asc") ? "desc" : "asc";
+
+    var vname = "";
+
+
+    switch (currentTipo.ToString())
+    {
+        case "C":
+            vname = BLL.Usuarios.GetEntidadeCliente();
+            break;
+        case "F":
+            vname = BLL.Usuarios.GetEntidadeFornecedor();
+
+            break;
+
+        case "O":
+            vname = BLL.Usuarios.GetEntidadeFuncionario();
+
+            break;
+
+        default:
+            vname = "Indefinido";
+
+            break;
+    }
+    var bllProdutos = new BLL.Produtos();
+    BLL.Pessoas obj = new BLL.Pessoas();
+    var pessoa = obj.Carregar(Convert.ToInt16(id));
+    var user = new BLL.Usuarios();
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>@Html.ActionLink(vname, "Index", new { id = 0, tipo = currentTipo })</li>
+}
+
+
+<div class="cwell">
+
+
+    <ul class="nav nav-tabs">
+        <li>
+            @Html.ActionLink("Dados Cadastrais", "Criar", new { id = pessoa.PessoaID, tipo = currentTipo }, new { @class = "" })
+        </li>
+        @if (currentTipo.ToString() == "O" && user.ControleAcesso("pessoas_funcionario_completo", "Regras"))
+        {
+            <li class="active"><a href="#">Produtos</a></li>
+        }
+        @if (user.ControleAcesso("pessoas_servicos_prestados","Regras"))
+        {
+            <li>@Html.ActionLink("Valores do Serviços prestados", "DefinirValores", new { id = pessoa.PessoaID, tipo = @ViewBag.tipo }, new { @class = "" })</li>  
+        }
+        @if (user.ControleAcesso("pessoas_indicacoes","Regras"))
+        {
+            <li>@Html.ActionLink("Indicações", "Indicacoes", new { id = pessoa.PessoaID, tipo = @ViewBag.tipo }, new { @class = "" })</li>                
+        }
+    </ul>
+
+
+    <div class="row-fluid">
+        <div class="span12">
+            @using (Html.BeginForm("Produtos", "Pessoas", FormMethod.Post, new { @class = "form-inline" }))
+            {
+                @Html.HiddenFor(m => m.PessoaId)   
+                @Html.Hidden("DadosProduto.PessoaID", Model.PessoaId)
+                <label>Quantidade / Produto</label><br />
+                @Html.TextBoxFor(m => m.DadosProduto.Quantidade, new { @class = "input-mini number" });
+                @Html.DropDownListFor(m => m.DadosProduto.ProdutoId, (SelectList)bllProdutos.ListarTipos(true), new { @class = "chosen-select input-xxlarge", @data_placeholder = "Selecione os produtos", })
+                
+                <input id="Submit1" type="submit" class="btn" value="Ok" />
+            }
+        </div>
+
+    </div>
+
+
+
+
+
+
+    <div class="cwell">
+        <legend>Produtos cadastrados</legend>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Qtd.</th>
+                    <th>Descrição</th>
+                    <th nowrap>Cadastrado por</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListaProdudos)
+                {
+                    <tr>
+                        <td nowrap>@item.RegDtInicio</td>
+                        <td nowrap>@item.Quantidade</td>
+                        <td width="100%">@item.ProdutoNome</td>
+                        <td nowrap>
+                            @item.RegNomeInicio
+                        </td>
+                        <td nowrap><a onclick="return confirm('Deseja realmente excluir esse item?')" class="btn btn-mini" href="~/Pessoas/ProdutosRemover/@Model.PessoaId/@Model.PessoaTipo?PessoaProdutoId=@item.PessoaProdutoId">Excluir</a></td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+
+
+    </div>
+
+
+
+
+</div>
+
+

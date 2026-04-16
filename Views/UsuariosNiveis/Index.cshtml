@@ -1,0 +1,85 @@
+@model IEnumerable<Models.UsuarioNivel>
+
+@{
+    ViewBag.Title = "N&iacute;veis";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles{
+    <link href="~/Content/themes/cinga/js/jOrgChart/jquery.jOrgChart.css" rel="stylesheet" />
+}
+
+@section Breadcrumb{
+
+
+}
+
+<h2>Organograma dos N&iacute;veis</h2>
+<p>
+    @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+</p>
+<div id="chart_div""></div>
+
+<table class="table table-bordered table-striped table-highlight table-hover table-condensed ">
+    <thead>
+        <tr>
+            <th nowrap>C&oacute;digo</th>
+            <th nowrap>C&oacute;digo Pai</th>
+            <th>Nome</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    @foreach (var item in Model)
+    {
+        <tbody>
+            <tr>
+                <td nowrap>
+                    @Html.DisplayFor(modelItem => item.NivelCodigo)
+                </td>
+                <td nowrap>
+                    @Html.DisplayFor(modelItem => item.NivelCodigoPai)
+                </td>
+                <td width="100%">@Html.DisplayFor(modelItem => item.NivelNome)</td>
+                <td nowrap>
+                    <a href="~/UsuariosNiveis/Criar/@item.UsuarioNivelId" class="btn btn-mini"><i class="fa fa-pencil"></i>Alterar</a> | 
+            
+                 
+                            <a href="~/UsuariosNiveis/Deletar/@item.UsuarioNivelId" class="btn btn-mini"><i class="fa fa-times"></i>Excluir</a>
+
+                </td>
+            </tr>
+        </tbody>
+    }
+
+</table>
+
+
+
+
+
+@section scripts{
+   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", { packages: ["orgchart"] });
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Manager');
+            data.addColumn('string', 'ToolTip');
+
+            data.addRows([
+                @foreach (var item2 in Model)
+                { var link = Url.Content("~/UsuariosNiveis/Criar/" + item2.UsuarioNivelId);
+		 @:[{ v: '@item2.NivelCodigo', f: '<a href=\"@link\">@item2.NivelCodigo<br>@item2.NivelNome</a>' }, '@item2.NivelCodigoPai', ''],
+	}
+
+            ]);
+
+            var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+            chart.draw(data, { allowHtml: true });
+        }
+   </script>
+
+}

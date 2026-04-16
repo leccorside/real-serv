@@ -1,0 +1,101 @@
+﻿@model Models.Escala
+
+@{
+    ViewBag.Title = "AdicionarPessoa";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Adicionar Pessoa - Etapa 1 de 2
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                
+@using (Html.BeginForm("AdicionarPessoaEtapa2", "PostosDeServicos", FormMethod.Post))
+{
+    @Html.Hidden("id", Model.PostoDeServicoId);
+                                              @Html.Hidden("EscalaId", Model.EscalaId);
+    @Html.ValidationSummary(true)
+    <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <label>Serviço</label>
+            @Html.DropDownList("ServicoId", (SelectList)ViewBag.ddlServicos, "--Selecione--", new { @class = "chosen-select form-control" })
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <label>@Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</label>
+            @Html.DropDownList("PessoaId", (SelectList)ViewBag.ddlPessoas, "--Selecione--", new { @class = "chosen-select  form-control" })
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <label>Escala</label>
+
+            <div class="input-group">
+                @Html.DropDownList("TipoEscalaId", (SelectList)ViewBag.ddlTipoEscalas, new { @class = "chosen-select  form-control" })
+                <span class="input-group-btn">
+                    <button id="btnAdicionar" type="submit" class=" btn btn-primary"><i class="fa fa-plus"></i> Inserir</button>
+                </span>
+            </div>
+
+            
+        </div>
+    </div>
+}
+
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+
+    <style>
+
+        .EntidadeStatusId_selected
+        {
+            background-color: #afafaf !important;
+            color: #ffffff !important;
+        }
+    </style>
+
+    }
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/Assets/js/jquery.maskedinput.js")
+    @Scripts.Render("~/Assets/js/jquery.maskMoney.js")
+        
+
+    <script>
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+
+    </script>
+    
+}
+

@@ -1,0 +1,67 @@
+v0.0.19 Mon Oct  5 03:27:50 CEST 2015
+    * add labelTemplate option to define custom labels for languages and countries
+
+v0.0.18 Wed Sep 30 21:43:27 CEST 2015
+    * add Tamil, India
+
+v0.0.17 Sun Jul 19 20:25:23 CEST 2015
+    * fix Chinese -> China/Simplified Chinese
+    * add Traditional Chinese/Taiwan
+
+v0.0.16 Sun May 31 18:57:17 CEST 2015
+    * add Korean
+
+v0.0.15 Fri Feb 20 22:15:07 CET 2015
+    * add Danish
+    * add Esperanto
+    * add Romanian
+    * allow languages without a country
+    * correct Brazilian Portuguese language code
+
+v0.0.14 Fri Nov  7 19:51:15 CET 2014
+    * change the widget heading when translation is called programmatically
+    * add 'ignoreUnmatchedSelectors' option to allow multi-page translations
+
+v0.0.13 Mon Sep 22 07:34:21 CEST 2014
+    * translate attributes with a syntax like <attributeName>::<elementSelector> (e.g., placeholder::element:input)
+
+v0.0.12 Fri Sep 19 16:53:19 CEST 2014
+    * add Hebrew/Israel
+
+v0.0.11 Tue Sep  9 11:43:30 CEST 2014
+    * add Turkish language
+
+v0.0.10 Fri Sep  5 09:24:59 CEST 2014
+    * fix Russian hyphen in language code: please use ru_RU instead of ru-RU to refer to russian
+    * add Hindi
+
+v0.0.9 Mon Sep  1 16:32:38 CEST 2014
+    * use $.inArray instead of Array.prototype.indexOf - fixes IE7/8 compatibility bug
+    * separate call to user specified callback in another function - should fix user callback not called when using the keyboard
+
+v0.0.8 Fri Aug 29 18:40:19 CEST 2014
+    * Allow callback "onLanguageSelected" for when the user selects a language
+    * Default country to appear once if defined in strings
+
+v0.0.7 Fri Aug 29 17:25:15 CEST 2014
+    * fix bug: throw exception on more than two "class:" strings defined
+    * allow to show/hide the flag, the country name and the language name
+
+v0.0.6 Sun Aug  3 17:20:51 CEST 2014
+    * fix bug related to mouse/keyboard support
+
+v0.0.5 Sun Aug  3 16:49:44 CEST 2014
+    * improved keyboard support
+
+v0.0.4 Sun Aug  3 16:38:30 CEST 2014
+    * fix 'China' translation in zh_CN
+    * add keyboard support
+
+v0.0.3 Sat Aug  2 13:45:15 CEST 2014
+    * added more supported languages
+
+v0.0.2 Thu Jul 31 19:07:45 CEST 2014
+    * better support for IE7
+
+v0.0.1  Thu Jul 31 07:35:24 CEST 2014
+    * first release

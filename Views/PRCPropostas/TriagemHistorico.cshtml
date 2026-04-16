@@ -1,0 +1,120 @@
+﻿@model Models.PRCPropostaView
+
+@{
+    /**/
+
+    string nome = "Proposta";
+
+
+
+    ViewBag.Title = "Proposta n. " + Model.PRCProposta.PRCPropostaId;
+
+
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+
+
+
+    var bllDocumentosArquivos = new BLL.DocumentosArquivos();
+
+    var listaDocumentos = bllDocumentosArquivos.Listar(null, "", "", "", "prcpropostas", Model.PRCProposta.PRCPropostaId);
+}
+
+
+@section Breadcrumb{
+
+    <li class="active">Histórico</li>
+}
+
+
+
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+                @Html.Partial("~/Views/PRCPropostas/_tabstriagem.cshtml", Model)
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12"><h4>Histórico</h4></div>
+    </div>
+
+    @Html.CubeeBlog("PRCPropostas", Model.PRCProposta.PRCPropostaId, "", BLL.Usuarios.GetUsuarioId())
+
+
+
+
+
+
+</div>
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+
+    <style>
+        tr.regapagado
+        {
+            text-decoration: line-through;
+            color: gray;
+            font-style: italic;
+        }
+    </style>
+
+}
+
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $(".fancybox").fancybox({
+                fitToView: false,
+                width: '80%',
+                autoSize: false
+            });
+            $(".fancybox_recarrega").fancybox({
+                fitToView: false,
+                width: '80%',
+                autoSize: false,
+                beforeClose: function () {
+                    RecarregaPagina();
+                },
+            });
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+        });
+
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+    </script>
+
+
+
+}
+

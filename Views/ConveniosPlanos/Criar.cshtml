@@ -1,0 +1,103 @@
+﻿@model Models.ConvenioPlano
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.ConvenioPlanoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Plano";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";   
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Convênios", "Index", "Convenios", null, new { id = 0 })</li>
+    <li class="active"><span class="divider">/</span>@Model.Convenio.ConvenioNome</li>
+    <li class="active">@Html.ActionLink("Planos", "Index", new { id = 0, ConvenioId = Model.ConvenioId })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "ConveniosPlanos", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.ConvenioId);
+                                                          if (Model.ConvenioPlanoId > 0)
+                                                          {
+                        @Html.Hidden("ConvenioPlanoId", Model.ConvenioPlanoId);
+                                                                              acao = "Alterar";
+                                                          }
+    
+                                          
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @Html.LabelFor(model => model.ConvenioPlanoNome)
+                                @Html.TextBoxFor(model => model.ConvenioPlanoNome, new { @class = "form-control" })
+
+                            </div>
+
+                            <div class="col-lg-6">
+
+                                <label class="control-label" for="ConvenioPlanoParticular">Particular <span data-toggle="tooltip" data-original-title="Marcando essa opção, o preenchimento de valores dos exames/produtos na guia deve ser realizado manualmente" title="Marcando essa opção, o preenchimento de valores dos exames/produtos na guia deve ser realizado manualmente" data-placement="top"><i class="fa fa-exclamation" aria-hidden="true"></i></span></label>
+
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.ConvenioPlanoParticular) Sim</label>
+                                </div>
+
+
+                            </div>
+                        </div>
+                                          
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", new { id = 0, ConvenioId=Model.ConvenioId }, new { @class = "btn btn-outline btn-primary" })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    <script src="~/Assets/js/bootstrap-tooltip.js"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script>
+        $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+        $("#ConvenioPlanoNome").focus();
+    </script>
+
+}

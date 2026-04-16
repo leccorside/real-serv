@@ -1,0 +1,162 @@
+﻿@model Models.MedGuia
+
+@{
+    ViewBag.Title = "Criar Guia";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Guias", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">        
+        <div class="row-fluid">
+            <div class="span2">
+                <label>Guia n.</label>
+                <h4 class="black">@Model.MedGuiaId</h4>
+            </div>
+        
+            <div class="span2">
+                <label>Data</label>
+                <h4 class="black">@string.Format("{0:dd/MM/yyyy}",Model.RegDtInicio)</h4>
+            </div>
+
+            <div class="span2">
+                <label>Data</label>
+                <h4 class="black">@string.Format("{0:HH:mm}",Model.RegDtInicio)</h4>
+            </div>
+
+            <div class="span3">
+                  <label>Situação</label>
+
+                @if (Model.Resolvido)
+                {
+                    <h4 class="black"><i class="fa fa-check" aria-hidden="true"></i> Resolvido</h4>
+                }
+                else
+                {
+                    <h4 class="black">Não resolvido</h4>
+                }
+
+               
+            </div>
+
+            <div class="span3">
+                  <label>Privado</label>
+                @if (true)
+                {
+                 <h4 class="black"><i class="fa fa-lock" aria-hidden="true"></i> Privado</h4>   
+                }
+                else
+                {
+                    <h4 class="black">Publico</h4>
+                }
+
+              
+            </div>
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Cliente</label>
+                <h4 class="black">@Model.ClienteNome</h4>
+                
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Atendente</label>
+                <h4 class="black">@Model.Atendente</h4>
+                
+            </div>
+            <div class="span4">
+                <label>Solicitante</label>
+                <h4 class="black">@Model.Solicitante</h4>
+            </div>
+            <div class="span4">
+                <label>Executor</label>
+                <h4 class="black">@Model.ExecutorNome</h4>
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span6">
+                <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+                <h4 class="black">@Model.FuncionarioNome</h4>
+            </div>
+            <div class="span6">
+                <label>Tipo de Guia</label>
+                <h4 class="black">@Model.MedGuiaTipoNome</h4>
+            </div>
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span6">
+                <label>Guia</label>
+                <p>@Model.MedGuiaDescricao</p>
+            </div>
+            <div class="span6">
+                <label>Solução Tomada</label>
+                <p>@Model.Solucao</p>
+            </div>
+        </div>
+        <br />
+    <div class="row-fluid">
+               @switch (Model.MedGuiaTipoRegra)
+                    {
+                        case "rep_advertencia":
+                            <a href="@Url.Content("~/MedGuias/ImprimirAdvertencia/" + Model.MedGuiaId)" class="btn "><i class="fa fa-print"></i> Imprimir Advertência</a>
+                            break;
+                        case "rep_suspencao":
+                            <a href="@Url.Content("~/MedGuias/ImprimirSuspensao/" + Model.MedGuiaId)" class="btn "><i class="fa fa-print"></i> Imprimir Suspensão</a>
+                            break;
+                        default:
+                            break;
+                    }
+            
+            
+        </div>
+    <br />
+
+    @if (Model.Modal == false)
+    {
+        <div>
+            <a href="~/MedGuias/Index" class="btn">Voltar</a>
+        </div>
+    }
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+
+

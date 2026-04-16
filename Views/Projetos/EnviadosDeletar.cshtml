@@ -1,0 +1,81 @@
+﻿@model Models.EnviadoView
+
+@{
+    ViewBag.Title = "Excluíndo Relatório Diário";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+
+
+@section Styles{
+
+    }
+
+
+    @section Breadcrumb{
+        <li><span class="divider">/</span><a href="~/Projetos/Index">Obras</a></li>
+    }
+
+
+
+    <div class="alert">
+
+        <h2>Atencão!</h2>
+        Você tem certeza que deseja apagar esse registro?
+    </div>
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>NF</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor Total</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        
+            <tr>
+                <td>@Model.Enviado.EnviadoId</td>
+                <td nowrap>@Model.Enviado.EnviadoNF</td>
+                <td nowrap>@Model.Enviado.EnviadoData</td>
+                <td nowrap>@Model.Enviado.EnviadoTipoNome</td>
+                <td nowrap>@Model.Enviado.EnviadoTotal</td>
+            </tr>
+        
+    </tbody>
+</table>
+
+
+@using (Html.BeginForm())
+{
+    
+    @Html.HiddenFor(model => model.Enviado.EnviadoId)
+    @Html.HiddenFor(model => model.Enviado.ProjetoId)
+
+    <div class="row-fluid">
+        <div class="span3">
+            <label>Motivo</label>
+            @Html.DropDownListFor(model => model.Enviado.MotivoCancelamentoId, (SelectList)ViewBag.ddlMotivos)
+
+        </div>
+        <div class="span9">
+            <label>Observações</label>
+            @Html.TextAreaFor(model => model.Enviado.MotivoCancelamentoObservacoes, new { @class = "span12" })
+
+        </div>
+    </div>
+    
+
+    <p class="pull-right">
+        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+    </p>
+
+    <p class="pull-left">
+        <a href="~/Medicoes/Index/@Model.DadosProjeto.ProjetoId">Voltar</a>
+    </p>
+}

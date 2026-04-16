@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Models.Perfil>
+
+
+@{
+    ViewBag.Title = "Perfis";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+    var idEmpresa = Url.RequestContext.RouteData.Values["id"];
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Empresas", "Index", "Empresas")</li>
+
+}
+
+
+<div class="row-fluid">
+    <div class="span12">
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0,  @idEmpresa=idEmpresa }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PerfilNome)
+                    </th>
+                    <th>@Html.DisplayNameFor(model => model.Nivel)</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegDtInicio)
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.PerfilId - @item.PerfilNome
+                    </td>
+                    <td>@item.Nivel</td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RegDtInicio)
+                    </td>
+
+                     <td nowrap>
+                            <a href="~/Manager/Perfis/Acessos/@item.PerfilId?idEmpresa=@item.EmpresaId" class="btn btn-mini"><i class="icon-lock"></i>Acessos</a> 
+                        </td>
+
+                    <td>
+                         <a href="~/Manager/Perfis/Criar/@item.PerfilId?idEmpresa=@item.EmpresaId" class="btn btn-mini"><i class="icon-edit"></i>Alterar</a> | 
+                            <a href="~/Manager/Perfis/Deletar/@item.PerfilId?idEmpresa=@item.EmpresaId" class="btn btn-mini"><i class="icon-trash"></i>Excluir</a>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+
+

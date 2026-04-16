@@ -1,0 +1,302 @@
+﻿@model Models.Agendamento
+
+@{
+    ViewBag.Title = "Calendario";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+
+
+
+
+    TimeSpan span = TimeSpan.FromMinutes(empresa.AgendaIntervaloMinutos);
+    string AgendaIntervaloMinutos = span.ToString(@"hh\:m");
+
+    
+    
+}
+
+@section Styles{
+
+    <style>
+        #calendar
+        {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+
+        /* Responsive iFrame */
+    </style>
+    <style>
+        
+        .popover
+        {
+            /*border: 2px dotted #000;
+            
+            width:300px; 
+
+
+           z-index: 2060 !important;*/
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 16777271 !important;
+            display: none;
+            width: 236px;
+            padding: 1px;
+            text-align: left;
+            white-space: normal;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            -webkit-background-clip: padding-box;
+            -moz-background-clip: padding;
+            background-clip: padding-box;
+        }
+
+
+        /* Popover Header */
+        .popover-title
+        {
+            background-color: #000;
+            color: #eaeaea;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* Popover Body */
+        .popover-content
+        {
+            background-color: #eaeaea;
+            color: #000;
+            font-size: 10px;
+            padding: 25px;
+        }
+
+        /* Popover Arrow */
+        .arrow
+        {
+            border-bottom-color: black !important;
+        }
+         .destaque_True
+        {
+                background-color: black !important;
+        }
+    </style>
+}
+@if (Request.Browser.IsMobileDevice)
+{
+
+    <div class="row-fluid">
+        <div class="span12" style="height: auto">
+            <div id='calendar' style="height: auto"></div>
+        </div>
+
+    </div>
+
+}
+else
+{<div class="row-fluid">
+    <div class="span12">
+        <div id='calendar' style="height: auto"></div>
+    </div>
+
+    </div>
+
+}
+
+
+@section scripts{
+    <link rel="stylesheet" href="~/Assets/js/fullcalendar/lib/cupertino/jquery-ui.min.css" />
+    <link href="~/Assets/js/fullcalendar/fullcalendar.css" rel="stylesheet" />
+    <link href="~/Assets/js/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+   
+    <style>
+
+       
+    </style>
+
+    
+    <script src="~/Assets/js/fullcalendar/lib/moment.min.js"></script>
+
+    <script src="~/Assets/js/fullcalendar/fullcalendar.min.js"></script>
+    <script src="~/Assets/js/fullcalendar/lang-all.js"></script>
+
+    <link href="~/Assets/js/fullcalendar/week.css" rel="stylesheet" />
+
+
+    @if (Request.Browser.IsMobileDevice)
+    {
+        <!-- mobile -->
+        <script>
+
+            $(document).ready(function () {
+                var currentLangCode = 'pt-br';
+
+                function renderCalendar() {
+                    $('#calendar').fullCalendar({
+                        header: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'month,agendaWeek,agendaDay'
+                        },
+                        defaultDate: moment(),
+                        lang: currentLangCode,
+                        buttonIcons: false, // show the prev/next text
+                        weekNumbers: true,
+                        editable: false,
+                        eventLimit: true, // allow "more" link when too many events
+                        minTime: "@AgendaHoraIni.ToString("HH:mm")",
+                        maxTime: "@AgendaHoraFim.ToString("HH:mm")",
+                        @if (BLL.Usuarios.GetEmpresaTipoId() == 2)
+                        {
+
+                    @:events: '@Url.Content("~/Agendamento/Getevents_2/")',
+                        	}
+                        else
+                        {
+                    @:events: '@Url.Content("~/Agendamento/Getevents/")',
+                        
+                        }
+                        columnFormat: 'ddd',
+                        defaultView: 'agendaWeek',
+                        axisFormat: 'HH:mm',
+                        allDaySlot: false,
+                        displayEventEnd: false,
+                        weekNumbers: false,
+                        handleWindowResize: true,
+                        slotDuration: '@AgendaIntervaloMinutos',
+                        height: '100%',
+                        contentHeight: 'auto'
+                    });
+                }
+
+
+                renderCalendar();
+            });
+
+
+        </script>
+
+    }
+    else
+    {
+        <!-- desktop -->
+        <script>
+
+
+
+
+
+            $(document).ready(function () {
+                var currentLangCode = 'pt-br';
+
+                function renderCalendar() {
+
+                    $('#calendar').fullCalendar({
+
+                        header: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'month,agendaWeek,agendaDay'
+                        },
+
+                        eventRender: function (event, element) {
+                            element.popover({
+                                html: true,
+                                trigger: "hover",
+                                //title: event.title,
+                                container: 'body',
+                                placement: 'top',
+                                content: event.text,
+                            }).addClass('');
+                        },
+
+                        dayClick: function (date, jsEvent, view) {
+
+                            var r = confirm("Deseja registrar um novo agendamento no dia" + date.format("DD-MM-YYYY"));
+
+                            if (r == true) {
+                                var url = "Criar/0?origem=Calendario&dataInicio=" + date.format("DD-MM-YYYY HH:00") + "&horaInicio=" + date.format("HH:00") + "&pessoaId=@BLL.Usuarios.GetUsuarioId()";
+                                parent.location = url;
+                            }
+
+                        },
+
+                        defaultDate: moment(),
+                        allDaySlot: false,
+                        lang: currentLangCode,
+                        buttonIcons: false, // show the prev/next text
+                        weekNumbers: true,
+                        editable: false,
+                        eventLimit: true, // allow "more" link when too many events
+                        minTime: "@AgendaHoraIni.ToString("HH:mm")",
+                        maxTime: "@AgendaHoraFim.ToString("HH:mm")",
+                       
+
+
+
+                         @if (BLL.Usuarios.GetEmpresaTipoId() == 2)
+                         {
+
+                    @:events: '@Url.Content("~/Agendamento/Getevents_2/")',
+                        	}
+                         else
+                         {
+                    @:events: '@Url.Content("~/Agendamento/Getevents/")',
+                                                
+                         }
+
+                        columnFormat: 'ddd',
+                        defaultView: 'agendaWeek',
+                        axisFormat: 'HH:mm',
+                        slotDuration: '@AgendaIntervaloMinutos',
+                        height: 'auto'
+                    });
+                }
+
+
+                renderCalendar();
+            });
+
+
+
+
+
+        </script>
+
+    }
+
+
+    <script>
+        $(document).ready(function () {
+            $(".fc-agendaDay-button").click(function () {
+                document.location.href = '@Url.Content("~/Agendamento/Calendario")';
+            });
+
+            $(".fc-month-button").click(function () {
+                document.location.href = '@Url.Content("~/Agendamento/Calendario")';
+              });
+        });
+
+
+
+    </script>
+
+
+
+}
+
+

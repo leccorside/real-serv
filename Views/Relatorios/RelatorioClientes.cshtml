@@ -1,0 +1,63 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório de "+BLL.Usuarios.GetEntidadeCliente();
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Relatórios", "Relatorios", "Principal")</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Status</label>
+                @Html.DropDownList("status", (SelectList)ViewBag.Status, "--Todos--", new { @class = "chosen-select " })
+
+            </div>
+
+            <div class="span4">
+
+            </div>
+        </div>
+
+        
+      
+
+
+
+
+
+
+        <div class="form-actions">
+            
+
+            <input type="submit" value="Gerar" formaction="@Url.Content("~/Relatorios/RelatorioClientes")" class="btn btn-primary  btn-large" onclick="return confirm('Esse processo pode demorar alguns minutos?')" />
+
+            <input type="submit" value="Exportar" formaction="@Url.Content("~/Relatorios/RelatorioClientesExportToXls")" class="btn btn-primary  btn-large" onclick="return confirm('Esse processo pode demorar alguns minutos?')" >
+
+        </div>
+
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Relatorios", "Principal")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

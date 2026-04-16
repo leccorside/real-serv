@@ -1,0 +1,180 @@
+﻿@model PetaPoco.Page<Models.MedGuia>
+
+
+@{
+    var user = new BLL.Usuarios();
+    ViewBag.Title = "Guias";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    var _MedGuiasExport = BLL.Usuarios.VerificaAcesso("Export", "MedGuias");
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "MedGuias/Index";
+}
+
+@section Styles{
+
+    <style>
+        .listAnexos
+        {
+            list-style: none;
+            font-size: 10px;
+            margin-left: 0px;
+        }
+    </style>
+
+}
+
+@section Breadcrumb{
+
+}
+
+@if (_MedGuiasCriar && BLL.Usuarios.GetFilialId() > 0)
+{
+<div class="row-fluid">
+    <div class="span12">
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+    
+}
+
+
+<div class="row-fluid">
+    <div class="span12 cwell">
+
+
+
+        <div class="row-fluid ">
+            <div class="span11">
+                @using (Html.BeginForm("Index", "MedGuias", FormMethod.Post, new { @class = "form-inline  " }))
+                {
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <label>Pesquisar</label>
+                            <input type="text" name="pesquisar" id="pesquisar" title="Pesquisar" class="span12" placeholder="Pesquisar..." value="@Request["pesquisar"]">
+                        </div>
+                        <div class="span2">
+                            <label>Convênios</label>@Html.DropDownList("ConvenioId", (SelectList)ViewBag.ddlConvenios, new { @class = "chosen-select span12 " })</div>
+                        <div class="span2">
+                            <label>Médicos</label>@Html.DropDownList("MedicoId", (SelectList)ViewBag.ddlMedicos, new { @class = "chosen-select span12 " })</div>
+                        
+                        @if (BLL.Usuarios.GetFilialId() > 0)
+                        {
+                        <div class="span2">
+                            <label>Status</label>@Html.DropDownList("StatusNome", (SelectList)ViewBag.ddlStatusAgrupado, new { @class = "chosen-select span12 " })</div>    
+                        }
+                        
+                        <div class="span3">
+                            <label>Data</label><br />
+                            <input type="text" name="de" id="de" title="Data de" class="datepickerDe span6 tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+                            <input type="text" name="ate" id="ate" title="Data até" class="datepickerAte span6 tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+                        </div>
+                        <div class="span1">
+                            <label></label>
+                            <br />
+                            <button class="btn btn-mini" type="submit"><i class="fa fa-search"></i></button><button class="btn btn-mini" type="button" onclick="parent.location='@strUrl'"><i class="fa fa-eraser"></i></button>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="span1">
+
+                @using (Html.BeginForm("Export", "MedGuias", FormMethod.Post, new { @class = "form-inline " }))
+                {
+                    if (_MedGuiasAdministrador || _MedGuiasExport)
+                    {
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <br />
+                            <input type="hidden" name="pesquisar" value="@Request["pesquisar"]">
+                            <input type="hidden" name="ConvenioId" value="@Request["ConvenioId"]">
+                            <input type="hidden" name="MedicoId" value="@Request["MedicoId"]">
+                            <input type="hidden" name="StatusNome" value="@Request["StatusNome"]">
+                            <input type="hidden" name="de" value="@Request["de"]">
+                            <input type="hidden" name="ate" value="@Request["ate"]">
+                            <button class="btn pull-right" data-toggle="tooltip" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i></button>
+                        </div>
+                    </div>    
+                    }
+
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+        
+        @Html.Partial("~/Views/MedGuias/_listguias.cshtml", Model)
+
+    </div>
+</div>
+
+@section Scripts {
+    @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>*@
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    <script src="~/Assets/js/bootstrap-tooltip.js"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+
+            $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+
+            $("body").on("click", ".jquery-lightbox-overlay", function () {
+                window.location.reload(true);
+            });
+
+            $("body").on("click", ".jquery-lightbox-button-close", function () {
+                window.location.reload(true);
+            });
+
+
+            
+            $("#MedGuiaTipoId").val("@Request["MedGuiaTipoId"]");
+
+            $('#ConvenioId').val('@Request["ConvenioId"]');
+            $('#MedicoId').val('@Request["MedicoId"]');
+            $('#StatusNome').val('@Request["StatusNome"]');
+            $("#de").mask("99/99/9999");
+            $("#ate").mask("99/99/9999");
+
+            $("#pesquisar").select();
+
+        });
+
+
+        
+
+
+    </script>
+
+
+
+}
+

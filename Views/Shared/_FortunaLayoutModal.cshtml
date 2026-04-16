@@ -1,0 +1,217 @@
+
+@{
+    
+    int empresaId = BLL.Usuarios.GetEmpresaId();
+
+
+    var _copyright = ""; 
+    var _copyright_infos = "";
+    var _head="";
+
+    if (empresaId>0)
+	{
+		  _copyright = BLL.Configuracoes.CarregarPorEmpresaId("copyright",empresaId);
+          _copyright_infos = BLL.Configuracoes.CarregarPorEmpresaId("copyright.infos", empresaId);
+          _head = BLL.Configuracoes.CarregarPorEmpresaId("layout.head", empresaId);
+        
+    
+	}
+    
+    }
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Page title -->
+    <title>@Html.Raw(ViewBag.Title)</title>
+
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    @RenderSection("css", required: false)
+
+
+    <!-- Primary vendor style -->
+    @Styles.Render("~/bundles/font-awesome/css")
+    @Styles.Render("~/bundles/animate/css")
+    @Styles.Render("~/bundles/bootstrap/css")
+    @Styles.Render("~/bundles/peicon7stroke/css")
+
+    <!-- mensagens de erros -->
+    @Styles.Render("~/bundles/sweetAlert/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+    <!-- Localization Tool -->
+    @Styles.Render("~/bundles/localizationTool/css")
+
+    <!-- Add local styles, mostly for plugins css file -->
+    @if (IsSectionDefined("Styles"))
+    {@RenderSection("Styles", required: false)}
+
+    <!-- Primary HOMER style -->
+    @Styles.Render("~/bundles/homer/css")
+    @Styles.Render("~/bundles/homer/custom")
+    @Styles.Render("~/bundles/fancybox/css")
+     <style>
+        body.hide-sidebar #wrapper
+        {
+            margin-left: 0;
+        }
+
+        #wrapper
+        {
+            margin: 0 0 0 0 !important;
+            min-height: 100% !important;
+        }
+    </style>
+
+    @Html.Raw(_head)
+
+</head>
+<body class="">
+
+    <!-- Simple splash screen-->
+    <div class="splash">
+        <div class="color-line"></div>
+        <div class="splash-title">
+            <h1></h1>
+            <p>Carregando recursos do Sistema</p>
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    <!--[if lt IE 7]>
+<p class="alert alert-danger">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+    @*<div style="display: none">
+        @RenderSection("breadcrumb", required: false)
+    </div>
+
+
+    <div class="modal-content">
+        <div class="color-line"></div>
+        <div class="modal-header text-center">
+            <h4 class="modal-title">Modal title</h4>
+            <small class="font-bold">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</small>
+        </div>
+        <div class="modal-body">
+            <p>
+                <strong>Lorem Ipsum is simply dummy</strong> text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
+                                        printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting,
+                                        remaining essentially unchanged.
+            </p>
+            @RenderBody()
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+    </div>*@
+
+
+    <!-- Main Wrapper -->
+    <div id="wrapper">
+
+        <div style="display:none">
+        @RenderSection("breadcrumb", required: false)
+        </div>
+        @RenderBody()
+
+
+
+        <!-- Right sidebar -->
+
+
+        <!-- Footer-->
+        <footer class="footer">
+            
+
+           @if (_copyright == "")
+            {
+                <span class="muted pull-right">@DateTime.Today.ToString("yyyy") &copy; Powered By <a href="http://www.e-bee.com.br" target="_blank" style="color: #ff7518; font-weight: bold">E-Bee</a>    </span>
+            }
+            else
+            {
+              <div>
+                    <span class="pull-right">
+                        @Html.Raw(_copyright_infos)
+                    </span>
+                    @DateTime.Today.ToString("yyyy") &copy; @Html.Raw(_copyright)
+                </div>
+            }
+
+        </footer>
+
+    </div>
+
+    <!-- Section for main scripts render -->
+    @Scripts.Render("~/bundles/jquery/js")
+    @Scripts.Render("~/bundles/bootstrap/js")
+    @Scripts.Render("~/bundles/homer/js")
+
+    <!-- mensagens de erros -->
+    @Scripts.Render("~/bundles/sweetAlert/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+    <!-- Localization Tool -->
+    @Scripts.Render("~/bundles/localizationTool/js")
+
+    <!-- mask -->
+    @Scripts.Render("~/bundles/mask/js")
+
+    <!-- input file -->
+    @Scripts.Render("~/bundles/filestyle/js")
+
+    @RenderSection("scripts", required: false)
+
+    @Html.Partial("~/Views/Foo/_FortunaRenderErros.cshtml")
+    <script>
+
+        function cubeeConfirm(titulo, texto, url) {
+            swal({
+                title: titulo,
+                text: texto,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim",
+                cancelButtonText: "Não, cancelar",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    window.location.href = url;
+                } else {
+                    return false;
+                }
+            });
+        }
+
+
+        $(":file").filestyle({ input: false, buttonText: "Localizar Arquivo" });
+        $("#EntidadeStatusId").on("change", function () { $.getJSON("@Url.Content("~/EntidadesStatus/GetSubStatus")", { id: $(this).val() }, function (t) { if ($("#div_substatus_checkbox").empty(), null == t || "" == t) $("#div_substatus").css("display", "none"); else { $("#div_substatus").css("display", "block"); for (var s = [], e = 0; e < t.length; e++) s.push('<label class="checkbox-inline"><input type="checkbox" value=\'' + t[e] + '\' name="EntidadeStatusSubStatus">' + t[e] + "</label>"); $("#div_substatus_checkbox").append($(s.join(""))) } }) });
+        $("#EntidadeStatusId").on("change", function () {
+            
+            if ($(this).find(':selected').attr('data-val-sendmail') == "True") {
+                $("#div_StatusEmailEnviar").css("display", "block");
+                $("#span_StatusEmailAssunto").text($(this).find(':selected').attr('data-val-sendmailsubject'));
+                span_StatusEmailAssunto
+            } else {
+                $("#div_StatusEmailEnviar").css("display", "none");
+                $('#StatusEmailEnviar').prop('checked', false); // Unchecks it
+            }
+
+
+        });
+    </script>
+</body>
+</html>

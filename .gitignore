@@ -1,0 +1,105 @@
+# ========================================================================
+# .gitignore gerado para o projeto ASP.NET MVC com vários backups e logs
+# ========================================================================
+
+# Diretórios de compilação do .NET
+/bin/
+/obj/
+
+# Arquivos e diretórios do Visual Studio
+.vs/
+*.user
+*.user.*
+*.suo
+*.userosscache
+*.sln.docstates
+*.vsix
+
+# Diretório de pacotes (NuGet)
+packages/
+*.nupkg
+
+# Logs de aplicação
+/Logs/
+*.log
+*.err
+
+# Bancos de dados e Backups (SQL Server, etc.)
+*.bak
+*.mdf
+*.ldf
+*.sqlite
+*.sqlite3
+/gruporealserv*.bak
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+.user.ini
+
+# ========================================================================
+# REGRAS ESPECÍFICAS DESTE PROJETO (Arquivos/Pastas antigas e de backup)
+# ========================================================================
+
+# Pastas da lixeira e de backup de compilações antigas (bin_old, bin_*, etc.)
+/bin_*/
+/binOld*/
+/bin_OLD/
+
+# Conteúdos estáticos velhos de backup
+/Content_OLD/
+/Content_old*/
+/Scripts[0-9]*/
+
+# Arquivos de configurações antigos e de backup (Web.config_old, OWeb, etc.)
+/Oweb*/
+/OWeb*/
+/[Oo]web*.config*
+/Web.config_*
+/Web.config[0-9]*
+/web.config.old
+/web.config.tst
+/web.config_old
+/webBkp.config
+/Bweb.config
+/packages.config_*
+/Global.asax_old
+
+# Outros arquivos antigos de backup que terminam ou contêm OLD / old / bkp
+*_OLD
+*_old
+*_old*
+*Bkp*
+*.old
+
+# Arquivo root index HTML (se for gerado dinamicamente ou for backup)
+/index.htm
+
+# ========================================================================
+# Arquivos de sistema operacional (Mac/Windows)
+# ========================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+/.git123/
+
+# ========================================================================
+# Agentes locais e arquivos de configuração IA
+# ========================================================================
+/.agent/
+/.claude/
+
+# Arquivos MD
+DOCKER_CHECKLIST.md
+DOCKER_README.md
+DOCKER_SETUP.md
+QUICKSTART.md
+
+# Arquivos de teste python
+

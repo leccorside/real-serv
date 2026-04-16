@@ -1,0 +1,70 @@
+﻿@model Models.PerfilTipo
+
+@{
+    var acao = "Cadastrar";
+    if (Model.PerfilTipoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+    ViewBag.Title = acao + " Tipos de Perfil";
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Tipos de Perfil", "Index")</li>
+}
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+         
+    if (Model.PerfilTipoId > 0)
+    {
+    @Html.Hidden("PerfilTipoId", Model.PerfilTipoId);
+    }
+    
+
+        
+
+    <div class="editor-label">
+        <label>Nome</label>
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.PerfilTipoNome)
+        @*@Html.ValidationMessageFor(model => model.PerfilTipoNome)*@
+    </div>
+
+    <div class="editor-label">
+        <label>Ordem</label>
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(model => model.Ordem)
+        @*@Html.ValidationMessageFor(model => model.Ordem)*@
+    </div>
+
+    
+
+    <div class="form-actions">
+
+
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+    </div>
+    
+}
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script>
+        $("#Ordem").mask("9?999");
+    </script>
+}

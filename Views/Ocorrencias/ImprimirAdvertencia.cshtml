@@ -1,0 +1,88 @@
+﻿@model Models.Ocorrencia
+
+@{
+    ViewBag.Title = "ImprimirAdvertencia";
+    Layout = "~/Views/Shared/_Report.cshtml";
+   
+    
+}
+
+@section Styles{
+
+    <style>
+        .table
+        {
+            font-size: 8px;
+        }
+    </style>
+
+}
+
+
+
+<div class="page-header">
+    <table width="100%">
+        <tr>
+            <td>
+                <h4>AVISO DE ADVERTÊNCIA AO EMPREGADO</h4>
+            </td>
+            <td align="right">
+                <h4>@BLL.Usuarios.GetEmpresaNome()</h4>
+                <p class="pull-right muted credit">
+                    Gerado em: @DateTime.Now por: @BLL.Usuarios.GetUsuarioNome()
+                </p>
+            </td>
+        </tr>
+    </table>
+
+
+    
+<H1>AVISO DE ADVERTÊNCIA AO EMPREGADO</H1>
+	<p>SANTOS @DateTime.Now.ToString("dd/MM/yyyy")</p>
+	<p>Nome do Empregado: <b>@Model.FuncionarioNome</b></p>
+<br />
+<br />
+<p>Na conformidade da consolidação das Leis do Trabalho, fica advertida por saída antecipada, abaixo descriminada.</p>
+<p>Pelo presente notificamos que, fica advertido por escrito, na data de @DateTime.Now.ToString("dd/MM/yyyy"), <b>@Model.OcorrenciaDescricao</b>, assim pedimos a devolução do presente com o seu CIENTE.</p>
+<br />
+<br />
+<br />
+<br />
+<p>Não só esperamos que tomasse as necessárias providencias a fim de que não se repitam as irregularidades acima descriminadas, como também aproveitamos para esclarecer-lhe que a repetição ou a pratica de outra prevista em nossos regulamentos, Ordens de Serviços, Comunicações, ETC., irá contribuir desfavoravelmente em seu progresso nesta firma, além de poder acarretar-lhe penalidades mais severas, conforme preceitua as disposições do artigo, 482 e suas alíneas da consolidação das Leis do Trabalho.</p>
+<br />
+<br />
+<br />                                     
+<br />                           
+	<p>Empresa <b>@BLL.Usuarios.GetEmpresaNome()</b></p>
+    <p>Empregado <b>@Model.FuncionarioNome</b></p>
+    <p>Endereço	<b>RUA PADRE ANCHIETA, 320.</b></p>
+    <p>CNPJ:    <b>04400471000148</b> </p>
+    <br />
+    <br />
+          <br />                                
+                <br />                   
+    <br />
+         <br />
+                                        Atenciosamente,                                     
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    Local e Data<br />SANTOS, @DateTime.Now.ToString("dddd, d 'de' MMMM 'de' yyyy")
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <br />
+                         @Model.ExecutorNome
+
+
+    
+
+
+
+
+</div>
+

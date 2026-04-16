@@ -1,0 +1,53 @@
+﻿@model PetaPoco.Page<Models.DocumentoArquivo>
+
+
+@{
+
+    var id = Url.RequestContext.RouteData.Values["id"];
+    var tipo = Url.RequestContext.RouteData.Values["tipo"];
+}
+
+
+
+<div class="row">
+    <div class="col-lg-12"> 
+        <div class="hpanel">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table cellpadding="1" cellspacing="1" class="table table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Nome</th>
+                                <th>Gerado em</th>
+                                <th>Impresso em</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td><a href="@Url.Content("~/DocumentosArquivos/View/" + item.DocumentoArquivoId + "?")" class="fancybox fancybox.iframe btn btn-xs btn-outline btn-primary tip-top" data-toggle="tooltip" data-original-title="Imprimir"  title="Imprimir" data-placement="top">Imprimir</a></td>
+                                    <td>@item.DocumentoArquivoId - @item.DocumentoArquivoNome</td>
+                                    <td>@item.RegDtInicio</td>
+                                    <td>
+                                        @if (item.DocumentoImprimirData!=null)
+                                        {
+                                            <i class="fa fa-check"></i>
+                                        }
+                                        @item.DocumentoImprimirData</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+            </div>
+            <div class="panel-footer">
+                @Model.TotalItems documentos
+            </div>
+        </div>
+    </div>
+</div>
+
+

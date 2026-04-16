@@ -1,0 +1,103 @@
+﻿@model Models.Filial
+
+
+@{
+    ViewBag.Title = "Excluindo " + BLL.Usuarios.GetEntidadeFilial();
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var bgInterna = "~/Assets/img/bg/" + Model.EmpresaId + "_" + Model.FilialID + "Interna.jpg?" + DateTime.Now.Second;
+}
+
+
+
+
+@section Breadcrumb{
+   <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Filiais", "Index", new { id = 0 })</li>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja apagar esse registro?
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    <div class="row">
+
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.FilialID)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.FilialID)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.FilialDocumento)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.FilialDocumento)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.FilialRazaoSocial)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.FilialRazaoSocial)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.FilialNome)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.FilialNome)
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- ./conteudo aqui -->
+                </div>
+                <div class="panel-footer">
+
+                    @using (Html.BeginForm())
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.HiddenFor(model => model.FilialID)
+                                    <input type="submit" value="Apagar" class="btn btn-danger" />
+                                
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary" })
+                                
+                            </div>
+                        </div>    
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+

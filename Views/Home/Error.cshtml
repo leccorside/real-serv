@@ -1,0 +1,43 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "Não Autorizado";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+}
+
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-md-12">
+
+ <i class="pe-7s-way text-success big-icon"></i>
+    <h1>500</h1>
+    <strong>Oooops. Ocorreu um erro inesperado.</strong>
+    <p>
+       Mas já fomos notificados e vamos resolver esse problema o quanto antes. 
+    </p>
+<p>Não ligue para as informações abaixo, elas já foram direcionadas para nossa equipe de Nerd's</p>
+<hr />
+<small>
+    @if (Model != null && HttpContext.Current.IsDebuggingEnabled)
+    {
+        <div>
+            <p>
+                <b>Exception:</b> @Model.Exception.Message<br />
+                <b>Controller:</b> @Model.ControllerName<br />
+                <b>Action:</b> @Model.ActionName<br />
+            </p>
+
+            <div style="overflow:scroll">
+                <pre>
+                    @Model.Exception.StackTrace
+                </pre>
+            </div>
+        </div>
+    }
+
+
+</small>
+    <a href="@Url.Content("~/Principal/Index")" class="btn btn-xs btn-success">Go back to dashboard</a>
+
+</div></div></div>

@@ -1,0 +1,82 @@
+﻿@model List<Models.PessoaPlanoGrupoAgendamento>
+
+@{
+    ViewBag.Title = "Programação";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    var currentId = ViewContext.RouteData.Values["id"] as string ?? "0";
+}
+
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Programação
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="@Url.Content("~/PessoasPlanosGruposAgendamentos/Criar/0/?PessoaPlanoGrupoId=" + currentId)" class="btn btn-primary"><i class="fa fa-plus"></i>Criar</a>
+                            <div class="table-responsive">
+                                <table class="data table table-condensed table-striped">
+                                    <tr>
+                                        <th>Data</th>
+                                                <th>Horário</th>
+                                                <th>Descrição</th>
+
+                                                <th></th>
+                                                <th></th>
+                                    </tr>
+
+                                    @foreach (var item in Model)
+                                    {
+                                       <tr>
+                                                    <td>@item.PessoaPlanoGrupoAgendamentoDt.ToShortDateString()</td>
+                                                    <td>@item.PessoaPlanoGrupoAgendamentoHrIni<br />
+                                                        @item.PessoaPlanoGrupoAgendamentoHrFim</td>
+                                                    <td>
+                                                        <h5>@item.PessoaPlanoGrupoAgendamentoDescricao</h5>
+                                                        <small>@item.PessoaPlanoGrupoAgendamentoNome</small></td>
+                                                    <td><a href="@Url.Content("~/PessoasPlanosGruposAgendamentos/Criar/" + item.PessoaPlanoGrupoAgendamentoId + "/?PessoaPlanoGrupoId=" + item.PessoaPlanoGrupoId)" class="btn btn-outline btn-primary btn-xs fancybox_recarrega fancybox.iframe">Editar</a>    </td>
+                                                    <td><a href="@Url.Content("~/PessoasPlanosGruposAgendamentos/Deletar/" + item.PessoaPlanoGrupoAgendamentoId + "/?PessoaPlanoGrupoId=" + item.PessoaPlanoGrupoId)" class="btn btn-outline btn-danger btn-xs fancybox_recarrega fancybox.iframe">Excluir</a></td>
+                                                </tr>   
+                                    }
+
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+
+    <script>
+        function selecionado(id) {
+            this.parent.UpdateElementOfParent(id);
+        }
+
+
+    </script>
+
+
+}

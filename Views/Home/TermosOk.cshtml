@@ -1,0 +1,88 @@
+﻿@model Models.PessoaTermoAceiteView
+
+@{
+    ViewBag.Title = "Termos";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+    // Get host name
+    String strHostName = Dns.GetHostName();
+
+    // Find host by name
+    var iphostentry = Dns.GetHostByName(strHostName);
+
+
+    string bg = Model.Filial.EmpresaId + "_" + Model.Filial.FilialID;
+
+    
+}
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center">
+                <img src="@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/1.png")" /></h1>
+            <div class="hpanel">
+                <div class="panel-body">
+
+
+
+
+
+                    @using (Html.BeginForm("TermosOk", "Home", FormMethod.Post))
+                    {
+                        @Html.HiddenFor(m => m.PessoaTermoAceite.PessoaTermoAceiteGuid)
+                        
+                    
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+
+
+                                @if (Model.PessoaTermoAceite.PessoaTermoAceiteRealizado)
+                                {
+                                    <h4>Obrigado!</h4>
+                                    <strong>Aceite realizado em @Model.PessoaTermoAceite.PessoaTermoAceiteData através do IP @Model.PessoaTermoAceite.PessoaTermoAceiteIp</strong>
+                                }
+                                else
+                                {
+                                    <h2>Termo de Prestação</h2>
+                                    <small>@Model.PessoaTermoAceite.PessoaTermoAceiteTexto</small><br />
+                                    <br />
+                                    <h4>Eu, @Model.Pessoa.Nome, li e aceito os termos.</h4>
+                                    <hr />
+                                    <button name="btn_aceitar" value="true" type="submit" class="btn btn-primary  btn-large ">Aceitar</button>
+                                    <button name="btn_recusar" value="true" type="submit" class="btn btn-danger  btn-large pull-right" onclick="return confirm('Deseja realmente recusar os termos?')">Recusar</button>
+                                }
+
+                            </div>
+                        </div>
+                            
+                        
+                        
+                        
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            @if (_copyright == "" || _copyright == "true")
+            {
+                <span><strong>Fortuna</strong> - Gestor do seu negócio<br />
+                    2017 Copyright |  E-Bee</span>
+            }
+
+
+        </div>
+    </div>
+</div>
+

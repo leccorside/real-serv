@@ -1,0 +1,48 @@
+﻿@{
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+
+    
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+    <link href="@baseUrl/Assets/css/bootstrap.css" rel="stylesheet" />
+<link href="@baseUrl/Assets/css/bootstrap-responsive.css" rel="stylesheet" />
+    <link href="@baseUrl/Assets/css/Boleto.css" rel="stylesheet" />
+    <style>
+        @@media print{
+
+            .noprint
+            {
+                display:none;
+            }
+
+            p
+            {
+                margin-top:2pt !important;
+            }
+
+        }
+    </style>
+    @RenderSection("Styles", false)
+<body >
+    
+  <div class="container-fluid noprint">
+        <div class="row-fluid">
+            <div class="col-lg-12 text-center"><button class="btn btn-primary" onclick="window.print();">Clique aqui para imprimir</button></div>
+        </div>
+    </div>
+
+      <div class="container-fluid">
+        @RenderBody()
+    </div>
+   
+</body>
+</html>
+@RenderSection("scripts", required: false)

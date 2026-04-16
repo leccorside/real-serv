@@ -1,0 +1,86 @@
+<style>
+    label.ng-binding {
+        margin-left: 0px !important;
+        font-size: 12px;
+    }
+    
+    .content.ng-scope {
+        /*padding: 0px;*/
+    }
+
+</style>
+
+<div class="header-clear">
+</div>
+<div class="content-strip">
+    <div class="strip-content">
+        <h1>Registro de Ponto</h1>
+    </div>
+    <div class="overlay"></div> <img src="images/pictures/Sobre.png" alt="img"> </div>
+<div class="content">
+    <!-- erro -->
+    <div ng-show="error" class="static-notification bg-red-dark">
+        <h6><i class="fa fa-times-circle static-notification-icon"></i>Ooops!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{ errormsg }}
+        </p>
+    </div>
+
+
+    <!-- sucesso -->
+    <div ng-show="sucesso" class="static-notification bg-green-dark">
+        <h6><i class="fa fa-check static-notification-icon"></i>Tudo certo!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{sucessomsg}}
+        </p>
+    </div>
+
+    <form name="FormRe" role="form" ng-show="showFormRe">
+        <!-- aqui para baixo-->
+
+        <div class="text-icon-field">
+            <i class="fa fa-user"></i>
+            <h6>SEU RE</h6>
+            <em>*obrigatório</em>
+            <input ng-model="uRe" class="text-field green-field" onfocus="if (this.value=='RE') this.value = ''" onblur="if (this.value=='') this.value = 'RE'" type="text" value="RE">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="login-button button button-l button-green button-fullscreen full-bottom" ng-click="ReCheck()">VALIDAR RE</button>
+        </div>
+    </form>
+
+
+    <form name="supervisaoForm" role="form" ng-show="ListaOpcoes">
+
+
+        <h4>Selecione o tipo de operação que você está registrando</h4>
+        <div ng-repeat="item in ListaOpcoes">
+            <label><input class="radiobox" type="radio" value="{{item.campo}}" ng-model="item.selected"  name="group" id="{{item.campo}}" /> {{item.descricao}}</label>
+        </div>
+
+
+        <div class="text-icon-field">
+            <i class="fa fa-lock"></i>
+            <h6>Sua senha</h6>
+            <em>*obrigatório</em>
+            <input ng-model="uContraSenha" class="text-field green-field" onfocus="if (this.value=='password') this.value = ''" onblur="if (this.value=='') this.value = 'password'" type="password" value="password">
+        </div>
+
+
+        <div class="form-actions">
+            <button type="submit" class="login-button button button-l button-green button-fullscreen full-bottom" ng-click="Registrar()">Registrar</button>
+
+        </div>
+
+    </form>
+
+    <div ng-show="showTheButtons && Logado()">
+        <a href="#!/principal" class="button button-icon button-dark"><i class="fa fa-angle-left"></i> Sair</a>
+    </div>
+    
+    <a href="#!/" class="pageapp-login-button button tumblr-color" ng-show="!Logado()"><i class="fa fa-chevron-left"></i>Sair</a>
+
+</div>
+

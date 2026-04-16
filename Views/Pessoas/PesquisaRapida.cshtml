@@ -1,0 +1,304 @@
+﻿@model PetaPoco.Page<Models.Pessoa>
+
+
+
+@{
+    var vtipo = BLL.Usuarios.GetEntidadeCliente();
+
+
+    ViewBag.Title = vtipo;
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    var pagina = Request["pagina"];
+    var paginaAtual = (pagina == "" || pagina == null) ? 1 : int.Parse(pagina);
+    var qtdPaginas = Model.TotalPages;// ViewBag.qtdPaginas;
+    var paginasAntesDepois = 5;
+    var qtdPaginasInLine = 20;
+
+    var campoordenacao = Request["ordenacao"];
+    var pesquisar = Request["pesquisar"];
+    var ordenacao = Request["tipoordenacao"];
+    var tipoordenacao = (ordenacao == "" || pagina == null) ? "asc" : ordenacao;
+    tipoordenacao = (tipoordenacao == "asc") ? "desc" : "asc";
+    string ordenacaoLabel = "Nro.";
+    string ordenacaoCampo = "PessoaCount";
+
+    var _PessoasDadosAluno = BLL.Usuarios.VerificaAcesso("DadosAluno", "Pessoas");
+    var _PessoasCriar = BLL.Usuarios.VerificaAcesso("Criar", "Pessoas");
+    var _PessoasDeletar = BLL.Usuarios.VerificaAcesso("Deletar", "Pessoas");
+
+    var _PostosDeServicosIndex = BLL.Usuarios.VerificaAcesso("index", "postosdeservicos");
+
+    var status = Request["status"];
+
+    var tipo_pessoa = Request["tipo"] as string ?? "C";
+
+    var user = new BLL.Usuarios();
+
+
+    bool _ExibirFilial = false;
+    if (BLL.Usuarios.GetFilialIDMaster() == 0 && BLL.Usuarios.GetUtilizaFilial())
+    {
+        _ExibirFilial = true;
+    }
+    
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Pesquisa Rápida
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    <div class="row">
+
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            @using (Html.BeginForm("PesquisaRapida", "Pessoas", FormMethod.Get, new { @class = "form-" }))
+                            {
+                                @*<input type="hidden" name="tipo" value="@tipo_pessoa" />*@
+                                <input type="hidden" name="status" value="@status" />
+                                <input type="hidden" name="ordenacao" value="@campoordenacao" />
+                                <input type="hidden" name="tipoordenacao" value="@ordenacao" />
+            
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3 col-sm-3">@Html.DropDownListPessoaCategoria("tipo", tipo_pessoa, true, " form-control col-lg-4 chosen-select ")</div>
+                                    <div class="col-lg-9 col-md-9 col-sm-9">
+                                        <div class="input-group">
+                                            <input type="text" name="pesquisar" title="Pesquisar" class="form-control " id="pesquisar" value="@Request["pesquisar"]" />
+                                            <span class="input-group-btn">
+                                                <button type="submit" name="todasfiliais" value="false" class="btn  btn-primary">Pesquisar</button>
+                                                <button type="submit" name="todasfiliais" value="true" class="btn btn-outline btn-primary">Pesquisar em Todas</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+            
+                                
+                                
+            
+                            }
+                        </div>
+
+                    </div>
+                    <br />
+
+                    <div class="row">
+
+                        <div class="col-lg-12">
+                            Foi(ram) encontrado(s) @Model.TotalItems registro(s) (página @Model.CurrentPage de @Model.TotalPages)
+        <table cellpadding="1" cellspacing="1" class="data table table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + tipo_pessoa)?pagina=@paginaAtual&ordenacao=PessoaCodigo&tipoordenacao=@tipoordenacao">Cód.</a>
+                    </th>
+                    <th></th>
+
+                    @if (_PostosDeServicosIndex)
+                    {
+                        <th></th>
+                    }
+
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + tipo_pessoa)?pagina=@paginaAtual&ordenacao=Nome&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Items.GetEnumerator().Current.Nome) / Email</a>
+                    </th>
+
+
+
+                    @*<th data-hide="phone,tablet">
+                            <a href="@Url.Content("~/Pessoas/Index/0/" + tipo_pessoa)?pagina=@paginaAtual&ordenacao=Telefone&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Items.GetEnumerator().Current.Telefone)</a>
+                        </th>*@
+                    <th data-hide="phone,tablet">
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + tipo_pessoa)?pagina=@paginaAtual&ordenacao=Celular&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Items.GetEnumerator().Current.Celular)</a>
+                    </th>
+
+                    <th data-hide="phone,tablet"><a href="@Url.Content("~/Pessoas/Index/0/" + tipo_pessoa)?pagina=@paginaAtual&ordenacao=DataNascimento&tipoordenacao=@tipoordenacao">Dt.Nascimento</a></th>
+
+                    @if (user.ControleAcesso("index", "turmas"))
+                    {
+                        <th data-hide="phone,tablet"><a href="@Url.Content("~/Pessoas/Index/0/" + tipo_pessoa)?pagina=@paginaAtual&ordenacao=TurmaNome&tipoordenacao=@tipoordenacao">Turma</a></th>    
+                    }
+                    
+                        <th>
+                            <a href="@Url.Content("~/Pessoas/Index/0/" + tipo_pessoa)?pagina=@paginaAtual&ordenacao=FilialNome&tipoordenacao=@tipoordenacao">Filial</a>
+                        </th>
+                    
+                    <th data-hide="phone,tablet"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    BLL.Erro alerta = BLL.Utils.Validacoes.IsAniversariante(item.DataNascimento);
+                    <tr class="@(item.Ativo ? "" : " muted ") @(alerta.NUMERO == BLL.Erro.Tipo.ComErro ? " warning " : "") @(item.Desligado ? " warning " : "") ">
+                        <td>
+                            @Html.Raw((item.PessoaCodigo == 0 ? "" : item.PessoaCodigo.ToString()+"<br />"))<small>@item.RE</small>
+                        </td>
+
+                        <td>
+                            @if (item.FotoPessoa != null)
+                            {
+                                <img src="@Url.Content(item.FotoPessoa.Replace(".jpg", "thumb.jpg"))?@DateTime.Now.Second" style="max-width: 40px; max-height: 40px;" data-src="holder.js/40x40" alt="@item.Nome">    
+                            }
+                            else
+                            {
+                                <img src="@Url.Content("~/Content/images/YourPhotoHere.png")" style="max-width: 40px; max-height: 40px;" data-src="holder.js/40x40" alt="@item.Nome">
+                            }
+                        </td>
+                        @if (_PostosDeServicosIndex)
+                        {
+                            <td>
+                                <span class="tip-right" title="Postos de Serviços"><a href="@Url.Content("~/PostosDeServicos/Index/0/")?pesquisar=@item.Nome"><i class="fa fa-building-o"></i></a></span>
+                            </td>
+                        }
+
+
+
+                        <td width="100%">
+                            @if (alerta.NUMERO == BLL.Erro.Tipo.ComErro)
+                            {<span class="tip-right" title="@alerta.MENSAGEM"><i class="icon-info-sign"></i></span>}
+                            @if (item.Desligado)
+                            {<span class="tip-right" title="Desligado em @(Convert.ToDateTime(item.DesligadoDt).ToShortDateString())"><i class="icon-download"></i></span>}
+                            <i class="fa text-warning fa-heart@(item.Favorito ? "" : "-o")"></i>
+                            @if (user.ControleAcesso("ficha_aluno", "Regras"))
+                            {<a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID + "")" class="fancybox fancybox.iframe">@Html.DisplayFor(modelItem => item.Nome)</a>}
+                            else
+                            {@item.Nome}
+
+                            <br />
+                            <small>@item.Email</small>
+
+                        </td>
+
+
+                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                             @if (item.Celular != null)
+                             {
+                                        <a href="@Url.Content("https://api.whatsapp.com/send?1=pt_BR&phone=55" + BLL.Utils.Formatacoes.ApenasNumeros(item.Celular))" target="_blank" class="btn btn-outline btn-success btn-xs"><i class="fa fa-whatsapp"></i> </a>    
+                             }
+                            @item.Celular
+                            @(item.Celular!=null?"/":"")
+                            @item.Telefone
+                        </td>
+
+                        <td data-hide="phone,tablet" style="display: table-cell">
+                            @if (item.DataNascimento != null)
+                            {
+                                <span>@Convert.ToDateTime(item.DataNascimento).ToString("dd/MM/yyyy")</span>
+                            }
+                            else
+                            {
+                                <i class="fa fa-frown-o"></i>
+                            }
+
+                        </td>
+                        @if (user.ControleAcesso("index", "turmas"))
+                        {
+                            <td data-hide="phone,tablet" style="display: table-cell"><a href="@Url.Content("~/Turmas/Alunos/" + item.TurmaId)?" class="fancybox fancybox.iframe">@item.TurmaNome</a></td>
+                        }
+
+
+                            <td nowrap>
+                                <small>@item.FilialNome</small>
+                            </td>
+                        
+                        <td data-hide="phone,tablet" style="display: table-cell" class="footable-last-column">
+                            <a href="@Url.Content("~/Pessoas/Criar/" + item.PessoaID + "/" + tipo_pessoa)" target="_top" class="btn btn-outline btn-primary btn-xs" data-toggle="tooltip" data-original-title="Alterar"  title="Alterar" data-placement="top"><i class="fa fa-edit" aria-hidden="true"></i></a>
+
+
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+                            @Html.FortunaPaginacao((int)Model.TotalPages)
+
+
+                        </div>
+                    </div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Styles{
+    
+    @Styles.Render("~/bundles/fancybox/css")
+    
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    
+    <script type="text/javascript">
+        $(function () {
+
+
+            $(document).ready(function () {
+    
+                $(".fancybox").fancybox({
+                    fitToView: false,
+                    width: '80%',
+                    autoSize: false,
+                    
+                });
+    
+
+            });
+
+
+
+            
+            $("#pesquisar").select();
+
+        });
+
+
+
+    </script>
+
+
+
+}
+

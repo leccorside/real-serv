@@ -1,0 +1,149 @@
+﻿@model Models.Cupom
+
+@{
+    ViewBag.Title = "Criar Ocorrência";
+
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+    var bllCuponsTipos = new BLL.CuponsTipos();
+
+    var cuponsTipos = bllCuponsTipos.Listar();
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Cupons", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+        
+        
+        
+        <div class="row-fluid">
+            <div class="span4"></div>
+            <div class="span4">
+                <small>Exemplo de cupom</small>
+                <div class="cwell"><h1 class="black"><span id="lbl_programa" ></span><span id="lbl_codigocomplementar"></span><span>9</span></h1></div>
+            </div>
+            <div class="span4"></div>
+        </div>
+        
+        <br />
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Programa</label>
+                <select id="CupomTipoId" name="CupomTipoId" class="chosen-select span12">
+                    <option>--Selecione--</option>
+                    @foreach (var item in cuponsTipos)
+                    {
+                        <option data-val="@item.CupomCodigoComplementar" value="@item.CupomTipoId" @(Model.CupomTipoId == item.CupomTipoId ? " SELECTED " : "")>@item.CupomTipoNome / @item.CupomCodigoComplementar</option>
+                    }
+                    </select>
+            </div>
+            <div class="span4">
+                <label>Código Complementar</label>
+                @Html.TextBoxFor(m => m.CupomCodigoComplementar, new { @class = "span12" })
+            </div>
+            <div class="span4">
+                <label>Tipo</label>
+                <select id="CupomTipo" name="CupomTipo" class="span12">
+                    <option value="0" @(Model.CupomTipo == (int)BLL.Cupons.eCupomTipo.Valor ? " SELECTED " : "")>Valor</option>
+                    <option value="1" @(Model.CupomTipo == (int)BLL.Cupons.eCupomTipo.Percentual ? " SELECTED " : "")>Percentual</option>
+                </select>
+            </div>
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Valor</label>
+                @Html.TextBoxFor(m => m.CupomValor, new { @class = "span12 money" })
+            </div>
+            <div class="span4">
+                <label>Quantidade</label>
+                @Html.TextBoxFor(m => m.CupomQtd, new { @class = "span12 number" })
+            </div>
+            <div class="span4">
+                <label>Vencimento</label>
+                @Html.TextBox("CupomVencimento", @String.Format("{0:dd/MM/yyyy}", Model.CupomVencimento), new { @class = "datepicker input-small", value = @DateTime.Now })
+            </div>
+
+        </div>
+        <br />
+        <div class="form-actions">
+            <div class="row-fluid">
+                <div class="span6">
+                    <button name="salvarfechar" value="true" type="submit" class="btn btn-primary  btn-large "  onclick="return confirm('Confirma a criação dos cupons?')">Criar</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        <a href="~/Cupons/Index" class="btn">Voltar</a>
+    </div>
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @*<script src="~/Assets/plugins/bootstrap-ajax-typeahead-master/bootstrap-typeahead.min.js"></script>*@
+    <script>
+        $("#CupomTipoId").change(function () {
+            select = $(this).find(':selected').data('val');
+            $("#lbl_programa").html(select);
+        });
+
+        $("#CupomCodigoComplementar").keyup(function () {
+            var dInput = this.value;
+            $("#lbl_codigocomplementar").html(dInput);
+        });
+
+        
+
+        //Definicao valor
+        $("#CupomTipo").change(function () {
+
+            select = $(this).val();
+
+
+            switch (select) {
+                case "0":
+                    //money
+                    $("#CupomValor").val('');
+                    $("#CupomValor").maskMoney('destroy');
+                    $("#CupomValor").maskMoney({ thousands: '.', decimal: ',', symbolStay: false, allowNegative: false, allowZero: true });
+                    break;
+                case "1":
+                    //percentual
+                    $("#CupomValor").val('');
+                    $("#CupomValor").maskMoney('destroy');
+                    $("#CupomValor").maskMoney({ thousands: '', decimal: '', symbolStay: false, allowNegative: false, allowZero: true, defaultZero: false });
+
+                    break;
+                default:
+                    break;
+            }
+
+
+
+        });
+    </script>
+}
+
+

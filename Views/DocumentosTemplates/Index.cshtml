@@ -1,0 +1,75 @@
+@model PetaPoco.Page<Models.DocumentoTemplate>
+
+@{
+    ViewBag.Title = "Templates de Documentos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    var _DocumentosTemplatesCriar = BLL.Usuarios.VerificaAcesso("Criar", "DocumentosTemplates");
+}
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Configura&ccedil;&otilde;es", "Configuracoes", "Principal")</li>
+}
+
+@section Styles {
+@Html.Partial("_TableStyles")
+@Styles.Render("~/bundles/fancybox/css")
+}
+
+<div class="ponto-container">
+    <div class="ponto-header">
+        <div class="ponto-title"><h2><i class="pe-7s-copy-file"></i> Templates de Documentos</h2></div>
+        <div style="display:flex; gap:12px; align-items:center;">
+            @Html.FormPesquisaIndex()
+            @if (_DocumentosTemplatesCriar && BLL.Usuarios.GetFilialId() > 0)
+            {
+                <a href="@Url.Content("~/DocumentosTemplates/Copiar")" class="btn-alterar fancybox.iframe fancybox_mini"><i class="fa fa-cogs"></i> Copiar</a>
+            }
+            @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn-create" })
+        </div>
+    </div>
+    <div class="ponto-table-container">
+        <table class="ponto-table" data-pagination="server">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Descri&ccedil;&atilde;o</th>
+                    <th>Data de Cadastro</th>
+                    <th style="width:140px">A&ccedil;&otilde;es</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(m => item.DocumentoTemplateId)</td>
+                        <td width="100%">@Html.DisplayFor(m => item.DocumentoTemplateNome)</td>
+                        <td><small>@item.DocumentoTemplateDescricao</small></td>
+                        <td nowrap>@Html.DisplayFor(m => item.RegDtInicio)</td>
+                        <td nowrap>
+                            <div class="actions-cell">
+                                @Html.ActionLink("Alterar", "Criar", new { id = item.DocumentoTemplateId }, new { @class = "btn-alterar" })
+                                @Html.ActionLink("Excluir", "Deletar", new { id = item.DocumentoTemplateId }, new { @class = "btn-excluir" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination">
+        @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+    </div>
+</div>
+
+@section Scripts {
+@Scripts.Render("~/bundles/fancybox/js")
+<script>
+    $(".fancybox_mini").fancybox({
+        padding: 0, fitToView: false, width: '50%', autoSize: false,
+        closeClick: false, openEffect: 'none', closeEffect: 'none',
+        helpers: { overlay: { locked: true } },
+        beforeClose: function () { window.location.reload(true); }
+    });
+</script>
+}

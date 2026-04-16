@@ -1,0 +1,28 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="row-fluid">
+    <div class="span3">
+        <label>Tipo</label>
+        @Html.DropDownListFor(m => m.RecorrenciaObj.Tipo, new[] {
+                           new SelectListItem() {Text = "Diário", Value = Models.Recorrencia.ETipo.Diaria.ToString()},
+                           new SelectListItem() {Text = "Semanal", Value = Models.Recorrencia.ETipo.Semanal.ToString()},
+                           new SelectListItem() {Text = "Mensal", Value = Models.Recorrencia.ETipo.Mensal.ToString()},
+                           }, null, new { onchange = "TipoRecorrencia(this.value);" })
+        @Html.TextBox("Teste",'','');
+
+    </div>
+    <!DOCTYPE HTML>
+
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>_DadosBoletos</title>
+    </head>
+    <body>
+        <div>
+
+        </div>
+    </body>
+</html>

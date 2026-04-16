@@ -1,0 +1,392 @@
+﻿@model Models.Usuario
+
+
+
+@{
+
+
+
+    var acao = "Cadastrar";
+    if (Model.UsuarioId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Usuario";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+
+    var bllFiliais = new BLL.Filiais();
+    var bllUsuariosFiliais = new BLL.UsuariosFiliais();
+    var filiaisSelecionadas = bllUsuariosFiliais.ListarTiposAcessos(Model.UsuarioId);
+    var listaFiliais = bllFiliais.Listar();
+
+    var _PRCPropostas_Index = BLL.Usuarios.VerificaAcesso("Index", "PRCPropostas");
+
+
+    var listaFontes = new List<string>();
+    listaFontes.Add("TRF1");
+    listaFontes.Add("TRF2");
+    listaFontes.Add("TRF3");
+    listaFontes.Add("TRF4");
+    listaFontes.Add("TRF5");
+    listaFontes.Add("TJ-SP");
+
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Usuarios", "Index", new { id = 0 })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "Usuarios", FormMethod.Post))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        if (Model.UsuarioId > 0)
+                        {
+                            @Html.Hidden("UsuarioId", Model.UsuarioId);
+                            acao = "Alterar";
+                        }
+
+
+                        <div class="row">
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.UsuarioNome)
+                                @Html.TextBoxFor(model => model.UsuarioNome, new { @class = " form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.UsuarioEmail)
+                                @Html.TextBoxFor(model => model.UsuarioEmail, new { @class = " form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>CPF</label>
+                                @Html.TextBoxFor(model => model.UsuarioDocumento, new { @class = " form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.UsuarioLogin)
+                                @Html.TextBoxFor(model => model.UsuarioLogin, new { @class = " form-control" })
+                            </div>
+
+
+
+
+                            @if (Model.UsuarioId == 0)
+                            {
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    <label>Senha:</label>
+                                    @Html.PasswordFor(model => model.DefinirSenha.newPassword, new { @class = " form-control" })
+                                </div>
+
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    <label>Confirmar senha:</label>
+                                    @Html.PasswordFor(model => model.DefinirSenha.ConfirmPassword, new { @class = " form-control" })
+                                </div>
+                            }
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Perfil de acesso</label>
+                                @Html.DropDownListFor(model => model.PerfilId, (SelectList)ViewBag.DdlPerfil, "--Selecione--", new { @class = "form-control chosen-select" })
+
+                            </div>
+
+                            @if (BLL.Usuarios.GetUtilizaFilial() == true && BLL.Usuarios.GetFilialIDMaster() == 0)
+                            {
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    <label>@BLL.Usuarios.GetEntidadeFilial() Padrão:</label>
+                                    @Html.DropDownListFor(model => model.FilialID, (SelectList)ViewBag.DdlFiliais, "--Nenhuma--", new { @class = "form-control chosen-select" })
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+
+                                    <label>Visualiza outras filiais?</label><br />
+                                    <div class="checkbox">
+                                        <label>@Html.CheckBoxFor(model => model.VisualizaOutrasFiliais)  Sim</label>
+                                    </div>
+
+                                </div>
+                                <div class="col-form col-lg-12 col-md-12 col-sm-12" id="div_filiais" name="div_filiais">
+                                    <label>Selecione as filiais que o usuário pode visualizar</label>
+                                    @foreach (var item in listaFiliais)
+                                    {
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="listaFiliais" id="listaFiliais" value="@item.FilialID" @(filiaisSelecionadas.Any(x => x.Value == item.FilialID.ToString()) ? " checked " : " ") />
+                                                @item.FilialNome
+                                            </label>
+                                        </div>
+
+
+                                    }
+                                </div>
+
+
+
+                            }
+                            else
+                            {
+                                <input type="hidden" name="FilialID" value="@BLL.Usuarios.GetFilialIDMaster()" />
+                            }
+
+
+
+
+                        </div>
+
+                        <legend>Definições do Acesso</legend>
+                        <div class="row">
+
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+
+                                <label>Acesso restrito por IP? </label>
+                                <br />
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.AcessoRestrito)  Sim</label>
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>IP</label>
+                                <small class="pull-right">Seu IP atual é:  @Request.UserHostAddress</small>
+                                @Html.TextBoxFor(model => model.AcessoIP, new { @class = " form-control" })
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+
+                                <label>Acesso restrito por MAC ADDRESS? </label>
+                                <br />
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.AcessoRestritoMacAddress)  Sim</label>
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>MAC ADDRESS</label>
+                                @*<small class="pull-right">Seu Mac Address atual é:  @BLL.Utils.Funcoes.GetMacAddress()</small>*@
+                                @Html.TextBoxFor(model => model.AcessoMacAddress, new { @class = " form-control" })
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            @if (Model.UsuarioId > 0)
+                            {
+                                <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                    <label>Hash Key <small>(Para integração)</small></label>
+                                    @Html.TextBoxFor(model => model.HashKey, new { @class = " form-control" })
+                                </div>
+                            }
+                        </div>
+
+
+
+                        if ((int)ViewBag.QtdPessoas > 1)
+                        {
+                            <legend>Integração Usuários X @BLL.Usuarios.GetEntidadeFuncionario()</legend>
+                            <div class="row">
+
+                                <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                    <label>Concender acesso:</label>
+                                    @Html.DropDownListFor(model => model.PessoaId, (SelectList)ViewBag.DdlPessoas, new { @class = "form-control chosen-select" })
+
+                                </div>
+
+                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    <label>Criar um @BLL.Usuarios.GetEntidadeFuncionarioSingular()</label>
+                                    <br />
+                                    <div class="checkbox">
+                                        <label>@Html.CheckBoxFor(model => model.AcessoRestrito)<input type="checkbox" name="CriarPessoa" id="CriarPessoa" />  Sim</label>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+
+
+
+                        }
+
+
+
+                        if (_PRCPropostas_Index)
+                        {
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="checkbox">
+                                        <legend>
+                                            <label>@Html.CheckBoxFor(model => model.PRCPropostaRegraRange) <i class="fa fa-money"></i>Intervalo de Valor Bruto para criação de propostas</label>
+                                        </legend>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row" id="div_PRCPropostaRegraRange">
+                                <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                    <label>De</label>
+                                    @Html.TextBox("PRCPropostaRegraVlrDe", string.Format("{0:F2}", Model.PRCPropostaRegraVlrDe), new { @class = "moeda form-control select-all" })
+                                </div>
+
+                                <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                    <label>Até</label>
+                                    @Html.TextBox("PRCPropostaRegraVlrAte", string.Format("{0:F2}", Model.PRCPropostaRegraVlrAte), new { @class = "moeda form-control select-all" })
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h2>Meta máx/min de follow-up de propostas dias</h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                    <label>Teto Atendimento Dia</label>
+                                    @Html.TextBoxFor(x => x.PRCPropostaRegraMetaTeto, new { @class = "number form-control select-all" })
+                                </div>
+
+                                <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                    <label>Meta Follow Up</label>
+                                    @Html.TextBoxFor(x => x.PRCPropostaRegraMetaFUP, new { @class = "number form-control select-all" })
+                                </div>
+                            </div>
+
+                            
+
+                        }
+
+
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+
+    <script>
+
+        verificaFilial($('#VisualizaOutrasFiliais').is(':checked'));
+
+        $("#UsuarioDocumento").mask("999.999.999-99");
+        function verificaFilial(result) {
+            if (result) {
+                $("#div_filiais").slideDown();
+            } else {
+                $("#div_filiais").slideUp();
+            }
+        }
+
+
+        $('#VisualizaOutrasFiliais').click(function () {
+
+            verificaFilial(this.checked);
+
+        });
+
+
+        $('#FilialID').change(function () {
+            if (this.value == 0) {
+                $('#VisualizaOutrasFiliais').prop('checked', true);
+                verificaFilial(true);
+            }
+        });
+    </script>
+
+    <script>
+
+        $('#PRCPropostaRegraRange').change(function () {
+            verificaEmail(this.checked);
+        });
+
+        verificaEmail($("#PRCPropostaRegraRange").is(':checked'));
+
+        function verificaEmail(checado) {
+            if (checado) {
+                $("#div_PRCPropostaRegraRange").slideDown();
+            } else {
+                $("#div_PRCPropostaRegraRange").slideUp();
+            }
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+            $('.number').mask('0000');
+            $(".select-all").click(function () {
+                $(this).select();
+            });
+
+
+            
+        });
+    </script>
+
+}

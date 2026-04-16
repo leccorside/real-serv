@@ -1,0 +1,66 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório Multiplus - Resgates";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+
+    var data = BLL.Utils.Funcoes.GetDataIniFim(DataConsulta);
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Relatórios", "Relatorios", "Principal")</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        <div class="row-fluid">
+            
+            <div class="span3">
+                <label>De</label>
+                <input type="text" name="dataDe" title="Data para consulta da agenda" class="datepicker input-small input-small" value="@String.Format("{0:dd/MM/yyyy}", data.DataInicial)" />
+            </div>
+
+
+            <div class="span3">
+                <label>Até</label>
+                <input type="text" name="dataAte" title="Data para consulta da agenda" class="datepicker input-small input-small" value="@String.Format("{0:dd/MM/yyyy}", data.DataFim)" />
+            </div>
+
+        </div>
+                   
+                
+         
+            
+            
+                       
+            
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="Exportar" class="btn btn-primary  btn-large"/>
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Relatorios", "Principal")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

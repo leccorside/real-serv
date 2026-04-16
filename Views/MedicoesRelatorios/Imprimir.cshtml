@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Relatório Medição";
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+
+
+@section Styles{
+
+    <style>
+        .papel
+        {
+            position: relative;
+        }
+
+        .tag
+        {
+            float: left;
+            position: absolute;
+            left: 400px;
+            top: 100px;
+            z-index: 1000;
+            padding: 5px;
+        }
+
+        div.divFooter
+        {
+            position:fixed;
+            bottom:0;
+        }
+    </style>
+}
+@Html.Partial("~/Views/Foo/_MedicaoRelatorio.cshtml")
+
+

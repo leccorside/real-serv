@@ -1,0 +1,467 @@
+﻿@model PetaPoco.Page<Models.Pessoa>
+
+
+
+@{
+    var vtipo = "";
+
+    if (ViewBag.tipo == "F")
+    {
+        vtipo = BLL.Usuarios.GetEntidadeFornecedor();
+    }
+    else if (ViewBag.tipo == "O")
+    {
+        vtipo = BLL.Usuarios.GetEntidadeFuncionario();
+    }
+    else if (ViewBag.tipo == "A")
+    {
+        vtipo = BLL.Usuarios.GetEntidade4();
+    }
+    else
+    {
+        vtipo = BLL.Usuarios.GetEntidadeCliente();
+    }
+
+
+
+    ViewBag.Title = vtipo;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var pagina = Request["pagina"];
+    var paginaAtual = (pagina == "" || pagina == null) ? 1 : int.Parse(pagina);
+    var qtdPaginas = Model.TotalPages;// ViewBag.qtdPaginas;
+    var paginasAntesDepois = 5;
+    var qtdPaginasInLine = 20;
+
+    var campoordenacao = Request["ordenacao"];
+    var pesquisar = Request["pesquisar"];
+    var ordenacao = Request["tipoordenacao"];
+    var tipoordenacao = (ordenacao == "" || pagina == null) ? "asc" : ordenacao;
+    tipoordenacao = (tipoordenacao == "asc") ? "desc" : "asc";
+    string ordenacaoLabel = "Nro.";
+    string ordenacaoCampo = "PessoaCount";
+
+    var _PessoasDadosAluno = BLL.Usuarios.VerificaAcesso("DadosAluno", "Pessoas");
+    var _PessoasCriar = BLL.Usuarios.VerificaAcesso("Criar", "Pessoas");
+    var _PessoasDeletar = BLL.Usuarios.VerificaAcesso("Deletar", "Pessoas");
+    var _PessoasExport = BLL.Usuarios.VerificaAcesso("Export", "Pessoas");
+    var _PessoasPlanosInscricoesIndex = BLL.Usuarios.VerificaAcesso("Index", "PessoasPlanosInscricoes");
+    var _PostosDeServicosIndex = BLL.Usuarios.VerificaAcesso("index", "postosdeservicos");
+
+    var status = Request["status"];
+
+    var user = new BLL.Usuarios();
+
+    if (user.ControleAcesso("pessoas_funcionario_completo", "Regras") && ViewBag.tipo == "O")
+    {
+        ordenacaoLabel = "RE";
+        ordenacaoCampo = "RE";
+    }
+
+    bool _ExibirFilial = false;
+    if (BLL.Usuarios.GetFilialId() == 0 && BLL.Usuarios.GetUtilizaFilial())
+    {
+        _ExibirFilial = true;
+    }
+
+
+    // ativar pesquisa
+    var urlPesquisa = "~/Pessoas/Index/0/" + ViewBag.tipo;
+    ViewBag.SearchAction = urlPesquisa;
+    ViewBag.SearchPlaceHolder = "Pesquisar ";
+    ViewBag.SearchMethod = "get";
+
+    string outrosCampos = "&tipo=" + ViewBag.tipo;
+
+    var duplicados = Request["duplicados"];
+    var lead = Request["lead"];
+
+
+    if (duplicados != "false")
+    {
+        outrosCampos += "&duplicados=" + duplicados;
+    }
+
+    if (lead != "false")
+    {
+        outrosCampos += "&lead=" + lead;
+    }
+
+    var outrosFiltros = false;
+
+    if (Request["duplicados"] == "true")
+    {
+        outrosFiltros = true;
+    }
+
+    if (Request["lead"] == "true")
+    {
+        outrosFiltros = true;
+    }
+    
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+<div class="content ">
+
+
+    <div class="row">
+
+
+
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    @using (Html.BeginForm("Index", "Pessoas", FormMethod.Get, new { @class = "form-inline" }))
+                    {
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+
+                                <div class="btn-groupxxx">
+                                    @Html.ActionLink("+ Criar", "Criar", new { id = 0, tipo = @ViewBag.tipo }, new { @class = "btn btn-primary" })
+                                    @if (ViewBag.tipo == "C" && user.ControleAcesso("PreCadastroIndex", "Pessoas"))
+                                    {
+            
+                                        @Html.ActionLink("Pré-Cadastro", "PreCadastroIndex", new { id = 0, tipo = @ViewBag.tipo }, new { @class = "btn btn-outline btn-primary  " })
+                                    }
+
+
+                                </div>
+
+
+
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+
+                                <input type="hidden" name="tipo" value="@ViewBag.tipo" />
+                                <input type="hidden" name="status" value="@status" />
+                                <input type="hidden" name="ordenacao" value="@campoordenacao" />
+                                <input type="hidden" name="tipoordenacao" value="@ordenacao" />
+                                <div class="input-group pull-right">
+                                    @if (user.ControleAcesso("index", "companhias") && ViewBag.tipo == "O")
+                                    {
+                                        <span class="input-group-btn">
+                                            @Html.DropDownListCompanhia("CompanhiaId", Request["CompanhiaId"], true, " form-control")
+                                        </span>}
+                                    <input type="text" name="pesquisar" title="Pesquisar" placeholder="Pesquisar" class="form-control" value="@Request["pesquisar"]" />
+                                    <span class="input-group-btn">
+                                        <input id="Submit1" type="submit" class="btn btn-primary" value="Ok" />
+                                        @if (Request["pesquisar"] != null)
+                                        {
+                                            <a href="@Url.Content(urlPesquisa)" class="btn btn-outline btn-primary">Limpar</a>    
+                                        }
+
+
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    
+                        <br />
+                                        if (_PessoasPlanosInscricoesIndex)
+                                        {
+                        
+                        <div class="row">
+                            <div class="col-lg-12" style="">
+
+
+
+
+                                <div class="hpanel @(outrosFiltros ? "" : " collapsed ") ">
+                                    <div class="panel-heading hbuilt">
+                                        <div class="panel-tools">
+                                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                                        </div>
+                                        <a class="showhide"><i class="fa fa-filter"></i>Outros filtros</a>
+                                    </div>
+                                    <div class="panel-body  ">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <label>
+                                                    <input type="checkbox" id="duplicados" name="duplicados" value="true" @(Request["duplicados"] == "true" ? " checked " : "") />
+                                                    Duplicados</label></div>
+                                            <div class="col-lg-3">
+                                                <label>
+                                                    <input type="checkbox" id="lead" name="lead" value="true" @(Request["lead"] == "true" ? " checked " : "") />
+                                                    Eliminar os Leads</label></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <br />
+                                                <input id="Submit2" type="submit" class="btn btn-primary" value="Ok" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                                        }
+                    }
+                    <!-- dados confidencias-->
+                    @if (BLL.Usuarios.GetManager())
+                    {
+                        <div class="row">
+                            <div class="col-lg-12" style="">
+                                <div class="hpanel collapsed">
+                                    <div class="panel-heading hbuilt">
+                                        <div class="panel-tools">
+                                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                                        </div>
+                                        <a class="showhide"><i class="fa fa-cogs"></i>Outras configurações</a>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <a href="@Url.Content("~/Pessoas/AnaliseDuplicados")" onclick="return confirm('Deseja realmente realizar processo de análise de duplicidades?')"  class="btn btn-outline btn-primary fancybox fancybox.iframe">Analisar Duplicidades</a>
+                                                <a href="@Url.Content("~/ApiIntegracao/PessoasPlanosInscricoesAtualiza")" onclick="return confirm('Deseja realmente realizar processo de atualização das inscrições?')"  class="btn btn-outline btn-primary fancybox fancybox.iframe">Atualiza Inscrições</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- dados confidenciasi-->
+
+                    <!-- tirei daqui-->
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <p class="text-muted">Foi(ram) encontrado(s) @Model.TotalItems registro(s) (página @Model.CurrentPage)</p>
+        </div>
+    </div>
+
+    @if (_PessoasExport)
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="btn-group pull-right">
+                    @using (Html.BeginForm("Export", "Pessoas", FormMethod.Post, new { @class = "form-inline " }))
+                    {
+                                    
+                        <input type="hidden" name="tipo" value="@ViewBag.tipo" />
+                        <input type="hidden" name="lead" value="@lead" />
+                        <button class="btn btn-outline btn-primary btn-xs" data-toggle="tooltip" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i>Exportar</button>
+                                    
+                    }
+                </div>
+                <br />
+                <br />
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <ul style="list-style: none; margin: 0px !important; padding: 0px !important;">
+            @foreach (var item in Model.Items)
+            {
+                BLL.Erro alerta = BLL.Utils.Validacoes.IsAniversariante(item.DataNascimento);
+                
+                <li class="col-lg-4" style="">
+                    <div class="hpanel @(item.Ativo ? "hgreen" : "hblue") contact-panel">
+                        <div class="panel-body contact-panel-body">
+                            @if (alerta.NUMERO == BLL.Erro.Tipo.ComErro)
+                            {<span class="label label-success pull-right">@alerta.MENSAGEM</span>}
+
+                            @if (item.Lead)
+                            {
+                                <span class="label label-warning pull-right">Prospect</span>    
+                            }
+
+                            @if (item.InscricaoSituacao > 0)
+                            {
+                                <span class="label @(item.InscricaoSituacao == 1 ? "label-success" : "label-danger") pull-right">@(item.InscricaoSituacao == 1 ? "Em dia" : "Vencido")</span>        
+                            }
+
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="project-action m-t-md pull-right">
+                                        <div class="btn-group">
+                                            @if (_PessoasDadosAluno)
+                                            {
+                                                <a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID + "?")" class="fancybox fancybox.iframe btn btn-xs btn-default"><i class="fa fa-search"></i>Visualizar</a>
+                                            }
+                                            @if (_PessoasCriar)
+                                            {
+                                                <a href="@Url.Content("~/Pessoas/Criar/" + item.PessoaID + "/" + ViewBag.tipo)" target="_top" class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="Alterar"  title="Alterar" data-placement="top"><i class="fa fa-edit" aria-hidden="true"></i>Editar</a>
+                                            }
+
+                                        </div>
+                                    </div>
+                                    @if (item.FotoPessoa != null)
+                                    {
+                                        <img src="@Url.Content(item.FotoPessoa.Replace(".jpg", "thumb.jpg"))" class="img-circle m-b" style="max-width: 40px; max-height: 40px;" data-src="holder.js/40x40" alt="@item.Nome">    
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Content("~/Content/images/YourPhotoHere.png")" class="img-circle m-b" style="max-width: 40px; max-height: 40px;" data-src="holder.js/40x40" alt="@item.Nome">
+                                    }
+
+
+
+
+                                    <h3><a href="@Url.Content("~/Pessoas/Criar/" + item.PessoaID + "/" + ViewBag.tipo)">@item.Nome </a></h3>
+
+                                    @if (item.Email != "" && item.Email != null)
+                                    {
+                                        <div class="text-muted  m-b-xs">@item.Email</div>    
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted  m-b-xs">-</div>
+                                    }
+
+
+
+
+                                    <div class="row">
+                                        <div class="col-lg-5">
+                                            <div class="text-muted  m-b-xs">@item.Celular </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="text-muted  m-b-xs">@item.RE </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            @if (item.DataNascimento != null)
+                                            {
+                                                <div class="text-muted  m-b-xs pull-right">@Convert.ToDateTime(item.DataNascimento).ToString("dd/MM/yyyy") </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="text-muted  m-b-xs pull-right">-</div>
+                                            }
+                                        </div>
+                                    </div>
+ 
+                                    <div class="row">
+                                        <div class="col-lg-6 pull-left">
+                                            Adm.: @Convert.ToDateTime(item.DataInicio).ToString("dd/MM/yyyy") 
+                                        </div>
+                                        <div class="col-lg-6 pull-right">@item.PessoaCategoriaSubNome</div>
+                                    </div>
+
+                                    @if (item.PessoaIntegrado)
+                                    {
+                                        <div class="row">
+                                            <div class="col-lg-12"><i class="fa fa-plug"></i>Integrado CUBEE <i class="fa fa-cube" aria-hidden="true"></i></div>
+                                        </div>    
+                                    }
+
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                        @if (_ExibirFilial)
+                        {
+                            <div class="panel-footer">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4">
+                                        @if (item.PessoaCodigo > 0)
+                                        {
+                                            <span>@item.PessoaCodigo</span>
+                                        }
+                                    </div>
+                                    <div class="col-lg-4 col-md-4">
+                                        @if (item.InscricaoSituacaoDtVencimento != null)
+                                        {
+                                            <small>@Convert.ToDateTime(item.InscricaoSituacaoDtVencimento).ToShortDateString()</small>    
+                                        }
+
+
+                                    </div>
+                                    <div class="col-lg-4 col-md-4">
+                                        <span class="pull-right">@item.FilialNome</span>
+                                    </div>
+                                </div>
+
+
+
+                                @if (item.PessoaDuplicado)
+                                {
+                                    <div class="row">
+                                        <div class="col-lg-12 text-danger"><i class="fa fa-alert"></i><strong>Atencão!</strong> Possui duplicidades</div>
+                                    </div>    
+                                }
+
+
+                            </div> 
+                        }
+
+                    </div>
+                </li>
+            }
+
+        </ul>
+    </div>
+    <div class="row">
+        @Html.FortunaPaginacao((int)Model.TotalPages, outrosCampos)
+    </div>
+    <br />
+</div>
+
+
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    <style>
+        .panel-body.contact-panel-body
+        {
+            min-height: 240px!important;
+        }
+    </style>
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+            $(".fancybox").fancybox({ fitToView: false, width: '80%', autoSize: false });
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+        });
+
+
+
+
+
+    </script>
+}

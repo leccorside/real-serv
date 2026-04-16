@@ -1,0 +1,73 @@
+﻿@model Models.EscalaRegistroView
+
+@{
+    if (Model.Impressao==true)
+    {
+        ViewBag.Title = "ImprimirEscala";
+        Layout = "~/Views/Shared/_WindowPrint.cshtml";
+    }
+    else
+    {
+        ViewBag.Title = "ImprimirEscala";
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+        Model.Impressao = true;
+    }
+    
+    
+}
+
+@section Styles{
+
+    <style>
+        .table
+        {
+            font-size: 8px;
+        }
+
+        
+
+    </style>
+    @if (Model.Impressao)
+        {
+         <style>
+             .naoimprimir
+             {
+                 display:none;
+             }
+         </style>   
+        }
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Escala de @String.Format("{0:dd/MM/yyyy}", Model.Escala.DataDe) até @String.Format("{0:dd/MM/yyyy}", Model.Escala.DataAte)
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    
+                    <div class="table-responsive">
+                        @Html.Partial("~/Views/PostosDeServicos/_Escala.cshtml", Model)
+                        </div>
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>    
+
+
+
+
+ 

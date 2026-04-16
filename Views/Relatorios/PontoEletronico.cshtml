@@ -1,0 +1,442 @@
+@{
+    ViewBag.Title = "Controle de Ponto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --bg-gray: #f8fafc;
+        --border-color: #e2e8f0;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+    }
+
+    .ponto-container {
+        font-family: 'Inter', sans-serif;
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-top: 20px;
+        padding-bottom: 100px;
+    }
+
+    .ponto-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+    }
+
+    .ponto-title h2 {
+        margin: 0;
+        font-size: 24px;
+        color: var(--text-main);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ponto-title span {
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 400;
+        border-left: 1px solid var(--border-color);
+        padding-left: 12px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-export {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: white;
+        color: var(--text-main);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+        background: var(--bg-gray);
+    }
+
+    .btn-export i {
+        font-size: 16px;
+    }
+
+    .btn-pdf i { color: #ef4444; }
+    .btn-excel i { color: #10b981; }
+
+    .filters-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 16px;
+        align-items: flex-end;
+        margin-bottom: 24px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 10px 12px 10px 36px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text-main);
+        outline: none;
+    }
+
+    .filter-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-advanced-filters {
+        padding: 10px 16px;
+        background: var(--bg-gray);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-main);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ponto-table-container {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .ponto-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    .ponto-table th {
+        background: var(--bg-gray);
+        padding: 16px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.05em;
+    }
+
+    .ponto-table td {
+        padding: 16px;
+        border-top: 1px solid var(--border-color);
+        color: var(--text-main);
+    }
+
+    .ponto-table tr:hover {
+        background: #fbfcfd;
+    }
+
+    .re-tag {
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .funcionario-name {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .status-badge {
+        font-weight: 700;
+    }
+
+    .status-entrada { color: #10b981; }
+    .status-atraso { color: #f59e0b; }
+    .status-falta { color: #ef4444; }
+
+    .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: white;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .results-info {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .page-controls {
+        display: flex;
+        gap: 4px;
+    }
+
+    .page-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: white;
+        cursor: pointer;
+        font-size: 14px;
+        color: var(--text-main);
+    }
+
+    .page-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .action-icons {
+        display: flex;
+        gap: 12px;
+    }
+
+    .action-icons i {
+        cursor: pointer;
+        font-size: 16px;
+        transition: color 0.2s;
+    }
+
+    .icon-view { color: #64748b; }
+    .icon-edit { color: #3b82f6; }
+    .icon-delete { color: #ef4444; }
+
+    .action-icons i:hover {
+        opacity: 0.8;
+    }
+</style>
+
+<div class="ponto-container">
+    <div class="ponto-header">
+        <div class="ponto-title">
+            <h2>Controle de Ponto <span>Visualização de Registros Diários</span></h2>
+        </div>
+        <div class="header-actions">
+            <button class="btn-export btn-pdf" onclick="exportPDF()">
+                <i class="fa-regular fa-file-pdf"></i> Exportar PDF
+            </button>
+            <button class="btn-export btn-excel" onclick="exportExcel()">
+                <i class="fa-regular fa-file-excel"></i> Exportar Excel
+            </button>
+            <div style="width: 32px; height: 32px; background: #dbeafe; color: #1e40af; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
+                JD
+            </div>
+        </div>
+    </div>
+
+    <div class="filters-section">
+        <div class="filter-group">
+            <label>Buscar</label>
+            <div class="input-wrapper">
+                <i class="fa fa-search"></i>
+                <input type="text" id="inputBusca" class="filter-input" placeholder="Funcionário ou RE...">
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>Data Inicial</label>
+            <input type="date" id="dataInicial" class="filter-input">
+        </div>
+        <div class="filter-group">
+            <label>Data Final</label>
+            <input type="date" id="dataFinal" class="filter-input">
+        </div>
+        <div class="filter-group">
+            <button class="btn-advanced-filters">
+                <i class="fa fa-filter"></i> Filtros Avançados
+            </button>
+        </div>
+        <div class="filter-group">
+            <span style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px; display: block;">Exibindo 25 registros</span>
+        </div>
+    </div>
+
+    <div class="ponto-table-container">
+        <table class="ponto-table">
+            <thead>
+                <tr>
+                    <th>RE</th>
+                    <th>Funcionário</th>
+                    <th>Posto de Trabalho</th>
+                    <th>Entrada</th>
+                    <th>Almoço</th>
+                    <th>Volta</th>
+                    <th>Saída</th>
+                    <th>Supervisão</th>
+                    <th>Tipo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="pontoTableBody">
+                <!-- Data will be loaded via AJAX -->
+                <tr>
+                    <td colspan="10" style="text-align: center; padding: 40px;">
+                        <i class="fa fa-spinner fa-spin"></i> Carregando registros...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="pagination">
+            <div class="results-info">
+                Mostrando <span id="startRange">1</span> a <span id="endRange">10</span> de <span id="totalResults">25</span> resultados
+            </div>
+            <div class="page-controls">
+                <button class="page-btn"><i class="fa fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/Handlers/PontoHandler.ashx';
+
+    async function carregarRegistros() {
+        try {
+            const busca = document.getElementById('inputBusca').value;
+            const dataInicial = document.getElementById('dataInicial').value;
+            const dataFinal = document.getElementById('dataFinal').value;
+
+            const params = new URLSearchParams({ busca, dataInicial, dataFinal });
+            const response = await fetch(`${API_URL}?${params}`);
+            const data = await response.json();
+
+            renderizarTabela(data);
+        } catch (error) {
+            console.error('Erro ao carregar registros:', error);
+            document.getElementById('pontoTableBody').innerHTML = '<tr><td colspan="10" style="text-align: center; color: red;">Erro ao carregar dados</td></tr>';
+        }
+    }
+
+    function renderizarTabela(registros) {
+        const tbody = document.getElementById('pontoTableBody');
+        tbody.innerHTML = '';
+
+        if (registros.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Nenhum registro encontrado</td></tr>';
+            return;
+        }
+
+        registros.forEach(reg => {
+            const row = document.createElement('tr');
+            
+            // Entrada status color
+            let entradaStyle = 'status-entrada';
+            if (reg.Entrada === '--:--' || !reg.Entrada) {
+                 reg.Entrada = '--:--';
+            } else if (reg.Situacao === 'Falta') {
+                entradaStyle = 'status-falta';
+                reg.Entrada = 'FALTA';
+            }
+
+            row.innerHTML = `
+                <td class="re-tag">${reg.RE || ''}</td>
+                <td class="funcionario-name">${reg.NomeFuncionario}</td>
+                <td>${reg.PostoTrabalho || ''}</td>
+                <td class="status-badge ${entradaStyle}">${reg.Entrada}</td>
+                <td>${reg.AlmocoSaida || '--:--'}</td>
+                <td>${reg.AlmocoRetorno || '--:--'}</td>
+                <td>${reg.Saida || '--:--'}</td>
+                <td>${reg.Supervisao || ''}</td>
+                <td>${reg.TipoRegistro || ''}</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="fa-regular fa-eye icon-view" title="Visualizar"></i>
+                        <i class="fa-regular fa-pen-to-square icon-edit" title="Editar"></i>
+                        <i class="fa-regular fa-trash-can icon-delete" title="Excluir" onclick="excluirRegistro(${reg.Id})"></i>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    async function excluirRegistro(id) {
+        if (!confirm('Deseja realmente excluir este registro?')) return;
+        
+        try {
+            const response = await fetch(`${API_URL}?id=${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                carregarRegistros();
+            }
+        } catch (error) {
+            alert('Erro ao excluir registro');
+        }
+    }
+
+    function exportPDF() {
+        window.open(`${API_URL}/export/pdf`, '_blank');
+    }
+
+    function exportExcel() {
+        window.open(`${API_URL}/export/excel`, '_blank');
+    }
+
+    // Event Listeners
+    document.getElementById('inputBusca').addEventListener('input', carregarRegistros);
+    document.getElementById('dataInicial').addEventListener('change', carregarRegistros);
+    document.getElementById('dataFinal').addEventListener('change', carregarRegistros);
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set default dates for demo
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        document.getElementById('dataInicial').value = firstDay.toISOString().split('T')[0];
+        document.getElementById('dataFinal').value = today.toISOString().split('T')[0];
+        
+        carregarRegistros();
+    });
+</script>

@@ -1,0 +1,151 @@
+﻿@model Models.Ocorrencia
+
+@{
+    ViewBag.Title = "Excluíndo ocorrência";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    }
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Ocorrências", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+
+
+<div class="cwell">
+
+
+    <div class="row-fluid">
+        <div class="span2">
+            <label>Ocorrência n.</label>
+            <h4 class="black">@Model.OcorrenciaId</h4>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <h4 class="black">@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</h4>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <h4 class="black">@string.Format("{0:HH:mm}", Model.RegDtInicio)</h4>
+        </div>
+
+        <div class="span3">
+            <label>Situação</label>
+            <h4 class="black">
+                @if (Model.Resolvido)
+                {
+                    <span><i class="fa fa-check" aria-hidden="true"></i>Resolvido</span>
+                }
+                else
+                {
+                    <span><i class="fa fa-exclamation-circle" aria-hidden="true"></i>Pendente</span>
+                    <br />
+                    <small><i class="fa fa-clock-o" aria-hidden="true"></i>@Model.Horas hrs</small>
+                }
+            </h4>
+
+        </div>
+
+        <div class="span3">
+            <label>Privado</label>
+            <h4 class="black">
+            @if (Model.Privado)
+            {
+                <span><i class="fa fa-lock" aria-hidden="true"></i>Privado</span>
+            }
+                </h4>
+        </div>
+
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span12">
+            <label>Cliente</label>
+            <h4 class="black">@Model.ClienteNome</h4>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Atendente</label>
+            <h4 class="black">@Model.Atendente</h4>
+        </div>
+        <div class="span4">
+            <label>Solicitante</label>
+            <h4 class="black">@Model.Solicitante</h4>
+        </div>
+        <div class="span4">
+            <label>Executor</label>
+            <h4 class="black">@Model.ExecutorNome</h4>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+            <h4 class="black">@Model.FuncionarioNome</h4>
+        </div>
+        <div class="span6">
+            <label>Tipo de Ocorrência</label>
+            <h4 class="black">@Model.OcorrenciaTipoNome</h4>
+        </div>
+
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            <label>Ocorrência</label>
+            <h4 class="black">@Model.OcorrenciaDescricao</h4>
+        </div>
+        <div class="span6">
+            <label>Solução Tomada</label>
+            <h4 class="black">@Model.Solucao</h4>
+        </div>
+    </div>
+
+
+    @using (Html.BeginForm())
+    {
+        <div class="row-fluid">
+            <div class="span12">
+                @Html.HiddenFor(model => model.OcorrenciaId)
+                <p class="pull-right">
+                    <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+                </p>
+
+                <p class="pull-left">
+                    
+    @if (Model.Modal == false)
+    {
+        <div>
+            <a href="~/Ocorrencias/Index" class="btn">Voltar</a>
+        </div>
+    }
+                </p>
+            </div>
+        </div>    
+    }
+
+
+
+</div>

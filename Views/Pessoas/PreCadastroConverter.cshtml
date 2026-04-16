@@ -1,0 +1,116 @@
+﻿@model Models.PessoaPreCadastro
+
+@{
+    var vname = BLL.Usuarios.GetEntidadeCliente();
+    
+}
+
+
+@{
+    ViewBag.Title = "Converter " + vname;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Pré-cadastro de " + vname, "PreCadastroIndex", new { id = 0 })</li>
+}
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Selecione uma opção abaixo</h2>
+    Converter como novo contato ou como um contato existente<br />
+</div>
+
+
+<div class="cwell">
+
+    <table class="footable table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Nro.
+                </th>
+                <th>Nome
+                </th>
+                @if (BLL.Usuarios.GetUtilizaFilial())
+                {
+                    <th nowrap data-hide="phone,tablet">Filial
+                    </th>
+                }
+                <th nowrap data-hide="phone,tablet">E-Mail
+                </th>
+                <th data-hide="phone,tablet">Telefone
+                </th>
+                <th data-hide="phone,tablet">Celular
+                </th>
+
+                <th data-hide="phone,tablet">Data de Cadastro
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td nowrap>
+                    @Html.DisplayFor(modelItem => Model.PessoaID)
+                </td>
+                <td width="100%">
+                    @Html.DisplayFor(modelItem => Model.Nome)
+                </td>
+                @if (BLL.Usuarios.GetUtilizaFilial())
+                {
+                    <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                        @Model.FilialNome
+                    </td>
+                }
+                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                    @Html.DisplayFor(modelItem => Model.Email)
+                </td>
+                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                    @Html.DisplayFor(modelItem => Model.Telefone)
+                </td>
+                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                    @Html.DisplayFor(modelItem => Model.Celular)
+                </td>
+                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+
+                    @Html.DisplayFor(modelItem => Model.RegDtInicio)
+                </td>
+
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <br />
+
+    @using (Html.BeginForm())
+    {  @Html.HiddenFor(model => model.PessoaID)
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="input-append">
+                    @Html.DropDownList("PessoaIDConverter", (SelectList)ViewBag.DdlPessoas, "Adicionar como novo contato", new { @class = "chosen-select span12", @data_placeholder = "Converter como novo contato ou como um contato existente" })
+                    <input type="submit" value="Salvar" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>  
+        <br />
+        <p>
+            @Html.ActionLink("Voltar", "PreCadastroIndex", new { id = 0 })
+        </p>
+    }
+
+</div>
+
+
+
+
+
+
+
+
+

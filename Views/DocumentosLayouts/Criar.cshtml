@@ -1,0 +1,117 @@
+﻿@model Models.DocumentoLayout
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.DocumentoLayoutId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Layout";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+
+@section  Styles{
+    <link href="~/Assets/plugins/codemirror-5.7/lib/codemirror.css" rel="stylesheet" />
+    <link href="~/Assets/plugins/codemirror-5.7/theme/zenburn.css" rel="stylesheet" />
+    @*<link href="~/Assets/plugins/CodeMirror/lib/codemirror.css" rel="stylesheet" />
+    <link href="~/Assets/plugins/CodeMirror/theme/zenburn.css" rel="stylesheet" />*@
+}
+
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li>@Html.ActionLink("Layouts", "Index", new { id = 0 })</li>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+                    <div class="col-lg-12" style="">
+
+                        @using (Html.BeginForm("Criar", "DocumentosLayouts", FormMethod.Post, new { @class = "form-horizontal" }))
+                        {
+                            @Html.ValidationSummary(true)
+
+                            if (Model.DocumentoLayoutId > 0)
+                            {
+                            @Html.HiddenFor(m => m.DocumentoLayoutId);
+                                                                     acao = "Alterar";
+                            }
+    
+    
+    
+       
+                            <div class="row">
+
+                                <div class="form-group col-lg-12">
+                                    @Html.LabelFor(model => model.DocumentoLayoutNome)
+                                    @Html.TextBoxFor(model => model.DocumentoLayoutNome, new { @class = " form-control " })
+                                </div>
+
+                            </div>                  
+            
+                            
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    @Html.LabelFor(model => model.DocumentoLayoutConteudo, new { @class = "control-label" })
+                                    @Html.TextAreaFor(model => model.DocumentoLayoutConteudo, new { @class = "span12", @rows = 20 })
+                                </div>
+
+
+                            </div>
+         
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                                </div>
+
+                            </div>
+            
+                        }
+                    </div>
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    @*<script src="~/Assets/plugins/CodeMirror/src/codemirror.js"></script>
+    <script src="~/Assets/plugins/CodeMirror/mode/xml/xml.js"></script>*@
+    <script src="~/Assets/plugins/codemirror-5.7/lib/codemirror.js"></script>
+    <script src="~/Assets/plugins/codemirror-5.7/mode/xml/xml.js"></script>
+
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("DocumentoLayoutConteudo"), {
+            mode: "text/html",
+            lineNumbers: true,
+            theme: 'zenburn'
+        });
+    </script>
+}

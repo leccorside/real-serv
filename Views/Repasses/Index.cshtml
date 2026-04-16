@@ -1,0 +1,177 @@
+﻿@model PetaPoco.Page<Models.Repasse>
+
+@{
+    ViewBag.Title = "Repasses";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @Html.ActionLink("+ Criar", "Preview", new { id = 0 }, new { @class = "btn btn-primary" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+                                    <th>#</th>
+                                    <th>@BLL.Usuarios.GetEntidadeFilial()</th>
+                                    <th>Status</th>
+                                    <th>Valor</th>
+                                    <th>Valor Real</th>
+                                    <th>Data</th>
+                                    <th>Alterar</th>
+                                    <th>Anexar</th>
+                                    <th>Imprimir</th>
+                                    <th>Excluir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.Items)
+                                {
+                                    var s_status = "Pendente";
+                                    var s_cor = "label-danger";
+                                    switch (item.RepasseStatus)
+                                    {
+                                        case"C":
+                                            s_status="Concluído";
+                                            s_cor = "label-success";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    
+                                    <tr>
+                                        <td>@item.RepasseId</td>
+                                        <td>@item.FilialNome</td>
+                                        <td><span class="label @s_cor">@s_status</span></td>
+                                        <td>R$ @string.Format("{0:F2}", item.RepasseTotal)</td>
+                                        <td>R$ @string.Format("{0:F2}", item.RepasseTotalReal)</td>
+                                        <td>@item.RepasseData.ToShortDateString()</td>
+                                        <td>@Html.ActionLink("Alterar", "Criar", new { id = item.RepasseId }, new { @class = "btn btn-outline btn-primary btn-xs" })</td>
+                                        <td>@Html.ActionLink("Anexar", "Anexos", new { id = item.RepasseId }, new { @class = "btn fancybox_recarrega fancybox.iframe btn-outline btn-primary btn-xs" })</td>
+                                        <td>@Html.ActionLink("Imprimir", "ImprimirConfig", new { id = item.RepasseId }, new { @class = "btn fancybox_full fancybox.iframe btn-outline btn-primary btn-xs" })</td>
+                                        <td>@Html.ActionLink("Excluir", "Deletar", new { id = item.RepasseId }, new { @class = "btn btn-outline btn-danger btn-xs" })</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+
+}
+
+
+@section Scripts {
+    
+    @Scripts.Render("~/bundles/fancybox/js")
+    
+    <script type="text/javascript">
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+        $(".fancybox_full").fancybox({
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+    </script>
+
+    
+
+}
+
+
+
+
+
+
+
+
+
+
+

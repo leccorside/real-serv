@@ -1,0 +1,317 @@
+﻿@model Models.MedGuiaItemView
+
+@{
+    string nome = "Guia " + Model.MedGuia.MedGuiaId + " de " + Model.MedGuia.PacienteNome;
+    nome = BLL.Utils.Formatacoes.GenerateSlug(nome);
+
+
+
+    ViewBag.Title = nome;
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+
+    //bool _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    //bool _PodeAlterar = BLL.MedGuias.
+    var bllMedGuias = new BLL.MedGuias();
+    var _PodeAlterar = bllMedGuias.PodeAlterar(Model.MedGuia);
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+}
+
+
+
+<div class="content animate-panel">
+    @if (Model.MedGuia.BoletoUrl != "" && Model.MedGuia.BoletoUrl != null)
+    {
+        <div class="row">
+            <div class="col-lg-12" style="">
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Boleto Gerado
+                    </div>
+                    <div class="panel-body">
+                        <!-- dados aqui-->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                                    <table cellpadding="1" cellspacing="1" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Nun</th>
+                                                <th>Dados</th>
+                                                <th>Vencimento</th>
+                                                <th>Valor</th>
+                                                <th>Status</th>
+                                                <th>Visualizar</th>
+                                                <th>Cancelar</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            @foreach (var item in Model.ListBoletos)
+                                            {
+                                                var s_status = "";
+                                                var s_cor = "";
+                                                bool ativo = true;
+                                                switch (item.status)
+                                                {
+                                                    case "generating":
+                                                    case "opened":
+                                                        s_status = "Aberto";
+                                                        s_cor = "label-info";
+                                                        break;
+                                                    case "canceled":
+                                                        s_status = "Cancelado";
+                                                        s_cor = "label-danger";
+                                                        ativo = false;
+                                                        break;
+                                                    case "paid":
+                                                        s_status = "Pago";
+                                                        s_cor = "label-success";
+                                                        ativo = false;
+                                                        break;
+                                                    case "overdue":
+                                                        s_status = "Vencido";
+                                                        s_cor = "label-danger";
+                                                        break;
+                                                    default:
+                                                        s_status = " - ";  
+                                                        break;
+                                                }
+                                                
+                                                <tr>
+                                                    <td><p class="form-control-static">@item.id <button class="btn btn-primary btn-xs copy btncopy btn-outline" data-clipboard-text="@item.shorten_url"><i class="fa fa-cut"></i> link</button></p></td>
+                                                    <td>@item.our_number</td>
+                                                    <td>@item.bank_contract_slug ag. @item.agency_number @item.agency_digit cc. @item.account_number</td>
+                                                    <td>@item.BoletoSimplesVencimento.ToShortDateString()</td>
+                                                    <td>R$ @string.Format("{0:F2}", item.amount)</td>
+                                                    <td><a  href="@Url.Content("~/MedGuias/BoletosInfo/" + item.id + "?BoletoSimplesId=" + item.BoletoSimplesId + "&EntidadeId=" + item.EntidadeId)" ><i class="fa fa-refresh"></i></a> <span class="label @s_cor">@s_status</span></td>
+                                                    <td><a href="@item.shorten_url" class="btn btn-outline btn-primary btn-xs " target="_blank">Visualizar</a></td>
+                                                    <td>
+                                                        @if (ativo)
+                                                        {
+                                                            <a  onclick="return confirm('Confirma o cancelamento do boleto @item.our_number')" href="@Url.Content("~/MedGuias/BoletosCancel/" + item.id + "?BoletoSimplesId=" + item.BoletoSimplesId + "&EntidadeId=" + item.EntidadeId)" class="btn btn-outline btn-danger btn-xs ">Cancelar</a>    
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <br />    
+    }
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel ">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Geração de Boletos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="row">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <label>Guia n.</label>
+                            @Model.MedGuiaId
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Data</label><br />
+                            @string.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedGuiaData)
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Total</label><br />
+                            @string.Format("{0:C}", Model.MedGuia.TotalProdutos)
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Convênio</label><br />
+                            @Model.MedGuia.ConvenioNome
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Plano</label><br />
+                            @Model.MedGuia.ConvenioPlanoNome
+                        </div>
+
+
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>Médico</label><br />
+                            @Model.MedGuia.MedicoNome
+                        </div>
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>Paciente</label><br />
+                            @Model.MedGuia.PacienteNome
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>CPF</label><br />
+                            @Model.MedGuia.PacienteCpf
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Banco</label><br />
+                            @Model.MedGuia.BancoCod - @Model.MedGuia.BancoNome
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Agência</label><br />
+                            @Model.MedGuia.BancoAgencia
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Conta</label><br />
+                            @Model.MedGuia.BancoConta
+                        </div>
+
+                    </div>
+                    <br />
+                    @using (Html.BeginForm())
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.MedGuia.MedGuiaId)
+                        @Html.HiddenFor(m => m.MedGuiaId);
+                            
+
+        
+                        <div class="row">
+
+                            <div class="form-group col-lg-4">
+                                <label>Conta</label>
+                                @Html.DropDownListFor(model => model.BoletoSimplesContaId, (SelectList)ViewBag.ddlContas, "--Selecione--", new { @class = "chosen-select form-control " })
+                            </div>
+
+                            <div class="form-group col-lg-4">
+                                <label>Validade</label>
+                                @Html.TextBox("BoletoSimplesValidade", @String.Format("{0:dd/MM/yyyy}", Model.BoletoSimplesValidade), new { @class = "datepicker form-control", value = @DateTime.Now })
+                            </div>
+
+
+                            <div class="form-group col-lg-4">
+                                <label>Valor</label>
+                                @Html.TextBox("BoletoSimplesValor", string.Format("{0:F2}", Model.BoletoSimplesValor), new { @class = "moeda form-control" })
+                            </div>
+                            
+                            <div class="col-form  col-lg-12 col-md-12 col-sm-12">
+                                <label>Descrição</label>
+                                <textarea class=" form-control max" cols="20" id="BoletoSimplesDescricao" maxlength="400" name="BoletoSimplesDescricao" rows="4">ANALISES CLINICAS@(Environment.NewLine)DIAGNOSTICO POR IMAGEM@(Environment.NewLine)POS VENCIMENTO SUJEITO A PROTESTO - SERASA
+                                </textarea>
+
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary">Gerar</button>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/datepicker/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+
+
+    <script>
+        // copiar e colar
+        var clipboard = new Clipboard('.copy');
+
+        clipboard.on('success', function (e) {
+            e.clearSelection();
+        });
+
+        $('.copy').click(function (e) {
+            e.preventDefault();
+        });
+        // ./ copiar e colar
+
+        $(document).ready(function () {
+            $("#MedGuia_TotalProdutosCusto").focus();
+        });
+
+        $('.max').maxlength();
+
+
+        $(document).ready(function () {
+
+            $(".fancybox").fancybox({ fitToView: false, width: '80%', autoSize: true });
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+}
+

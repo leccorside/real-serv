@@ -1,0 +1,486 @@
+﻿@model Models.EntidadeStatus
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.EntidadeStatusId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Status";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    //var tipo = Url.RequestContext.RouteData.Values["tipo"];
+
+    var bllPerfis = new BLL.Perfis();
+    var bllPerfisEntidadesStatus = new BLL.PerfisEntidadesStatus();
+    var perfisSelecionados = bllPerfisEntidadesStatus.ListarTiposPerfis(Model.EntidadeStatusId);
+    var listarPerfis = bllPerfis.Listar();
+    
+    
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Entidades", "Index", new { id = 0, tipo = Model.Entidade })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+                    @using (Html.BeginForm("Criar", "EntidadesStatus", FormMethod.Post, new { @class = "" }))
+                    {
+                        @Html.ValidationSummary(true)
+        
+                        @Html.HiddenFor(m => m.EntidadeStatusId);
+                        @Html.HiddenFor(m => m.Entidade);
+        
+                        @Html.HiddenFor(m => m.TabelaAux1Nome);
+                        @Html.HiddenFor(m => m.TabelaAux1CampoId);
+                        @Html.HiddenFor(m => m.TabelaAux1CampoValue);
+                        
+                        <legend>Dados do Status</legend>
+                        <div class="row">
+                            @if (Model.TabelaAux1Nome != null && Model.TabelaAux1Nome != "")
+                            {
+                        <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                            <label>@Model.TabelaAux1Nome</label>
+                            @Html.DropDownListFor(model => model.TabelaAux1Id, Model.DdlAux1, new { @class = "chosen-select form-control " })
+                        </div>
+                            }
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>Sequência</label>
+                                @Html.TextBoxFor(model => model.StatusSequencia, new { @class = "number form-control" })
+                                @Html.ValidationMessageFor(model => model.StatusSequencia)
+                            </div>
+
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>Prioridade</label>
+                                @Html.DropDownListPrioridade("StatusPrioridade", Model.StatusPrioridade.ToString(), true, " form-control ")
+                            </div>
+
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label><abbr title="Tempo Máximo em Horas (deixe 0 para sem prazo)">Max. Horas</abbr></label>
+                                @Html.TextBoxFor(model => model.StatusTempoMaximo, new { @class = "number form-control" })
+                                @Html.ValidationMessageFor(model => model.StatusTempoMaximo)
+                            </div>
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Tipo de Status</label>
+                                @Html.DropDownListStatusTipos("StatusTipo", Model.StatusTipo.ToString(), false, "form-control")
+
+                            </div>
+
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Status</label>
+                                @Html.TextBoxFor(model => model.StatusNome, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.StatusNome)
+                            </div>
+
+                            <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                <label>Instrução do Status</label>
+                                @Html.TextBoxFor(model => model.StatusInstrucoes, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.StatusInstrucoes)
+                            </div>
+
+
+
+                            <!--
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status Anterior</label>
+                                <select id="StatusAnterior" name="StatusAnterior" class="form-control chosen-select"></select>
+                            </div>
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status Posterior</label>
+                                <select id="StatusPosterior" name="StatusPosterior" class="form-control chosen-select"></select>
+                            </div>
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status Posterior (Exceção)</label>
+                                <select id="StatusExcecao" name="StatusExcecao" class="form-control chosen-select"></select>
+                            </div>
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status de Cancelamento</label>
+                                <select id="StatusCancela" name="StatusCancela" class="form-control chosen-select"></select>
+                            </div>
+                                -->
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Status Associados</label>
+                                @Html.ListBoxFor(model => model.StatusMultiIdsAux, (SelectList)ViewBag.ddlEntidadesStatus, new { @class = "select2 form-control ", @data_placeholder = "Selecione os status associados", multiple = "multiple" })
+                            </div>
+
+                            
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Sub-Status</label><br />
+                                @Html.TextBoxFor(model => model.StatusTagsPipe, new { @class = "tags ", })
+                            </div>
+
+                        </div>
+                        <br />
+                        
+                         <!-- email -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.StatusEmailEnviar) <i class="fa fa-envelope"></i>Enviar EMail</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row" id="div_StatusEmailEnviar">
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Assunto</label>
+                                @Html.TextBoxFor(model => model.StatusEmailAssunto, new { @class = "form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Texto</label>
+
+                                @Html.TextAreaFor(model => model.StatusEmailTexto, new { @class = "col-lg-12", @rows = 10 })
+
+                            </div>
+                        </div>
+                        <!-- ./email -->
+                        
+                        <br />
+                        <!-- SMS -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.StatusSmsSend) <i class="fa fa-comments"></i>Enviar SMS</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row"  id="div_StatusSmsSend">
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Texto SMS</label>
+                                <select id="variaveis" class="form-control" name="variaveis">
+                                    <option value="">--Variáveis--</option>
+                                    <option value="#nome#">Nome do Paciente</option>
+                                    <option value="#filialnome#">Nome @BLL.Usuarios.GetEntidadeFilial()</option>
+                                    <option value="#statusnome#">Status</option>
+                                    <option value="#statusconteudo#">Status Descrição (digitado)</option>
+                                    <option value="#medguiaid#">Número da Guia</option>
+                                    <option value="#medguiadata#">Data da Guia</option>
+                                    <option value="#notafiscaldata#">Data da NF</option>
+                                    <option value="#totalprodutos#">Valor Total da Guia</option>
+                                    <option value="#totalprodutoscustonff#">NFF/Fatura</option>
+                                    <option value="#totalreembolso#">Valor Total Reembolso</option>
+                                    <option value="#imposto#">Valor do Imposto</option>
+                                    <option value="#notafiscal#">NF</option>
+                                    <option value="#boletourl#">Link Boleto</option>
+                                    <option value="#bancocod#">Cód. Banco</option>
+                                    <option value="#banconome#">Nome Banco</option>
+                                    <option value="#bancoagencia#">Agência Banco</option>
+                                    <option value="#bancoconta#">Conta Banco</option>
+                                </select>
+                                @Html.TextAreaFor(model => model.StatusSmsText, new { @class = "form-control maxlen", maxlength = "1400", rows = 4 })
+                            </div>
+                        </div>
+                        <!-- ./SMS -->
+                        <br />
+                        <!-- trello-->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.StatusTrelloCreate) <i class="fa fa-trello"></i>Trello</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="row" id="div_StatusTrelloCreate">
+                            <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                <label>Em qual lista?</label>
+
+                                <div class="input-group">
+                                    @Html.TextBoxFor(model => model.StatusTrelloListId, new { @class = "form-control", maxlength = "200" })
+                                    <span class="input-group-btn">
+                                        <a href="@Url.Content("~/Trello/Boards/")?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="btn btn-primary ui-lightbox fancybox fancybox.iframe"><i class="fa fa-trello"></i><i class="fa fa-search"></i></a>
+                                    </span>
+                                </div>
+
+
+
+                            </div>
+                            <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                <label>Título do Card</label>
+                                @Html.TextBoxFor(model => model.StatusTrelloTitulo, new { @class = "form-control", maxlength = "200" })
+                            </div>
+                        
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Texto do Card</label>
+                                <select id="variaveis_trello" class="form-control" name="variaveis_trello">
+                                    <option value="">--Variáveis--</option>
+                                    <option value="#nome#">Nome do Paciente</option>
+                                    <option value="#filialnome#">Nome @BLL.Usuarios.GetEntidadeFilial()</option>
+                                    <option value="#statusnome#">Status</option>
+                                    <option value="#statusconteudo#">Status Descrição (digitado)</option>
+                                    <option value="#medguiaid#">Número da Guia</option>
+                                    <option value="#medguiadata#">Data da Guia</option>
+                                    <option value="#notafiscaldata#">Data da NF</option>
+                                    <option value="#totalprodutos#">Valor Total da Guia</option>
+                                    <option value="#totalprodutoscustonff#">NFF/Fatura</option>
+                                    <option value="#totalreembolso#">Valor Total Reembolso</option>
+                                    <option value="#imposto#">Valor do Imposto</option>
+                                    <option value="#notafiscal#">NF</option>
+                                    <option value="#boletourl#">Link Boleto</option>
+                                    <option value="#bancocod#">Cód. Banco</option>
+                                    <option value="#banconome#">Nome Banco</option>
+                                    <option value="#bancoagencia#">Agência Banco</option>
+                                    <option value="#bancoconta#">Conta Banco</option>
+                                </select>
+                                @Html.TextAreaFor(model => model.StatusTrelloTexto, new { @class = "form-control", maxlength = "4000", rows = 4 })
+                            </div>
+                        </div>
+                        <!-- ./trello-->
+                        
+                        <br />
+                        <legend>Perfis</legend>
+                        <div class="row">
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <strong>Selecione os perfis que terão acesso à este Status</strong>
+                                @foreach (var item in listarPerfis)
+                                {
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="listaPerfis" id="listaPerfis" value="@item.PerfilId" @(perfisSelecionados.Any(x => x.Value == item.PerfilId.ToString()) ? " checked " : " ") />@item.PerfilNome</label>
+                                    </div>
+                                    
+                                }
+                            </div>
+
+
+                        </div>
+                        
+                        <br />
+                        <legend>Regras</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                            <label>Regra que será executada após alteração de status:</label>
+                            @Html.DropDownListFor(model => model.EntidadeStatusProcedureId, (SelectList)ViewBag.ddlEntidadeStatusProcedureId , new { @class = "chosen-select form-control " })
+                        </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", new { id = 0, tipo = Model.Entidade }, new { @class = "btn btn-outline btn-primary" })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+@Styles.Render("~/bundles/bootstrap-tagsinput/css")
+@Styles.Render("~/redactor/redactor.css")
+        @Styles.Render("~/bundles/fancybox/css") @Styles.Render("~/bundles/select2/css")
+
+    <style>
+        option:disabled
+        {
+            background-color: #afafaf !important;
+            color: #ffffff !important;
+        }
+        .bootstrap-tagsinput
+        {
+            width: 100%;
+        }
+    </style>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/maxlenght/js")
+@Scripts.Render("~/bundles/bootstrap-tagsinput/js")
+@Scripts.Render("~/redactor/redactor.min.js")
+    @Scripts.Render("~/bundles/select2/js")
+@Scripts.Render("~/bundles/fancybox/js")
+  <script type="text/javascript">
+      $(".fancybox").fancybox({
+          toolbar: false,
+          padding: 0,
+          fitToView: false,
+          width: '80%',
+          autoSize: true,
+          helpers: {
+              overlay: {
+                  locked: true
+              }
+          }
+      });
+    </script>
+   
+
+    <script>
+        $("#EntidadeNome").focus();
+
+        $('.select2').select2();
+
+        $('.tags').tagsinput({
+            splitOn: ',',
+            trimValue: true,
+        });
+
+        $('#variaveis').on('change', function () {
+            var cursorPos = $('#StatusSmsText').prop('selectionStart');
+            var v = $('#StatusSmsText').val();
+            var textBefore = v.substring(0, cursorPos);
+            var textAfter = v.substring(cursorPos, v.length);
+            $('#StatusSmsText').val(textBefore + $(this).val() + textAfter);
+            $("#variaveis").val("");
+        });
+
+
+        $('#variaveis_trello').on('change', function () {
+            var cursorPos = $('#StatusTrelloTexto').prop('selectionStart');
+            var v = $('#StatusTrelloTexto').val();
+            var textBefore = v.substring(0, cursorPos);
+            var textAfter = v.substring(cursorPos, v.length);
+            $('#StatusTrelloTexto').val(textBefore + $(this).val() + textAfter);
+            $("#variaveis_trello").val("");
+        });
+        $('.maxlen').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+
+
+
+
+        $('#TabelaAux1Id').on('change', function () {
+            carregaStatus($(this).val(), '@Model.Entidade', '@Model.StatusAnterior', 'StatusAnterior');
+            carregaStatus($(this).val(), '@Model.Entidade', '@Model.StatusPosterior', 'StatusPosterior');
+            carregaStatus($(this).val(), '@Model.Entidade', '@Model.StatusCancela', 'StatusCancela');
+            carregaStatus($(this).val(), '@Model.Entidade', '@Model.StatusExcecao', 'StatusExcecao');
+
+        });
+
+
+        function carregaStatus(TabelaAux1Id, Entidade, EntidadeStatusId, ddlId) {
+
+            if (TabelaAux1Id == null || TabelaAux1Id == "") {
+                TabelaAux1Id = 0;
+            }
+
+            
+
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetEntidadesStatus/")", { id: TabelaAux1Id, Entidade: Entidade }, function (result) {
+                data = $.map(result, function (item, a) {
+                    var select = (EntidadeStatusId == item.EntidadeStatusId) ? " selected='selected' " : "";
+                    var disabled = (item.EntidadeStatusId == '@Model.EntidadeStatusId') ? " disabled='disabled' " : "";
+                        return "<option value=" + item.EntidadeStatusId + " " + select + " " + disabled + ">" + item.StatusNome + "</option>";
+
+
+                });
+                $("#" + ddlId).empty();
+                $('#' + ddlId).append($('<option>', {
+                    value: 0,
+                    text: '--Nenhum--'
+                }));
+                $("#" + ddlId).append(data.join(""));
+
+                $("#" + ddlId).trigger('chosen:updated');
+                $("#" + ddlId).trigger('change.select2');
+
+            });
+            }
+
+            carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusAnterior', 'StatusAnterior');
+        carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusPosterior', 'StatusPosterior');
+        carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusCancela', 'StatusCancela');
+        carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusExcecao', 'StatusExcecao');
+        
+
+    </script>
+
+    
+
+    <script>
+        $('#StatusEmailEnviar').change(function () {
+            verificaEmail(this.checked);
+        });
+
+        verificaEmail($("#StatusEmailEnviar").is(':checked'));
+
+        function verificaEmail(checado) {
+            if (checado) {
+                $("#div_StatusEmailEnviar").slideDown();
+            } else {
+                $("#div_StatusEmailEnviar").slideUp();
+            }
+        }
+
+        $('#StatusEmailTexto').redactor({
+            focus: true,
+            imageUpload: '@Url.Content("~/Redactor/ImageUpload")'
+        });
+    </script>
+
+    <script>
+        $('#StatusSmsSend').change(function () {
+            verificaSms(this.checked);
+        });
+
+        verificaSms($("#StatusSmsSend").is(':checked'));
+
+        function verificaSms(checado) {
+            if (checado) {
+                $("#div_StatusSmsSend").slideDown();
+            } else {
+                $("#div_StatusSmsSend").slideUp();
+            }
+        }
+
+    </script>
+
+    <script>
+        $('#StatusTrelloCreate').change(function () {
+            verificaTrello(this.checked);
+        });
+
+        verificaTrello($("#StatusTrelloCreate").is(':checked'));
+
+        function verificaTrello(checado) {
+            if (checado) {
+                $("#div_StatusTrelloCreate").slideDown();
+            } else {
+                $("#div_StatusTrelloCreate").slideUp();
+            }
+        }
+
+    </script>
+}

@@ -1,0 +1,174 @@
+﻿@model Models.Ocorrencia
+
+@{
+    ViewBag.Title = "Criar Ocorrência";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";  
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var bllAnexos = new BLL.OcorrenciasAnexos();
+    var listaAnexos = bllAnexos.Listar(Model.OcorrenciaId);
+
+    var _OcorrenciasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "Ocorrencias");
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Ocorrências", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">
+
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Content("~/Ocorrencias/Criar/" + Model.OcorrenciaId + "?Modal=" + Model.Modal)">Dados Gerais</a></li>
+        <li class="active"><a href="#">Histórico</a></li>
+    </ul>
+
+    <div class="row-fluid">
+        <div class="span2">
+            <label>Ocorrência n.</label>
+            <span class="black">@Model.OcorrenciaId</span>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <span class="black">@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</span>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <span class="black">@string.Format("{0:HH:mm}", Model.RegDtInicio)</span>
+        </div>
+
+        <div class="span3">
+            <label>Situação</label>
+            @if (Model.Resolvido)
+            {
+                <span><i class="fa fa-check-square-o" aria-hidden="true"></i>Resolvido</span>
+            }
+            else
+            {
+                <span><i class="fa fa-square-o" aria-hidden="true"></i>Pendente</span>
+            }
+        </div>
+
+        <div class="span3">
+            <label>Acesso</label>
+
+            @if (Model.Privado)
+            {
+                <span><i class="fa fa-lock" aria-hidden="true"></i>Privado</span>
+            }
+            else
+            {
+                <i class="fa fa-unlock" aria-hidden="true"></i> <span>Público</span>
+            }
+
+        </div>
+
+    </div>
+
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Atendente</label>
+            @Model.Atendente
+        </div>
+        <div class="span4">
+            <label>Solicitante</label>
+            @Model.Solicitante
+        </div>
+        <div class="span4">
+            <label>Executor</label>
+            @Model.ExecutorNome
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span6">
+            <label>Funcionário</label>
+            @Model.FuncionarioRE - @Model.FuncionarioNome
+        </div>
+        <div class="span6">
+            <label>Tipo de ocorrência</label>
+            @Model.OcorrenciaTipoNome
+        </div>
+    </div>
+
+        <div class="row-fluid">
+        <div class="span6">
+            <div class="accordion" id="accordion1">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+                            <span style="color: #000">Ocorrência</span>
+                        </a>
+                    </div>
+                    <div id="collapseOne" class="accordion-body collapse ">
+                        <div class="accordion-inner">
+                            @Model.OcorrenciaDescricao
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="span6">
+            <div class="accordion" id="accordion2">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse2">
+                            <span style="color: #000">Solução Tomada</span>
+                        </a>
+                    </div>
+                    <div id="collapse2" class="accordion-body collapse ">
+                        <div class="accordion-inner">
+                           @Model.Solucao
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+</div>
+
+    <legend><i class="fa fa-comments"></i>Histórico</legend>
+    @if (_OcorrenciasAdministrador && Model.RegAtualizado)
+    {
+        <a href="@Url.Content("~/Ocorrencias/Blog/" + Model.OcorrenciaId + "?Modal=" + Model.Modal + "&Atualizado=0")" class="btn btn-mini" onclick="return confirm('Ao clicar em OK, outros usuários não visualizarão que houve alterações nessa ocorrência. Confirma?')">Marcar como visualizado</a>    
+    }
+
+    @Html.CubeeBlog("Ocorrencias", Model.OcorrenciaId, "", BLL.Usuarios.GetUsuarioId(), _OcorrenciasAdministrador)
+
+
+
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+
+

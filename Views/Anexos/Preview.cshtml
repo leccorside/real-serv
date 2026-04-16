@@ -1,0 +1,87 @@
+﻿@model Models.Anexo
+
+@{
+    
+
+
+
+    ViewBag.Title = "Preview";
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    var html = "";
+    var width = "720";
+    var height = "350";
+    
+    if (Model.ContentType.Contains("pdf") && Model.Path != "")
+    {
+
+        html += " <object width=\"" + width + "\" height=\"" + height + "\" name=\"plugin\" data=\"" + Url.Content(Model.Path) + "\"  type=\"application/pdf\"> ";
+        html += "		<embed width=\"" + width + "\" height=\"" + height + "\" name=\"plugin\" src=\"" + Url.Content(Model.Path) + "\" type=\"application/pdf\" class=\"pdf_view_embed\">";
+        html += " </object> ";
+    }
+    else
+    {
+        if (Model.PathThumb != "" && Model.PathThumb != null)
+        {
+            html += "		<img src=\"" + Url.Content(Model.PathThumb) + "\" style=\"width: " + width + "px; height: " + height + "px;\">";
+        }
+        else
+        {
+            html += "		<div style=\"width: " + width + "px; height: " + height + "px; border:1px solid black; font-size:10px; text-align:center; background-color: #fff;\">" + Model.ContentType + "<br />Sem visualização</div>";
+        }
+    }
+
+    var urlDownload = Url.Content("~/Anexos/Download/?guid=" + Model.AnexoGuid + "");
+}
+
+@section Styles{
+
+}
+
+
+<div class="content animate-panel">
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Preview @Model.FileName  / Dt.Cadastro: @Model.RegDtInicio
+                </div>
+                <div class="panel-body">
+                    <!-- inicia aqui-->
+                    <a class="btn btn-xs btn-outline btn-primary" href="@urlDownload" data-toggle="tooltip" data-original-title="Download @Model.FileName" title="" data-placement="top"><i class="fa fa-download"></i> Download</a>
+                    <!-- ./inicia aqui-->
+                </div>
+                <div class="panel-body">
+                @Html.Raw(html);
+            </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+
+}
+

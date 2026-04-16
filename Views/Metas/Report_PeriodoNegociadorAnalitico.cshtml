@@ -1,0 +1,122 @@
+﻿@model List<Models.EntidadeStatusDadoPRCPropostaView>
+@{
+    ViewBag.Title = "Report_PeriodoNegociadorAnalitico";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        
+<table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+    <thead>
+        <tr style="font-size: 12px;">
+            <th>Proposta</th>
+            <th>Fonte</th>
+            <th>Precatório</th>
+            <th>Triagem</th>
+            <th>Retorno</th>
+            <th>Status</th>
+            <th>Requerente</th>
+            <th>Valor Bruto</th>
+            <th>Valor Proposta</th>
+            <th>Última Ação</th>
+            <th>Próxima Ação</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+
+            var tr_status = "";
+
+
+
+            var icon = "";
+            var tempoPassado = "";
+            if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+            {
+                tr_status = "warning";
+                icon = "fa fa-bell-o";
+                tempoPassado = "<i class='fa fa-clock-o'></i> " + item.StatusTempoPassado + " hrs";
+            }
+            
+                                    
+            <tr class=" @tr_status">
+                <td><i class="@icon"></i>@item.PRCPropostaId </td>
+                <td><span class="badge @item.Fonte">@item.Fonte</span></td>
+                <td>@item.PRCPropostaPrecatorio
+                  
+
+                </td>
+                <td>@if (item.Triagem)
+                    {
+                    <span class="label label-warning">Em triagem</span>
+                    }</td>
+                <td>@if (item.TriagemRetorno)
+                    {
+                    <span class="label label-success">Retorno Triagem</span>
+                    }</td>
+                <td>@item.StatusNome @Html.Raw(tempoPassado)
+
+                    @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                    {
+                        List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                        foreach (var badge in badges)
+                        {
+                        <span class="label label-info">@badge</span>
+                        }
+                    }
+
+
+                </td>
+                <td>@item.RequerenteNome</td>
+                <td>R$ @string.Format("{0:N2}", item.PRCPropostaValorBruto)</td>
+                <td>R$ @string.Format("{0:N2}", item.PRCPropostaFinalValor)</td>
+
+                <td>
+                    @if (item.EntidadeStatusDtAtualiza != null)
+                    {
+                        <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusDtAtualiza)</span>
+                    }
+                </td>
+                <td>
+                    @if (item.EntidadeStatusHistoricoData != null)
+                    {
+                        <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusHistoricoData)</span>
+                    }
+                </td>
+
+              
+
+            </tr>    
+                                  
+
+        }
+
+    </tbody>
+
+
+
+</table>
+
+                    </div>
+
+                 
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

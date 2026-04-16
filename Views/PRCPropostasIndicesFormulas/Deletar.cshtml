@@ -1,0 +1,83 @@
+﻿@model Models.PRCPropostaIndiceFormula
+
+@{
+    ViewBag.Title = "Excluíndo Fórmulas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    
+ <li class="active">@Html.ActionLink("Índices", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja apagar esse registro?
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+                    <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                        @Html.DisplayNameFor(model => model.PRCPropostaIndiceFormulaId)
+                        @Html.DisplayFor(model => model.PRCPropostaIndiceFormulaId)
+                </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                        @Html.DisplayNameFor(model => model.Fonte)
+                        @Html.DisplayFor(model => model.Fonte)
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="display-label">
+
+                        @Html.DisplayNameFor(model => model.Formula)
+
+
+
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Formula)
+                    </div>
+
+                </div>
+
+
+
+            </div>
+                    <!-- ./conteudo aqui -->
+                </div>
+                <div class="panel-footer">
+
+                    @using (Html.BeginForm())
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.HiddenFor(model => model.PRCPropostaIndiceFormulaId)
+                                
+                                    <input type="submit" value="Apagar" class="btn btn-danger" />
+                                
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary" })
+                                
+                            </div>
+                        </div>    
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+

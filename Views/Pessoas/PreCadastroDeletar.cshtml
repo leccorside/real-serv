@@ -1,0 +1,123 @@
+﻿@model Models.PessoaPreCadastro
+
+@{
+     var vname = BLL.Usuarios.GetEntidadeCliente();
+    
+}
+
+
+@{
+    ViewBag.Title = "Excluir " + vname;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+@section Breadcrumb{
+  <li class="active"><span class="divider">/</span> @Html.ActionLink("Pré-cadastro de " + vname, "PreCadastroIndex", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja excluir o registro do Pré-Cadastro?
+</div>
+
+
+ <div class="cwell">
+        <fieldset>
+            <legend>Dados</legend>
+
+            <div class="row-fluid">
+                <div class="span1">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.PessoaID)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.PessoaID)
+                    </div>
+                </div>
+                <div class="span11">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Nome)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Nome)
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Email)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Email)
+                    </div>
+                </div>
+                <div class="span3">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Telefone)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Telefone)
+                    </div>
+                </div>
+                <div class="span3">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Celular)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Celular)
+                    </div>
+                </div>
+                <div class="span3">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Observacao)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Observacao)
+                    </div>
+                </div>
+            </div>
+            <br />
+          
+        </fieldset>
+
+        <br />
+
+
+        @using (Html.BeginForm())
+        {
+      
+            <div class="row-fluid">
+                <div class="span12">
+                    @Html.HiddenFor(model => model.PessoaID)
+                    
+                    <p class="pull-right">
+                        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+
+                    </p>
+
+                    <p class="pull-left">
+                        @Html.ActionLink("Voltar", "PreCadastroIndex", new { id = 0 })
+                    </p>
+                </div>
+            </div>    
+        }
+
+    </div>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,322 @@
+﻿@{ 
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentTipo = ViewContext.RouteData.Values["tipo"] as string ?? "";
+
+    var currentId = ViewContext.RouteData.Values["id"] as string ?? "0";
+    
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    currentTipo = currentTipo.ToLower();
+    var currentPage = (currentController + "-" + currentAction + currentTipo).ToLower();
+
+    var user = new BLL.Usuarios();
+    var controleAcesso = user.ControleAcesso(currentAction, currentController);
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+    
+    var dadosUser = user.Carregar(BLL.Usuarios.GetUsuarioId());
+
+    var bllFiliais = new BLL.Filiais();
+    var listaFiliais = (SelectList)bllFiliais.ListarTipos(false);
+
+    SelectListItem selected = listaFiliais.FirstOrDefault(x => x.Value.ToUpper().Contains(BLL.Usuarios.GetFilialId().ToString()));
+    if (selected != null)
+    {
+        listaFiliais = new SelectList(listaFiliais, "value", "text", selected.Value);
+    }
+    
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+
+
+    <!-- Stylesheets -->
+    <link href="~/Assets/themes/metro/style/bootstrap.css" rel="stylesheet" />
+    <link href="~/Assets/themes/metro/style/bootstrap-responsive.css" rel="stylesheet">
+    <link href="~/Assets/themes/metro/style/font-awesome.css" rel="stylesheet" />
+
+    <link href="~/Assets/themes/metro/style/prettyPhoto.css" rel="stylesheet">
+    <!-- Parallax slider -->
+    <link rel="stylesheet" href="~/Assets/themes/metro/style/slider.css">
+    <!-- Flexslider -->
+    <link rel="stylesheet" href="~/Assets/themes/metro/style/flexslider.css">
+
+    <link href="~/Assets/themes/metro/style/style.css" rel="stylesheet">
+
+    <!-- Colors - Orange, Purple, Light Blue (lblue), Red, Green and Blue -->
+    <link href="~/Assets/themes/metro/style/Blue.css" rel="stylesheet">
+
+       <link href="~/Assets/themes/metro/css/font-awesome.css" rel="stylesheet" />
+
+
+
+    @*   @Styles.Render("~/Assets/css/bootstrap.css")
+
+    @Styles.Render("~/Assets/css/bootstrap-responsive.css")*@
+
+    @Styles.Render("~/Assets/css/datepicker.css")
+
+    @Styles.Render("~/Assets/css/chosen.css")
+
+
+    <link href="~/Content/themes/base/js/plugins/lightbox/themes/evolution-dark/jquery.lightbox.css" rel="stylesheet" />
+
+    @Styles.Render("~/Assets/css/custom.css")
+
+    <style>
+       
+html {
+    min-height: 100%;
+    x-background: #eaeaea url('@VirtualPathUtility.ToAbsolute("~/Assets/img/bg/" + BLL.Usuarios.GetEmpresaId() + "Interna.jpg")') 100% 100% no-repeat;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+    </style>
+
+    <style>
+        body
+        {
+            min-height: 100%;
+            /*xxxfont: 20px/1.4 'PT Sans', sans-serif;*/
+            color: #000;
+            /*text-shadow: 0 1px 2px rgba(0, 0, 0, 0.66);*/
+            background: transparent;
+        }
+
+        table
+        {
+            background: #eaeaea;
+        }
+
+        h1, h2, h3, h4, h5, h6
+        {
+            color: #fff;
+        }
+    </style>
+     @RenderSection("Styles", false)
+</head>
+<body>
+
+    
+    
+    <div style="display:none">
+    @RenderSection("Breadcrumb",false)
+        </div>
+
+
+    <div id="content">
+
+
+     
+
+        <div class="container-fluid">
+
+
+
+            @if (!@Html.ViewData.ModelState.IsValid)
+            {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-error" id="alert-error">
+                            <h4>Ooops... alguns erros ocorreram</h4>
+                            <br />
+                            @Html.ValidationSummary("", new { @class = "unstyled" })
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (TempData["message"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-success" id="alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Sucesso!</h4>
+                        @TempData["message"]
+                    </div>
+                </div>
+            </div>
+            }
+            @if (TempData["error"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-danger" id="alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @TempData["error"]
+                    </div>
+                </div>
+            </div>
+            }
+
+            @if (TempData["alert"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-block" id="alert-block">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @TempData["alert"]
+                    </div>
+                </div>
+            </div>
+            }
+
+
+            @if (dadosUser.AcessoRestrito == true && Request.UserHostAddress.Trim() != dadosUser.AcessoIP.Trim())
+            {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-warning">
+                            <h4>Ooops... Parece que seu perfil possui restrição de acesso ao sistema</h4>
+
+                            <h6>Qual o motivo para restrição de acesso:</h6>
+                            Você não está acessando do IP: @dadosUser.AcessoIP<br />
+                            Seu IP atual: @Request.UserHostAddress<br />
+                            <small>Se você acha que essa mensagem não se aplica à você, entre em contato.</small>
+                        </div>
+                    </div>
+                </div>
+            }
+             else if (dadosUser.AcessoRestritoMacAddress == true && BLL.Utils.Funcoes.GetMacAddress() != dadosUser.AcessoMacAddress.Trim())
+            {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-warning">
+                            <h4>Ooops... Parece que seu perfil possui restrição de acesso ao sistema</h4>
+
+                            <h6>Qual o motivo para restrição de acesso:</h6>
+                            Você não está acessando do MAC ADDRESS: @dadosUser.AcessoMacAddress<br />
+                            Seu MAC ADDRESS atual: @BLL.Utils.Funcoes.GetMacAddress()<br />
+                            <small>Se você acha que essa mensagem não se aplica à você, entre em contato.</small>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                if (controleAcesso)
+                {
+                @RenderBody()    
+                }
+                else
+                {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-error" id="alert-error">
+                            <h4>Ooops... Você não possui acesso à este módulo</h4>
+                            <br />
+                            @currentController / @currentAction
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display:none">@RenderBody()</div>
+                
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+            <div class="row-fluid">
+                <div id="footer" class="span12">
+                    @if (_copyright == "" || _copyright == "true")
+                    {
+                    <span class="muted pull-right">@DateTime.Now.Year &copy; Power By <a href="http://www.e-bee.com.br" target="_blank">E-Bee</a></span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+
+    @Scripts.Render("~/Assets/themes/metro/js/jquery.js")
+    @Scripts.Render("~/Assets/themes/metro/js/bootstrap.js")
+
+    <!-- necessários -->
+    @Scripts.Render("~/Assets/js/bootstrap-datepicker.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/jquery.maskedinput.js")
+    @Scripts.Render("~/Assets/js/jquery.maskMoney.js")
+    @Scripts.Render("~/Assets/js/bootstrap-maxlength.js")
+    @Scripts.Render("~/Assets/js/custom.js")
+    <!-- ./necessários -->
+
+
+    @*@Scripts.Render("~/Assets/themes/unicorn/js/jquery.ui.custom.js")
+
+    @Scripts.Render("~/Assets/themes/unicorn/js/jquery.flot.min.js")
+    @Scripts.Render("~/Assets/themes/unicorn/js/jquery.flot.resize.min.js")
+    @Scripts.Render("~/Assets/themes/unicorn/js/jquery.peity.min.js")
+    @Scripts.Render("~/Assets/themes/unicorn/js/fullcalendar.min.js")
+    @Scripts.Render("~/Assets/themes/unicorn/js/unicorn.js")
+
+    @Scripts.Render("~/Assets/themes/unicorn/js/unicorn.calendar.js")
+
+    @Scripts.Render("~/Assets/themes/unicorn/js/unicorn.dashboard.js")
+    @Scripts.Render("~/Assets/themes/unicorn/js/form_common.js")*@
+    
+    
+
+    @RenderSection("scripts", required: false)
+
+    <script>
+
+
+        $(document).ready(function () {
+
+            //$('.max').maxlength({ alwaysShow: true, });
+            $("input[data-val-length-max]").each(function (index, element) {
+                var length = parseInt($(this).attr("data-val-length-max"));
+                $(this).prop("maxlength", length);
+            });
+
+            $('input[maxlength]').maxlength({
+                warningClass: 'label label-success max-custom',
+                limitReachedClass: 'label label-important label-danger max-custom',
+            });
+
+            $(document).ajaxStart(function () {
+                $("#wait").css("display", "block");
+                $("#wait").css("top", ($(document).height() / 2) + "px");
+                $("#wait").css("position", "relative");
+                $("#ajax_painel").css("position", "absolute");
+                $("#ajax_painel").css("display", "block");
+                $("#ajax_painel").css("height", ($(document).height()) + "px");
+                $("#ajax_painel").css("width", "100%");
+                $("#ajax_painel").css("z-index", "9000");
+                $("#ajax_painel").css("background-color", "#000");
+                $("#ajax_painel").css({ opacity: 0.6 });
+
+
+            });
+            $(document).ajaxComplete(function () {
+                $("#wait").css("display", "none");
+                $("#ajax_painel").css("display", "none");
+                $("#ajax_painel").css({ opacity: 1 });
+
+            });
+        });
+
+
+    </script>
+</body>
+</html>
+

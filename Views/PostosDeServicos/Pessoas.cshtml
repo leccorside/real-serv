@@ -1,0 +1,154 @@
+﻿@model Models.PostoDeServicoPessoaView
+
+@{
+    ViewBag.Title = "Alterar " + @Html.Raw(BLL.Usuarios.GetEntidadeFuncionario());
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+@section Styles{
+    <link href="~/Assets/plugins/fancybox/jquery.fancybox.css" rel="stylesheet" />
+    <link href="~/Assets/plugins/fancybox/helpers/jquery.fancybox-buttons.css" rel="stylesheet" />
+
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Posto de Serviço", "Index", new { id = 0 })</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Alterar Posto de Serviço", "Criar", new { id = Model.DadosPostoDeServico.PostoDeServicoId })</li>
+}
+
+<div class="cwell">
+
+    @Html.Partial("~/Views/PostosDeServicos/_Navtabs.cshtml", Model.DadosPostoDeServico)
+
+    @using (Html.BeginForm("Pessoas", "PostosDeServicos", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.DadosPostoDeServico.PostoDeServicoId);
+        
+        @Html.Hidden("PostoDeServicoPessoa.PostoDeServicoId", Model.DadosPostoDeServico.PostoDeServicoId);
+  
+        
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Serviço</label>
+                @Html.DropDownList("PostoDeServicoPessoa.ServicoId", (SelectList)ViewBag.ddlServicos, "--Selecione--", new { @class = "chosen-select span12" })
+            </div>
+            <div class="span8"></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span4">
+                <label>@Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</label>
+                <div class="input-append">
+                @Html.DropDownList("PostoDeServicoPessoa.PessoaId", (SelectList)ViewBag.ddlPessoas, "--Selecione--", new { @class = "chosen-select span12" })
+                    <button id="btnAdicionar" type="submit" class="btn"><i class="icon-plus"></i> Adicionar</button>
+                    </div>
+            </div>
+
+            @*<div class="span1"><br />
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.PostoDeServicoPessoa.Folguista) Folguista
+                </label>
+            </div>
+            <div class="span1">
+                <label>Hr.Início</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sHoraDe, new { @class = "input-mini" })</div>
+            <div class="span1">
+                <label>Interv.de</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sIntervaloDe, new { @class = "input-mini" })</div>
+            <div class="span1">
+                <label>Interv.até</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sIntervaloAte, new { @class = "input-mini" })</div>
+            <div class="span1">
+                <label>Hr.Fim</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sHoraAte, new { @class = "input-mini" })</div>
+            <div class="span1">
+                <label>Dias Trab.</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.DiasTrabalho, new { @class = "input-mini numeric" })
+            </div>
+            <div class="span1">
+                <label>Dias Folga</label>
+                <div class="input-append">
+                    @Html.TextBoxFor(model => model.PostoDeServicoPessoa.DiasFolga, new { @class = "input-mini numeric" })
+                    <button id="btnAdicionar" type="submit" class="btn"><i class="icon-plus"></i></button>
+                </div>
+            </div>*@
+        </div>
+    
+        <div class="row-fluid">
+        </div>
+
+            
+    }
+
+
+    <table class="table table-bordered table-striped table-highlight">
+        <thead>
+            <tr>
+                <th>RE</th>
+                <th>Pessoa</th>
+                <th>Serviço</th>
+                <th>Escala</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ListaPostoDeServicoPessoa)
+            {
+                <tr>
+                    <td nowrap>@item.RE</td>
+                    <td nowrap>@item.PessoaNome</td>
+                    <td nowrap>@item.ServicoNome</td>
+                    <td>@item.TipoEscalaNome</td>
+                    <td nowrap>
+                        <a href="~/PostosDeServicos/PessoasAlterar/@Model.DadosPostoDeServico.PostoDeServicoId?pid=@item.PostoDeServicoPessoaId" class="btn btn-mini fancybox fancybox.iframe"><i class="fa fa-pencil-square-o"></i>Alterar</a>
+                        <a href="~/PostosDeServicos/PessoasDeletar/@Model.DadosPostoDeServico.PostoDeServicoId?pid=@item.PostoDeServicoPessoaId" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir esse registro?')"><i class="fa fa-times"></i>Excluir</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Assets/plugins/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script src="~/Assets/plugins/fancybox/jquery.fancybox.js"></script>
+    <script src="~/Assets/plugins/fancybox/helpers/jquery.fancybox-buttons.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+
+
+            $(".fancybox").fancybox({
+                fitToView: true,
+                autoSize: true,
+                closeClick: false,
+                openEffect: 'elastic',
+                closeEffect: 'elastic',
+                beforeClose: function () {
+                    CarregaPessoas();
+                },
+
+            });
+
+        });
+
+
+        function CarregaPessoas() {
+            parent.location = "@Url.Content("~/PostosDeServicos/Pessoas/" + Model.DadosPostoDeServico.PostoDeServicoId)";
+        }
+    </script>
+
+    <script>
+        $("#PostoDeServicoPessoa_PessoaId").focus();
+
+
+        $("#PostoDeServicoPessoa_sHoraDe").mask("99:99");
+        $("#PostoDeServicoPessoa_sHoraAte").mask("99:99");
+        $("#PostoDeServicoPessoa_sIntervaloDe").mask("99:99");
+        $("#PostoDeServicoPessoa_sIntervaloAte").mask("99:99");
+    </script>
+}

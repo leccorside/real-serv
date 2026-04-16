@@ -1,0 +1,168 @@
+﻿@model Models.MedicaoView
+
+@{
+    ViewBag.Title = "Relatórios Diários";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles{
+    
+}
+
+@section Breadcrumb{
+    <li><span class="divider">/</span><a href="~/Projetos/Index">Obras</a></li>
+    <li><span class="divider">/</span><a href="~/Projetos/Criar/@Model.DadosProjeto.ProjetoId">@Model.DadosProjeto.ProjetoNome</a></li>
+}
+
+
+
+<legend>Dados da Obra</legend>
+<div class="row-fluid">
+    <div class="span10">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DadosProjeto.ProjetoNome)
+        </div>
+        <div class="editor-field">
+            <a href="~/Projetos/Criar/@Model.DadosProjeto.ProjetoId" class=""><i class="fa fa-pencil"></i></a>@Model.DadosProjeto.ProjetoNome
+        </div>
+    </div>
+    <div class="span2">
+        <a data-toggle="tooltip" data-placement="top" title="Relatórios Diários" href="/Medicoes/Index/@Model.DadosProjeto.ProjetoId" class="btn btn-mini disabled"><i class="fa fa-calculator"></i></a>
+        <a data-toggle="tooltip" data-placement="top" title="Relatórios Medição" href="/MedicoesRelatorios/Index/@Model.DadosProjeto.ProjetoId" class="btn btn-mini"><i class="fa fa-bar-chart"></i></a>
+    </div>
+</div>
+<br />
+<div class="row-fluid">
+    <div class="span3">
+        <div class="editor-label ">
+            @Html.LabelFor(model => model.DadosProjeto.ProjetoContrato)
+        </div>
+        <div class="editor-field ">
+            @Model.DadosProjeto.ProjetoContrato
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DadosProjeto.ProjetoStatusNome)
+        </div>
+        <div class="editor-field">
+            @Model.DadosProjeto.ProjetoStatusNome
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DadosProjeto.ProjetoDtIni)
+        </div>
+        <div class="editor-field">
+            @Model.DadosProjeto.ProjetoDtIni.ToShortDateString()
+        </div>
+    </div>
+
+    <div class="span3">
+        <div class="editor-label ">
+            @Html.LabelFor(model => model.DadosProjeto.ProjetoDtFim)
+        </div>
+        <div class="editor-field ">
+            @Model.DadosProjeto.ProjetoDtFim.ToShortDateString()
+        </div>
+    </div>
+</div>
+
+
+<br />
+@Html.ActionLink("+ Criar", "Criar", new { id = 0, @ProjetoId = Model.DadosProjeto.ProjetoId }, new { @class = "btn btn-primary" })
+
+<p class="pull-right">
+<i class="fa fa-wrench"></i> - Instalação / <i class="fa fa-cogs"></i> - Cravação</p>
+<table class="table table-bordered table-striped table-condensed table-highlight">
+    <thead>
+        <tr>
+            <th>#
+            </th>
+            <th></th>
+            <th>Equipamento
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medicao.EquipamentoDtEntrada)
+            </th>
+            <th>Operador
+            </th>
+            <th>Fiscal
+            </th>
+            <th>Engenheiro
+            </th>
+            <th>Criado por
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaMedicoes)
+        {
+            <tr class="@(item.MotivoCancelamentoId != null ? " muted error  " : (item.Assinado?" success ":""))">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contador)
+                </td>
+                <td>
+                    @if (item.Instalacao)
+                    {
+                        <span data-toggle='tooltip' class='tip-top pull-top' data-placement='top' title='Taxa de Instalação'><i class="fa fa-wrench"></i></span>    
+                    }
+                    else
+                    {
+                        <span data-toggle='tooltip' class='tip-top pull-top' data-placement='top' title='Cravação'><i class="fa fa-cogs"></i></span>    
+                        
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EquipamentoNome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EquipamentoDtEntrada)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OperadorNome)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.FiscalNome)
+                    <p><small>@item.FiscalDtAssinatura</small></p>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EngenheiroNome)
+                    <p><small>@item.EngenheiroDtAssinatura</small></p>
+                </td>
+                <td>
+                    @item.CriadoPor
+                    <p><small>@item.RegDtInicio</small></p>
+
+                </td>
+                <td>
+                    @if (item.MotivoCancelamentoId != null)
+                    {   
+                        <a data-toggle="tooltip" data-placement="top" title="Imprimir" href="~/Medicoes/Imprimir/@item.MedicaoId?ProjetoId=@item.ProjetoId"  class="btn btn-mini"><i class="icon-print"></i></a>
+                        <span data-toggle='tooltip' class='tip-top pull-top' data-placement='top' title='Motivo cancelamento: @item.MotivoCancelamentoObservacoes'><i class="fa fa-exclamation-triangle"></i></span> 
+                    }
+                    else
+                    {
+                        
+                        <a data-toggle="tooltip" data-placement="top" title="@(item.Assinado?"Visualizar":"Alterar")" href="~/Medicoes/Criar/@item.MedicaoId?ProjetoId=@item.ProjetoId" class="btn btn-mini"><i class="fa @(item.Assinado?"fa-eye":"fa-pencil")"></i></a> 
+                        <a data-toggle="tooltip" data-placement="top" title="Imprimir" href="~/Medicoes/Imprimir/@item.MedicaoId?ProjetoId=@item.ProjetoId"  class="btn btn-mini"><i class="icon-print"></i></a> 
+                        <a data-toggle="tooltip" data-placement="top" title="Excluir" href="~/Medicoes/Deletar/@item.MedicaoId?ProjetoId=@item.ProjetoId" class="btn btn-mini"><i class="fa fa-times"></i></a>    
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@{
+    //Controles de paginação
+    int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);   
+}
+@Html.Paginacao(qtdPaginas)

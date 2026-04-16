@@ -1,0 +1,123 @@
+﻿@model Models.PessoaTermoAceite
+
+@{
+    ViewBag.Title = "Termos";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+    // Get host name
+    String strHostName = Dns.GetHostName();
+
+    // Find host by name
+    var iphostentry = Dns.GetHostByName(strHostName);
+
+}
+
+
+<style>
+
+html {
+    min-height: 100%;
+    background: #eaeaea url('@VirtualPathUtility.ToAbsolute("~/Assets/img/bg/0Interna.jpg")') 100% 100% no-repeat;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+    </style>
+
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+
+
+
+                <h3>Termos de Aceite</h3>
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+
+                    <h1 class="text-center">
+                        <img src="@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/1.png")" /></h1>
+
+
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.Hidden("EmpresaRoute", (string)ViewBag.EmpresaRoute);
+                        
+                    
+                        
+                        
+                        <div class="form-group">
+                            <label>Informe o número do seu celular com o DDD</label>
+                            <div class="input-group m-b">
+                                <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                                @Html.TextBoxFor(model => model.PessoaTermoAceiteCelular, null, new { @class = "form-control span12 phone", @inputmode = "numeric", placeholder = "Seu celular", required = "preencha o campo", autofocus = "" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Informe o Código que você recebeu no SMS</label>
+                            <div class="input-group m-b">
+                                <span class="input-group-addon"><i class="fa fa-keyboard-o"></i></span>
+                                @Html.TextBoxFor(model => model.PessoaTermoAceiteCode, new { @class = "form-control span12", placeholder = "Código", required = "", autofocus = "" })
+                            </div>
+
+                        </div>
+                            
+                        
+                        <input type="submit" class="btn btn-primary btn-large" value="Verificar" data-loading-text="Aguarde..." />
+                        
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        @*<div class="row">
+    <div class="span12">
+
+        <ul>
+            @foreach (var item in iphostentry.AddressList)
+            {
+                <li>@item.MapToIPv4()</li>
+            }
+        </ul>
+        
+    </div>
+</div>*@
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            @if (_copyright == "" || _copyright == "true")
+            {
+                <span><strong>Fortuna</strong> - Gestor do seu negócio<br />
+                    2017 Copyright |  E-Bee</span>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/mask/js")
+    <script>
+        
+
+        $(".phone").mask(maskBehavior, options);
+
+        $("#PessoaTermoAceiteCelular").focus();
+    </script>
+
+}

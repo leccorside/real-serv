@@ -1,0 +1,145 @@
+﻿@model Models.Cliente
+
+
+@{
+    ViewBag.Title = "Usuários";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> <a href="~/UsuariosEmpresas/Index/@Model.DadosCliente.UsuarioEmpresaId">@Model.DadosCliente.UsuarioEmpresaNomeFantasia</a></li>
+}
+
+
+<ul class="nav nav-tabs">
+
+    @if (Model.DadosCliente.UsuarioEmpresaId > 0)
+    {
+        <li><a href="~/UsuariosEmpresas/Criar/@Model.DadosCliente.UsuarioEmpresaId">Dados</a></li>
+    }
+    <li class="active"><a href="#tab1" data-toggle="tab">Usuários</a></li>
+</ul>
+
+
+<legend>Informações da Empresa</legend>
+
+<div class="row-fluid">
+    <div class="span6">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DadosCliente.UsuarioEmpresaDocumento)
+        </div>
+        <div class="editor-field">
+            @Model.DadosCliente.UsuarioEmpresaDocumento
+        </div>
+    </div>
+
+    <div class="span6">
+        <div class="editor-label ">
+            @Html.LabelFor(model => model.DadosCliente.UsuarioEmpresaRazaoSocial)
+        </div>
+        <div class="editor-field ">
+            @Model.DadosCliente.UsuarioEmpresaRazaoSocial
+        </div>
+    </div>
+</div>
+<br />
+<div class="row-fluid">
+    <div class="span12">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DadosCliente.UsuarioEmpresaNomeFantasia)
+        </div>
+        <div class="editor-field">
+            @Model.DadosCliente.UsuarioEmpresaNomeFantasia
+        </div>
+    </div>
+</div>
+<br />
+<legend>Úsuários</legend>
+
+@Html.ActionLink("+ Criar", "Criar", new { id = 0, @UsuarioEmpresaId = ViewContext.RouteData.Values["id"] }, new { @class = "btn btn-primary" })
+
+
+<p class="pull-right"><i class="fa fa-user-md "></i>- Engenheiro / <i class="fa fa-street-view"></i>- Fiscal</p>
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Função</th>
+            <th><span data-toggle='tooltip' class='tip-top pull-top' data-placement='top' title='Engenheiro' data-original-title='Engenheiro'><i class="fa fa-user-md fa-lg"></i></span></th>
+            <th><span data-toggle='tooltip' class='tip-top pull-top' data-placement='top' title='Fiscal' data-original-title='Fiscal'><i class="fa fa-street-view fa-lg"></i></span></th>
+
+
+            <th nowrap>Data de início
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.ListaUsuarios.Count() == 0)
+        {
+            <tr class="info">
+                <td colspan="20"><small class="muted">Nenhum registro localizado</small></td>
+            </tr>
+        }
+        @foreach (var item in Model.ListaUsuarios)
+        {
+            <tr>
+                <td>@item.UsuarioId</td>
+                <td width="100%">
+                    @if (item.EmailConfirmed)
+                    {
+                        <span data-toggle='tooltip' class='tip-top pull-right' data-placement='left' title='Primeiro acesso realizado' data-original-title='Primeiro acesso realizado'><i class='icon-flag'></i></span>
+                    }
+                    @item.UsuarioNome<p>
+                        <small>@item.UsuarioEmail</small><br />
+                        <small>@Bll.Utils.Formatacoes.FormataTelefone(item.UsuarioDDD, item.UsuarioTelefone)</small><br />
+                        <small>@Bll.Utils.Formatacoes.FormataTelefone(item.UsuarioCttDDD, item.UsuarioCttTelefone)</small>
+                    </p>
+                    @if (item.UsuarioEmail!=null && item.UsuarioEmail!="")
+                    {
+                        <a href="~/Clientes/PrimeiroAcesso/@item.UsuarioId?uid=@Model.DadosCliente.UsuarioEmpresaId" class=""  onclick="return confirm('@(!item.FirstAccess ? "Deseja enviar e-mail de primeiro acesso?" : "Deseja reenviar o e-mail de primeiro acesso?")')" ><i class="@(!item.FirstAccess ? "icon-star-empty" : "icon-star")"></i>@(!item.FirstAccess ? "Enviar e-mail de primeiro acesso" : "Reenviar e-mail de acesso")</a>
+                    }
+                </td>
+                <td nowrap>
+                    <small>@Html.DisplayFor(modelItem => item.PerfilNome)</small>
+                </td>
+                <td><i class="@(item.UsuarioEngenheiro ? "icon-ok" : "")"></i></td>
+                <td><i class="@(item.UsuarioFiscal ? "icon-ok" : "")"></i></td>
+
+                <td nowrap>
+                    <small>@Html.DisplayFor(modelItem => item.RegDtInicio)</small>
+                </td>
+                <td nowrap>
+                    <a href="~/Clientes/Criar/@item.UsuarioId" class="btn btn-mini"><i class="fa fa-pencil"></i>Alterar</a> |
+                    @if (item.PossuiAcesso)
+                    {
+                        <a href="~/Clientes/RedefinirSenha/@item.UsuarioId" class="btn btn-mini"><i class="icon-lock"></i>Redefinir Senha</a> @:|
+                    }
+                    else
+                    {
+                        <a href="#" class="btn btn-mini disabled"><i class="fa fa-ban"></i>Sem Acesso</a> @:|
+	                }
+
+                    <a href="~/Clientes/Deletar/@item.UsuarioId" class="btn btn-mini"><i class="fa fa-times"></i>Excluir</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+
+
+
+</table>
+
+
+
+
+@{
+    //Controles de paginação
+    int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);   
+}
+@Html.Paginacao(qtdPaginas)

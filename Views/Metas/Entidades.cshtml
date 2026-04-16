@@ -1,0 +1,78 @@
+﻿@model Models.EntidadeNomeView
+
+@{
+    ViewBag.Title = "Metas";
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+   
+    
+   
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">                
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+            
+                            <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th width="100%">
+                        Selecione a entidade para configuração de metas
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ListEntidadeNome)
+                {
+                    <tr>
+                        <td><a href="@Url.Content("~/Metas/Index/0/" + item.EntidadeNomenclatura+"/?UsuarioId="+Model.UsuarioId+"&Modal="+Model.Modal+"")" class="btn btn-outline btn-primary btn-xs"><i class="fa fa-cogs"></i></a></td>
+                        <td>
+                            <a href="@Url.Content("~/Metas/Index/0/" + item.EntidadeNomenclatura+"/?UsuarioId="+Model.UsuarioId+"&Modal="+Model.Modal+"")">
+                            <h5>@item.EntidadeNomenclatura</h5>
+                            <small>@item.EntidadeDescricao</small>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+
+
+        </table>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

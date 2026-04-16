@@ -1,0 +1,98 @@
+﻿@model Models.MedProduto
+
+@{
+    ViewBag.Title = "Excluíndo Produtos e Exames";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    
+ <li class="active">@Html.ActionLink("Produtos e Exames", "Index", new { id = 0 })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja apagar esse registro?
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    <div class="row">
+
+                        <div class="col-lg-2">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.MedProdutoCod)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.MedProdutoCod)
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.MedProdutoCodLegado)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.MedProdutoCodLegado)
+                            </div>
+                        </div>
+
+                        <div class="col-lg-8">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.MedProdutoNome)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.MedProdutoNome)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.MedProdutoDescricao)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.MedProdutoDescricao)
+                            </div>
+
+                        </div>
+                        
+                    </div>
+
+
+
+
+                    <!-- ./conteudo aqui -->
+                </div>
+                <div class="panel-footer">
+
+                    @using (Html.BeginForm())
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.HiddenFor(model => model.MedProdutoId)
+                                    <input type="submit" value="Apagar" class="btn btn-danger" />
+                                
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary" })
+                                
+                            </div>
+                        </div>    
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+

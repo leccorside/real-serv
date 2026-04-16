@@ -1,0 +1,255 @@
+﻿@model PetaPoco.Page<Models.TrjReqPag>
+
+@{
+    ViewBag.Title = "Requisições de Pagamentos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "Trj/Index";
+
+    //ViewBag.SearchAction = strUrl;
+    //ViewBag.SearchPlaceHolder = "Pesquisar ";
+    //ViewBag.SearchMethod = "get";
+
+    var _Trj_Criar = BLL.Usuarios.VerificaAcesso("Criar", "Trj");
+
+    string outrosCampos = Convert.ToString(ViewBag.Campos);
+    if (outrosCampos == null)
+    {
+        outrosCampos = "";
+    }
+}
+
+
+
+
+@section Breadcrumb{
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @if (_Trj_Criar)
+                                {
+                                    @Html.ActionLink("+ Criar", "Criar", new { id = 0, Modal = false }, new { @class = "btn btn-primary" })
+                                }
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="btn-group pull-right">
+                                    
+                                    @using (Html.BeginForm("Export", "Trj", FormMethod.Post, new { @class = "" }))
+                                    {
+                                        <input type="hidden" name="pesquisar" value="@Request["pesquisar"]">
+                                        <a href="@Url.Content("~/Trj/Downloads/")" class="btn btn-outline btn-primary btn-sm"><i class="fa fa-upload"></i> Importar</a>
+                                        <button class="btn btn-outline btn-primary btn-sm" data-toggle="tooltip" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i> Exportar</button>   
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+
+                        @using (Html.BeginForm("Index", "Trj", FormMethod.Get, new { @class = "  " }))
+                        {
+                            <input type="hidden" name="realizaconsulta" value="true" />
+                            
+                            
+                            <div class="row">
+                                
+
+                                <div class="form-group col-lg-3">
+                                    <label>Precatório</label>
+                                    <input type="text" name="pesquisar" id="pesquisar" title="Pesquisar" class="form-control select-all" placeholder="Precatório..." value="@Request["pesquisar"]">
+                                </div>
+
+                                
+                                <div class="form-group col-lg-3">
+                                    <label>Fonte</label>@Html.DropDownListTrjFonte("Fonte", Request["Fonte"], true, " form-control ")
+                                </div>
+
+
+                                   <div class="form-group col-lg-6">
+                                    <label>&nbsp;</label>
+                                    <div class="row">
+                                        <div class="col-md-12" style="">
+                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                <button class="btn btn-outline btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                                                <button class="btn btn-outline btn-danger" type="button" onclick="parent.location='@strUrl'"><i class="fa fa-eraser"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+                                    <th>Número</th>
+                                    <th>Tipo</th>
+                                    <th>Procedimento</th>
+                                    <th>Data prococolo TRF</th>
+                                    <th>Valor solicitado</th>
+                                    <th>Requerente</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="@Url.Content("~/Trj/View/0/?Protocolo=" + item.TrjReqPagNumero + "")" class="fancybox fancybox.iframe "><i class="fa fa-search"></i></a>@item.TrjReqPagNumero
+
+                                            @if (item.Fonte == "TRF4")
+                                            {
+                                                if (item.TrjReqPagLink != null && item.TrjReqPagLink != "")
+                                                {
+                                                <br />
+                                                <a href="@Url.Content("~/Content/Uploads/Precatorios/" + BLL.Utils.Formatacoes.ApenasNumeros(item.TrjReqPagNumero) + ".pdf")" class="fancybox fancybox.iframe "><i class="fa  fa-file-pdf-o"></i><small>Precatório</small></a>        
+                                                }
+                                            }
+
+                                            @if (item.TrjReqPagHtml != null && item.TrjReqPagHtml != "")
+                                            {
+                                                <br />
+                                                <a href="@Url.Content("~/Trj/HtmlCode/0/?Protocolo=" + item.TrjReqPagNumero + "")" class="fancybox fancybox.iframe "><i class="fa fa-code" aria-hidden="true"></i><small>Trecho da página</small></a>
+                                            }
+
+                                        </td>
+                                        <td><span class="badge @item.Fonte">@item.Fonte</span></td>
+                                        <td>@item.TrjReqPagProcedimento</td>
+                                        <td>@item.TrjReqPagDtProtocolo</td>
+                                        <td>
+                                            @if (item.Fonte == "TRF4" && item.TrjReqPagValorSolicitado == 0)
+                                            {
+                                                <small>Valor será captura na geração da proposta</small>
+                                            }
+                                            else
+                                            {
+                                                <span>R$ @string.Format("{0:N2}", item.TrjReqPagValorSolicitado)</span>    
+                                            }
+
+
+                                        </td>
+                                        <td>@item.TrjReqPagRequerentes</td>
+                                        <td>
+                                            @switch (item.RegStatus)
+                                            {
+                                                case "A":
+                                                @:<span class="label label-success">Ok</span>
+                                                    break;
+                                                case "P":
+                                                @:<span class="label label-warning">Próxima requisição à consultar</span>
+                                                    break;
+                                                case "X":
+                                                @:<span class="label label-warning">Aguardando reprocessamento</span>        
+                                                    break;
+                                                case "R":
+                                                @:<span class="label label-danger">ERRO</span> <small>@item.TrjReqPagErro</small>    
+                                                break;
+                                                default:
+                                                <span class="label label-warning">Aguardando processamento</span>        
+                                                break;
+                                            }
+                                        </td>
+
+                                        <td><a href="@Url.Content("~/Trj/Criar/" + item.TrjReqPagId)" class="btn btn-outline btn-primary btn-xs" >Editar</a></td>
+                                    </tr>    
+                                    
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages), outrosCampos)
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Styles{
+
+    @Styles.Render("~/bundles/fancybox/css")
+
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+
+    <script type="text/javascript">
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+    </script>
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,258 @@
+﻿@model Models.MedGuiaView
+
+@{
+    ViewBag.Title = "Selecionar Guias para Repasse";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Repasses", "Index", "Repasses")</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+                    @using (Html.BeginForm("Preparar", "Repasses", FormMethod.Post, new { @class = "form-horizontal", @id="form_repasse" }))
+                    {
+                        @Html.ValidationSummary(true)
+                        @Html.HiddenFor(m => m.FilialId)
+                        @Html.HiddenFor(m => m.FilialRepasse)
+                        
+                        <div class="table-responsive">
+                            <table cellpadding="1" cellspacing="1" class="table dataTable" id="table_produtos">
+                                <thead>
+                                    <tr style="font-size: 12px;">
+                                        <th>
+                                            <div class="checkbox"><label>
+                                            <input type="checkbox" id="checkAll" rel="0" /></label></div></th>
+                                        <th>Guia n<sup>o</sup></th>
+                                        <th>Data</th>
+                                        <th>Paciente</th>
+                                        <th>Médico</th>
+                                        <th>Convênio/Plano</th>
+                                        <th>Lucro</th>
+                                        <th>Repasse</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.ListMedGuias.Count(); i++)
+                                    {
+                                        
+                                        <tr>
+                                            <td>
+                                                @Html.HiddenFor(m => Model.ListMedGuias[i].MedGuiaId)
+                                                @Html.HiddenFor(m => Model.ListMedGuias[i].TotalRepasse)
+                                                <div class="checkbox">
+                                                    <label>@Html.CheckBoxFor(m => Model.ListMedGuias[i].checado, new { @rel = Model.ListMedGuias[i].TotalRepasse })</label></div>
+                                            </td>
+                                            <td>@Model.ListMedGuias[i].MedGuiaId</td>
+                                            <td>@Model.ListMedGuias[i].MedGuiaData.ToShortDateString()</td>
+                                            <td>@Model.ListMedGuias[i].PacienteNome</td>
+                                            <td>@Model.ListMedGuias[i].MedicoNome <small>CRM: @Model.ListMedGuias[i].MedicoCRM</small></td>
+                                            <td>@Model.ListMedGuias[i].ConvenioNome / @Model.ListMedGuias[i].ConvenioPlanoNome</td>
+                                            <td nowrap class="text-right">R$  @string.Format("{0:F2}", Model.ListMedGuias[i].TotalLucroLiquido)</td>
+                                            <td nowrap class="text-right">R$  @string.Format("{0:F2}", Model.ListMedGuias[i].TotalRepasse)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                
+                            </table>
+                            
+
+                        </div>
+
+                        <div class="row">
+                                <div class="col-lg-6"><h4 id="QtdRegistros">0 registros selecionados</h4></div>
+                                <div class="col-lg-6"><h4 class="pull-right" id="VlrTotal">R$ 0,00</h4></div>
+                            </div>
+                        <br />
+                        
+                        <div class="row">
+                            
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Data do Repasse</label>
+                                @Html.TextBox("Repasse.RepasseData", String.Format("{0:dd/MM/yyyy}", Model.Repasse.RepasseData), new { @class = "datepicker form-control", value = DateTime.Now })
+                                @Html.ValidationMessageFor(model => model.Repasse.RepasseData)
+                            </div>
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Total Real</label>
+                                @Html.TextBox("Repasse.RepasseTotalReal", string.Format("{0:F2}", Model.Repasse.RepasseTotalReal), new { @class = "moeda form-control" })
+                            </div>
+
+                          
+                        </div>
+                        <br />
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @*<input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />*@
+
+                                <input type="button" value="Salvar" onclick="Enviar()" class="btn btn-primary btn-large" tabindex="11" />
+
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+                        
+                    }
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles{
+    <style>
+        div#table_produtos_filter {
+    text-align: right;
+}
+    </style>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+
+    @Scripts.Render("~/bundles/maxlenght/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+
+
+
+    <script>
+        $("input[type=checkbox]").change(function () {
+            recalculate();
+        });
+
+
+        function recalculate() {
+            var sum = 0;
+            var qtd = 0;
+            $("input[type=checkbox]:checked").each(function () {
+                sum += parseFloat($(this).attr("rel"));
+                qtd++;
+            });
+
+            var checado = $("#checkAll").is(':checked');
+            if (checado) {
+                qtd--;
+            }
+
+            if (sum>40000) {
+                window.alert("Atenção, o total do repasse supera R$ 40 mil");
+            }
+
+            $("#VlrTotal").text("R$ " + mascaraValor(sum.toFixed(2)));
+            $("#QtdRegistros").text(qtd + " registros selecionados");
+            
+        }
+
+
+        $("#checkAll").click(function () {
+            $('input:checkbox').not(this).prop('checked', this.checked);
+        });
+
+
+        function mascaraValor(valor) {
+            //valor = valor.toString().replace(/\D/g, "");
+            //valor = valor.toString().replace(/(\d)(\d{8})$/, "$1.$2");
+            //valor = valor.toString().replace(/(\d)(\d{5})$/, "$1.$2");
+            //valor = valor.toString().replace(/(\d)(\d{2})$/, "$1,$2");
+            return valor
+        }
+
+
+        function Enviar() {
+            //limpa os filtros
+            var table = $('.dataTable').DataTable();
+            table
+             .search('')
+             .columns().search('')
+             .draw();
+
+
+            $("#form_repasse").submit();
+        }
+
+    </script>
+
+
+
+    <script>
+
+        $(function () {
+
+            // Initialize Example 2
+            $('.dataTable').dataTable({
+                "pageLength": 100,
+                "paging":   false,
+                "ordering": true,
+                "info":     false,
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "_MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar ",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+
+
+
+
+        });
+
+
+
+    </script>
+
+    <script>
+
+        $('.maxlen').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+
+        $("#Repasse_RepasseData").mask("99/99/9999");
+
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+
+    </script>
+}
+
+
+
+
+
+

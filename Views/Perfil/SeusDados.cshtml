@@ -1,0 +1,93 @@
+﻿@model Models.Usuario
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.UsuarioId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Dados";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";   
+}
+
+
+
+
+
+@section Breadcrumb{
+      <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+<li class="active">@Html.ActionLink("Seu Perfil", "Perfil","Principal")</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("SeusDados", "Perfil", FormMethod.Post))
+        {
+            @Html.ValidationSummary(true)
+
+            if (Model.UsuarioId > 0)
+            {
+            @Html.Hidden("UsuarioId", Model.UsuarioId);
+                                                          acao = "Alterar";
+            }
+                      
+            
+            <div class="row">
+                
+            <div class="col-lg-6">
+                <label>Seu nome:</label>
+                
+                    @Html.TextBoxFor(model => model.UsuarioNome, new {@class="form-control"})
+                    
+                
+            </div>
+        
+    
+            <div class="col-lg-6">
+                <label>Seu e-mail:</label>
+                
+                    @Html.TextBoxFor(model => model.UsuarioEmail, new {@class="form-control"})
+                    
+                
+            </div>
+        
+      
+
+            </div>
+            
+                        
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large pull-right" tabindex="11" />
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

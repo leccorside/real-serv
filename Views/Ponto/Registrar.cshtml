@@ -1,0 +1,84 @@
+﻿@model Models.RegistroPonto
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    var agora = DateTime.Now;
+
+    
+}
+
+@section Styles{
+
+}
+
+<br />
+<br />
+<br />
+@using (Html.BeginForm("Registrar", "Ponto", FormMethod.Post, new { @autocomplete = "off" }))
+{
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(m => m.RE)
+    <div class="row-fluid">
+        <div class="span2"></div>
+        <div class="span8">
+            <h2 class="pull-right"><i class="fa fa-clock-o"></i><span id="clock"></span></h2>
+            <h2 class="pull-left">Registro de Ponto</h2>
+
+        </div>
+        <div class="span2"></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span2"></div>
+        <div class="span8">
+
+
+            <label>Seu RE</label>
+            @Model.RE<br />
+
+            <label>Selecione o tipo de operação que você está registrando</label>
+                
+
+            @foreach (var item in Model.ListRegistroPontoUpdate)
+            {
+                <div class="radio">
+                    <label><input type="radio" name="TipoRegistro" id="@("TipoRegistro" + item.campo)" value="@item.campo" /> @item.descricao</label>
+                </div>
+            }
+
+            <label>Sua senha</label>
+            @Html.PasswordFor(m => m.ContraSenha, new { @class = "span12", @placeholder = "Sua senha" })<br />
+
+            <label>Observações</label>
+            @Html.TextBoxFor(m => m.Observacao, new { @class = "span12", @placeholder = "Você têm alguma observação?" })<br />
+
+            <button type="submit" class="btn btn-large btn-primary" onclick="return confirm('Confirma o registro de ponto?')">Registrar Ponto</button>
+            <a href="~/Ponto/Index" class="btn btn-large pull-right">Voltar</a>
+        </div>
+        <div class="span2"></div>
+    </div>
+}
+@section scripts{
+    <script src="~/Assets/js/jquery.js"></script>
+
+
+
+    <script>
+        $(function () {
+
+            function updateTime() {
+                $.getJSON("@Url.Content("~/Ponto/DataHora")", function (result) {
+                    $("#clock").text(result);
+                });
+            }
+
+
+            setInterval(function () {
+                updateTime();
+            }, 30000);
+
+            updateTime();
+
+        });
+    </script>
+}

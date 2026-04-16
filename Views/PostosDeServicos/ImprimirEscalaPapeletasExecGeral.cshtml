@@ -1,0 +1,48 @@
+﻿@model PetaPoco.Page<Models.PostoDeServico>
+
+@{
+    ViewBag.Title = "ImprimirEscalaPapeletasExecGeral";
+    Layout = "~/Views/Shared/_WindowPrint.cshtml";
+    
+    var obj = new Models.EscalaRegistroView();
+    var bll = new BLL.EscalasRegistros();
+
+    
+    
+        
+   
+    
+}
+
+@section Styles{
+
+    <style>
+        .page-break
+        {
+            display: block;
+            page-break-before: always;
+        }
+
+        table.grade, table.grade th, table.grade td
+        {
+            border: 1px solid black;
+            padding: 1px;
+        }
+
+        table.grade
+        {
+            /*font-size:11px;*/
+        }
+
+        .td_quadro
+        {
+            border:1px solid black;
+        }
+    </style>
+
+}
+@foreach (var item in Model.Items.Where(x => x.EscalaId > 0))
+{
+    obj = bll.CarregarDados(item.EscalaId, null);
+    @Html.Partial("~/Views/PostosDeServicos/_ImprimirEscalaPapeletaExec.cshtml", obj)
+}

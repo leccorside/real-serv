@@ -1,0 +1,144 @@
+﻿@model PetaPoco.Page<Models.PRCProposta>
+
+
+@{
+    
+    var _visualizarTodas = BLL.Usuarios.VerificaAcesso("ViewAll", "PRCPropostas");
+    var _PrcPropsotas_Deletar = BLL.Usuarios.VerificaAcesso("Deletar", "PRCPropostas");
+    var _PrcPropsotas_Criar = BLL.Usuarios.VerificaAcesso("Criar", "PRCPropostas");
+    var _PrcPropsotas_CriarPorId = BLL.Usuarios.VerificaAcesso("CriarPorId", "PRCPropostas");
+    var _regraVisualizaOutras = true;
+    
+}
+
+<table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+    <thead>
+        <tr style="font-size: 12px;">
+            <th>@Html.CampoOrdenacao("Proposta", "PRCPropostas.PRCPropostaId")</th>
+            <th>@Html.CampoOrdenacao("Fonte", "PRCPropostas.Fonte")</th>
+            <th>@Html.CampoOrdenacao("Precatório", "PRCPropostas.PRCPropostaPrecatorio")</th>
+            <th>@Html.CampoOrdenacao("Triagem", "PRCPropostas.Triagem")</th>
+            <th>@Html.CampoOrdenacao("Retorno", "PRCPropostas.TriagemRetorno")</th>
+            <th>@Html.CampoOrdenacao("Status", "EntidadesStatus.StatusNome")</th>
+            <th>@Html.CampoOrdenacao("Requerente", "Requerentes.Nome")</th>
+            <th>@Html.CampoOrdenacao("Valor Bruto", "PRCPropostas.PRCPropostaValorBruto")</th>
+            <th>@Html.CampoOrdenacao("Valor Proposta", "PRCPropostas.PRCPropostaFinalValor")</th>
+            <th nowrap>@Html.CampoOrdenacao("Última Ação", "PRCPropostas.EntidadeStatusDtAtualiza")</th>
+            <th nowrap><i class="fa fa-list"></i>@Html.CampoOrdenacao("Próxima Ação", "PRCPropostas.EntidadeStatusHistoricoData")</th>
+
+            <th></th>
+
+
+
+            @if (_PrcPropsotas_Deletar)
+            {
+                <th></th>    
+            }
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.Items)
+        {
+
+            var tr_status = "";
+
+
+
+            var icon = "";
+            var tempoPassado = "";
+            if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+            {
+                tr_status = "warning";
+                icon = "fa fa-bell-o";
+                tempoPassado = "<i class='fa fa-clock-o'></i> " + item.StatusTempoPassado + " hrs";
+            }
+            
+                                    
+            <tr class=" @tr_status">
+                <td><i class="@icon"></i>@item.PRCPropostaId </td>
+                <td><span class="badge @item.Fonte">@item.Fonte</span></td>
+                <td>@item.PRCPropostaPrecatorio
+                    @if (_visualizarTodas == false && _regraVisualizaOutras == true && item.NegociadorId != BLL.Usuarios.GetUsuarioId())
+                    {
+                        <br />
+                        <small>Negociador:<strong></small><br />
+                        <h5>@item.NegociadorNome</h5>
+                    }
+
+                </td>
+                <td>@if (item.Triagem)
+                    {
+                    <span class="label label-warning">Em triagem</span>
+                    }</td>
+                <td>@if (item.TriagemRetorno)
+                    {
+                    <span class="label label-success">Retorno Triagem</span>
+                    }</td>
+                <td>@item.StatusNome @Html.Raw(tempoPassado)
+
+                    @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                    {
+                        List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                        foreach (var badge in badges)
+                        {
+                        <span class="label label-info">@badge</span>
+                        }
+                    }
+
+
+                </td>
+                <td>@item.RequerenteNome</td>
+                <td>R$ @string.Format("{0:N2}", item.PRCPropostaValorBruto)</td>
+                <td>R$ @string.Format("{0:N2}", item.PRCPropostaFinalValor)</td>
+
+                <td>
+                    @if (item.EntidadeStatusDtAtualiza != null)
+                    {
+                        <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusDtAtualiza)</span>
+                    }
+                </td>
+                <td>
+                    @if (item.EntidadeStatusHistoricoData != null)
+                    {
+                        <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusHistoricoData)</span>
+                    }
+                </td>
+
+                @if (!item.Triagem || _visualizarTodas)
+                {
+
+
+                    if (_visualizarTodas == false && _regraVisualizaOutras == true && item.NegociadorId != BLL.Usuarios.GetUsuarioId())
+                    {
+                    <td></td>
+                    }
+                    else
+                    {
+                    <td><a href="@Url.Content("~/PRCPropostas/Editar/" + item.PRCPropostaId + "/" + item.PRCPropostaGUID)" class="btn btn-outline btn-primary btn-xs" >Editar</a></td>    
+                        if (_PrcPropsotas_Deletar)
+                        {
+                    <td><a href="@Url.Content("~/PRCPropostas/Deletar/" + item.PRCPropostaId + "/" + item.PRCPropostaGUID)" class="btn btn-outline btn-danger btn-xs" >Excluir</a></td>        
+                        }
+                    }
+
+
+
+
+                }
+                else
+                {
+                    <td colspan="2"></td>
+                }
+
+            </tr>    
+                                  
+
+        }
+
+    </tbody>
+
+
+
+</table>

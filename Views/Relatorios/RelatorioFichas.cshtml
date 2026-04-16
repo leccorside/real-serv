@@ -1,0 +1,59 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório Fichas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Relatórios", "Relatorios", "Principal")</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+        <br /><br />
+        <div class="row-fluid">
+            <div class="span3">
+                <label>De</label>
+                <input type="text" name="de" title="Data de" class="datepickerDe input-small tip-top" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+            </div>
+            <div class="span3">
+                <label>Até</label>
+                <input type="text" name="ate" title="Data até" class="datepickerAte input-small tip-top" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+            </div>
+        </div>
+
+        
+      
+
+
+
+
+
+
+        <div class="form-actions">
+            
+            <input type="submit" value="Exportar"class="btn btn-primary  btn-large"  >
+
+        </div>
+
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Relatorios", "Principal")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

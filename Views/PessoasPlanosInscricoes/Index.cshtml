@@ -1,0 +1,347 @@
+﻿@model PetaPoco.Page<Models.PessoaPlanoInscricao>
+
+@{
+    ViewBag.Title = "Inscrições";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var _PermiteExport = BLL.Usuarios.VerificaAcesso("Export", "PessoasPlanosInscricoes");
+    var _PermiteCriar = BLL.Usuarios.VerificaAcesso("Criar", "PessoasPlanosInscricoes");
+    var hrefAux = "#";
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "PessoasPlanosInscricoes/Index";
+
+    var bllEntidadesStatus = new BLL.EntidadesStatus();
+    var listaStatus = bllEntidadesStatus.Listar("PessoasPlanosInscricoes", 0);
+
+    var statusNome = Request["StatusNome"];
+
+    var PessoaPlanoGrupoTipoId = Request["PessoaPlanoGrupoTipoId"] as string ?? "0";
+    var PessoaPlanoGrupoId = Request["PessoaPlanoGrupoId"] as string ?? "0";
+
+
+    var arrayId = Model.Items.Select(p => p.PessoaPlanoInscricaoId).ToArray();
+
+    var ids = string.Join(",", arrayId);
+    string outrosCampos = Convert.ToString(ViewBag.Campos);
+    if (outrosCampos == null)
+    {
+        outrosCampos = "";
+    }
+
+
+}
+
+
+
+
+@section Breadcrumb{
+
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+
+                        @using (Html.BeginForm("Index", "PessoasPlanosInscricoes", FormMethod.Get, new { @class = "  " }))
+                        {
+                            <div class="row">
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <label>Pesquisar</label>
+                                    <input type="text" name="pesquisar" id="pesquisar" title="Pesquisar" class="form-control" placeholder="Pesquisar..." value="@Request["pesquisar"]">
+                                </div>
+
+
+
+
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <label>Tipo</label>
+                                    @Html.DropDownListPlanoGrupoTipo("PessoaPlanoGrupoTipoId", Request["PessoaPlanoGrupoTipoId"], true, " form-control ")
+                                </div>
+
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <label>Plano/Evento</label>
+                                    <select data-placeholder="Selecione ..." class="form-control chosen-select " data-val="true" id="PessoaPlanoGrupoId" name="PessoaPlanoGrupoId"></select>
+                                </div>
+
+
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <label>Status Inscrição</label>@Html.DropDownList("StatusNome", (SelectList)ViewBag.ddlStatusAgrupado, new { @class = "chosen-select form-control " })
+                                </div>
+
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    <label>Status Pagamento</label>@Html.DropDownListStatusPagto("PessoaPlanoInscricaoStatusId", Request["PessoaPlanoInscricaoStatusId"], true, " form-control")
+                                </div>
+
+                                <div class="form-group col-lg-5 col-md-5 col-sm-5">
+                                    <label>Data da Inscrição</label>
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4" style="">
+                                            <input type="text" name="de" id="de" title="Data de" class="datepicker form-control tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4" style="">
+                                            <input type="text" name="ate" id="ate" title="Data até" class="datepicker form-control tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4" style="">
+                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                <button class="btn btn-outline btn-primary" type="submit"><i class="fa fa-search"></i>Pesquisar</button>
+                                                @*<button class="btn btn-outline btn-danger" type="button" onclick="parent.location='@strUrl'"><i class="fa fa-eraser"></i> Limpar</button>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+                        }
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+                    <div class="row">
+
+                        <div class="col-lg-6">
+                            <div class="" style="margin-right: 10px">
+                                @if (Request["StatusNome"] != null && Request["StatusNome"] != "0" && Model.TotalItems > 0)
+                                {
+                                    using (Html.BeginForm("AlterarLote", "PessoasPlanosInscricoes", FormMethod.Post, new { @class = "form-inline ", id = "form_alteralote" }))
+                                    {
+                                        <input type="hidden" name="pesquisar" value="@Request["pesquisar"]">
+                                        <input type="hidden" name="StatusNome" value="@Request["StatusNome"]">
+                                        <input type="hidden" name="de" value="@Request["de"]">
+                                        <input type="hidden" name="ate" value="@Request["ate"]">
+                                        <input type="hidden" name="PessoaPlanoGrupoTipoId" value="@Request["PessoaPlanoGrupoTipoId"]">
+                                        <input type="hidden" name="PessoaPlanoGrupoId" value="@Request["PessoaPlanoGrupoId"]">
+                                        <input type="hidden" name="ids" id="ids" value="@ids" />
+                                        if (_PermiteCriar)
+                                        {
+                                            <label>Alterar registros abaixo para status </label>
+
+                                            <div class="input-group">
+                                                <select class="-select form-control" id="EntidadeStatusId" name="EntidadeStatusId">
+                                                    <option value="0">--Selecione--</option>
+                                                    @foreach (var item in listaStatus)
+                                                    {
+                                                        <option value="@item.EntidadeStatusId">@item.StatusNome</option>
+                                                    }
+                                                </select>
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-outline btn-primary alterar_status">
+                                                        Alterar
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        }
+
+
+                                    }
+                                }
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-6">
+                            <div class="btn-group pull-right">
+                                @using (Html.BeginForm("Export", "PessoasPlanosInscricoes", FormMethod.Post, new { @class = "form-inline " }))
+                                {
+                                    if (_PermiteExport && Model.Items.Count > 0)
+                                    {
+                                        <input type="hidden" name="pesquisar" value="@Request["pesquisar"]">
+                                        <input type="hidden" name="StatusNome" value="@Request["StatusNome"]">
+                                        <input type="hidden" name="de" value="@Request["de"]">
+                                        <input type="hidden" name="ate" value="@Request["ate"]">
+                                        <input type="hidden" name="PessoaPlanoGrupoTipoId" value="@Request["PessoaPlanoGrupoTipoId"]">
+                                        <input type="hidden" name="PessoaPlanoInscricaoStatusId" value="@Request["PessoaPlanoInscricaoStatusId"]">
+                                        <input type="hidden" name="PessoaPlanoGrupoId" value="@Request["PessoaPlanoGrupoId"]">
+                                        <button class="btn btn-outline btn-primary btn-xs" data-toggle="tooltip" value="compacto" name="exportar" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i>Exportar Compacto </button>
+                                        <button class="btn btn-outline btn-primary btn-xs" data-toggle="tooltip" value="completo" name="exportar" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i>Exportar Completo </button>
+                                    }
+                                }
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <span class="f">Total de Registros: @Model.TotalItems - Exibindo nesta página: @Model.Items.Count() </span>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @foreach (var item in Model.Items)
+                            {
+                                if (_PermiteCriar)
+                                {
+                                    hrefAux = Url.Content("~/PessoasPlanosInscricoes/Criar/" + item.PessoaPlanoInscricaoId + "/" + item.PessoaPlanoGUID);
+
+                                    <a class="fancybox_recarrega fancybox.iframe" href="@hrefAux">
+                                        @Html.Partial("~/Views/PessoasPlanosInscricoes/_detalheInscricao.cshtml", item)
+                                    </a>
+
+                                }
+                                else
+                                {
+                                    @Html.Partial("~/Views/PessoasPlanosInscricoes/_detalheInscricao.cshtml", item)
+
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages), outrosCampos)
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Styles{
+
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    <style>
+        .datepicker {
+            font-size: 11px !important;
+        }
+    </style>
+
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+
+    <script type="text/javascript">
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+
+
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+        $(".fancybox_full").fancybox({
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+        $("#de").mask("99/99/9999");
+        $("#ate").mask("99/99/9999");
+
+        //$("#StatusNome").val("@statusNome").trigger('change.select2');
+
+        $(document).ready(function () {
+            $('#StatusNome').val('@Request["StatusNome"]').trigger('change.select2');
+        });
+    </script>
+
+    <script>
+        $('#PessoaPlanoGrupoTipoId').on('change', function () {
+            carregaPlanosGrupos($(this).val(), "");
+        });
+
+
+        function carregaPlanosGrupos(PessoaPlanoGrupoTipoId, PessoaPlanoGrupoId) {
+
+
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetPessoasPlanosGrupos/")", { id: PessoaPlanoGrupoTipoId, EmpresaId: '@BLL.Usuarios.GetEmpresaId()' }, function (result) {
+
+
+
+                data = $.map(result, function (item, a) {
+
+                    var select = (PessoaPlanoGrupoId.toString() == item.PessoaPlanoGrupoId.toString()) ? " selected='selected' " : "";
+                    return "<option value=" + item.PessoaPlanoGrupoId + " " + select + ">" + item.PessoaPlanoGrupoNome + "</option>";
+                });
+                $("#PessoaPlanoGrupoId").empty();
+                $('#PessoaPlanoGrupoId').append($('<option>', {
+                    value: 0,
+                    text: '--Selecione--'
+                }));
+                $("#PessoaPlanoGrupoId").append(data.join(""));
+
+                $("#PessoaPlanoGrupoId").val(PessoaPlanoGrupoId).trigger('chosen:updated');
+                $("#PessoaPlanoGrupoId").val(PessoaPlanoGrupoId).trigger('change.select2');
+
+            });
+        }
+
+        carregaPlanosGrupos('@PessoaPlanoGrupoTipoId', '@PessoaPlanoGrupoId');
+
+
+
+    </script>
+
+    <script>
+        $(".alterar_status").click(function () {
+            swal({ title: "Alterar Status", text: "Deseja realmente alterar status?", type: "warning", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { $("#form_alteralote").submit(); });
+        });
+    </script>
+
+}
+

@@ -1,0 +1,75 @@
+﻿@model Models.MedGuia
+
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+
+    var bllMedGuias = new BLL.MedGuias();
+    
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+    var _MedGuiasHistorico = BLL.Usuarios.VerificaAcesso("Historico", "MedGuias");
+    var _MedGuiasAnexos = BLL.Usuarios.VerificaAcesso("Anexos", "MedGuias");
+
+    var _PodeAlterar = bllMedGuias.PodeAlterar(Model);
+    
+    switch (currentAction.ToLower())
+    {
+        case "produtosexcluirtudo":
+        case "produtosexcluir":
+            currentAction = "produtos";
+            break;
+        default:
+            break;
+    }
+}
+
+
+
+<ul class="nav nav-tabs">
+
+    
+    @if (_MedGuiasCriar)
+    {
+        <li class="@(currentAction == "criar" && _MedGuiasCriar ? " active " : "")">
+            @Html.ActionLink("Dados Gerais", "Criar", new { id = Model.MedGuiaId }, new { @class = "" })
+        </li>    
+    }
+
+    @if (_MedGuiasAnexos)
+    {
+        <li class="@(currentAction == "anexos" && _MedGuiasAnexos ? " active " : "")">@Html.ActionLink("Documentos", "anexos", new { id = Model.MedGuiaId }, new { @class = "" })</li>    
+    }
+
+
+
+    @if (_MedGuiasProdutos)
+    {
+        <li class="@(currentAction == "produtos" && _MedGuiasProdutos ? " active " : "")">@Html.ActionLink("Produtos / Exames", "Produtos", new { id = Model.MedGuiaId }, new { @class = "" })</li>
+    }
+
+
+
+
+    @if (_MedGuiasGuiaNF)
+    {
+        <li class="@(currentAction == "guianf" && _MedGuiasGuiaNF ? " active " : "")">@Html.ActionLink("Valor e NF", "GuiaNF", new { id = Model.MedGuiaId }, new { @class = "" })</li>    
+    }
+
+
+
+    @if (_MedGuiasHistorico)
+    {
+        <li class="@(currentAction == "historico" && _MedGuiasHistorico ? " active " : "")">@Html.ActionLink("Histórico", "historico", new { id = Model.MedGuiaId }, new { @class = "" })</li>    
+    }
+
+
+
+</ul>
+
+

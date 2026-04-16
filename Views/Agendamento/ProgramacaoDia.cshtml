@@ -1,0 +1,483 @@
+﻿@model IEnumerable<Models.Agendamento>
+
+@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Programação de " + String.Format("{0:D}", DataConsulta);
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+@{
+
+    // inicializa variaveis
+
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var pessoas = new BLL.Pessoas();
+    var obJagendamentos = new BLL.Agendamentos();
+    var objPessoas = pessoas.Listar(BLL.Pessoas.ECategoriaPessoa.Funcionario, BLL.Pessoas.EExibirAgenda.Sim).OrderBy(m => m.ExibirAgendaOrdem);
+    var qtdPessoas = objPessoas.Count() + 1;
+    var idx = 0;
+    var divisor = (int)(objPessoas.Count());
+    divisor = (divisor == 0) ? 1 : divisor;
+    var porcentagem = (int)(100 / divisor);
+
+    List<int> listAgendamentoIds = new List<int>();
+    var rowspan = 0;
+    var criaTd = false;
+
+
+    var contadorA = 0;
+    int[] control;
+    control = new int[objPessoas.Count() + 1];
+
+
+    int[] controlRemove;
+    controlRemove = new int[objPessoas.Count() + 1];
+
+    var dtini = DataConsulta;
+    var dtfim = DataConsulta.AddDays(1);
+
+    var listaExcluidos = obJagendamentos.ListarFiltradoPorData((System.DateTime)dtini, (System.DateTime)dtfim, 0, "E");
+    //var novaLista = obJagendamentos.ListarPorData(DataConsulta);
+
+
+    // var anotacoes
+    var bllAgendamentosAnotacoes = new BLL.AgendamentosAnotacoes();
+    var listaAnotacoes = bllAgendamentosAnotacoes.ListarQtd(DataConsulta.ToShortDateString());
+
+    //var listaAgendamentos = obJagendamentos.ListarPorData(DataConsulta);
+
+    //var listaPresencas = obJagendamentos.PresencaListarPorData(DataConsulta);
+    
+}
+
+@section Styles{
+    <link href="~/Assets/plugins/fancybox/jquery.fancybox.css" rel="stylesheet" />
+    <link href="~/Assets/plugins/fancybox/helpers/jquery.fancybox-buttons.css" rel="stylesheet" />
+    <link href="~/Assets/css/custom_programacaodia.css" rel="stylesheet" />
+    
+
+    @if (BLL.Usuarios.GetEmpresaTipoId() == 2)
+    {
+        <style>
+            td.td_marcado, td_marcado
+            {
+                text-align: center;
+                color: #fff !important;
+            }
+        </style>
+        	 
+    }
+
+    @if (objPessoas.Count() > 8)
+    {
+        <style>
+            .table-programacao-dia
+            {
+                font-size: 10px !important;
+            }
+
+            .table-programacao-dia
+            {
+                table-layout: auto;
+            }
+        </style>
+    }
+
+}
+
+
+@section Breadcrumb{
+
+}
+
+<div class="row-fluid">
+
+    <div class="span6">
+
+
+        <span class="presenca-p">Presente</span>
+        <span class="presenca-f">Faltou</span>
+        <span class="presenca-c">Cancelou</span>
+
+
+
+    </div>
+
+
+    <div class="span6 cwell">
+
+        <div class="row-fluid">
+
+            <div class="span1">
+                <div class="span1">
+                    @using (Html.BeginForm("ProgramacaoDia", "Agendamento", FormMethod.Post))
+                    {
+                        <input type="hidden" name="dataDe"  value="@String.Format("{0:dd/MM/yyyy}", DataConsulta.AddDays(-1))" />   
+                        <input id="Submit1" type="submit" class="btn" value="«" />
+                    }
+                </div>
+            </div>
+            <div class="span10">
+                @using (Html.BeginForm("ProgramacaoDia", "Agendamento", FormMethod.Post, new { @class = "form-inline text-center" }))
+                {
+            
+                    
+         
+    
+                    <input type="text" name="dataDe" title="Data para consulta da agenda" class="datepicker input-small input-small" value="@String.Format("{0:dd/MM/yyyy}", DataConsulta)" />
+            
+                    
+                    
+                    <input id="Submit1" type="submit" class="btn btn-primary" value="Atualizar" />
+      
+            
+                }
+            </div>
+            <div class="span1">
+                @using (Html.BeginForm("ProgramacaoDia", "Agendamento", FormMethod.Post))
+                {
+                    <input type="hidden" name="dataDe"  value="@String.Format("{0:dd/MM/yyyy}", DataConsulta.AddDays(+1))" />   
+                    <input id="Submit1" type="submit" class="btn" value="»" />
+                }
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+
+
+@if (objPessoas.Count() == 0)
+{
+    <div class="alert alert-danger" id="alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4>Atenção!</h4>
+        Não há @BLL.Usuarios.GetEntidadeFuncionario() cadastrados na agenda.
+    </div> 
+}
+else
+{
+
+    <div class="row-fluid">
+
+
+        <div class="span12 cwell">
+            <table class="table table-hover table-condensed table-bordered table-programacao-dia">
+                <thead>
+                    <!-- anotacoes -->
+                    <tr>
+                        <td></td>
+                        @foreach (var item in objPessoas)
+                        {
+                            var GuidAnotacao = DataConsulta.ToShortDateString().Replace("/", "-") + "-" + item.PessoaID;
+                            var urlModalAnotacao = "~/Agendamento/Anotacao/" + item.PessoaID + "/" + GuidAnotacao + "/?DataRef=" + DataConsulta.ToShortDateString() + "&lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460";
+                            var qtdAnotacoes = listaAnotacoes.Count(m => m.PessoaID == item.PessoaID);
+                            
+                            <td><a href="@Url.Content(urlModalAnotacao)" class=" ui-lightbox  @(qtdAnotacoes > 0 ? " link_com_anotacao " : " link_sem_anotacao ")">
+                                <img src="~/Assets/img/@(qtdAnotacoes > 0 ? "ico-post-it-3" : "ico-add-post-it-2").png" /></a></td>
+                            
+                            
+                         
+                        }
+                    </tr>
+                    <!-- /. anotacoes -->
+                    <tr>
+
+                        <th width="40px" nowrap>Horários</th>
+                        @foreach (var item in objPessoas)
+                        {
+                            var nomeApresentacao = item.Apelido ?? item.Nome;
+                    
+                            <th class="td_@idx" width="@porcentagem%">
+
+                                <i class="icon-user"></i>@nomeApresentacao
+                            </th>
+                            idx++;
+                            idx = (idx > 5) ? idx = 0 : idx;
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                    @for (int i = 0; i < horarios; i++)
+                    {
+                        idx = 0; // variavel para controlar mudanca de cor
+                        horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+                        var novaDataConsulta = Convert.ToDateTime(DataConsulta.ToShortDateString() + " " + String.Format("{0:t}", horario));
+                        contadorA = 0;
+                
+                
+                        <tr>
+
+                            <td width="40px" nowrap><i class="icon-time"></i>@String.Format("{0:t}", horario)</td>
+
+                            @foreach (var item in objPessoas)
+                            {
+                                contadorA++;
+
+
+
+                                var id = item.PessoaID + "_" + novaDataConsulta.ToString().Replace("/", "").Replace(" ", "").Replace(":", "");
+
+
+                                //define URL de acordo com situacao do agendamento
+                                var url = Url.Action("Criar", "Agendamento", new { origem = "ProgramacaoDia", id = 0, tipo = "", @dataInicio = String.Format("{0:dd/MM/yyyy}", DataConsulta) + " " + String.Format("{0:t}", horario), @pessoaId = item.PessoaID });
+
+
+
+                                <td class="td-edit" onclick="location.href = '@url'" id="@id"></td>               
+                        
+                               
+                          
+
+
+
+
+                                // o IDX controla as mudancas de cores
+                                if (BLL.Usuarios.GetEmpresaTipoId() != 2)
+                                {
+                                    idx++;
+                                    idx = (idx > 5) ? idx = 0 : idx;
+                                }
+
+
+                            }
+                        </tr>
+                        //_tdhorarios++;
+                        //_tdhorarios = (i == horarios) ? _tdhorarios = 0 : _tdhorarios;
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+}
+
+
+<div class="row-fluid">
+    <div class="span12">
+        <span class="presenca-p">Presente</span>
+        <span class="presenca-f">Faltou</span>
+        <span class="presenca-c">Cancelou</span>
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span12 cwell">
+        <strong><i class="fa fa-trash"></i>Agendamentos Excluídos</strong><br />
+        <ul>
+            @if (listaExcluidos.Count() == 0)
+            {
+                <li>Nenhum registro excluído</li>
+            }
+            else
+            {
+                foreach (var item in listaExcluidos)
+                {
+                    var newobjagenda = new BLL.Agendamentos();
+                    var nomes = newobjagenda.ListarParticipantesApenasNomes(item.AgendamentoId);
+                <li><i class="fa fa-tint"></i>@item.Nome <i class="fa fa-clock-o"></i>@item.Inicio.ToShortTimeString() até @item.Fim.ToShortTimeString() - @nomes - <small><i class="fa fa-trash"></i>Excluído por: @item.UsDelUsuarioNome</small></li>    
+                }
+
+            }
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Assets/plugins/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script src="~/Assets/plugins/fancybox/jquery.fancybox.js"></script>
+    <script src="~/Assets/plugins/fancybox/helpers/jquery.fancybox-buttons.js"></script>
+
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/content/themes/base/js/application.js"></script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            getAgendamentos();
+        });
+
+        function getAgendamentos() {
+            $.getJSON('@Url.Content("~/ApiIntegracao/GetAgendamentosPorDia/")', { dia: "@DataConsulta.ToShortDateString()", AgendaIntervaloMinutos: "@AgendaIntervaloMinutos" }, function (result) {
+
+                data = $.map(result, function (item, a) {
+
+                    //definicao de altura do agendamento
+                    var bordaDaTabela = 1;
+                    var altura = $("#" + item.td_agendamento_id).height();
+                    var alturafinal = (altura + bordaDaTabela) * item.td_horarios;
+                    var html = "";
+
+                    
+
+                    // definicao de todos os estilos
+                    var cssPresenca = "";
+                    if (item.AgendamentoPessoa[0] != null) {
+                        cssPresenca = "empresa_tipo2_presenca-" + item.AgendamentoPessoa[0].Presenca;
+                    }
+                    var cssMarcado = "td_marcado";
+                    if (item.Indisponivel) {
+                        cssMarcado = "td_indisponivel";
+                    }
+
+                    var estilo = " td-edit td_marcado v-align-c " + cssPresenca;
+
+                    //definicao da URL do agendamento
+                    var url = "#";
+
+                    if (item.Situacao == "A") {
+                        url = "ListaPresenca/" + item.AgendamentoId;
+                    }
+                    else {
+                        url = "Criar/" + item.AgendamentoId;
+                    }
+
+
+                    // inicio da div de agendamento
+                    html += "<div class='agendamento " + estilo + "' style='height:" + alturafinal + "px'  onclick=\"location.href = '" + url + "'\">";
+
+
+                    if (item.Destaque) {
+                        html += " <i class=\"fa fa-info-circle\" aria-hidden=\"true\"></i>";
+                    }
+
+                    if (item.Indisponivel) {
+                        html += " <p class=\"text-center text-info\"><strong>INDISPONÍVEL</strong></p>";
+                    }
+                    else {
+
+                        html += "<div>";
+
+                        for (i = 0; i < item.AgendamentoPessoa.length; ++i) {
+                            html += "<p class=\"text-center\"><strong>" + item.AgendamentoPessoa[i].NomeCompleto + "<br />" + item.AgendamentoPessoa[i].Celular + "</strong></p>";
+                        }
+
+                        html += "<p class=\"text-center\"><small>" + item.Observacoes + "</small></p>";
+                        html += "</div>";
+
+                    }
+
+                    //fim da div de agendamento
+                    html += "</div>";
+
+
+                    $("#" + item.td_agendamento_id).attr('onclick', '').unbind('click');
+                    $("#" + item.td_agendamento_id).html(html);
+
+
+                });
+
+
+            });
+        }
+
+    </script>
+
+
+    <script>
+        $('.popover-markup > .trigger').popover({
+            html: true,
+            trigger: "hover",
+            title: function () {
+                return $(this).parent().find('.head').html();
+            },
+            content: function () {
+                return $(this).parent().find('.content').html();
+            },
+            container: 'body',
+            placement: 'top',
+
+        }).addClass('my-super-popover');
+
+
+        function enviar(id) {
+            $('form#fooFormPrint' + id).submit();
+        };
+
+
+        //atualiza a cada 10 minutos 60*10 = 600000
+        setTimeout(function () {
+            //window.location.reload(1);
+            
+            getAgendamentos();
+        }, 600000);
+
+        $(document).ready(function () {
+            $('td.td-edit-fancybox').bind('click', function () {
+
+                var record_id = $(this).attr("id");
+                var link = record_id;
+
+                alert(link);
+
+                $.fancybox({
+                    'type': 'iframe',
+                    'href': link,
+                    fitToView: true,
+                    autoSize: true,
+                    closeClick: false,
+                    openEffect: 'elastic',
+                    closeEffect: 'elastic',
+
+                    beforeClose: function () {
+                        RecarregaPagina();
+                    },
+
+                });
+
+            });
+        });
+
+
+
+        $("body").on("click", ".jquery-lightbox-overlay", function () {
+            //window.location.reload(true);
+
+            RecarregaPagina();
+        });
+
+        $("body").on("click", ".jquery-lightbox-button-close", function () {
+
+            //window.location.reload(true);
+            RecarregaPagina();
+        });
+
+
+
+
+
+
+
+        function RecarregaPagina() {
+            //window.location.reload();
+            getAgendamentos();
+
+        }
+
+    </script>
+}

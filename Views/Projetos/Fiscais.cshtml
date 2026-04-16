@@ -1,0 +1,132 @@
+﻿@model Models.ProjetoFiscalView
+
+@{
+    
+    
+    ViewBag.Title = "Alterar Obras";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@section Styles {
+
+}
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Obras", "Index")</li>
+
+}
+
+@Html.Partial("~/Views/Projetos/_Navtabs.cshtml", Model.DadosProjeto)
+
+
+
+@using (Html.BeginForm("Fiscais", "Projetos", FormMethod.Post))
+{
+    @Html.ValidationSummary(true)
+    
+    
+    @Html.Hidden("ProjetoFiscal.ProjetoId", Model.DadosProjeto.ProjetoId);
+  
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="control-group">
+                <label><strong>Empresas</strong></label>
+                <div class="input-append">
+
+                    @Html.DropDownList("UsuarioEmpresaId", (SelectList)ViewBag.ddlEmpresas, new { @class="chosen-select" })
+
+                    
+                </div>
+            </div>
+        </div>
+        <div class="span9">
+            <div class="control-group">
+                <label><strong>Fiscais</strong></label>
+                <div class="input-append">
+
+                    
+                    <select id="ProjetoFiscal.UsuarioId" name="ProjetoFiscal.UsuarioId" disabled>
+                        <option selected="selected" value="0">--Selecione--</option>
+                    </select>
+
+
+                    <button id="btnAdicionar" type="submit" class="btn" disabled><i class="icon-plus"></i>Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+}
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>Empresa</th>
+            <th>Nome</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaFiscais)
+        {
+            <tr>
+                <td nowrap>@item.UsuarioEmpresaNomeFantasia</td>
+                <td width="100%">@item.UsuarioNome</td>
+                <td nowrap><a href="~/Projetos/FiscaisDeletar/@Model.DadosProjeto.ProjetoId?pid=@item.ProjetoFiscalId" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir esse registro?')"><i class="fa fa-times"></i>Excluir</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#UsuarioEmpresaId").change(function () {
+                listaPessoas($(this).val());
+            });
+        });
+        //chamada ajax para a Action ListaCidade
+        //passando como parâmetro a Estado selecionado
+        function listaPessoas(id) {
+            $("#ProjetoFiscal\\.UsuarioId").prop('disabled', 'disabled');
+            $("#btnAdicionar").prop('disabled', 'disabled');
+            $.getJSON('@Url.Content("~/Projetos/GetFiscais")', {
+                UsuarioEmpresaId: id,
+                ProjetoId: $("#ProjetoFiscal_ProjetoId").val()
+            }, listaPessoasCallBack);
+        }
+        //função que irá ser chamada quando terminar
+        //a chamada ajax
+        function listaPessoasCallBack(json) {
+            //Limpar os itens que são maiores que 0
+            //Ou seja: não retirar o primeiro item
+            $("#ProjetoFiscal\\.UsuarioId :gt(0)").remove();
+            $("#ProjetoFiscal\\.UsuarioId").prop('disabled', false);
+            $("#btnAdicionar").prop('disabled', false);
+            $(json).each(function () {
+                //adicionando as opções de acordo com o retorno
+                $("#ProjetoFiscal\\.UsuarioId").append("<option value='" + this.Value + "'>" + this.Text + "</option>");
+            });
+            //$("#ProjetoFiscal\\.UsuarioId").prop('class', 'chosen-select');
+
+        }
+
+    </script>
+
+
+}

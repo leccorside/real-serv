@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Models.Projeto>
+@{
+    ViewBag.Title = "Obras que não foram preenchidos Relatórios Diários";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Breadcrumb{
+
+}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Dt. Conclusão</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProjetoId</td>
+                <td>@item.ProjetoNome</td>
+                <td>@item.ProjetoDtFim.ToShortDateString()</td>
+                <td>
+                    <a href="~/Medicoes/Criar/0?ProjetoId=@item.ProjetoId" class="btn btn-small"><i class="fa fa-plus"></i><i class="fa fa-calculator"></i></a>
+                </td>
+            </tr> 
+        }
+    </tbody>
+</table>
+@Html.Paginacao((int)ViewBag.qtdPaginas)

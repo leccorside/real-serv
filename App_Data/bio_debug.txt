@@ -1,0 +1,10 @@
+--- Bio Upload Debug 17/03/2026 20:36:42 ---
+AppRoot: C:\inetpub\wwwroot
+UploadPath: C:\inetpub\wwwroot\Content\Uploads\Pessoas_Fotos
+PessoaID: 17360
+Imagens: 6
+--- Bio Upload Debug 17/03/2026 20:53:21 ---
+AppRoot: C:\inetpub\wwwroot
+UploadPath: C:\inetpub\wwwroot\Content\Uploads\Pessoas_Fotos
+PessoaID: 17360
+Imagens: 6

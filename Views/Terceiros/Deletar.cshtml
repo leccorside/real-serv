@@ -1,0 +1,72 @@
+﻿@model Models.Usuario
+
+@{
+    ViewBag.Title = "Excluíndo Terceiros";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Terceiros", "Index")</li>
+}
+
+
+<div class="alert">
+    
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse Usuário?
+</div>
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+
+            <th>Nome
+            </th>
+
+            <th>E-Mail
+            </th>
+
+            <th>Pefil
+            </th>
+
+
+            <th nowrap>Criado em
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Html.DisplayFor(model => model.UsuarioNome)</td>
+
+            <td>@Html.DisplayFor(model => model.UsuarioEmail) </td>
+
+            <td>@Html.DisplayFor(model => model.PerfilNome) </td>
+
+            <td>@Html.DisplayFor(model => model.RegDtInicio)  </td>
+        </tr>
+
+
+
+    </tbody>
+</table>
+
+
+
+@using (Html.BeginForm())
+{
+    
+    @Html.HiddenFor(model => model.UsuarioId)
+
+    <p class="pull-right">
+        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+    </p>
+
+    <p class="pull-left">
+        @Html.ActionLink("Voltar", "Index")
+    </p>
+}
+
+

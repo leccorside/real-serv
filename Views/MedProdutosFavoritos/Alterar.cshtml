@@ -1,0 +1,42 @@
+﻿@model Models.MedProdutoFavorito
+
+@{
+    ViewBag.Title = "Criar Produtos & Exames Favoritos";
+
+
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Produtos & Exames Favoritos", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">
+    <div class="row-fluid">
+        <div class="span2">
+                <label>Favorito n.</label>
+                <h4 class="black">@Model.MedProdutoFavoritoId</h4>
+            </div>
+
+        <div class="span10">
+            <label>Favorito</label>
+            <h4 class="black">@Model.MedProdutoFavoritoNome</h4>
+        </div>
+
+    </div>
+    <br />
+    <div>
+        <a href="~/MedGuias/Index" class="btn">Voltar</a>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

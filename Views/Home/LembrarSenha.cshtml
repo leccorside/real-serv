@@ -1,0 +1,101 @@
+﻿@model Models.AutenticationModel
+
+@{
+    ViewBag.Title = "Lembrar senha";
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+    var nome = ViewBag.EmpresaId;
+}
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <section class="login-form">
+                @using (Html.BeginForm("LembrarSenha", "Home", FormMethod.Post, new { @role = "login" }))
+                {
+                   
+
+                    <img src="@VirtualPathUtility.ToAbsolute("~/Content/images/logotipos/" + nome + ".png")" class="img-responsive" />
+                      
+                     if (!@Html.ViewData.ModelState.IsValid)
+                    {
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <div class="alert alert-error" id="alert-error">
+                                <h4>Ooops... alguns erros ocorreram</h4>
+                                <br />
+                                @Html.ValidationSummary("", new { @class = "unstyled" })
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    if (TempData["message"] != null)
+                    { <div class="row-fluid">
+                        <div class="span12">
+                            <div class="alert alert-success" id="alert-success">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <h4>Sucesso!</h4>
+                                @TempData["message"]
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    if (TempData["error"] != null)
+                    { <div class="row-fluid">
+                        <div class="span12">
+                            <div class="alert alert-danger" id="alert-danger">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <h4>Atenção!</h4>
+                                @TempData["error"]
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    if (TempData["alert"] != null)
+                    { <div class="row-fluid">
+                        <div class="span12">
+                            <div class="alert alert-block" id="alert-block">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <h4>Atenção!</h4>
+                                @TempData["alert"]
+                            </div>
+                        </div>
+                    </div>
+                    }
+                      
+                        <h4>Lembrar sua senha</h4>
+                    @Html.TextBoxFor(model => model.LoginOrEmail, null, new { @class = "form-control input-lg", placeholder = "Informe seu email", required = "preencha o campo", autofocus = "" })
+					    
+                    <button type="submit" name="go" class="btn btn-primary">Enviar lembrete</button>
+                   
+
+                        
+                   
+
+                     <div>
+                        <a href="@Url.Content("~/Home/Index")" class="pull-right">Voltar</a>
+                    </div>
+                    
+                }
+
+                <div class="form-links">
+                    <a href="http://www.kmov.com.br" target="_blank" class="pull-left">
+                        <img src="~/Content/images/logo-footer.png" alt="Grupo Kmov>>" style="max-height: 30px;" title="Grupo Kmov>>" /></a>
+                    <a href="http://www.e-bee.com.br" target="_blank" class="pull-right">
+                        <img src="~/Content/images/ebee.png" alt="Powered by E-Bee" title="Powered By E-Bee" style="max-height: 30px;" /></a>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-md-4"></div>
+
+
+    </div>
+
+
+
+</div>
+

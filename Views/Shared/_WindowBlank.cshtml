@@ -1,0 +1,75 @@
+﻿@{
+    var registrar = ViewBag.RegistrarImpressao;
+
+    int DocumentoArquivoId = 0;
+
+    if (registrar != null)
+    {
+        int.TryParse(Convert.ToString(registrar), out DocumentoArquivoId);    
+    }
+    
+    
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+    <style>
+        @@media print{
+
+            .noprint
+            {
+                display:none;
+            }
+
+        }
+    </style>
+    
+<body>
+
+    <div class="container-fluid noprint">
+        <div class="row-fluid">
+            <div class="col-lg-12 text-center"><button class="btn btn-primary" onclick="window.print();RegistraImpressao();">Clique aqui para imprimir</button></div>
+        </div>
+    </div>
+
+
+        @RenderBody()
+
+    
+
+</body>
+</html>
+
+   @Scripts.Render("~/bundles/jquery/js")
+    @Scripts.Render("~/bundles/bootstrap/js")
+
+ <script>
+        function RegistraImpressao() {
+            $.getJSON("@Url.Content("~/DocumentosArquivos/RegistraImpressaoJSON/")", { UsuarioId: '@BLL.Usuarios.GetUsuarioId()', DocumentoArquivoId: '@DocumentoArquivoId' }, function (result) {
+
+            })
+                .success(function (result) {
+
+                    console.log(result);
+
+                    if (result.NUMERO == "999") {
+                        //erro
+                       
+                    } else if (result.NUMERO == "10") {
+                        // alerta
+                       
+                    } else {
+                        // Sucesso
+                        
+                    }
+
+                })
+                .error(function () {
+                    //erro
+                });
+        }
+ </script>

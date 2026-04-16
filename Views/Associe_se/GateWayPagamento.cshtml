@@ -1,0 +1,105 @@
+﻿@model Models.PessoaPlanoInscricaoView
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.Pessoa.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.Pessoa.EmpresaId);
+
+
+    //var associe_obrigado_texto = BLL.Configuracoes.CarregarPorEmpresaId("associe_obrigado_texto", Model.EmpresaId);
+    //var associe_obrigado_urlredirect = BLL.Configuracoes.CarregarPorEmpresaId("associe_obrigado_urlredirect", Model.EmpresaId);
+
+    var bll = new BLL.BCASH(Model.Pessoa.EmpresaId);
+
+    var nome = BLL.Utils.Funcoes.GetPrimeiroNome(Model.Pessoa.Nome).ToLower();
+    
+    
+}
+
+<div class="content-boxed">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho)
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <h3><span style="text-transform:capitalize">@nome</span>, aguarde!<br /></h3>
+                            <br />
+                            <i class="fa fa-spinner fa-3x fa-spin"></i>
+                            <br />
+                            <br />
+                            Você será direcionado para a plataforma de pagamentos:<br />
+                            <img src="https://ecommerce.payulatam.com/logos/PayU_151x70.png" alt="PayU" border="0" />
+                        </div>
+                    </div>
+                    
+                       @Html.Raw(bll.GerarFormWebCheckout(
+                    DateTime.Now.AddDays(2),
+                    Model.PessoaPlanoInscricao.PessoaPlanoInscricaoId.ToString(),
+                    Model.PessoaPlano.PessoaPlanoTitulo,
+                    Model.PessoaPlanoInscricao.PessoaPlanoVlrTotal, 
+                    Model.Pessoa.Nome,
+                    Model.Pessoa.Email, Model.Pessoa.Documento,
+                    Model.Pessoa.Endereco, Model.Pessoa.Numero,
+                    Model.Pessoa.Complemento,
+                    Model.Pessoa.Cidade , 
+                    Model.Pessoa.Estado,
+                    Model.Pessoa.Cep,
+                    Model.Pessoa.Celular)
+                    )
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            @Html.Raw(associe_rodape)
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+<style>
+    input.btn-enviar {
+    display: none;
+}
+</style>
+
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+
+    
+    <script>
+        setTimeout(function () { $('form#pagto').submit(); }, 3000);
+    </script>
+}
+

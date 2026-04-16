@@ -1,0 +1,110 @@
+﻿@model Models.Repasse
+
+@{
+    ViewBag.Title = "Anexos";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";    
+}
+
+
+
+<div class="content">
+
+    <div class="row">
+            <div class="col-lg-12" style="">
+
+
+
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Repasse
+                    </div>
+                    <div class="panel-body">
+                        <!-- dados aqui-->
+
+
+
+
+
+                        @using (Html.BeginForm("Anexos", "Repasses", FormMethod.Post, new { @class = "" }))
+                        {
+                            @Html.ValidationSummary(true)
+    
+                          @Html.HiddenFor(m => m.RepasseId);
+                                                     
+
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.RepasseStatus)
+                                    @Html.DropDownListPendenteConcluido("RepasseStatus",Model.RepasseStatus, true, "select2 form-control")
+                                </div>
+                                
+                                <div class="col-lg-9 col-md-9 col-sm-9">
+                                    @Html.LabelFor(model => model.RepasseObservacao)
+                                    @Html.TextAreaFor(m=>m.RepasseObservacao, new {@class="form-control max", @maxlength=800})
+                                </div>
+                                 
+                            </div>
+                <div class="row">
+                    <div class="col-lg-12"><button type="submit" class="btn btn-primary pull-right">Salvar</button></div>
+                    
+                </div>
+        
+                          
+        
+                                                         
+                            
+
+
+                        }
+
+
+                        <!-- ./ dados aqui-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+<div class="row">
+    <div class="col-lg-12">
+        @Html.CubeeAnexos("Repasses", Model.RepasseId, " |Comprovante", "form-control", true, false, true, true, false,"",Model.EmpresaId)
+    </div>
+</div>
+</div>
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+@Styles.Render("~/bundles/fancybox/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/select2/js")
+@Scripts.Render("~/bundles/fancybox/js")
+@Scripts.Render("~/bundles/maxlenght/js")
+
+    <script>
+        $('.chosen-select').select2();
+        $('.max').maxlength();
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+    </script>
+}
+
+

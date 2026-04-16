@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "FIM";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+<h2>Obrigado por realizar seu cadastro</h2>
+
+<div class="cwell">
+    <legend>Seu cadastro foi realizado com sucesso!</legend>
+    <center><a href="~/Principal" class="btn btn-primary btn-large">FINALIZAR</a></center>
+
+    <div class="container">
+        <div class="row bs-wizard" style="border-bottom: 0;">
+            <div class="span3 bs-wizard-step complete">
+                <div class="text-center bs-wizard-stepnum">Etapa 1</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Validar Documento</div>
+            </div>
+
+            <div class="span3 bs-wizard-step active">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Etapa 2</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Preenchimento de dados cadastrais</div>
+            </div>
+
+            <div class="span3 bs-wizard-step active">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Etapa 3</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Assinatura Digital</div>
+            </div>
+            <div class="span3 bs-wizard-step active">
+                <!-- disabled -->
+                <div class="text-center bs-wizard-stepnum">
+                    <img src="~/Assets/img/icones/@BLL.Usuarios.GetEmpresaId()-cadastrofim.png" width="16" height="16" />
+                </div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">FIM</div>
+            </div>
+        </div>
+    </div>
+
+</div>

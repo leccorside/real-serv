@@ -1,0 +1,641 @@
+﻿@model Models.MedGuiaItemView
+
+@{
+    ViewBag.Title = "Criar Guia > Produtos e Exames";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+
+    var qtd = (int)Math.Ceiling((double)Model.ListMedGuiaItem.Count() / 2);
+
+    List<List<Models.MedGuiaItem>> newList = BLL.Utils.Funcoes.SplitList<Models.MedGuiaItem>(Model.ListMedGuiaItem, qtd);
+    var qtdLists = newList.Count();
+    var tamanhoSpan = 12 / qtdLists;
+
+    var bllMedGuias = new BLL.MedGuias();
+    var _PodeAlterar = bllMedGuias.PodeAlterar(Model.MedGuia);
+    var _NFEmitida = bllMedGuias.isNfEmitida(Model.MedGuia);
+
+    var bllConveniosPlanos = new BLL.ConveniosPlanos();
+    var plano = bllConveniosPlanos.Carregar(Model.MedGuia.ConvenioPlanoId);
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+    var _MedGuiasHistorico = BLL.Usuarios.VerificaAcesso("Historico", "MedGuias");
+    var _MedGuiasStatus = BLL.Usuarios.VerificaAcesso("Status", "MedGuias");
+
+
+    bool _debug = false;
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Guias", "Index", new { id = 0 })</li>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12" style="">
+            @if (!_PodeAlterar)
+            {
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Essa Guia não pode ser mais alterada. Caso seja necessário, entre em contato com o administrador do sistema
+                </div>
+            }
+
+
+
+            <div class="hpanel">
+                @Html.Partial("~/Views/MedGuias/_tabs.cshtml", Model.MedGuia)
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- conteuod aqui -->
+
+                            <div class="btn-group pull-right">
+
+                                @if (_MedGuiasAdministrador)
+                                {
+
+                                }
+                                <form target="_blank" id="my-form" action="https://novalabslaudos.avantix.com.br/ResultAgreement.php" method="post" style="display: inline-block;">
+                                    <input type="hidden" name="id" value="041">
+                                    <input type="hidden" name="id_senha" value="041jpmbe">
+                                    <input type="hidden" name="idDataIni" value="@Model.MedGuia.MedGuiaData.AddDays(-15).ToShortDateString()">
+                                    <input type="hidden" name="idDataFim" value="@Model.MedGuia.MedGuiaData.AddDays(20).ToShortDateString()">
+                                    <input type="hidden" name="idPaciente" value="@Model.MedGuia.PacienteNome">
+                                    <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-table" aria-hidden="true"></i>Acessar Resultado</button>
+                                    <input type="hidden" name="laboratorio" maxlength="255" value="novalabs">
+                                </form>
+
+                                @if (!_NFEmitida)
+                                {
+                                <a href="@Url.Content("~/MedGuias/ProdutosImportar/" + Model.MedGuiaId)" class="pull-right btn btn-default btn-sm fancybox_recarrega fancybox.iframe"><i class="fa fa-upload"></i>Importar Exames</a>    
+                                }
+                                
+
+
+
+
+                            </div>
+
+
+                            <!-- ./conteudo aqui -->
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12 text-right">
+                                </div>
+                            </div>
+                            <!-- conteuod aqui -->
+                            @using (Html.BeginForm("Produtos", "MedGuias", FormMethod.Post))
+                            {
+                                @Html.ValidationSummary(true)
+                                @Html.HiddenFor(m => m.MedGuiaId);
+                                @Html.HiddenFor(m => m.MedGuia.ConvenioId);
+                                @Html.HiddenFor(m => m.MedGuia.ConvenioPlanoId);
+                                @Html.HiddenFor(m => m.MedGuia.LancamentoExamesParticular);
+                                <div class="row">
+
+                                    <div class="form-group col-lg-1">
+                                        <label>Guia n.</label>
+                                        <p class="form-control-static">@Model.MedGuiaId</p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Data</label>
+                                        <p class="form-control-static">@string.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedGuiaData)</p>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Convênio / Plano</label>
+                                        <p class="form-control-static">@Model.MedGuia.ConvenioNome / @Model.MedGuia.ConvenioPlanoNome</p>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Médico</label>
+                                        <p class="form-control-static">@Model.MedGuia.MedicoNome</p>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Paciente</label>
+                                        @Html.TermoAceiteStatus(Model.MedGuia.PacienteTermoAceite)
+                                        <p class="form-control-static"><a href="@Url.Content("~/Pessoas/DadosAluno/" + Model.MedGuia.PacienteId)" class="fancybox_full fancybox.iframe btn btn-outline btn-default btn-xs"><i class="fa fa-search"></i></a>@Model.MedGuia.PacienteNome <small>@Model.MedGuia.PacienteCpf</small></p>
+                                        @if (Model.MedGuia.PacienteId > 0 && Model.MedGuia.PacienteCelular != null)
+                                        {
+                                            
+                                            <a href="@Url.Content("~/TemplatesMensagens/Enviar/?PessoaId=" + Model.MedGuia.PacienteId + "&MedGuiaId=" + Model.MedGuiaId)" class="fancybox_full fancybox.iframe btn btn-outline btn-success btn-xs pull-right"><i class="fa fa-whatsapp"></i><small>Conversar</small></a>
+                                        }
+                                    </div>
+
+                                </div>
+                                        if (_PodeAlterar)
+                                        {
+                                
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="hpanel  @(((plano.ConvenioPlanoParticular == false && Model.MedGuia.LancamentoExamesParticular == false) || (Model.MedGuia.LancamentoExamesParticular == false && plano.ConvenioPlanoParticular == true)) ? "" : " collapsed ") " id="div_normal">
+                                            <div class="panel-heading hbuilt">
+                                                <div class="panel-tools">
+                                                    <a class="showhide normal"><i class="fa fa-chevron-up"></i></a>
+                                                </div>
+                                                <a class="showhide normal">Produtos / Exames</a>
+                                            </div>
+                                            <div class="panel-body">
+                                                @if (plano.ConvenioPlanoParticular)
+                                                {                                                       
+                                                    <div class="row">
+                                                        <div class="form-group col-lg-6">
+                                                            <label>Produto / Exame</label>
+                                                            @Html.DropDownListFor(model => model.MedGuiaItem.MedProdutoId, (SelectList)ViewBag.ddlProdutos, new { @class = "chosen-select form-control " })
+                                                        </div>
+                                                        <div class="form-group col-lg-6">
+                                                            <label>Valor</label>
+                                                            <div class="input-group">
+                                                                @Html.TextBox("MedGuiaItem.Valor", null, new { @class = "moeda form-control" })
+                                                                <span class="input-group-btn">
+                                                                    <button type="submit" id="btnaddprodparticular" value="true" name="btnaddprodparticular" class="btn btn-primary">Adicionar</button>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="row">
+                                                        <div class="form-group col-lg-6">
+                                                            <label>Produto / Exame</label>
+                                                            <div class="input-group">
+                                                                @Html.DropDownListFor(model => model.MedGuiaItem.ConvenioMedProdutoId, (SelectList)ViewBag.ddlProdutos, new { @class = "chosen-select form-control chs " })
+                                                                <span class="input-group-btn">
+                                                                    <button type="submit" id="btnaddprod" value="true" name="btnaddprod" class="btn btn-primary">Adicionar</button>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group col-lg-6">
+                                                            <label><i class="fa fa-star"></i>Favoritos</label>
+                                                            <div class="input-group">
+                                                                @Html.DropDownList("MedProdutoFavoritoId", (SelectList)ViewBag.ddlFavoritos, new { @class = "chosen-select form-control chs " })
+                                                                <span class="input-group-btn">
+                                                                    <button type="submit" id="btnaddfav" value="true" name="btnaddfav" class="btn btn-primary">Adicionar</button>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>        
+                                                }
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                                if (!plano.ConvenioPlanoParticular)
+                                                {        
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="hpanel @(Model.MedGuia.LancamentoExamesParticular ? "" : " collapsed ") " id="div_particular">
+                                            <div class="panel-heading hbuilt">
+                                                <div class="panel-tools">
+                                                    <a class="showhide particular"><i class="fa fa-chevron-up"></i></a>
+                                                </div>
+                                                <a class="showhide particular">Lançar particular</a>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="row">
+                                                    <div class="form-group col-lg-6">
+                                                        <label>Produto / Exame</label>
+                                                        @Html.DropDownListFor(model => model.MedGuiaItem.Extra_MedProdutoId, (SelectList)ViewBag.ddlProdutosParticular, new { @class = "chosen-select form-control " })
+                                                    </div>
+                                                    <div class="form-group col-lg-6">
+                                                        <label>Valor</label>
+                                                        <div class="input-group">
+                                                            @Html.TextBox("MedGuiaItem.Extra_Valor", null, new { @class = "moeda form-control" })
+                                                            <span class="input-group-btn">
+                                                                <button type="submit" id="btnaddprodparticular_2" value="true" name="btnaddprodparticular_2" class="btn btn-primary">Adicionar</button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                                }
+
+                                                
+
+
+                                
+                                <br />
+                                        }
+                                
+                               
+                                        
+                                                                                        
+                                <div class="row">
+                                    <div class="col-lg-12 text-center">@Model.ListMedGuiaItem.Count() produtos / exames</div>
+                                </div>
+                                
+                                        if (newList[0].Count() > 0 && _PodeAlterar)
+                                        {
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="pull-left">
+                                            <button type="submit" id="btnapagarselecionados" value="true" name="btnapagarselecionados" class="btn btn-outline btn-danger btn-xs">Apagar selecionados</button>
+                                        </div>
+                                        <div class="pull-right">
+                                            <a href="#" class="btn btn-outline btn-danger btn-xs" onclick="return cubeeConfirm('Atenção','Confirma a exclusão de todos os produtos?','@Url.Content("~/MedGuias/ProdutosExcluirTudo/" + Model.MedGuiaId)')" ><i class="icon-trash"></i>Apagar Tudo</a>
+                                            <a href="#" class="btn btn-outline btn-primary btn-xs"  onclick="return cubeeConfirm('Atenção','Atenção, esse processo pode demorar alguns minutos.','@Url.Content("~/MedGuias/ProdutosExport/" + Model.MedGuiaId)')"><i class="fa fa-download"></i>Exportar</a>
+                                        </div>
+                                    </div>
+                                </div>
+                  
+                                        }
+                                                                               
+                                
+                                <div class="row">
+                                    <ul style="list-style: none; margin: 0px !important; padding: 0px !important;">
+                                        @foreach (var list in newList)
+                                        {
+                                        
+                                            <li class="col-lg-6">
+
+                                                <table cellpadding="1" cellspacing="1" class="data table table-condensed table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>Produto / Exame</th>
+                                                            @if (_debug)
+                                                            {
+                                                                <th>MODO DEBUG (AMBIENTE DESENVOLVIMENTO)</th>    
+                                                            }
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in list)
+                                                        {
+                    
+                                                            <tr>
+                                                                <td class="text-center" nowrap>
+                                                                    @if (_PodeAlterar)
+                                                                    {
+                                                                        <input type="checkbox" value="@item.MedGuiaItemId" id="MedGuiaItemId" name="MedGuiaItemId"  /> @:- <a href="@Url.Content("~/MedGuias/ProdutosExcluir/" + Model.MedGuiaId + "?eid=" + item.MedGuiaItemId)"  class="btn btn-outline btn-danger btn-xs"><i class="fa fa-trash"></i></a>   
+                                                                    }
+                                                                </td>
+                                                                <td id="@item.MedGuiaItemId" class="marcar" data-id="@item.MedGuiaItemId" onclick="FiltroProdutoSet('medguiaprodutos', '@item.MedGuiaItemId','@item.MedProdutoNome')">
+                                                                    @item.MedProdutoCod - @item.MedProdutoNome
+                                                                    @if (Model.ListMedGuiaItem.Where(x => x.MedProdutoCod == item.MedProdutoCod).Count() > 1)
+                                                                    {
+                                                                        <span class="label label-warning pull-right">Duplicado</span>
+                                                                    }
+                                                                </td>
+                                                                @if (_debug)
+                                                                {
+                                                                    <td>Fator: @item.Fator / Valor Exame: @item.Valor / Total: @item.Total</td>
+                                                                }
+                                                            </tr>	 
+                                                        }
+                                                    </tbody>
+                                                </table>
+
+                                            </li>
+                                            
+                                        }
+                                    </ul>
+                                </div>
+                                
+                                
+                            }
+
+
+                            <!-- ./conteudo aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @if (_MedGuiasStatus)
+    {
+        <div class="row">
+            <div class="col-lg-12" style="">
+
+                @if (Model.MedGuia.StatusTempoMaximo > 0 && Model.MedGuia.StatusTempoPassado >= Model.MedGuia.StatusTempoMaximo)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção!</strong> @Model.MedGuia.StatusInstrucoes<br />
+                        Tempo nesse status: <i class="fa fa-clock-o"></i>@Model.MedGuia.StatusTempoPassado hrs
+                    </div>
+                }
+
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Status: @Html.CubeeStatusAtual("MedGuias", Model.MedGuiaId)
+                    </div>
+                    <div class="panel-body">
+                        <!-- dados aqui-->
+                        @Html.CubeeStatus("MedGuias", Model.MedGuiaId, "chosen-select form-control", BLL.Usuarios.GetUsuarioId(), _MedGuiasAdministrador, Model.MedGuia.ConvenioId, true, 0)
+                        <!-- ./ dados aqui-->
+                    </div>
+
+                </div>
+            </div>
+        </div>    
+    }
+
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+    <style>
+        .data
+        {
+            font-size: 11px !important;
+        }
+
+            .data td
+            {
+                padding-top: 0px;
+                padding-bottom: 2px;
+                margin: 0px !Important;
+            }
+
+        tr.highlight td
+        {
+            background-color: #ffd800 !important;
+        }
+
+        td.highlight
+        {
+            background-color: #ffd800 !important;
+        }
+
+        .chs
+        {
+            max-width: 400px;
+        }
+    </style>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+
+    <script>
+
+        $('.chosen-select').select2();
+        $(".fancybox").fancybox({ fitToView: false, width: '80%', autoSize: true });
+        $(".fancybox_full").fancybox({
+            fitToView: false,
+            width: '100%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none'
+        });
+
+
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+        //$(".data tr").click(function () {
+        //    console.log('clicou');
+        //    $(this).toggleClass("highlight");
+        //});
+
+        $(".marcar").click(function () {
+            var id = $(this).attr("data-id");
+            var classe = $(this).attr("class");
+            if (classe.indexOf('highlight') >= 0) {
+                //console.log('tem que apagar');
+                FiltroProdutoDelPorValor(id);
+            }
+
+            $(this).toggleClass("highlight");
+        });
+
+
+
+        $(document).ready(function () {
+
+               @if (!Model.MedGuia.LancamentoExamesParticular)
+               {
+		        @:$('#MedGuiaItem_ConvenioMedProdutoId').select2('open');
+	            }
+        });
+
+
+
+
+
+
+
+        $("#PacienteCpf").mask("999.999.999-99");
+
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+
+        $("#PacienteCpf").focusout(function () {
+            $.getJSON('@Url.Content("~/Pessoas/GetPessoas/")', { tipo: 'c', stype: 'Cpf', key: $(this).val() }, function (data) {
+                if (data.Objeto[0] != null) {
+                    $("#PacienteNome").prop("readOnly", false);
+                    $("#PacienteNome").val(data.Objeto[0].Nome);
+                    $("#PacienteId").val(data.Objeto[0].PessoaID);
+                    $("#PacienteNome").prop("readOnly", true);
+                    $("#btnerrado").attr("style", "display:show");
+                } else {
+                    $("#btnerrado").attr("style", "display:none");
+                    $("#PacienteNome").prop("readOnly", false);
+                    $("#PacienteNome").val('');
+                    $("#PacienteId").val('0');
+                    $("#PacienteNome").focus();
+                }
+            });
+        });
+
+        $("#btnerrado").click(function () {
+            $("#btnerrado").attr("style", "display:none");
+            $("#PacienteNome").prop("readOnly", false);
+            $("#PacienteNome").val('');
+            $("#PacienteId").val('0');
+            $("#PacienteNome").focus();
+        });
+
+
+        // controle marcacao
+
+
+        function FiltroProdutoSet(type, valor, descricao) {
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/ApiIntegracao/FiltroProdutoSet/',
+                data: "type=" + type + "&valor=" + valor + "&descricao=" + descricao,
+                success: function (data) {
+                    //console.log(data);
+                }
+            });
+            return false;
+        }
+
+
+        function FiltroProdutoDel(guid) {
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/ApiIntegracao/FiltroProdutoDel/',
+                data: "guid=" + guid,
+                success: function (data) {
+                    //console.log(data);
+                }
+            });
+            return false;
+        }
+
+        function FiltroProdutoDelPorValor(valor) {
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/ApiIntegracao/FiltroProdutoDelPorValor/',
+                data: "valor=" + valor,
+                success: function (data) {
+                    //console.log(data);
+                }
+            });
+            return false;
+        }
+
+        function FiltroProdutoClear() {
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/ApiIntegracao/FiltroProdutoClear/',
+                data: "",
+                success: function (data) {
+                    //console.log(data);
+                }
+            });
+            return false;
+        }
+
+
+        jQuery.ajax({
+            type: 'POST',
+            url: '/ApiIntegracao/GetFiltroProduto/',
+            data: "",
+            success: function (data) {
+                $.each(data, function (index) {
+                    var id = data[index].valor;
+                    $("#" + id).toggleClass("highlight");
+                });
+
+            }
+        });
+
+    </script>
+
+    <script>
+        $(".normal").click(function () {
+            $("#div_normal").toggleClass("highlight");
+            $("#div_particular").toggleClass("highlight");
+
+            abreFecha("#div_particular");
+
+        });
+
+
+        $(".particular").click(function () {
+            abreFecha("#div_normal");
+
+        });
+
+        // Function for collapse hpanel
+        function abreFecha(div_id) {
+            event.preventDefault();
+            var hpanel = $(div_id).closest('div.hpanel');
+            var icon = $(div_id).find('i:first');
+            var body = hpanel.find('div.panel-body');
+            var footer = hpanel.find('div.panel-footer');
+            body.slideToggle(300);
+            footer.slideToggle(200);
+
+            // Toggle icon from up to down
+            icon.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
+            hpanel.toggleClass('').toggleClass('panel-collapse');
+            setTimeout(function () {
+                hpanel.resize();
+                hpanel.find('[id^=map-]').resize();
+            }, 50);
+        };
+
+
+    </script>
+
+    <script>
+        $(function () {
+
+            //$("#my-form").submit(function () {
+
+            //    $form = $(this);
+
+            //    console.log($form.attr("action") + "?" + $form.serialize());
+
+            //    $.fancybox({
+            //        'title': "form submission",
+            //        'href': $form.attr("action") + "?" + $form.serialize(),
+            //        'type': 'iframe'
+            //    });
+
+            //    return false;
+
+            //});
+
+
+        });
+    </script>
+}
+

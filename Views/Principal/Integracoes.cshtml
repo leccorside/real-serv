@@ -1,0 +1,41 @@
+﻿@{
+    ViewBag.Title = "Integrações";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Financeiro", "Financeiro", "Principal")</li>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+               
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <ul>
+                        <li> <a href="@Url.Content("~/Integracoes/Remessa")">
+                        <i class="icon-arrow-down"></i>
+                        Remessa
+                    </a></li>
+                        <li> <a href="@Url.Content("~/Integracoes/Retorno")">
+                        
+                        <i class="icon-arrow-up"></i>
+                        
+                        Retorno
+                    </a></li>
+                    </ul>
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

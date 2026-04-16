@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Models.Trello.Boards.Board>
+
+@{
+    ViewBag.Title = "Boards";
+    Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    var bllEmpresas = new BLL.Empresas();
+    var empresa = bllEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+    var organization = BLL.Trello.GetOrganization(empresa.EmpresaTrelloOrganization);
+}
+
+<h2><i class="fa fa-trello"></i> Boards da @organization.displayName</h2>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Board</th>
+            <th>Id</th>
+            <th>Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><a href="@Url.Content("~/Trello/Lists/0/"+item.id)"><i class="fa fa-trello"></i></a></td>
+                <td><a href="@Url.Content("~/Trello/Lists/0/"+item.id)">@item.name</a></td>
+                <td><a href="@Url.Content("~/Trello/Lists/0/"+item.id)">@item.id</a></td>
+                <td><a href="@item.shortUrl" target="_blank">@item.shortUrl</a></td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>

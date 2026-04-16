@@ -1,0 +1,65 @@
+﻿@model Models.AutenticationModel
+
+@{
+    ViewBag.Title = "Confirmar";
+    Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    
+        var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+}
+
+
+
+ <div class="row-fluid">
+     <div class="span4"></div>
+     <div class="span4 cwell">
+@using (Html.BeginForm("Confirmar", "Usuarios", FormMethod.Post, new { @class = "form-vertical", @id = "loginform" }))
+{
+    
+    <h4>Entre com seu e-mail e senha</h4>
+    @Html.ValidationSummary(true)
+       
+    
+    <div class="control-group">
+        <div class="controls">
+            <div class="input-prepend">
+                <span class="add-on"><i class="icon-user"></i></span>@Html.TextBoxFor(model => model.LoginOrEmail, null, new { @class = "form-control span12", placeholder = "Seu login ou e-mail", required = "preencha o campo", autofocus = "" })
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <div class="controls">
+            <div class="input-prepend">
+                <span class="add-on"><i class="icon-lock"></i></span>@Html.PasswordFor(model => model.UsuarioSenha, new { @class = "form-control span12", placeholder = "Sua senha", required = "", autofocus = "", autocomplete="off" })
+            </div>
+        </div>
+    </div>
+    <input type="submit" class="btn btn-primary btn-large" value="Entrar" data-loading-text="Aguarde..." />
+    
+}
+         
+         @if (_copyright == "" || _copyright == "true"){
+         <h6 class="pull-right muted">Power by <a href="http://www.e-bee.com.br" target="_blank">E-Bee</a></h6>
+         }
+     </div>
+     <div class="span4"></div>
+     </div>
+
+
+@section scripts{
+    <script>
+        $(function () {
+            var btn = $('#btnLogin').click(function () {
+                btn.button('loading')
+                setTimeout(function () {
+                    btn.button('reset')
+                }, 3000)
+            })
+        })
+    </script>
+}
+
+
+

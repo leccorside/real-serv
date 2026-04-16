@@ -1,0 +1,50 @@
+@model IEnumerable<Models.Midia>
+
+@{
+    ViewBag.Title = "M&iacute;dias";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configura&ccedil;&otilde;es", "Configuracoes", "Principal")</li>
+}
+
+@section Styles {
+@Html.Partial("_TableStyles")
+}
+
+<div class="ponto-container">
+    <div class="ponto-header">
+        <div class="ponto-title"><h2><i class="pe-7s-video"></i> M&iacute;dias</h2></div>
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn-create" })
+    </div>
+    <div class="ponto-table-container">
+        <table class="ponto-table">
+            <thead>
+                <tr>
+                    <th>M&iacute;dia</th>
+                    <th>Data de Cadastro</th>
+                    <th style="width:140px">A&ccedil;&otilde;es</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td width="100%">
+                            @item.MidiaNome
+                            @if (!string.IsNullOrEmpty(item.MidiaNomeEN_US)) {<small>@item.MidiaNomeEN_US</small>}
+                        </td>
+                        <td nowrap>@Html.DisplayFor(m => item.RegDtInicio)</td>
+                        <td nowrap>
+                            <div class="actions-cell">
+                                @Html.ActionLink("Alterar", "Criar", new { id = item.MidiaId }, new { @class = "btn-alterar" })
+                                @Html.ActionLink("Excluir", "Deletar", new { id = item.MidiaId }, new { @class = "btn-excluir" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

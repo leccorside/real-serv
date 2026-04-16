@@ -1,0 +1,331 @@
+﻿@model Models.Turma
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.TurmaId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Turma";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    var alunos = ViewBag.Alunos;
+
+    int DiaDaSemana = (int)DateTime.Now.DayOfWeek;
+    var InicioSemana = DateTime.Now.AddDays(-DiaDaSemana + 1);
+    var FimSemana = DateTime.Now.AddDays(7 - DiaDaSemana);
+    var anopadrao = 2000;
+    var anoinicio = anopadrao;
+    int diferencafim = 0;
+
+    if (InicioSemana.Month == 12 && FimSemana.Month == 1)
+    {
+
+        anoinicio = anoinicio - 1;
+
+    }
+
+    var iniciosemanastr = InicioSemana.Day + "/" + InicioSemana.Month + "/" + anoinicio;
+    InicioSemana = Convert.ToDateTime(iniciosemanastr);
+
+    var fimsemanastr = FimSemana.Day + "/" + FimSemana.Month + "/" + anopadrao;
+    FimSemana = Convert.ToDateTime(fimsemanastr);
+
+    var datanascimentostr = "";
+
+
+
+
+    BLL.Turmas t = new BLL.Turmas();
+    var coaches = t.GetCoaches(ViewBag.TurmaID);
+
+
+
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var idx = 0;
+                   
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Turmas", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "Turmas", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.TurmaId > 0)
+        {
+        @Html.Hidden("TurmaId", Model.TurmaId);
+                                              acao = "Alterar";
+        }
+       
+        <div class="row-fluid">
+            <div class="span12">
+                <legend>Dados da turma</legend>
+                <div class="control-group">
+                    <label>Turma</label>
+                    @*@Html.LabelFor(model => model.TurmaNome, new { @class = "control-label" })*@
+
+                    @Html.EditorFor(model => model.TurmaNome)
+                    @Html.ValidationMessageFor(model => model.TurmaNome)
+
+
+                    @if (BLL.Usuarios.GetUtilizaFilial() == true && BLL.Usuarios.GetFilialIDMaster() == 0)
+                    { 
+                        <label>@BLL.Usuarios.GetEntidadeFilial()</label>
+                        @Html.DropDownListFor(model => model.FilialID, (SelectList)ViewBag.DdlFiliais, "--Selecione--")
+                    }
+                    else
+                    {
+                        <input type="hidden" name="FilialID" value="@BLL.Usuarios.GetFilialIDMaster()"/>
+                    }
+                </div>
+
+            </div>
+        </div>
+        
+        <div class="row-fluid">
+
+            <div class="span3">
+                <label>Hora Início</label>
+
+
+                <div class="input-prepend">
+                    <span class="add-on"><i class="icon-time"></i></span>
+
+
+                    <select class="chosen-select input-small" id="HoraInicio" name="HoraInicio">
+                        @{horario = AgendaHoraIni;
+                        }
+                        @for (int i = 0; i < horarios; i++)
+                        {
+                            idx = 0;
+                            horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+                            var shorario = String.Format("{0:t}", horario);
+                            var shorarioSelect = String.Format("{0:t}", Model.Inicio);
+                            <option value="@shorario" @(shorario == shorarioSelect ? "selected" : "")>@shorario</option>
+                        }
+                    </select>
+
+                </div>
+
+
+
+            </div>
+
+
+
+            <div class="span3">
+                <label>Hora Fim</label>
+
+
+
+                <div class="input-prepend">
+                    <span class="add-on"><i class="icon-time"></i></span>
+
+
+                    <select class="chosen-select input-small" id="HoraFim" name="HoraFim">
+                        @{horario = AgendaHoraIni;
+                        }
+                        @for (int i = 0; i < horarios; i++)
+                        {
+                            idx = 0;
+                            horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+                            var shorario = String.Format("{0:t}", horario);
+                            var shorarioSelect = String.Format("{0:t}", Model.Fim);
+                            <option value="@shorario" @(shorario == shorarioSelect ? "selected" : "")>@shorario</option>
+                        }
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+            
+        
+        <div class="row-fluid">
+            <div class="span12">
+
+                <br />
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Dias</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <td>
+                            <label class="checkbox">@Html.CheckBoxFor(model => model.Domingo) Domingo</label></td>
+                        <td>
+                            <label class="checkbox">@Html.CheckBoxFor(model => model.Segunda) Segunda</label></td>
+                        <td>
+                            <label class="checkbox">@Html.CheckBoxFor(model => model.Terca) Terça</label></td>
+                        <td>
+                            <label class="checkbox">@Html.CheckBoxFor(model => model.Quarta) Quarta</label></td>
+                        <td>
+                            <label class="checkbox">@Html.CheckBoxFor(model => model.Quinta) Quinta</label></td>
+                        <td>
+                            <label class="checkbox">@Html.CheckBoxFor(model => model.Sexta) Sexta</label></td>
+                        <td>
+                            <label class="checkbox">@Html.CheckBoxFor(model => model.Sabado) Sábado</label></td>
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+        
+        <div class="row-fluid">
+            <div class="span12">
+
+
+                <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+                @Html.ActionLink("Voltar", "Index", new { id = 0 }, new { @class = "pull-right" })
+
+
+            </div>
+        </div>
+        
+        
+                        if (Model.TurmaId > 0)
+                        {
+        <br />
+        <br />
+        <legend>@BLL.Usuarios.GetEntidadeCliente() na turma</legend>
+        @Html.ActionLink("+ Adicionar", "InserirAluno", new { id = Model.TurmaId, tipo = @ViewBag.tipo }, new { @class = "" })
+        <div class="control-group">
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Aluno </th>
+                        <th>% Presença </th>
+                        <th>Dt. Nascimento</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in alunos)
+                    {
+
+                        BLL.Erro alerta = BLL.Utils.Validacoes.IsAniversariante(item.DataNascimento);
+                        
+                        <tr class="@(alerta.NUMERO == BLL.Erro.Tipo.ComErro ? "warning" : "")">
+                            <td>@if (alerta.NUMERO == BLL.Erro.Tipo.ComErro)
+                                {<span class="tip-right" title="@alerta.MENSAGEM"><i class="icon-info-sign"></i></span>}</td>
+                            <td><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox">@item.Nome</a></td>
+                            <td>@{
+                              
+                                BLL.Pessoas o = new BLL.Pessoas();
+                                var obj = o.GetPercPresenca(item.PessoaID);
+
+                                foreach (var item2 in obj)
+                                {
+
+                                    double percpres = (item2.Pres / item2.Vezes) * 100;
+                                    
+                                @percpres
+                                    
+                                }
+                                
+                                
+                                
+                            }</td>
+
+                            <td>@if (item.DataNascimento != null)
+                                {
+                                @item.DataNascimento.ToString("dd/MM/yyyy");
+                                }
+                                else
+                                {
+                                <i class="fa fa-frown-o"></i>
+                                }
+
+                            </td>
+
+
+                            <td>@Html.ActionLink("Excluir", "DeletarAluno", new { id = item.PessoaID, tipo = @ViewBag.tipo, @TurmaId = @Model.TurmaId }, new { @class = "btn btn-mini" })</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+            
+        <div class="control-group">
+            <legend>Coaches vinculados</legend>
+
+            <div>
+                <ul>
+
+                    @{
+                    foreach (var item3 in coaches)
+                    {
+
+                        <li>
+                            @item3.Apelido
+                        </li> ;
+
+                    } }
+                </ul>
+            </div>
+
+        </div>
+            
+                        }
+
+
+
+
+
+
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index", new { id = 0 })
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    @*<script src="~/Content/themes/base/js/Gallery.js"></script>*@
+
+}

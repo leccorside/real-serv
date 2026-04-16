@@ -1,0 +1,116 @@
+<style>
+    .content {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    .user-item h5,
+    .user-item em {
+        padding-left: 0px !important;
+        margin-bottom: 0px !important;
+        line-height: 15pt;
+    }
+    
+    .user-item {
+        margin-bottom: 5pt;
+        border-bottom: solid 3px rgba(73, 155, 234, 0.62);
+        min-height: 45pt;
+    }
+    
+    .user-item .user-item-icon-3 {
+        padding: 0 10px;
+        width: auto;
+        /* text-align: center; */
+        /* line-height: 30px; */
+        position: relative !important;
+        top: 0px;
+        /* right: 0px; */
+        border-radius: 0px;
+        margin-top: 0px;
+        font-size: 11px;
+        /*float: right;*/
+    }
+    
+    .bg-blue-light {
+        color: #fff !important;
+        padding: 0 15pt;
+        font-weight: 700 !important;
+        font-size: 15pt !important;
+    }
+    
+    .toggle i {
+        font-size: 15pt !important;
+        padding-right: 25pt !important;
+    }
+    
+    .toggle i.rotate-toggle {
+        color: #c0392b !important;
+    }
+    
+    .accordion-toggle i {
+        float: inherit;
+    }
+    
+    #i-toggle {
+        float: right;
+    }
+    
+    .button i {
+        padding-right: 0px;
+    }
+
+</style>
+<div class="header-clear">
+</div>
+<div class="content-strip">
+    <div class="strip-content">
+        <h1>Supervisões</h1>
+    </div>
+    <div class="overlay"></div> <img src="images/pictures/Sobre.png" alt="img"> </div>
+<div class="content">
+    <!-- erro -->
+    <div ng-show="error" class="static-notification bg-red-dark">
+        <h6><i class="fa fa-times-circle static-notification-icon"></i>Ooops!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{ errormsg }}
+        </p>
+    </div>
+
+
+    <!-- sucesso -->
+    <div ng-show="sucesso" class="static-notification bg-green-dark">
+        <h6><i class="fa fa-check static-notification-icon"></i>Tudo certo!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{sucessomsg}}
+        </p>
+    </div>
+
+
+    <div ng-show="!Supervisoes">Carregando supervisões do dia</div>
+    <div ng-show="Supervisoes">
+
+
+        <a href="#!/supervisao" class="button button-icon button-green"><i class="fa fa-plus"></i> Nova supervisão</a>
+
+        <h4>Supervisões realizadas no dia</h4>
+
+        <div class="one-half-responsive" ng-repeat="supervisao in Supervisoes">
+
+
+            <div class="user-feed">
+                <a ng-href="#!/supervisaoview/{{supervisao.SupervisaoId}}">
+                <img class="user-feed-image preload-image" data-original="images/pictures/icoCheck.jpg" alt="img" src="images/pictures/icoCheck.jpg" style="display: block;">
+                <h5>{{supervisao.PostoDeServicoNome}}</h5>
+                <small class="pull-right">id: {{supervisao.SupervisaoId}}</small>
+                <em><i class="fa fa-clock-o"></i>{{supervisao.sRegDtInicio}} </em>
+                </a>
+            </div>
+
+
+        </div>
+    </div>
+
+
+</div>

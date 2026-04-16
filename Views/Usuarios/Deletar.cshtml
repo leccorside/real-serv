@@ -1,0 +1,107 @@
+﻿@model Models.Usuario
+
+@{
+    ViewBag.Title = "Excluíndo Usuários";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Usuários", "Index", new { id = 0 })</li>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja apagar esse registro?
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    <div class="row">
+
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.UsuarioId)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.UsuarioId)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.UsuarioNome)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.UsuarioNome)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.UsuarioEmail)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.UsuarioEmail)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.UsuarioLogin)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.UsuarioLogin)
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- ./conteudo aqui -->
+                </div>
+                <div class="panel-footer">
+
+                    @using (Html.BeginForm())
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.HiddenFor(model => model.UsuarioId)
+                                    <input type="submit" value="Apagar" class="btn btn-danger" />
+                                
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary" })
+                                
+                            </div>
+                        </div>    
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+

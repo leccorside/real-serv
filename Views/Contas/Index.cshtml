@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Models.Conta>
+
+@{
+    ViewBag.Title = "Contas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Financeiro", "Index", "Financeiro")</li>
+
+}
+
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">                
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @Html.ActionLink("+ Criar", "Criar", null, new { @class = "btn btn-primary" })
+
+                            <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Tipo
+                    </th>
+                    <th>@BLL.Usuarios.GetEntidadeFilial()</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ContaNome)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegDtInicio)
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.ContaTipo)
+                        </td>
+                        <td nowrap>@item.FilialNome</td>
+                        <td width="100%" nowrap>
+                            @item.ContaNome
+                            @if (item.BoletoSimplesContaId > 0)
+                            {
+                            <span class="label label-warning">Integrado Boleto Simples</span>    
+                            }
+                            
+                        </td>
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.RegDtInicio)
+                        </td>
+                        <td nowrap>@Html.ActionLink("Alterar", "Editar", new { id = item.ContaId }, new { @class = "btn btn-outline btn-primary btn-xs" })</td>
+                        <td nowrap>@Html.ActionLink("Excluir", "Deletar", new { id = item.ContaId }, new { @class = "btn btn-outline btn-primary btn-xs" })</td>
+                    </tr>
+                }
+
+
+            </tbody>
+
+
+
+        </table>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

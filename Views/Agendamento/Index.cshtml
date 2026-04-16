@@ -1,0 +1,21 @@
+﻿@model Models.Agendamento
+
+@{
+    ViewBag.Title = "Agenda";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+@section Breadcrumb{
+
+}
+
+
+@Html.Partial("~/Views/Agendamento/_AgendaPartial.cshtml")
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    }

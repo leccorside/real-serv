@@ -1,0 +1,216 @@
+﻿@model Models.MedGuiaItemView
+
+@{
+    string nome = "Guia " + Model.MedGuia.MedGuiaId + " de " + Model.MedGuia.PacienteNome;
+
+
+
+    ViewBag.Title = nome;
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+
+    //bool _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    //bool _PodeAlterar = BLL.MedGuias.
+    var bllMedGuias = new BLL.MedGuias();
+
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasAnexos = BLL.Usuarios.VerificaAcesso("Anexos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+
+
+    var bllDocumentosArquivos = new BLL.DocumentosArquivos();
+
+    var listaDocumentos = bllDocumentosArquivos.Listar(null, "", "", "", "medguias", Model.MedGuiaId);
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Guias", "Index", new { id = 0 })</li>
+    <li class="active">Documentos</li>
+}
+
+
+
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+                @Html.Partial("~/Views/MedGuias/_tabs.cshtml", Model.MedGuia)
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- conteuod aqui -->
+                            
+                                <div class="row">
+
+                                    <div class="form-group col-lg-1">
+                                        <label>Guia n.</label>
+                                        <p class="form-control-static">@Model.MedGuiaId</p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Data</label>
+                                        <p class="form-control-static">@string.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedGuiaData)</p>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Convênio / Plano</label>
+                                        <p class="form-control-static">@Model.MedGuia.ConvenioNome / @Model.MedGuia.ConvenioPlanoNome</p>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>Médico</label>
+                                        <p class="form-control-static">@Model.MedGuia.MedicoNome</p>
+                                    </div>
+                                    <div class="form-group col-lg-3">
+                                        <label>@(Model.MedGuia.PacienteResponsavel?"Responsável":"Paciente")</label> @Html.TermoAceiteStatus(Model.MedGuia.PacienteTermoAceite)
+                                        <p class="form-control-static"><a href="@Url.Content("~/Pessoas/DadosAluno/" + Model.MedGuia.PacienteId)" class="fancybox_full fancybox.iframe btn btn-outline btn-default btn-xs"><i class="fa fa-search"></i></a> @Model.MedGuia.PacienteNome <small>@Model.MedGuia.PacienteCpf</small></p>
+                                          @if (Model.MedGuia.PacienteId > 0 && Model.MedGuia.PacienteCelular!=null)
+                                        {
+                                        
+                                              <a href="@Url.Content("~/TemplatesMensagens/Enviar/?PessoaId=" + Model.MedGuia.PacienteId + "&MedGuiaId=" + Model.MedGuiaId)" class="fancybox_full fancybox.iframe btn btn-outline btn-success btn-xs pull-right"><i class="fa fa-whatsapp"></i><small>Conversar</small></a>
+                                              
+                                        }
+                                        
+
+                                        
+                                    </div>
+
+
+
+                                </div>
+
+                            @if (Model.MedGuia.PacienteResponsavel)
+                                {
+                                <div class="row">
+                                    <div class="form-group col-lg-6">
+                                        <label>Paciente</label> 
+                                        <p class="form-control-static"><span id="PessoaDependenteNome">@Model.MedGuia.PessoaDependenteNome</span></p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Grau Parentesco</label> 
+                                        <p class="form-control-static"><span id="GrauParentescoNome">@Model.MedGuia.GrauParentescoNome</span> </p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Data Nascimento</label> 
+                                        <p class="form-control-static">@string.Format("{0:dd/MM/yyyy}", Model.MedGuia.DataNascimento)</p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Sexo</label> 
+                                        <p class="form-control-static"><span>@Model.MedGuia.Sexo</span> </p>
+                                    </div>
+                                    </div>
+                                }
+                            <!-- ./conteudo aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+    
+
+    <div class="row">
+        <div class="col-lg-12"><h4>Documentos</h4></div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <ul class="h-list m-t">
+                        <li class="active"><a href="@Url.Content("~/DocumentosArquivos/Index/" + Model.MedGuiaId + "/medguias/")" class="fancybox_recarrega fancybox.iframe"><i class="fa fa-folder"></i>Documentos</a></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-9" style="">
+            @Html.Partial("~/Views/DocumentosArquivos/_ListDocumentos.cshtml", listaDocumentos)
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12"><h4>Anexos</h4></div>
+    </div>
+    
+    @Html.CubeeAnexos("Pessoas", Model.MedGuia.PacienteId, " |RG|CPF|Carteirinha|Exames|Contrato|Laudo", "form-control", _MedGuiasAnexos, _MedGuiasAnexos, _MedGuiasAnexos, _MedGuiasAnexos, false, "", Model.MedGuia.EmpresaId)
+
+
+
+
+
+
+
+</div>
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+}
+
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $(".fancybox").fancybox({
+                fitToView: false,
+                width: '80%',
+                autoSize: false
+            });
+            $(".fancybox_recarrega").fancybox({
+                fitToView: false,
+                width: '80%',
+                autoSize: false,
+                beforeClose: function () {
+                    RecarregaPagina();
+                },
+            });
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+        });
+
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+    </script>
+
+
+
+}
+

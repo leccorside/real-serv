@@ -1,0 +1,36 @@
+﻿@model Models.ContratoView
+
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+
+    
+    
+}
+
+
+
+<ul class="nav nav-tabs">
+    <li class="@(currentAction == "criar" ? " active " : "")">
+        @Html.ActionLink("Dados Gerais", "Criar", new { id = Model.Contrato.ContratoId, Modal = Model.Contrato.Modal }, new { @class = "" })
+    </li>
+    @*<li class="@(currentAction == "produtos" ? " active " : "")">
+        @Html.ActionLink("Produtos & Serviços", "Produtos", new { id = Model.Contrato.ContratoId, Modal = Model.Contrato.Modal }, new { @class = "" })
+    </li>*@
+    <li class="@(currentAction == "planos" ? " active " : "")">
+        @Html.ActionLink("Planos", "Planos", new { id = Model.Contrato.ContratoId, Modal = Model.Contrato.Modal }, new { @class = "" })
+    </li>
+    <li class="@(currentAction == "status" ? " active " : "")">
+        @Html.ActionLink("Status", "Status", new { id = Model.Contrato.ContratoId, Modal = Model.Contrato.Modal }, new { @class = "" })
+    </li>
+    <li class="@(currentAction == "documentos" ? " active " : "")">
+        @Html.ActionLink("Documentos", "Documentos", new { id = Model.Contrato.ContratoId, Modal = Model.Contrato.Modal }, new { @class = "" })
+    </li>
+    <li class="@(currentAction == "anexos" ? " active " : "")">
+        @Html.ActionLink("Anexos", "Anexos", new { id = Model.Contrato.ContratoId, Modal = Model.Contrato.Modal }, new { @class = "" })
+    </li>
+</ul>
+
+

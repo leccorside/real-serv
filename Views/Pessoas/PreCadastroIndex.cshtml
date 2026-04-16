@@ -1,0 +1,159 @@
+﻿@model IEnumerable<Models.PessoaPreCadastro>
+
+
+
+@{
+    var vtipo = "Pré-cadastro de " + BLL.Usuarios.GetEntidadeCliente();
+    
+    ViewBag.Title = vtipo;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    var pagina = Request["pagina"];
+    var paginaAtual = (pagina == "" || pagina == null) ? 1 : int.Parse(pagina);
+    var qtdPaginas = ViewBag.qtdPaginas;
+
+    var ordenacao = Request["tipoordenacao"];
+    var tipoordenacao = (ordenacao == "" || pagina == null) ? "asc" : ordenacao;
+    tipoordenacao = (tipoordenacao == "asc") ? "desc" : "asc";
+
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+
+
+<div class="row-fluid">
+    <div class="span6">
+        @Html.ActionLink("+ Criar", "PreCadastroCriar", new { id = 0 }, new { @class = "btn btn-primary" })
+    </div>
+    
+    <div class="span6 cwell">@using (Html.BeginForm("PreCadastroIndex", "Pessoas", FormMethod.Get, new { @class = "form-inline" }))
+        {
+                           <input type="hidden" name="tipo" value="@ViewBag.tipo" />
+            <label>Pesquisar:</label> <input type="text" name="pesquisar" title="Pesquisar" class="input" />   
+            <input id="Submit1" type="submit" class="btn" value="Ok" />
+        }</div>
+
+</div>
+
+<div class="row-fluid">
+
+    <div class="span12">
+
+            
+        <h6>@ViewBag.qtdAtivos pré-cadastrado(s)</h6>
+        <table class="footable table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=PessoaCount&tipoordenacao=@tipoordenacao">Nro.</a>
+                    </th>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Nome&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Nome)</a>
+                    </th>
+                      @if (BLL.Usuarios.GetUtilizaFilial())
+{
+    <th nowrap data-hide="phone,tablet">
+        <a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=FilialNome&tipoordenacao=@tipoordenacao">Filial</a>
+    </th>
+}
+                
+                    <th nowrap data-hide="phone,tablet">
+                        <a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Email&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Email)</a>
+                    </th>
+                    <th data-hide="phone,tablet">
+                        <a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Telefone&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Telefone)</a>
+                    </th>
+                    <th data-hide="phone,tablet">
+                        <a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Celular&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Celular)</a>
+                    </th>
+                    
+                    <th data-hide="phone,tablet"><a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=RegDtInicio&tipoordenacao=@tipoordenacao">Data de Cadastro</a></th>
+                    <th data-hide="phone,tablet"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr >
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.PessoaID)
+                        </td>
+                        <td width="100%">
+                            @Html.DisplayFor(modelItem => item.Nome)
+                        </td>
+                          @if (BLL.Usuarios.GetUtilizaFilial())
+                        {
+                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                            @item.FilialNome
+                        </td>
+                        }
+                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                            @Html.DisplayFor(modelItem => item.Telefone)
+                        </td>
+                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                            @Html.DisplayFor(modelItem => item.Celular)
+                        </td>
+                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+
+                            @Html.DisplayFor(modelItem => item.RegDtInicio)
+                        </td>
+
+                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                            <a href="@Url.Content("~/Pessoas/PreCadastroConverter/"+item.PessoaID)" class="btn btn-mini btn-info"><i class="icon-thumbs-up"></i>Converter em cliente</a> |
+                            @Html.ActionLink("Alterar", "PreCadastroCriar", new { id = item.PessoaID, tipo = @ViewBag.tipo }, new { @class = "btn btn-mini" }) |
+                            @Html.ActionLink("Excluir", "PreCadastroDeletar", new { id = item.PessoaID, tipo = @ViewBag.tipo }, new { @class = "btn btn-mini" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+        <div class="pagination">
+            <ul>
+                
+                <li class="@(paginaAtual == 1 ? " disabled " : "")"><a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@(paginaAtual > 1 ? paginaAtual - 1 : paginaAtual)">«</a></li>
+                @for (int i = 1; i < qtdPaginas+1; i++)
+                  {
+                <li class="@(paginaAtual == i ? " active " : "")"><a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/"+ViewBag.tipo)?pagina=@i">@i</a></li>      
+                      
+                  }
+                    
+                
+                <li class="@(paginaAtual >= qtdPaginas ? " disabled " : "")"><a href="@Url.Content("~/Pessoas/PreCadastroIndex/0/" + ViewBag.tipo)?pagina=@(paginaAtual < qtdPaginas ? paginaAtual + 1 : paginaAtual)">»</a></li>
+            </ul>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+        });
+    </script>
+
+
+
+}

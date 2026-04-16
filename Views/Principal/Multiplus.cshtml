@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "Multiplus";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    var user = new BLL.Usuarios();
+
+
+    var lista = new List<Models.Menu>();
+    var contador = 0;
+    var contadorMaster = 1;
+    var orientacao = "col-l";
+    var click = "";
+
+    //monta o menu de acordo com o perfil 
+    //cores: Orange, Purple, lblue, Red, Green and Blue
+    //icones: http://fortawesome.github.io/Font-Awesome/icons/
+
+    lista.Add(new Models.Menu { Cor = "black", Icone = "icon-home", Link = "~/Principal/Index", Nome = "Home", OnClick = "" });
+
+    if (user.ControleAcesso("LoteIndex", "Multiplus"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-upload", Link = "~/multiplus/LoteIndex/", Nome = "Lotes", OnClick = "" });
+    }
+    
+    //if (user.ControleAcesso("index", "produtosstatus"))
+    //{
+    //    lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-ellipsis-h", Link = "~/ProdutosStatus/Index/", Nome = "Status de Produtos", OnClick = "" });
+    //}
+    //if (user.ControleAcesso("index", "produtosunidades"))
+    //{
+    //    lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-neuter", Link = "~/ProdutosUnidades/Index/", Nome = "Unidade de Medida de Produtos", OnClick = "" });
+    //}
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+<div class="color-blocks">
+
+    @foreach (var item in lista)
+    {
+        // aqui inicia
+        orientacao = (contador % 2 == 0) ? "col-l" : "col-r";
+        click = (item.OnClick != "onclick=\"return confirm('" + item.OnClick + "')\"") ? "" : "";
+        
+        if (contador==0)
+        {
+            @:<div class="row-fluid">
+        }
+
+        //abre spans6
+        if (contador==0 || contador==2)
+        {
+                @:<div class="span6">
+                    @:<div class="c-block">
+        }
+
+        // aqui entra o item
+                        @:<div class="@orientacao b-@item.Cor">
+                            @:<a href="@Url.Content(item.Link)" @click><i class="@item.Icone"></i>@item.Nome</a>
+                        @:</div>
+        
+        // aqui finaliza
+        
+        
+        
+        //feca span6
+        if (contador==1 || contador==3)
+        {
+                    @:</div>
+                @:</div>
+        }
+        
+        if (contador==3)
+        {
+            @:</div><!--rowfluid--><br />
+            contador = -1;
+        }
+        
+        if (lista.Count()==contadorMaster)
+        {
+                    @:</div>
+                @:</div>
+            @:</div><!--rowfluid-->
+            @:<br />
+        }
+        
+        contador++;
+        contadorMaster++;
+    }
+</div>
+
+
+
+

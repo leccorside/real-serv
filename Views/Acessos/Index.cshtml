@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Models.Acesso>
+
+
+@{
+    ViewBag.Title = "Acessos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+
+
+@Html.ActionLink("+ Novo Acesso", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+
+
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.AcessoId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Controle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Acao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>Exibir no menu</th>
+            <th>Menu</th>
+            <th>Ordem</th>
+            <th>Id Pai</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count() == 0)
+        {
+            <tr class="info">
+                <td colspan="20"><small class="muted">Nenhum registro localizado</small></td>
+            </tr>
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.AcessoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Controle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Acao)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descricao)
+                </td>
+                <td>@if (item.MenuExibir)
+                    {
+                    <i class="icon-checkmark"></i>
+                    }</td>
+                <td>@item.Menu</td>
+                <td>@item.MenuOrdem</td>
+                <td>@item.AcessoIdPai</td>
+                <td nowrap>
+
+                    <a href="~/Acessos/Alterar/@item.AcessoId" class="btn btn-mini"><i class="fa fa-pencil"></i>Alterar</a> | 
+                            <a href="~/Acessos/Deletar/@item.AcessoId" class="btn btn-mini"><i class="fa fa-times"></i>Excluir</a>
+
+
+                </td>
+            </tr>
+        }
+
+    </tbody>
+
+
+
+</table>
+
+

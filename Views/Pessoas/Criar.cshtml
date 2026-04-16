@@ -1,0 +1,2543 @@
+@model Models.Pessoa
+
+@{
+    var user = new BLL.Usuarios();
+    //var vtipo = (string)ViewBag.tipo.ToString();
+    var vtipo = Model.PessoaCategoria;
+
+    var bllProdutos = new BLL.Produtos();
+    var bllPessoasDependentes = new BLL.PessoasDependentes();
+    var bllPessoasDadosClinicos = new BLL.PessoasDadosClinicos();
+
+    var bllMedGuias = new BLL.MedGuias();
+
+    var bllContratos = new BLL.Contratos();
+
+    var listaDadosClinicos = bllPessoasDadosClinicos.ListarPorPessoaId(Model.PessoaID);
+
+    var listaGuias = bllMedGuias.ListarPorPessoaId(Model.PessoaID);
+
+
+    var bllPessoasTermosAceite = new BLL.PessoasTermosAceite();
+
+    var listaAceites = bllPessoasTermosAceite.ListarPorPessoaId(Model.PessoaID);
+    var _PessoasTermosAceite = BLL.Usuarios.VerificaAcesso("TermosAceite", "Pessoas");
+
+    //IEnumerable<Models.Produto> ddlProdutos = new List<Models.Produto>();
+
+    //IEnumerable<int> ProdutosSelecionados = new List<int>();
+
+    var vname = "";
+    switch (vtipo)
+    {
+        case "C":
+            vname = BLL.Usuarios.GetEntidadeCliente();
+            break;
+        case "F":
+            vname = BLL.Usuarios.GetEntidadeFornecedor();
+            break;
+        case "O":
+            vname = BLL.Usuarios.GetEntidadeFuncionario();
+
+            //ddlProdutos = bllProdutos.Listar();
+            //ProdutosSelecionados = bllProdutos.PessoasProdutosListar((int)Model.PessoaID);
+
+            break;
+        case "A":
+            vname = BLL.Usuarios.GetEntidade4();
+            break;
+        default:
+            vname = "Indefinido";
+
+            break;
+    }
+    var acao = "Cadastrar";
+
+    if (Model.PessoaID > 0)
+    {
+        acao = "Alterar";
+    }
+
+    var bllPessoasAnexos = new BLL.PessoasAnexos();
+    var listaAnexos = bllPessoasAnexos.Listar(Model.PessoaID);
+
+    var PostosDeServicos_Index = user.ControleAcesso("Index", "PostosDeServicos");
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+
+    var _PessoasDeletar = BLL.Usuarios.VerificaAcesso("Deletar", "Pessoas");
+
+
+    var _MedGuiasAnexos = BLL.Usuarios.VerificaAcesso("Anexos", "MedGuias");
+
+    var _ContratosPreparar = BLL.Usuarios.VerificaAcesso("Preparar", "Contratos");
+
+    var _PessoasPlanosInscricoes_index = BLL.Usuarios.VerificaAcesso("index", "PessoasPlanosInscricoes");
+
+
+    var _Regras_pessoas_cliente_formacao = user.ControleAcesso("pessoas_cliente_formacao", "Regras");
+
+    var _PRCPropostas_Index = BLL.Usuarios.VerificaAcesso("Index", "PRCPropostas");
+
+
+
+    bool exibeDadosBancarios = (vtipo != "C") ? true : false;
+
+    var registrarvalores_fichacadastral = user.ControleAcesso("registrarvalores", "fichacadastral");
+    var medguias_criar = user.ControleAcesso("Criar", "MedGuias");
+
+    var listaDependentes = bllPessoasDependentes.ListarTudoPorPessoaId(Model.PessoaID);
+
+    var associe_seusdados_maxlen_pessoa_nome = BLL.Configuracoes.CarregarPorEmpresaId("associe_seusdados_maxlen_pessoa_nome", Model.EmpresaId) ?? "";
+    associe_seusdados_maxlen_pessoa_nome = (associe_seusdados_maxlen_pessoa_nome == "" ? "200" : associe_seusdados_maxlen_pessoa_nome);
+
+    var pessoas_f_docs_padrao = BLL.Configuracoes.CarregarPorEmpresaId("pessoas_f.documentos.padrao", Model.EmpresaId) ?? "";
+    var pessoas_f_docs_obrigatorio = BLL.Configuracoes.CarregarPorEmpresaId("pessoas_f.documentos.obrigatorio", Model.EmpresaId) ?? "";
+    
+}
+
+@{
+    ViewBag.Title = acao + " " + vname;
+
+    if (Model.ExibirModal)
+    {
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+    
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"> @Html.ActionLink(vname, "Index", new { id = 0, tipo = vtipo })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+             @if (user.ControleAcesso("pessoas_documento_duplicados", "Regras"))
+             {
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Seu perfil está habilitado para cadastro de @vname duplicados.
+                </div>
+             }
+            
+              @if (vtipo == "F" && _PRCPropostas_Index)
+            {
+                var bllPRCPropostas = new BLL.PRCPropostas();
+                  var listaIndices = bllPRCPropostas.ListaQtdPorAdvogadoId(Model.PessoaID);
+                  
+                <br />               
+                  <a href="#" onclick="javascript:$('#tab_20').click()">
+                  <div class="row">
+                      @foreach (var item in listaIndices)
+                      {
+                          var classe = "";
+                          switch (item.result_B)
+                          {
+                              case "Total Realizado":
+                                  classe = "text-success";
+                                  break;
+                              case "Total Não Realizado":
+                                  classe = "text-danger";
+                                  break;
+                              case "Total Andamento":
+                                  classe = "text-warning";
+                                  break;
+                              default:
+                                  break;
+                          }
+                              
+                              
+                      <div class="col-lg-3" style="">
+                          <div class="hpanel">
+                              <div class="panel-body text-center h-180">
+                                  
+
+                                  
+                                  <h4 class="font-extra-bold no-margins @classe">@item.result_B</h4>
+                                  <br />
+                                  <div class="row">
+                                <div class="col-xs-3" style="">
+                                    <small class="stats-label">Propostas</small>
+                                    <h5>@item.result_D</h5>
+                                </div>
+
+                                <div class="col-xs-9" style="">
+                                    <small class="stats-label">Total Bruto</small>
+                                    <h5>@decimal.Parse(item.result_C).ToString("C")</h5>
+                                </div>
+                            </div>
+                              </div>
+
+                          </div>
+                      </div>    
+                      }
+                      
+                  </div>                                                 
+                      </a>         
+                <br />
+            }
+
+            
+            
+            
+        
+
+            <div class="hpanel">
+                <!-- tab aqui_-->
+                @if (vtipo == "O" && Model.PessoaID > 0)
+                {
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#">Dados Cadastrais</a>
+                        </li>
+                        
+                        @if (vtipo.ToString() == "O" && user.ControleAcesso("pessoas_funcionario_completo", "Regras"))
+                        {
+                            <li>@Html.ActionLink("Produtos", "Produtos", new { id = Model.PessoaID, tipo = vtipo }, new { @class = "" })</li>
+                        }
+                        @if (user.ControleAcesso("pessoas_servicos_prestados", "Regras"))
+                        {
+                            <li>@Html.ActionLink("Valores do Serviços prestados", "DefinirValores", new { id = Model.PessoaID, tipo = Model.PessoaCategoria }, new { @class = "" })</li>  
+                        }
+                        @if (user.ControleAcesso("pessoas_indicacoes", "Regras"))
+                        {
+                            <li>@Html.ActionLink("Indicações", "Indicacoes", new { id = Model.PessoaID, tipo = Model.PessoaCategoria }, new { @class = "" })</li>                
+                        }
+
+                    </ul>
+                }
+                else
+                {
+                    <ul class="nav nav-tabs">
+
+                        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">Dados Cadastrais</a></li>
+                        @if (Model.PessoaID > 0 && _PRCPropostas_Index)
+                        {
+                            <li class=""><a data-toggle="tab" href="#tab-20" id="tab_20" aria-expanded="false">Propostas</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-30" aria-expanded="false">Status</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-40" aria-expanded="false">Documentos</a></li>
+                        }
+                    </ul>
+                }
+                <!-- tab aqui-->
+                <div class="tab-content">
+                    
+                    
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- conteudo aqui -->
+                            @using (Html.BeginForm("Criar", "Pessoas", FormMethod.Post, new { enctype = "multipart/form-data", @id = "form_principal" }))
+                            {
+                                if (Model.PessoaID > 0)
+                                {
+                                @Html.HiddenFor(m => m.PessoaID);
+                                @Html.HiddenFor(m => m.PessoaCount);
+                                }
+                                @Html.HiddenFor(m => m.NomeHash)
+                                @Html.HiddenFor(m => m.ExibirModal)
+                                @Html.HiddenFor(m => m.PessoaGUID)
+                                @Html.HiddenFor(m => m.PessoaIntegrado)
+                            <!-- DADOS BASICOS -->
+                            <legend>Dados Básicos</legend>
+                                <div class="row">
+                                    <div class="col-lg-9 col-md-9 col-sm-9">
+                                        <div class="row">
+                                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                                <label>Número </label><br />
+                                                <p class="form-control-static">@Model.PessoaID</p>
+                                            </div>
+
+                                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                                <label>Código</label> <a href="#" class="btn btn-xs btn-primary btn-outline" id="btnGerarNovoCodigo"><i class="fa fa-refresh" ></i> Novo</a><br />
+                                                @Html.TextBoxFor(model => model.PessoaCodigo, new { @class = "form-control" })
+                                            </div>
+
+                                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                                <label>@BLL.Usuarios.GetEntidadeFilial():</label><br />
+                                                @Html.DropDownListFiliais(Model.PessoaID, "FilialID", Model.FilialID.ToString(), false, "chosen-select form-control ", false)
+                                            </div>
+                                
+                                            <input type="hidden" id="xsx" name="xxx" value="xxx" />
+                                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                                <label>Tipo:</label><br />
+                                                @Html.DropDownListFor(m => m.PessoaTipo, new[] {
+                           new SelectListItem() {Text = "PF", Value = "PF"},
+                           new SelectListItem() {Text = "PJ", Value = "PJ"},
+                           new SelectListItem() {Text = "Estrangeiro", Value = "OU"},
+                           }, null, new { onchange = "Select(this.value);", @class = "chosen-select form-control" })
+                                            </div>
+
+                                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                                <label id="tpDocumento"></label><br />
+
+                                                <div class="input-group">
+                                                    @Html.TextBoxFor(model => model.Documento, new { @class = "form-control" })
+                                                    <span class="input-group-btn">
+                                                         @if (Model.CpfValido == true)
+                                                         {
+                                                        <button class="btn btn-success " type="submit" name="btnSubmit" value="validar"><i class="fa fa-check"></i></button>    
+                                            
+                                                         }
+                                                         else
+                                                         {
+                                                        <button class="btn btn-outline btn-primary" type="submit" name="btnSubmit" value="validar"><i class="fa fa-search"></i></button>    
+                                                         }
+                                                    </span>
+                                                </div>
+
+                                            </div>
+
+                                              <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                                <label>Nome Completo</label><br />
+                                                  @Html.TextBox("Nome", Model.Nome, new { @class = "form-control max", maxlength = associe_seusdados_maxlen_pessoa_nome })<br />@Html.ValidationMessageFor(model => model.Nome)
+                                            </div>
+
+                                            @if (user.ControleAcesso("pessoas_campo_apelido", "Regras"))
+                                            {
+                                                <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                                    <label>Apelido</label><br />
+                                                    @Html.TextBoxFor(model => model.Apelido, new { @class = "form-control" })
+                                                    <br />@Html.ValidationMessageFor(model => model.Apelido)
+                                                </div>}
+
+                                            <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                                <label style="width:100%">Celular   @if (Model.PessoaID > 0 && Model.Celular != null)
+                                                                                    {
+                                        
+                                                    
+                                                    <a href="@Url.Content("~/TemplatesMensagens/Enviar/?PessoaId=" + Model.PessoaID)" class="fancybox_full fancybox.iframe btn btn-outline btn-success btn-xs"><i class="fa fa-whatsapp"></i></a>    
+                                                    
+                                                                                    } <small class="pull-right" style="font-size: 11px">@Model.Celular</small></label><br />
+                                                <div class="input-group m-b"><span class="input-group-addon">
+                                                    <label>@Html.CheckBoxFor(model => model.CelularInternacional) cel. inter.</label>
+                                                </span>
+                                                    @Html.TextBoxFor(model => model.Celular, new { @class = "form-control" })</div>
+                                            </div>
+
+                                            @if (vtipo == "C" && user.ControleAcesso("pessoas_clientes_empresa", "Regras"))
+                                            {
+                                                <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                                    <label>Empresa</label><br />
+                                                    @Html.DropDownListFor(model => model.CompanhiaId, (SelectList)ViewBag.DdlCompanhias, "--Nenhuma--", new { @class = "chosen-select form-control" })
+                                                </div>
+                                            }
+
+
+                                            @if (vtipo == "O" && user.ControleAcesso("pessoas_funcionario_completo", "Regras"))
+                                            {
+                                                <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                                    <label>RE</label><br />
+                                                    @Html.TextBoxFor(model => model.RE, new { @class = "form-control" })
+                                                </div>
+                                            }
+
+
+
+                                            @if (user.ControleAcesso("pessoas_alterar_tipo ", "Regras") && (int)Model.PessoaID > 0)
+                                            {
+                                                <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                                    <label>Categoria da Pessoa</label><br />
+                                                    <select name="PessoaCategoria" id="PessoaCategoria", class="form-control chosen-select">
+                                                        <option value="C" @(vtipo == "C" ? " SELECTED " : "")>@BLL.Usuarios.GetEntidadeCliente()</option>
+                                                        <option value="F" @(vtipo == "F" ? " SELECTED " : "")>@BLL.Usuarios.GetEntidadeFornecedor()</option>
+                                                        <option value="O" @(vtipo == "O" ? " SELECTED " : "")>@BLL.Usuarios.GetEntidadeFuncionario()</option>
+                                                        @if (BLL.Usuarios.GetEmpresaTipoId() == 1)
+                                                        {
+                                                            <option value="A" @(vtipo == "A" ? " SELECTED " : "")>@BLL.Usuarios.GetEntidade4()</option>    
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                @Html.Hidden("PessoaCategoria", vtipo)    
+                                            }
+
+
+                                            
+
+                                            @if (vtipo == "C")
+                                            {
+                                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                                <label>Perfil:</label><br />
+                                                @Html.DropDownListFor(model => model.PessoaCategoriaSubId, (SelectList)ViewBag.DdlPessoasCategoriasSubs, null, new { @class = "chosen-select form-control" })
+                                            
+                                                </div>
+                                                
+                                                <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                                <label>Indicado por:</label><br />
+                                                @Html.DropDownListFor(model => model.PessoaIDIndicacao, (SelectList)ViewBag.DdlApresentadoPor, "--Ninguém--", new { @class = "chosen-select form-control" })
+                                            
+                                                </div>
+                                                
+                                                
+                                                
+                                                @*<div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                                <label>Formação:</label><br />
+                                                @Html.DropDownListPessoasTabelasAux("","",true," form-control ", "selecione", "FormacaoTipo")
+                                            
+                                                </div>*@
+                                                
+                                            }
+
+                                            @if (vtipo == "C" && user.ControleAcesso("index", "turmas"))
+                                            {<div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                                <label>Turma:</label><br />
+                                                @Html.DropDownListFor(model => model.TurmaId, (SelectList)ViewBag.DdlTurmas, "--Nenhuma--", new { @class = "chosen-select form-control" })
+                                            </div>
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(x => x.TurmaId)
+                                            }
+
+                                             @if (user.ControleAcesso("pessoas_campo_exibiragenda", "Regras"))
+                                             {<div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                                <label>Exibir na agenda</label><br />
+                                                <div class="checkbox">
+                                                   <label>@Html.CheckBoxFor(model => model.ExibirAgenda) Sim</label>
+                                                </div>
+                                            </div>
+                                                 if (Model.PessoaCategoria == "O")
+                                                 {
+                                                <div class="col-form col-lg-2 col-md-2 col-sm-2" id="div_exibiragenda_ordem">
+                                                    <label>Ordem de Exibição</label><br />
+                                                    @Html.TextBoxFor(model => model.ExibirAgendaOrdem, new { @class = "form-control" })
+                                                </div>
+                                                 }
+                                             }
+                                             else
+                                             {
+                                                 @Html.HiddenFor(x => x.ExibirAgenda)
+                                                 @Html.HiddenFor(x => x.ExibirAgendaOrdem)
+                                             }
+
+
+                                            @if ((int)Model.PessoaID > 0)
+                                            {<div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                                <label>Ativo</label><br />
+                                                <div class="checkbox">
+                                                    <label>@Html.CheckBoxFor(model => model.Ativo) Sim</label>
+                                                </div>
+                                            </div>
+                                            }
+                                            else
+                                            {
+                                                @Html.Hidden("Ativo", true)
+                                            }
+
+                                            @if (Model.PessoaIntegrado)
+                                            {
+                                                <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                                <label>Integrado</label><br />
+                                                <p class="form-control-static">CUBEE <i class="fa fa-cube" aria-hidden="true"></i></p>
+                                            </div>
+
+                                                
+                                            }
+
+                                            @if (user.ControleAcesso("pessoas_campo_favorito", "Regras"))
+                                            {
+                                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                                <label>Favorito</label>
+                                                <div class="checkbox">
+                                                   <label>@Html.CheckBoxFor(model => model.Favorito) <i id="labelFavorito" class="fa text-warning fa-heart"></i> sim</label>
+                                                </div>
+                                            </div>}
+                                            else
+                                            {
+                                                @Html.HiddenFor(x => x.Favorito)
+                                            }
+
+                                             @if (user.ControleAcesso("pessoas_campo_obito", "Regras"))
+                                             {
+                                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                                <label>Óbito</label>
+                                                <div class="checkbox">
+                                                   <label>@Html.CheckBoxFor(model => model.Obito) sim</label>
+                                                </div>
+                                            </div>
+                                             }
+                                             else
+                                             {
+                                                @Html.HiddenFor(x => x.Obito)
+                                             }
+
+                                            <div class="form-group col-lg-3 col-md-3 col-sm-3 @(Model.NaoPermiteEmail ? " alert-warning " : "")">
+                                <label>E-Mail</label>
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.NaoPermiteEmail, new { @class = "atualiza" }) <small>Não permite</small></label>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3 @(Model.NaoPermiteSMS ? " alert-warning " : "")">
+                                <label>SMS</label>
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.NaoPermiteSMS, new { @class = "atualiza" }) <small>Não permite</small></label>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3 @(Model.NaoPermiteLigacao ? " alert-warning " : "")">
+                                <label>Ligação</label>
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.NaoPermiteLigacao, new { @class = "atualiza" }) <small>Não permite</small></label>
+                                </div>
+                            </div>
+
+
+                                        </div>
+
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <label>Contra Senha</label><br />
+                                            @Html.PasswordFor(model => model.ContraSenha, new { @class = "form-control" })
+                                        </div>
+
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <label>Confirmar Senha</label><br />
+                                            <input type="password" id="ConfirmSenha" class="form-control" />
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <div class="control-group">
+                                            @if (Model.FotoPessoa != null && Model.FotoPessoa != "")
+                                            {
+              
+                                                <div class="thumbnails">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="thumbnail">
+                                                            <img src="@Url.Content(Model.FotoPessoa.Replace(".jpg", "thumb.jpg"))?@DateTime.Now.Second" alt="Foto">
+                                                            <div class="caption">
+                                                                <label>Foto</label><br />
+                                                                <p>JPEG ou PNG</p>
+                                                                <a href="@Url.Content("~/Pessoas/RemoveFoto/" + @Model.PessoaID)" class="btn btn-outline btn-danger btn-xs remove" onclick="return confirm('Deseja realmente excluir essa foto?')"><i class="fa fa-trash "></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {  
+                                                <div class="thumbnails">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="thumbnail">
+                                                            <img src="~/Content/images/YourPhotoHere.png" alt="Foto" width="100" height="100" />
+                                                            <div class="caption">
+                                                                <label>Foto</label><br />
+                                                                <p>JPEG ou PNG</p>
+                                                                <input type="file" name="Arquivo" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+                            <!-- ./ DADOS BASICOS -->
+                                
+                                
+                                
+                                <legend>Dados Complementares</legend>
+                                <div class="row">
+                                    <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                        <label>@(vtipo == "O" ? "Data de Admissão" : BLL.Usuarios.GetEntidadeClienteSingular() + " desde")</label>
+                                        @Html.TextBox("DataInicio", @String.Format("{0:dd/MM/yyyy}", Model.DataInicio), new { @class = "form-control datepicker", value = @DateTime.Now })
+                                    </div>
+
+                                    @if (vtipo == "C" && (user.ControleAcesso("pessoas_funcionario_completo", "Regras") || user.ControleAcesso("pessoas_C_DesligadoDt", "Pessoas")))
+                                    {
+
+                                        <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                            <label>Desligamento?</label><br />
+                                            <div class="checkbox">
+                                                <label>@Html.CheckBoxFor(model => model.Desligado) sim</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                            <label>Data de Encerramento/Desligamento</label>
+                                            @Html.TextBox("DesligadoDt", @String.Format("{0:dd/MM/yyyy}", Model.DesligadoDt), new { @class = "form-control datepicker", value = @DateTime.Now })
+                                        </div>
+                                    }
+
+                                    <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                        <label><span id="dataNascimento"></span></label>
+                                        @Html.TextBox("DataNascimento", @String.Format("{0:dd/MM/yyyy}", Model.DataNascimento), new { @class = "form-control datepicker", value = @DateTime.Now })
+                                    </div>
+
+
+
+                                    @if (vtipo != "C" && user.ControleAcesso("pessoas_funcionario_completo", "Regras") == false)
+                                    {
+                                        <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                            <label>@BLL.Usuarios.GetDocumentoProfissional()</label>
+                                            @Html.TextBoxFor(model => model.DocumentoProfissional, new { @class = "form-control " })
+                                        </div>
+                                    }
+
+                                    <div class="col-form col-lg-3 col-md-3 col-sm-3" id="div_sexo">
+                                        <label>Sexo</label>
+
+                                        @Html.DropDownListFor(m => m.Sexo, new[] {
+                                                new SelectListItem() {Text = "--Selecione--", Value = ""},
+                                   new SelectListItem() {Text = "F-Feminino", Value = "F"},
+                                   new SelectListItem() {Text = "M-Masculino", Value = "M"},
+                                   }, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="col-form col-lg-3 col-md-3 col-sm-3" id="div_rg">
+                                        <label>RG</label>
+                                        @Html.TextBoxFor(model => model.Rg, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="col-form col-lg-3 col-md-3 col-sm-3" id="div_ecivil">
+                                        <label>Estado Civil</label>
+                                        @Html.DropDownListEstadoCivil("EstadoCivil", Model.EstadoCivl, true, "form-control chosen-select ")
+                                    </div>
+
+                                    <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                        <label>Nacionalidade</label>
+                                        @Html.TextBoxFor(model => model.Nacionalidade, new { @class = "form-control" })
+                                    </div>
+
+
+
+                                    @if (user.ControleAcesso("pessoas_campo_contratook", "Regras"))
+                                    {
+                                        <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                            <label>Contrato ok?</label>
+                                            <div class="checkbox">
+                                                <label>@Html.CheckBoxFor(model => model.StatusContrato, new { @class = "form-control" }) sim</label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                    
+                                    if (vtipo != "C" && user.ControleAcesso("pessoas_clientes_insc_e_simples", "Regras") == false)
+                                    {
+                        <div id="painelPJ" class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.InscricaoEstadual)
+                                    @Html.TextBoxFor(model => model.InscricaoEstadual, new { @class = "form-control" })
+                            </div>
+                           
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Isento)
+                                @Html.TextBoxFor(model => model.Isento, new { @class = "form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.InscricaoMunicipal)
+                                @Html.TextBoxFor(model => model.InscricaoMunicipal, new { @class = "form-control" })
+                                </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.IsentoICMS)
+                                @Html.TextBoxFor(model => model.IsentoICMS, new { @class = "form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.InscricaoSuframa)
+                                @Html.TextBoxFor(model => model.InscricaoSuframa, new { @class = "form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Simples)
+                                @Html.TextBoxFor(model => model.Simples, new { @class = "form-control" })
+                            </div>
+
+
+                            
+                                </div>
+                                    }
+                    
+                                
+                    
+
+
+                    <legend>Contato</legend>
+                    <div class="row">
+                        <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                @Html.LabelFor(model => model.Email)
+                            
+                                @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                
+                            
+
+
+                        </div>
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Telefone)
+                                @Html.TextBoxFor(model => model.Telefone, new { @class = "form-control" })
+                        </div>
+
+                    </div>
+                                
+                          
+                                
+                                    if (vtipo == "C" && user.ControleAcesso("pessoas_clientes_cad_responsavel", "Regras") == true)
+                                    {
+                        <legend>Responsável</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.RespNome)
+                                
+                                    @Html.TextBoxFor(model => model.RespNome, new { @class = "form-control" })
+                                
+                            </div>
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.RespEmail)
+                                
+                                    @Html.TextBoxFor(model => model.RespEmail, new { @class = "form-control" })
+                                
+                            </div>
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.RespTelefone)
+                                
+                                    @Html.TextBoxFor(model => model.RespTelefone, new { @class = "form-control" })
+                                
+                            </div>
+
+                         
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Profissão</label>
+                                @Html.TextBoxFor(model => model.Profissao, new { @class = "form-control" })
+                            </div>
+                        
+                        
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                
+                                    @Html.LabelFor(model => model.RespEndereco)
+                                    @Html.TextAreaFor(model => model.RespEndereco, new { @class = "form-control" })
+                                
+                            </div>
+                        </div>
+                                    }
+
+                                    if (vtipo == "C" && user.ControleAcesso("pessoas_clientes_cad_administradora", "Regras") == true)
+                                    {
+                        <legend>Administradora</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                
+                                    @Html.LabelFor(model => model.AdmNome)
+                                    @Html.TextBoxFor(model => model.AdmNome, new { @class = "form-control" })
+                                    
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.AdmEmail)
+                                    @Html.TextBoxFor(model => model.AdmEmail, new { @class = "form-control" })
+                                    
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.AdmTelefone)
+                                    @Html.TextBoxFor(model => model.AdmTelefone, new { @class = "form-control" })
+                                
+                            </div>
+                        
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                    @Html.LabelFor(model => model.AdmEndereco)
+                                    @Html.TextAreaFor(model => model.AdmEndereco, new { @class = "form-control" })
+                                
+                            </div>
+                        </div>
+                                    }
+
+                    <a name="endereco"></a><legend>Endereço</legend>
+                    <div class="row">
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                            <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(model => model.Cep, new { @class = "form-control" })
+                                <span class="input-group-btn">
+                                    <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                </span>
+                            </div>
+                        </div>
+
+
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Endereco)
+                            
+                                @Html.TextBoxFor(model => model.Endereco, new { @class = "form-control" })
+                            
+                        </div>
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Numero)
+                            
+                                @Html.TextBoxFor(model => model.Numero, new { @class = "form-control" })
+                            
+                        </div>
+                    
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Complemento)
+                            
+                                @Html.TextBoxFor(model => model.Complemento, new { @class = "form-control" })
+                                
+                        </div>
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Bairro)
+                            
+                                @Html.TextBoxFor(model => model.Bairro, new { @class = "form-control" })
+                            
+                        </div>
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Cidade)
+                            
+                                @Html.TextBoxFor(model => model.Cidade, new { @class = "form-control" })
+                            
+                        </div>
+                    
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Estado)
+                            
+                                @Html.TextBoxFor(model => model.Estado, new { @class = "form-control" })
+                            
+                        </div>
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.Pais)
+                            
+                                @Html.TextBoxFor(model => model.Pais, new { @class = "form-control" })
+                            
+                        </div>
+                    
+                        <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Observações</label>
+                                @Html.TextAreaFor(model => model.Observacao, new { @class = "form-control" })
+                            
+                        </div>
+                    </div>
+
+                               
+                                
+                                <!-- perfil -->
+                                      
+                                <legend>Perfil</legend>
+                                <div class="row">
+                                    <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                        @Html.TextAreaFor(model => model.PessoaPerfil, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                
+                                <!-- ./perfil--> 
+                                
+                                
+                                <!-- ./perfil--> 
+                                
+                                <!-- DADOS CARTEIRA CONVENIO -->                                
+                                    if (vtipo == "C" && user.ControleAcesso("pessoas_convenio_carteira", "Regras"))
+                                    {<legend>Dados Carteira Convênio</legend>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" id="copyDadosPessoa" name="copyDadosPessoa" /> Copiar dados do paciente
+                                                </label>
+                                            </div>
+                                    </div>
+                                </div>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Convênio</label><br />
+                                @Html.DropDownListFor(model => model.ConvenioId, (SelectList)ViewBag.ddlConvenios, new { @class = "chosen-select form-control col-lg-12 col-md-12 col-sm-12 " })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Plano</label><br />
+                                <select data-placeholder="Selecione um convênio..." class="form-control chosen-select form-control col-lg-12 col-md-12 col-sm-12" data-val="true" data-val-required="O campo Plano é obrigatório" id="ConvenioPlanoId" name="ConvenioPlanoId"></select>
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Valor Reembolso Padrão</label><br />
+                                @Html.TextBox("ConvenioPlanoValor", string.Format("{0:F2}", Model.ConvenioPlanoValor), new { @class = "moeda form-control col-lg-12 col-md-12 col-sm-12" })
+                            </div>
+
+
+                             <div class="form-group col-lg-3">
+                                        <label>CPF Titular</label>
+                                        @Html.TextBoxFor(model => model.MedCarteiraTitularCpf, new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group col-lg-7">
+                                        <label>Nome Titular</label>
+                                        @Html.TextBoxFor(model => model.MedCarteiraTitularNome, new { @class = "form-control", maxlength = "200" })
+                                    </div>
+
+                                    <div class="form-group col-lg-2">
+                                        <label>Dt. Nascimento</label>
+                                        @Html.TextBox("MedCarteiraTitularDataNascimento", @String.Format("{0:dd/MM/yyyy}", Model.MedCarteiraTitularDataNascimento), new { @class = "datepicker form-control", value = @DateTime.Now })
+                                    </div>
+
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Carteira Convênio</label><br />
+                                @Html.TextBoxFor(model => model.MedCarteiraConvenio, new { @class = "form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>Validade</label><br />
+                                @Html.TextBox("MedCarteiraValidade", @String.Format("{0:dd/MM/yyyy}", Model.MedCarteiraValidade), new { @class = "datepicker form-control ", value = @DateTime.Now })
+                            </div>
+
+                            <div class="form-group col-lg-7">
+                                        <label>Nome Mãe</label>
+                                        @Html.TextBoxFor(model => model.MedCarteiraTitularNomeMae, new { @class = "form-control", maxlength = "200" })
+                                    </div>
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Dados Complementares</label><br />
+                                @Html.TextAreaFor(model => model.MedCarteiraTitular, new { @class = "form-control" })
+                            </div>
+
+                        </div>
+                                    }
+                    <!-- ./DADOS CARTEIRA CONVENIO -->
+                                
+
+                                    if (user.ControleAcesso("pessoas_dadosbancarios_cliente", "Regras") || exibeDadosBancarios)
+                                    {
+                        <legend>Dados bancários</legend>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Código do Banco</label>
+                                @Html.TextBoxFor(model => model.BancoCod, new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Nome do banco</label>
+                                @Html.TextBoxFor(model => model.BancoNome, new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Agência</label>
+                                @Html.TextBoxFor(model => model.BancoAgencia, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Conta</label>
+                                @Html.TextBoxFor(model => model.BancoConta, new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Observações bancárias</label>
+                                @Html.TextBoxFor(model => model.BancoObservacoes, new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Chave Pix</label>
+                                @Html.TextBoxFor(model => model.PessoaLinkedin, new { @class = "form-control" })
+                            </div>
+                        </div>
+                                    }
+                                    else
+                                    {
+                        @Html.HiddenFor(m => m.BancoCod)
+                        @Html.HiddenFor(m => m.BancoNome)
+                        @Html.HiddenFor(m => m.BancoAgencia)
+                        @Html.HiddenFor(m => m.BancoConta)
+                        @Html.HiddenFor(m => m.BancoObservacoes)
+                                    }
+
+                                    if (vtipo == "C")
+                                    {
+                        <legend>Como nos conheceu?</legend>
+                        <div class="row">
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Selecione a mídia:</label><br />
+                                @Html.DropDownListFor(model => model.MidiaId, (SelectList)ViewBag.DdlMidias, "--Selecione--", new { @class = "form-control" })
+
+                            </div>
+
+
+
+                        </div>
+                                    }
+
+                                    if (vtipo == "C" && _Regras_pessoas_cliente_formacao)
+                                    {
+                                    <div class="row">
+                                <div class="col-lg-12">
+                                    <legend>Formação Acadêmica</legend>
+                                </div>
+
+                                <div class="form-group col-lg-2">
+                                    <label>Tipo</label>
+                                    @Html.DropDownListPessoasTabelasAux("FormacaoTipoId", Model.FormacaoTipoId.ToString(), true, " form-control chosen-select", "--Selecione--", "FormacaoTipo")
+                                </div>
+                            
+
+                                <div class="form-group col-lg-3">
+                                    <label>Área</label>
+                                    @Html.DropDownListPessoasTabelasAux("FormacaoAreaId", Model.FormacaoAreaId.ToString(), true, " form-control chosen-select", "--Selecione--", "FormacaoArea")
+                                </div>
+
+                                <div class="form-group col-lg-3">
+                                    <label>Instituição</label>
+                                    @Html.DropDownListPessoasTabelasAux("FormacaoInstituicao", Model.FormacaoInstituicao.ToString(), true, " form-control chosen-select", "--Selecione--", "FormacaoInstituicao")
+                                </div>
+
+                                <div class="form-group col-lg-2">
+                                    <label>Data Início</label>
+                                    @Html.TextBox("FormacaoAnoInicio", String.Format("{0:dd/MM/yyyy}", Model.FormacaoAnoInicio), new { @class = "form-control datepicker", value = @DateTime.Now })
+                                </div>
+
+                                <div class="form-group col-lg-2">
+                                    <label>Data Conclusão</label>
+                                    @Html.TextBox("FormacaoAnoConclusao", String.Format("{0:dd/MM/yyyy}", Model.FormacaoAnoConclusao), new { @class = "form-control datepicker", value = @DateTime.Now })
+                                </div>
+
+
+                                <div class="col-lg-12">
+                                    <legend>Área de Atuação</legend>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>Área</label>
+                                    @Html.DropDownListPessoasTabelasAux("AtuacaoAreaId", Model.AtuacaoAreaId.ToString(), true, " form-control chosen-select", "--Selecione--", "AtuacaoArea")
+                                </div>
+                                        
+                                <div class="form-group col-lg-6">
+                                    <label>Formato</label>
+                                    @Html.DropDownListPessoasTabelasAux("AtuacaoFormatoId", Model.AtuacaoFormatoId.ToString(), true, " form-control chosen-select", "--Selecione--", "AtuacaoFormato")
+                                </div>
+                                        
+                                <div class="form-group col-lg-9">
+                                    <label>Especialidades</label>
+                                    @Html.DropDownListPessoasTabelasAux("AtuacaoEspecialidadeMultiIdsAux", Model.AtuacaoEspecialidadeMultiIds, true, " form-control chosen-select", "--Selecione--", "AtuacaoFormato", true)
+                                </div>
+                                        
+                                <div class="form-group col-lg-3">
+                                    <label>Outra? Qual?</label>
+                                    @Html.TextBoxFor(model => model.AtuacaoEspecialidadeOutra, new { @class = "  form-control " })
+                                </div>
+                              
+                                        </div>
+                                    
+                             
+                                    }
+                                    else
+                                    {
+                                @Html.HiddenFor(x => x.FormacaoTipoId)
+                                @Html.HiddenFor(x => x.FormacaoAreaId)
+                                @Html.HiddenFor(x => x.FormacaoInstituicao)
+                                @Html.HiddenFor(x => x.FormacaoAnoInicio)
+                                @Html.HiddenFor(x => x.FormacaoAnoConclusao)
+                                @Html.HiddenFor(x => x.AtuacaoAreaId)
+                                @Html.HiddenFor(x => x.AtuacaoFormatoId)
+                                @Html.HiddenFor(x => x.AtuacaoEspecialidadeMultiIds)
+                                @Html.HiddenFor(x => x.AtuacaoEspecialidadeOutra)    
+                                    }
+                                
+                        <!-- SESSAO FUNCIONARIO COMPLETO -->
+                                    if (vtipo == "O" && user.ControleAcesso("pessoas_funcionario_completo", "Regras"))
+                                    {<legend>Dados Profissionais</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Empresa</label><br />
+                                @Html.DropDownListFor(model => model.CompanhiaId, (SelectList)ViewBag.DdlCompanhias, "--Nenhuma--", new { @class = "chosen-select form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>CTPS</label><br />
+                                @Html.TextBoxFor(model => model.CTPS, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Função</label><br />
+                                @Html.DropDownListFor(model => model.FuncaoId, (SelectList)ViewBag.DdlFuncoes, "--Nenhuma--", new { @class = "chosen-select form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Piso Salarial</label><br />
+                                @Html.TextBox("PisoSalarial", string.Format("{0:n2}", Model.PisoSalarial), new { @class = "moeda form-control" })
+                            </div>
+                        
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Sindicato</label><br />
+                                @Html.DropDownListFor(model => model.SindicatoId, (SelectList)ViewBag.DdlSindicatos, "--Nenhuma--", new { @class = "chosen-select form-control" })
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Carga Horária</label><br />
+                                @Html.TextBoxFor(model => model.CargaHoraria, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Vale Transporte (diário)</label><br />
+                                @Html.TextBox("ValeTransporteDia", string.Format("{0:n2}", Model.ValeTransporteDia), new { @class = "moeda form-control" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Horário de/até</label><br />
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Início</th>
+                                            <th colspan="2">Intervalo</th>
+                                            <th>Término</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@Html.TextBoxFor(model => model.sHoraDe, new { @class = "form-control" })</td>
+                                            <td>@Html.TextBoxFor(model => model.sIntervaloDe, new { @class = "form-control" })</td>
+                                            <td>@Html.TextBoxFor(model => model.sIntervaloAte, new { @class = "form-control" })</td>
+                                            <td>@Html.TextBoxFor(model => model.sHoraAte, new { @class = "form-control" })</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                <label>Acumula Funções?</label>
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.AcumulaFuncao) sim</label>
+                                </div>
+                            </div>
+
+                            <div id="div_funcoes" class="col-form col-lg-12" style="display: none">
+                                    <label>Selecione os funções que acumula</label><br />
+                                    @Html.ListBoxFor(model => model.PessoaFuncoesIds, (SelectList)ViewBag.DdlFuncoes, new { @class = "chosen-select form-control input-block", @data_placeholder = "Selecione os funções que acumula", multiple = "multiple" })
+                                </div>
+
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Restrições</label><br />
+                                @Html.TextAreaFor(model => model.Restricoes, new { @class = "form-control" })
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                <label>Desligamento?</label><br />
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.Desligado) sim</label>
+                                </div>
+                            </div>
+
+                            <div id="div_desligamento" class="col-form col-lg-10 col-md-10 col-sm-10" style="display: none">
+                                <div class="row">
+                                        <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                            <label>Data de desligamento</label><br />
+                                            @Html.TextBox("DesligadoDt", @String.Format("{0:dd/MM/yyyy}", Model.DesligadoDt), new { @class = "datepicker form-control", value = @DateTime.Now })
+                                        </div>
+                                        <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                            <label>Motivo</label><br />
+                                            @Html.DropDownListFor(m => m.DesligadoMotivoId, new[] {
+                           new SelectListItem() {Text = "--Selecione--", Value = "0"},
+                           new SelectListItem() {Text = "Com Justa Causa", Value = "1"},
+                           new SelectListItem() {Text = "Sem Justa Causa", Value = "2"},
+                           new SelectListItem() {Text = "Demissão", Value = "3"},
+                           }, null, new { @class = "form-control chosen-select" })
+                                        </div>
+                                        <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                            <label>Observações</label><br />
+                                            @Html.TextAreaFor(model => model.DesligadoMotivo, new { @class = "form-control" })
+                                        </div>
+                                    </div>  
+                                </div>
+
+                        </div>                        
+                                    }
+                    <!-- #FIM. SESSAO FUNCIONARIO COMPLETO -->        
+                                
+                                <!-- dados confidencias-->
+                                                          <div class="row">
+                            <div class="col-lg-12" style="">
+            <div class="hpanel collapsed">
+                <div class="panel-heading hbuilt">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <a class="showhide">Dados confidenciais</a>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                            <label>Contra Senha</label><br />
+                            @Html.PasswordFor(model => model.ContraSenha, new { @class = "form-control", @autocomplete = "new-password" })
+                        </div>
+                        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                            <label>Confirmar Senha</label><br />
+                            <input type="password" name="ConfirmSenhaOld" id="ConfirmSenhaOld" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+                        </div>
+                                                          <!-- dados confidenciasi-->
+                                
+                            
+                                <div class="row">
+                                    <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                            <button class="btn btn-primary" type="submit" name="btnSubmit" value="gravar">Salvar</button>
+
+                                        <button class="btn btn-primary" type="submit" name="btnSubmit" value="inserirefechar">Salvar e Fechar</button>
+
+                                        @if (_PessoasDeletar && !Model.ExibirModal)
+                                        {
+                                        <a href="@Url.Content("~/Pessoas/Deletar/" + Model.PessoaID + "?")" class="btn btn-outline btn-danger pull-right" >Excluir</a>    
+                                        }
+                                        
+                                    </div></div>
+
+                            }
+                            <!-- ./conteudo aqui -->
+                        </div>
+                    </div>
+                    
+                    <div id="tab-20" class="tab-pane">
+                        <div class="panel-body">
+                            
+                            @if (Model.PessoaID > 0 && _PRCPropostas_Index)
+                            {
+                                var bllPropostas = new BLL.PRCPropostas();
+                                var listaPropostas = bllPropostas.ListarTudoPorPessoaId(Model.EmpresaId, Model.PessoaID);
+        
+        
+        
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            <div class="table-responsive">
+                        @Html.Partial("~/Views/PRCPropostas/_PropostasRegistrosList.cshtml", listaPropostas)
+                    </div>
+
+            
+        </div>
+    </div>
+                            }
+                            
+
+                        </div>
+                    </div>
+
+                    <div id="tab-30" class="tab-pane">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    @Html.CubeeStatus("Pessoas_" + vtipo, Model.PessoaID, "chosen-select form-control", BLL.Usuarios.GetUsuarioId(), true) 
+                                </div>
+                            </div>
+                            
+
+                        </div>
+                    </div>
+
+                    <div id="tab-40" class="tab-pane">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    
+                                    @Html.CubeeAnexos("Pessoas_F", Model.PessoaID, pessoas_f_docs_padrao, "col-lg-12 col-md-12 col-sm-12", true, true, true, true, false, pessoas_f_docs_obrigatorio, Model.EmpresaId)
+                                    
+                                </div>
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.PessoaID > 0 && vtipo == "C" && _PessoasPlanosInscricoes_index)
+    {
+
+        var bllPessoasPlanosInscricoes = new BLL.PessoasPlanosInscricoes();
+        var listaInscricoes = bllPessoasPlanosInscricoes.ListarPorPessoaID(Model.PessoaID);
+        
+        <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Inscrições
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="@Url.Content("~/Associados/Principal/" + Model.PessoaID + "/" + Model.PessoaGUID + "/?tab=")" target="_blank"><i class="fa fa-tasks"></i></a>
+                         
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>#</th>
+                                                <th>Tipo</th>
+                                                <th>Dt. Validade </th>
+                                                <th>Tipo Pagto. </th>
+                                                <th>Status Pagto</th>
+                                                <th>Dt. Pagto. </th>
+                                                <th>Total</th>
+                                                <th>Status Doc.</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in listaInscricoes.Items.OrderByDescending(x => x.PessoaPlanoInscricaoDtValidade))
+                                            {
+                                                var icon_status = "";
+                                                var class_status = "";
+                                                var panelColor = "hred";
+                                                bool statusPagto = false;
+                                                switch (item.PessoaPlanoPagtoStatus)
+                                                {
+                                                    case "Paga":
+                                                    case "Gratuito":
+                                                        class_status = " text-success ";
+                                                        icon_status = "fa fa-check";
+                                                        statusPagto = true;
+                                                        break;
+                                                    case "AguardandoPagamento":
+                                                        class_status = " text-warning ";
+                                                        icon_status = "fa fa-pause";
+                                                        break;
+                                                    default:
+                                                        class_status = "  ";
+                                                        break;
+                                                }
+
+                                                if (statusPagto && Model.CubeeAnexosStatusOk)
+                                                {
+                                                    panelColor = "hgreen";
+                                                }
+                                                else if (statusPagto || Model.CubeeAnexosStatusOk)
+                                                {
+                                                    panelColor = "hyellow";
+                                                }
+
+                                                var isPlano = (item.PessoaPlanoGrupoTipoId == 0 ? true : false);
+
+                                                
+                                                
+                                                <tr>
+                                                    <td><a class="fancybox_recarrega fancybox.iframe" href="@Url.Content("~/PessoasPlanosInscricoes/Criar/" + item.PessoaPlanoInscricaoId + "/" + item.PessoaPlanoGUID)"><i class="fa fa-search"></i></a></td>
+                                                    <td>@item.PessoaPlanoInscricaoId</td>
+                                                    <td><small>@item.PessoaPlanoGrupoNome</small><br />@item.PessoaPlanoTitulo</td>
+                                                    <td>
+
+                                                        @if (item.PessoaPlanoGrupoTipoId == 0)
+                                                        {
+                                                            if (item.PessoaPlanoPagtoStatus == "AguardandoPagamento")
+                                                            {
+                                                            <small>Válido até @DateTime.Now.AddMonths(12).ToShortDateString() se pago em @DateTime.Now.ToShortDateString().</small>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                if (item.PessoaPlanoInscricaoDtValidade != null)
+                                                                {
+                                                            <span>@Convert.ToDateTime(item.PessoaPlanoInscricaoDtValidade).ToShortDateString()</span>
+                                                                }
+
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>-</span>
+                                                        }
+
+                                                    </td>
+                                                    <td>@item.GatewayTipoPagamento</td>
+                                                    <td>
+                                                        @if (item.PessoaPlanoPagtoStatus == "AguardandoPagamento")
+                                                        {
+                                                            <a class="btn btn-outline btn-primary btn-xs" target="_blank" href="@Url.Content("~/Associados/GateWayPagamento/" + Model.EmpresaId + "/" + item.PessoaPlanoGUID)"> Realizar Pagamento</a>
+                                                        }
+                                                        else
+                                                        {
+                                                        <span class="@class_status">@item.PessoaPlanoPagtoStatus <i class="@icon_status"></i></span>
+                                                        }
+                                                        
+                                                        
+                                                    </td>
+                                                    <td>
+                                                        @if (item.PessoaPlanoInscricaoDtPagto != null)
+                                                        {
+                                                                <span>@Convert.ToDateTime(item.PessoaPlanoInscricaoDtPagto).ToShortDateString()</span>
+                                                        }
+                                                    </td>
+                                                    <td>@string.Format("{0:c}", item.PessoaPlanoVlrTotal) <i class=" @icon_status"></i></td>
+                                                    <td>
+                                                     <span class="@(Model.CubeeAnexosStatusOk ? "  text-success " : " text-warning ")">@(Model.CubeeAnexosStatusOk ? "Ok" : "Pendente") <i class="@(Model.CubeeAnexosStatusOk ? "fa fa-check" : " fa fa-pause ")"></i></span></td>
+                                                    <td>
+                                                        @if (item.PlanoAtivo)
+                                                        {
+                                                            <i class="fa fa-check text-success"></i>    
+                                                        }
+
+
+                                                    </td>
+                                                </tr>
+                                            }
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                              
+                        @*            
+                            <a class="fancybox_recarrega fancybox.iframe" href="@Url.Content("~/PessoasPlanosInscricoes/Criar/" + item.PessoaPlanoInscricaoId + "/" + item.PessoaPlanoGUID)">
+                                    @Html.Partial("~/Views/PessoasPlanosInscricoes/_detalheInscricao.cshtml", item)
+                                </a>
+                            *@
+                         
+                           
+                        </div>
+                    </div>
+                    
+                    
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+        
+    }
+
+
+    @if (Model.PessoaID > 0 && vtipo == "C" && medguias_criar)
+    {
+        <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Dependentes
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                      <a href="@Url.Content("~/PessoasDependentes/Index/" + Model.PessoaID)" class="btn btn-outline btn-primary btn-xs tooltip-legenda fancybox_submit fancybox.iframe">Editar</a>
+                    @if (listaDependentes.Count() > 0)
+                    {
+                    <div class="table-responsive">
+                    <table class="data table table-condensed table-striped">
+                                    <tr>
+                                        <th>Nome
+                                        </th>
+                                        <th>Sexo
+                                        </th>
+                                        <th>Data Nascimento
+                                        </th>
+                                        <th>Grau Parentesco
+                                        </th>
+                                        
+                                    </tr>
+
+                                    @foreach (var item in listaDependentes)
+                                    {
+                                        <tr>
+                                            
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PessoaDependenteNome)
+                                            </td>
+                                            <td>
+                                                @switch (item.Sexo)
+                                                {
+                                                    case "M":
+                                                        <span>Masculino</span>
+                                                        break;
+                                                    case "F":
+                                                        <span>Feminino</span>
+                                                        break;
+                                                    default:
+                                                    <span>-</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @string.Format("{0:dd/MM/yyyy}", item.DataNascimento)
+                                            </td>
+                                            <td>
+                                                @item.GrauParentescoNome
+                                            </td>
+                                            
+                                        </tr>
+                                    }
+
+                                </table>    
+                    </div>
+                    }
+                    else
+                    {
+                        <small>Não possui</small>
+                    }
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+
+    @if (Model.PessoaID > 0 && vtipo == "C" && medguias_criar)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Guias
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    @using (Html.BeginForm("CriarGuiaRapida", "MedGuias", FormMethod.Post, new { target = "_top" }))
+                    {    
+            @Html.Hidden("id", Model.PessoaID);
+            @Html.Hidden("fid", Model.FilialID);
+            <button class="btn btn-outline btn-primary btn-xs " type="submit"  onclick="return confirm('Confirma a criação de nova guia para @Model.Nome?')">Criar</button>
+                    }
+        @Html.Partial("~/Views/MedGuias/_listguias.cshtml", listaGuias)
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (PostosDeServicos_Index && Model.ListEscalas != null)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Postos de Serviços
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Período</th>
+                    <th>Posto de Serviço</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model.ListEscalas.OrderByDescending(x => x.DataDe))
+                {
+                    var url_posto = Url.Content("~/PostosDeServicos/VisualizarEscalaPapeletas/" + item.EscalaId + "?PessoaId=" + Model.PessoaID + "&lightbox[iframe]=true&lightbox[width]=620&lightbox[height]=380");
+                    
+                    <tr>
+                        <td nowrap class="text-center"><a href="@url_posto" class="ui-lightbox fancybox fancybox.iframe "><i class="fa fa-search-plus"></i></a></td>
+                        <td nowrap><a href="@url_posto" class="ui-lightbox ">@item.DataDe.ToString("dd/MM/yyyy") ~ @item.DataAte.ToString("dd/MM/yyyy")</a></td>
+                        <td width="100%"><a href="@url_posto" class="ui-lightbox ">@item.PostoDeServicoNome</a></td>
+                        <td><a href="@Url.Content("~/PostosDeServicos/ImprimirEscalaPapeletas/" + item.EscalaId + "?PessoaId=" + Model.PessoaID)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Papeletas</a></td>
+                        <td><a href="@Url.Content("~/PostosDeServicos/ImprimirEscalaPapeletasPlan/" + item.EscalaId + "?PessoaId=" + Model.PessoaID)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Planejamento</a></td>
+                        <td><a href="@Url.Content("~/PostosDeServicos/ImprimirEscala/" + item.EscalaId + "?PessoaId=" + Model.PessoaID)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Escala</a></td>
+                    </tr>    
+                }
+            </tbody>
+        </table>
+                    </div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (Model.PessoaDuplicado)
+    {
+        var bllPessoas = new BLL.Pessoas();
+        var duplicados = bllPessoas.ListarPorDocumento(Model.Documento, Model.EmpresaId);
+        
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <h6 class=" text-danger">Duplicados</h6>
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th><abbr title="ID Interno do Sistema">#</abbr></th>
+                                    <th><abbr title="Código do Associado">Cód.</abbr></th>
+                                    <th>Nome / RG</th>
+                                    <th>Categoria</th>
+                                    <th>Situação</th>
+                                    <th>Dt. <i class="fa fa-play" aria-hidden="true"></i> Início / <i class="fa fa-refresh" aria-hidden="true"></i> Atualização</th>
+                                    <th>-</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in duplicados)
+                                {
+                                    var url = Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID);
+                                    var classe = "fancybox fancybox.iframe";
+                                    
+                                    <tr class="@(Model.PessoaID == item.PessoaID ? " unread active " : "")  ">
+                                        <td>
+                                            @if (Model.PessoaID == item.PessoaID)
+                                            {
+                                            <i class="fa fa-chevron-right" aria-hidden="true"></i>    
+                                            }
+                                        </td>
+                                        <td><a href="@url" class="@classe">@item.PessoaID</a></td>
+                                        <td><a href="@url" class="@classe">@item.PessoaCodigo</a></td>
+                                        <td><a href="@url" class="@classe">@item.Nome<br /><small>@item.Documento</small></a></td>
+                                        <td><a href="@url" class="@classe">@item.PessoaCategoriaSubNome</a></td>
+                                        <td><a href="@url" class="@classe"> @BLL.PessoasPlanosInscricoes.GetLegendaInscricaoSituacao(item.InscricaoSituacao) @item.InscricaoSituacaoDtVencimento</a></td>
+                                        <td><a href="@url" class="@classe">
+                                            <i class="fa fa-play" aria-hidden="true"></i> @item.RegDtInicio<br />
+                                            <i class="fa fa-refresh" aria-hidden="true"></i> @item.RegDtUltAtualizacao</a></td>
+                                        
+                                        <td><a href="@Url.Content("~/Pessoas/Mesclar/" + item.PessoaID)" onclick="return confirm('Deseja realmente mesclar todos os registros nesse?')" class="btn btn-outline btn-primary btn-xs tooltip-legenda">Mesclar nesse</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+            </div>
+    </div>    
+        
+    }
+
+    @if (_PessoasTermosAceite)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Termos de Aceite
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <a href="#" class="btn btn-outline btn-primary btn-xs btn-reenviar tooltip-legenda"  data-style="zoom-in" data-val="@Model.PessoaID" data-toggle="tooltip" data-placement="top" data-original-title="Enviar novo SMS"><i class="fa fa-share" aria-hidden="true"></i> Enviar SMS</a>
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+                            <thead>
+                                <tr>
+                                    
+                                    <th nowrap>Data Enviado</th>
+                                    <th>Aceite</th>
+                                    <th nowrap>Date Aceite</th>
+                                    <th>Descrição</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in listaAceites)
+                                {
+                                   <tr>
+                                        <td nowrap class="text-center">@item.RegDtInicio</td>
+                                        <td class="text-center">
+                                            @if (item.PessoaTermoAceiteRealizado)
+                                            {
+                                                <i class="fa fa-check-square-o" aria-hidden="true"></i>
+
+                                            }
+                                            else
+                                            {
+                                                <i class="fa fa-square-o" aria-hidden="true"></i>
+
+                                            }
+
+                                        </td>
+                                        <td nowrap class="text-center">@item.PessoaTermoAceiteData</td>
+                                        <td >
+                                            Enviado para: @item.PessoaTermoAceiteCelular<br />
+                                            Link: @item.PessoaTermoAceiteLink<br />
+                                            Code: @item.PessoaTermoAceiteCode<br />
+                                            IP: @item.PessoaTermoAceiteIp<br />
+                                            <small>Guid: @item.PessoaTermoAceiteGuid</small></td>
+                                        
+                                    </tr>     
+                                }
+                            </tbody>
+                        </table></div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+  <!-- todo: INCLUIR INSCRICOES AQUI-->
+
+    @if (registrarvalores_fichacadastral)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Dados Clínicos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Ficha</th>
+                <th colspan="2"></th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in listaDadosClinicos)
+            {
+                <tr>
+                    <td nowrap>@item.PessoaDadoClinicoId</td>
+                    <td width="100%">@item.RegDtInicio - @item.PessoaIDIndicacaoNome</td>
+                    <td nowrap class="text-center"><a target="_blank" href="@Url.Content("~/FichaCadastral/Visualizar/" + item.PessoaDadoClinicoId + "?lightbox[iframe]=true&lightbox[width]=600&lightbox[height]=360")" class="ui-lightbox btn btn-outline btn-primary btn-xs "><i class="fa fa-search-plus"></i>Visualizar</a></td>
+                    <td nowrap class="text-center">
+
+
+                        <a class="btn btn-outline btn-primary btn-xs imprimir" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Aguarde" data-val="@item.PessoaDadoClinicoId" href="@Url.Content("~/FichaCadastral/Imprimir/" + item.PessoaDadoClinicoId + "?lightbox[iframe]=true&lightbox[width]=600&lightbox[height]=360")"><i class="fa fa-print"></i>Imprimir</a>
+
+                    </td>
+                </tr>    
+            }
+        </tbody>
+    </table>
+                    </div>
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>}
+
+    
+
+    @if (Model.PessoaID > 0 && _ContratosPreparar)
+    {
+        var listaContratos = bllContratos.ListarPorClienteId(Model.PessoaID);
+        
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Oportunidades e Contratos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <a href="@Url.Content("~/Contratos/Preparar/" + Model.PessoaID + "/?Modal=true")" class="btn btn-outline btn-primary btn-xs tooltip-legenda fancybox_submit fancybox.iframe">Criar Oportunidade</a>
+                    <table class="table table-condensed table-striped" width="100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Campanha</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th>Valor</th>
+                                <th>Editar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in listaContratos)
+                            {
+                                var tempoPassado = "";
+                                if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+                                {
+                                    tempoPassado = "<i class='fa fa-clock-o'></i> " + item.StatusTempoPassado + " hrs";
+                                }
+            
+                                <tr>
+                                    <td>@item.ContratoId</td>
+                                    <td>@item.CampanhaNome</td>
+                                    <td><span class="badge @(item.ContratoTipo == 0 ? "badge-info" : "badge-success") @Html.GetLegendaContratoTipo(item.ContratoTipo)">@Html.GetLegendaContratoTipo(item.ContratoTipo)</span></td>
+                                    <td>@item.StatusNome @Html.Raw(tempoPassado) 
+
+                                            @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                                            {
+                                                List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                                                foreach (var badge in badges)
+                                                {
+                        <span class="label label-info">@badge</span>
+                                                }
+                                            }
+                
+                                           
+                                        </td>
+                                        
+                                        <td>R$ @string.Format("{0:N2}", item.ContratoValorTotal)</td>
+                                    <td><a href="@Url.Content("~/Contratos/Criar/" + item.ContratoId + "/?Modal=true")" class="btn btn-outline btn-primary btn-xs tooltip-legenda fancybox_submit fancybox.iframe">Editar</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+
+    @if (Model.PessoaID > 0)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Outros Anexos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    
+                    @Html.CubeeAnexos("Pessoas", Model.PessoaID, BLL.Configuracoes.CarregarPorEmpresaId("documentos_pessoas_criar_" + Model.PessoaCategoria.ToLower(), Model.EmpresaId), "col-lg-12 col-md-12 col-sm-12", false, false, _MedGuiasAnexos, _MedGuiasAnexos, false, BLL.Configuracoes.CarregarPorEmpresaId("documentos_vital_pessoas_criar", Model.EmpresaId), Model.EmpresaId)
+                    
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (Model.PessoaID > 0 && user.ControleAcesso("pessoas_criar_anexos", "Regras"))
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Anexos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    @using (Html.BeginForm("Upload", "Pessoas", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+        @Html.Hidden("PessoaID", Model.PessoaID);
+        @Html.Hidden("PessoaTipo", vtipo);
+                    <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <label>Tipo de arquivo</label><br />
+                    @Html.DropDownList("TipoAnexoID", (SelectList)ViewBag.DllTiposAnexo, new { @class = "form-control" })
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <label>Validade</label><br />
+                    <input type="text" name="Validade" id="Validade" class="datepicker form-control" />
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <label>Arquivo</label><br /><input id="arquivo" type="file" name="arquivo" />
+                    <button class="btn " type="submit" name="submitButton"><i class="icon-upload-2"></i>Upload</button>
+                </div>
+            </div>
+
+
+            <small>@listaAnexos.Count() arquivos.</small>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <ul class="gallery-container">
+
+                        @foreach (var itemAnexo in listaAnexos)
+                        {
+                            var total_dias = (itemAnexo.Validade - DateTime.Now.Date).TotalDays;
+                            var classe = (total_dias < 1) ? "text-error" : "text-success";      
+                            <li>
+
+
+                                @if (itemAnexo.PathThumb != null)
+                                {
+                                    <a href="@Url.Content(itemAnexo.Path)" class="ui-lightbox">
+                                        <img style="height: 146px; max-height:146px;" src="@Url.Content(itemAnexo.PathThumb)" alt="@itemAnexo.FileName" />
+                                    </a><a href="@Url.Content(itemAnexo.Path)" class="preview"></a>
+                                    <br />
+                                }
+                                else
+                                {
+                                    <div style="height: 146px; max-height: 146px;">@itemAnexo.ContentType.ToString()<br />
+                                        <br />
+                                        <br />
+                                        <small>Sem visualização</small>
+                                    </div>
+                                }
+
+                                <small>Tipo: @itemAnexo.DescricaoAnexo.ToString()</small><br />
+                                <small class="@classe">Validade: @itemAnexo.Validade.ToShortDateString()</small>
+                                <br />
+                                <small>Formato: @itemAnexo.ContentType.ToString()</small><br />
+                                <small>Nome: @itemAnexo.FileName.ToString()</small><br />
+                                <small>Peso: @(itemAnexo.ContentLength / 1000) kb</small><br />
+                                <a href="@Url.Content("~/Pessoas/DownloadAnexo/" + itemAnexo.PessoaAnexoID)" class="btn btn-mini pull-left">Download</a>&nbsp;
+                        <a href="@Url.Content("~/Pessoas/RemoveAnexo/" + Model.PessoaID + "/" + vtipo + "?PessoaAnexoID=" + itemAnexo.PessoaAnexoID)" class="btn btn-mini pull-right" onclick="return confirm('Deseja realmente excluir esse anexo?')">Excluir</a>
+
+                            </li>                            
+                        }
+
+
+
+
+                    </ul>
+                </div>
+            </div>
+                    }
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+
+    @if (Model.PessoaID > 0)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Histórico
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                   @Html.CubeeBlog("Pessoas", Model.PessoaID, "", BLL.Usuarios.GetUsuarioId(), false, true)
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>    
+    }
+
+    @if (BLL.Configuracoes.CarregarPorEmpresaId("cubee.empresa.token") != "")
+    {
+        <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Integração CUBEE
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                     @if (Model.PessoaIntegrado)
+                     {
+                                <span><i class="fa fa-plug"></i> Integrado CUBEE <i class="fa fa-cube" aria-hidden="true"></i></span>
+                     }
+                     else
+                     {
+                                <a href="@Url.Content("~/Pessoas/CubeeIntegra/" + Model.PessoaID)" class="btn btn-outline btn-primary2 btn-xs fancyboxcubee_recarrega fancybox.iframe">Integrar CUBEE <i class="fa fa-cube" aria-hidden="true"></i></a>
+                     }
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+    
+    
+</div>
+
+
+
+
+        
+        
+        
+
+    
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/datatables/css")
+<style>
+    .listAnexos
+    {
+        list-style: none;
+        font-size: 10px;
+        margin-left: 0px;
+    }
+</style>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+@Scripts.Render("~/bundles/mask/js")
+@Scripts.Render("~/bundles/jquery-cep/js")
+@Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+    
+        <script>
+
+            // Initialize Example 2
+            $('.dataTable').dataTable({
+                "pageLength": 50,
+                "paging": true,
+                "ordering": true,
+                "bLengthChange": true,
+                "bFilter": true,
+                "info": true,
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "_MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar ",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+
+
+
+
+
+
+    </script>
+
+    <script>
+        $(".fancyboxcubee_recarrega").fancybox({
+            fitToView: false,
+            width: '50%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox_submit").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPaginaSubmit();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+        function RecarregaPaginaSubmit() {
+            console.log("submit");
+            $("#form_principal").submit();
+        }
+
+    </script>
+
+    <script src="~/Assets/js/bootstrap-tooltip.js"></script>
+    <script>
+
+        $("#Cep").mask("99999-999");
+        $("#PIS").mask("9999999999-9");
+
+        $("#CTPS").mask("99999-999");
+        $("#sHoraDe").mask("99:99");
+        $("#sHoraAte").mask("99:99");
+        $("#sIntervaloDe").mask("99:99");
+        $("#sIntervaloAte").mask("99:99");
+        $("#DataNascimento").mask("99/99/9999");
+        $("#DataInicio").mask("99/99/9999");
+        $("#DesligadoDt").mask("99/99/9999");
+
+        $("#MedCarteiraTitularCpf").mask("999.999.999-99");
+        $("#PacienteDataNascimento").mask("99/99/9999");
+
+        $("#MedCarteiraTitularDataNascimento").mask("99/99/9999");
+        $("#MedCarteiraValidade").mask("99/99/9999");
+
+
+        $(function () {
+            @if (Model.PessoaID == 0)
+            {
+
+
+                if (Model.CpfValido == true)
+                {
+         @:$('#Nome').focus();               
+                }
+                else
+                {
+         @:$('#Documento').focus();               
+                }
+            }
+
+        });
+
+        function Select(jtipo) {
+
+
+            $("#Telefone").mask(maskBehavior, options);
+            //$("#Celular").mask("(99)9999-9999?9");
+            habilitaMaskCelular($("#CelularInternacional").is(':checked'));
+
+            $("#AdmTelefone").mask(maskBehavior, options);
+            $("#RespTelefone").mask(maskBehavior, options);
+
+
+            if (jtipo == "PJ") {
+                $("#painelPJ").slideDown();
+                $("#Documento").mask("99.999.999/9999-99");
+
+                $("#dataNascimento").html("Data de Fundação");
+                $("#tpDocumento").html("CNPJ");
+                $("#div_sexo").hide("slow");
+                $("#div_ecivil").hide("slow");
+                $("#div_rg").hide("slow");
+                $("#div_profissao").hide("slow");
+            } else if (jtipo == "OU") {
+                $("#painelPJ").slideToggle();
+                $("#Documento").unmask();
+                $("#dataNascimento").html("Data de Nascimento");
+                $("#tpDocumento").html("Outros");
+                $("#div_sexo").show("slow");
+                $("#div_ecivil").show("slow");
+                $("#div_rg").hide("slow");
+                $("#div_profissao").show("slow");
+            } else {
+                $("#painelPJ").slideToggle();
+
+                $("#Documento").mask("999.999.999-99");
+                $("#dataNascimento").html("Data de Nascimento");
+                $("#tpDocumento").html("CPF");
+                $("#div_sexo").show("slow");
+                $("#div_ecivil").show("slow");
+                $("#div_rg").show("slow");
+                $("#div_profissao").show("slow");
+            }
+
+
+            $("#div_funcoes").toggle($("#AcumulaFuncao").is(':checked'));
+            $("#div_desligamento").toggle($("#Desligado").is(':checked'));
+            $("#div_exibiragenda_ordem").toggle($("#ExibirAgenda").is(':checked'));
+
+        }
+
+
+
+        function habilitaMaskCelular(vlr) {
+            if (vlr == true) {
+                $("#Celular").unmask();
+            } else {
+                $("#Celular").mask(maskBehavior, options);
+            }
+
+        }
+
+        $('#CelularInternacional').click(function () {
+            habilitaMaskCelular(this.checked);
+        });
+
+
+        $('#AcumulaFuncao').click(function () {
+            $("#div_funcoes").toggle(this.checked);
+        });
+
+        $('#Desligado').click(function () {
+            $("#div_desligamento").toggle(this.checked);
+        });
+
+        $('#ExibirAgenda').click(function () {
+            $("#div_exibiragenda_ordem").toggle(this.checked);
+        });
+
+
+        Select($('#PessoaTipo').val());
+
+
+        $('#Favorito').click(function () {
+            if (this.checked) {
+
+                $("#labelFavorito").attr('class', 'fa fa-heart text-warning');
+            } else {
+                $("#labelFavorito").attr('class', 'fa fa-heart-o text-warning');
+            }
+
+        });
+
+
+
+
+
+        $("input[data-val-length-max]").each(function (index, element) {
+            var length = parseInt($(this).attr("data-val-length-max"));
+            $(this).prop("maxlength", length);
+        });
+
+
+        $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+
+        jQuery(function () {
+
+            $('#buscar-cep').click(function () {
+                $('#Cep').cep({
+                    load: function () {
+                        //Exibe a div loading
+                        $('#loading').css('display', 'inline');
+                    },
+                    complete: function () {
+                        //Esconde a div loading
+                        $('#loading').css('display', 'none');
+                    },
+                    error: function (msg) {
+                        //Exibe em alert a mensagem de erro retornada
+                        alert(msg);
+                    },
+                    success: function (data) {
+                        $('#Endereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                        $('#Bairro').val(data.bairro);
+                        $('#Estado').val(data.estado);
+                        $('#Cidade').val(data.cidade);
+                        $('#Pais').val('Brasil');
+                        $('#Numero').focus();
+                    }
+                });
+            });
+
+        });
+
+
+        $('#btnGerarNovoCodigo').click(function (e) {
+            var guid = @Model.PessoaID;//$(this).attr('data-val');
+
+            e.preventDefault();
+
+            swal({
+                title: "Confirma geração de um novo código?",
+                text: "Será gerado um novo código e o atual será inutilizado.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim, gerar código!",
+                cancelButtonText: "Cancelar geração.",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+                function (isConfirm) {
+                    if (isConfirm) {
+                    
+                        $.ajax({
+                            url: '/ApiIntegracao/GeraPessoaCodigo/' + guid,
+                            error: function (data) {
+                                console.log(data);
+                                swal("Ops...", " Ocorreu um erro na geração.\n" + data.mensagem, "error");                               
+
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                if (data.codigo == 200) {
+                                    $("#PessoaCodigo").val(data.Objeto.PessoaCodigo);
+                                    swal("Gerado: " + data.Objeto.PessoaCodigo + "!", "O novo código já está no campo.", "success");
+                                    //location.reload();
+                                } else {
+                                    swal("Ops...", " Ocorreu um erro na geração.\n" + data.mensagem, "error");
+                                }
+
+                            },
+                            type: 'GET'
+                        });
+
+                    } else {
+                        swal("Cancelado", "Não foi gerado ou alterado código", "error");
+                    }
+                });
+
+           
+
+
+        });
+        
+        $('.btn-reenviar').click(function (e) {
+            var guid = $(this).attr('data-val');
+
+            e.preventDefault();
+
+            //var l = $(this).ladda();
+            //l.ladda('start');
+            //l.ladda('setProgress', 0.5);
+
+
+            $.ajax({
+                url: '/Pessoas/ReenviaTermoAceite/' + guid,
+                error: function (data) {
+                    console.log(data);
+                    window.alert("Oops... Ocorreu um erro ao reenviar\n" + data.mensagem);
+
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (data.codigo == 200) {
+                        window.alert("SMS reenviado");
+                        location.reload();
+                    } else {
+                        window.alert("Oops... Ocorreu um erro ao reenviar\n" + data.mensagem);
+                    }
+
+                },
+                type: 'GET'
+            });
+
+
+        });
+
+        $('#PacienteNome').keyup(function () {
+            this.value = this.value.toLocaleUpperCase();
+        });
+
+        $('#ConvenioId').on('change', function () {
+            carregaPlanos($(this).val(), null);
+        });
+
+
+        function carregaPlanos(ConvenioId, ConvenioPlanoId) {
+
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetConveniosPlanos/")", { id: ConvenioId, FilialId: "@BLL.Usuarios.GetFilialId()" }, function (result) {
+                data = $.map(result.ListConvenioPlano, function (item, a) {
+                    var select = (ConvenioPlanoId == item.ConvenioPlanoId) ? " selected='selected' " : "";
+                    return "<option value=" + item.ConvenioPlanoId + " " + select + ">" + item.ConvenioPlanoNome + "</option>";
+                });
+                $("#ConvenioPlanoId").empty();
+                $('#ConvenioPlanoId').append($('<option>', {
+                    value: 0,
+                    text: '--Selecione--'
+                }));
+                $("#ConvenioPlanoId").append(data.join(""));
+                $("#ConvenioPlanoId").val(ConvenioPlanoId).trigger('chosen:updated');
+                $("#ConvenioPlanoId").val(ConvenioPlanoId).trigger('change.select2');
+
+            });
+
+        }
+
+
+
+        //inicializador
+        carregaPlanos('@Model.ConvenioId', '@Model.ConvenioPlanoId');
+
+        @if (Model.FilialID == 0)
+        {
+		 @:$("#FilialID").val("@BLL.Usuarios.GetFilialId()").trigger('chosen:updated');
+                                    @:$("#FilialID").val("@BLL.Usuarios.GetFilialId()").trigger('change.select2');        
+	}
+        else
+        {
+        @:$("#FilialID").val("@Model.FilialID").trigger('chosen:updated');
+                            @:$("#FilialID").val("@Model.FilialID").trigger('change.select2');        
+                	}
+        
+        
+    </script>
+    <script type="text/javascript">
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $('.max').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+    </script>
+
+    <script>
+        $('#copyDadosPessoa').change(function () {
+            console.log(this.checked);
+            if (this.checked) {
+                $("#MedCarteiraTitularCpf").val($("#Documento").val());
+                $("#MedCarteiraTitularNome").val($("#Nome").val());
+                $("#MedCarteiraTitularDataNascimento").val($("#DataNascimento").val());
+            }
+        });
+    </script>
+
+    <script>
+        function atualiza() {
+            var url = "@Url.Content("~/Pessoas/CriarJSON")"; // the script where you handle the form input.
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#form_principal").serialize(),
+                success: function (result) {
+                    if (result.NUMERO != 0) {
+                        swal({ title: "Atencão!", text: result.MENSAGEM, type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                    }
+
+                },
+                error: function (result) {
+                    swal({ title: "Atencão!", text: "Ocorreu um erro ao tentar salvar os dados", type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                }
+            });
+
+
+        }
+
+
+        $("input[type=text], textarea, select, :checkbox").change(function () {
+            atualiza();
+
+        });
+
+        // Validação de senha
+        $('form').submit(function (e) {
+            var senha = $('#ContraSenha').val();
+            var confirma = $('#ConfirmSenha').val();
+
+            if (senha != confirma) {
+                swal({ title: "Atenção!", text: "As senhas não coincidem", type: "error", confirmButtonText: "Ok" });
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
+
+    </script>
+
+}

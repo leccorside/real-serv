@@ -1,0 +1,48 @@
+﻿@model Models.ContratoView
+
+
+@{
+    
+
+
+    ViewBag.Title = "Erro Contrato";
+
+    if (Model.Contrato.Modal)
+    {
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+   
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    
+    <li class="active">@Html.ActionLink("Contratos", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    
+    
+    <div class="row">
+        <div class="col-lg-12">
+                <div class="hpanel">
+                    <div class="panel-body">
+                        <h4>Erro na geração do contrato</h4>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+

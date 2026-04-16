@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Relatório Diário";
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+
+
+@section Styles{
+
+    <style>
+        .table-executada
+        {
+            font-size: 9px;
+        }
+
+        .editor-label label
+        {
+            font-size: 9px;
+        }
+
+        .editor-field input
+        {
+            font-size: 9px;
+        }
+
+        .papel
+        {
+            position: relative;
+        }
+
+        .tag
+        {
+            float: left;
+            position: absolute;
+            left: 400px;
+            top: 100px;
+            z-index: 1000;
+            padding: 5px;
+        }
+    </style>
+
+
+
+
+}
+
+@Html.Partial("~/Views/Foo/_Medicao.cshtml")
+

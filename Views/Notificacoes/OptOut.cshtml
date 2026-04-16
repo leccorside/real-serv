@@ -1,0 +1,56 @@
+﻿@model Models.Pessoa
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+    
+}
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+
+
+
+                <h3>Ok @BLL.Utils.Funcoes.GetPrimeiroNome(Model.Nome), você não receberá mais notificações.</h3>
+
+                @if (Model.NaoPermiteSMS)
+                {
+                    <label class="badge badge-danger"><i class="fa fa-ban" aria-hidden="true"></i> SMS não autorizado </label>
+                }
+
+                @if (Model.NaoPermiteEmail)
+                {
+                    <label class="badge badge-danger"><i class="fa fa-ban" aria-hidden="true"></i> E-Mail não autorizado </label>
+                }
+
+                @if (Model.NaoPermiteLigacao)
+                {
+                    <label class="badge badge-danger"><i class="fa fa-ban" aria-hidden="true"></i> Ligação não autorizada </label>
+                }
+
+            </div>
+            
+
+
+        </div>
+
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            @if (_copyright == "" || _copyright == "true")
+            {
+                <span><strong>Fortuna</strong> - Gestor do seu negócio<br />
+                    2017 Copyright |  E-Bee</span>
+            }
+
+
+        </div>
+    </div>
+</div>

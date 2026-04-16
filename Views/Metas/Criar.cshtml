@@ -1,0 +1,253 @@
+﻿@model Models.Meta
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.MetaId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Meta";
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Metas", "Index", new { id = 0, tipo= Model.Entidade })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+                    
+                    @using (Html.BeginForm("Criar", "Metas", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.Entidade)
+                        @Html.HiddenFor(m => m.Modal)
+                        if (Model.MetaId > 0)
+                        {
+                        @Html.Hidden("MetaId", Model.MetaId);
+                                                                    acao = "Alterar";
+                        }
+
+                        
+       
+                        <div class="row">
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Nome meta</label>
+                                @Html.TextBoxFor(model => model.MetaNome, new { @class = "form-control" })
+                            </div>
+                        
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Descriçao</label>
+                                @Html.TextAreaFor(model => model.MetaDescricao, new { @class = "form-control" })
+                            </div>
+
+
+                            @if (Model.UsuarioId > 0)
+                            {
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Usuário</label>
+                            <p class="form-control-static">@Model.Usuario.UsuarioNome</p>
+                                    @Html.Hidden("UsuarioId", Model.Usuario.UsuarioId)
+                                    </div>
+                            }
+                            else
+                            {
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Perfil</label>
+                                @Html.DropDownListFor(model => model.PerfilId, (SelectList)ViewBag.ddlPerfis, "--Selecione--",  new { @class = "chosen-select form-control" })
+                            </div>    
+                            }
+                            
+
+                            <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                                <label>Status</label>
+                                <select data-placeholder="Selecione um status..." class="form-control select2 " multiple="multiple" data-val="true" data-val-required="O campo status é obrigatório" id="StatusMultiIdsAux" name="StatusMultiIdsAux"></select>
+                            </div>
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Periodicidade</label>
+                                
+                                    @Html.DropDownListPeriodicidade("PeriodicidadeTipo", Model.PeriodicidadeTipo, true, " form-control select ", "")
+                                    
+                            </div>
+
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Quantidade</label>
+                                @Html.TextBoxFor(model=>model.PeriodicidadeValor, new { @class = "form-control input select-all number " })
+                                
+                            </div>
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Volume R$</label>
+                                @Html.TextBox("MetaVolume", string.Format("{0:F2}", Model.MetaVolume), new { @class = "moeda form-control select-all" })
+                            </div>
+
+                        </div>
+         
+                        <br />
+
+                        <div class="row-fluid">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", new { id = 0, tipo=Model.Entidade,UsuarioId=Model.UsuarioId, Modal=Model.Modal }, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles{
+        @Styles.Render("~/bundles/select2/css")
+@Styles.Render("~/bundles/bootstrap-tagsinput/css")
+
+    <style>
+          .my-group .select
+        {
+            width: 30%;
+        }
+
+        .my-group .input
+        {
+            width: 70%;
+        }
+
+
+    </style>
+    <style>
+        option:disabled
+        {
+            background-color: #afafaf !important;
+            color: #ffffff !important;
+        }
+        .bootstrap-tagsinput
+        {
+            width: 100%;
+        }
+    </style>
+}
+
+@section Scripts {
+        @Scripts.Render("~/bundles/maxlenght/js")
+@Scripts.Render("~/bundles/bootstrap-tagsinput/js")
+
+    @Scripts.Render("~/bundles/select2/js")
+
+
+     @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+
+    <script>
+        $("#MetaNome").focus();
+        $('.number').mask('0000');
+        $('.money').mask('000000000000000,00', { reverse: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+
+        $('.select2').select2();
+
+        $('.tags').tagsinput({
+            splitOn: ',',
+            trimValue: true,
+        });
+
+        $('#PerfilId').on('change', function () {
+            carregaStatus('@Model.Entidade', $(this).val(), '@BLL.Usuarios.GetFilialId()', '@Model.StatusMultiIds');
+        });
+
+        
+
+        
+
+        //inicializador
+
+        @if (Model.UsuarioId > 0)
+	{
+		@:carregaStatus('@Model.Entidade', "@Model.Usuario.PerfilId", '@BLL.Usuarios.GetFilialId()', '@Model.StatusMultiIds'); 
+	}else
+	{
+            @:carregaStatus('@Model.Entidade', "@Model.PerfilId", '@BLL.Usuarios.GetFilialId()', '@Model.StatusMultiIds');
+	}
+
+        
+
+        function carregaStatus(Entidade, PerfilId, FilialId, StatusMultiIdsAux) {
+
+
+            var arrayStatusMultiIdsAux = StatusMultiIdsAux.split(",").toString();
+
+            console.log(arrayStatusMultiIdsAux);
+            //string Entidade, int PerfilId, int FilialId = 0
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetStatusPorPerfil/")", { Entidade: Entidade, PerfilId: PerfilId, FilialId: FilialId }, function (result) {
+                
+                
+
+                data = $.map(result, function (item, a) {
+                    //var select = (EntidadeStatusId == item.EntidadeStatusId) ? " selected='selected' " : "";
+
+                    var select = (arrayStatusMultiIdsAux.indexOf(item.EntidadeStatusId) > -1) ? " selected='selected' " : "";
+                    
+
+                    return "<option value=" + item.EntidadeStatusId + " " + select + ">" + item.StatusNome + "</option>";
+                });
+                $("#StatusMultiIdsAux").empty();
+                //$('#StatusMultiIdsAux').append($('<option>', {
+                //    value: 0,
+                //    text: '--Selecione--'
+                //}));
+                
+                $("#StatusMultiIdsAux").append(data.join(""));
+
+                $("#StatusMultiIdsAux").trigger('chosen:updated');
+                $("#StatusMultiIdsAux").trigger('change.select2');
+
+            });
+        }
+
+
+    </script>
+}

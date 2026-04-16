@@ -1,0 +1,69 @@
+﻿@model List<Models.CSGProposta>
+
+
+@{
+    
+    var _PrcPropostas_Deletar = BLL.Usuarios.VerificaAcesso("Deletar", "CSGPropostas");
+    var _PrcPropostas_Criar = BLL.Usuarios.VerificaAcesso("Criar", "CSGPropostas");
+    
+}
+
+<table cellpadding="1" cellspacing="1" class="table dataTable" id="table_produtos">
+    <thead>
+        <tr style="font-size: 12px;">
+            <th>Proposta Id</th>
+            <th>GUID</th>
+            <th>CPF</th>
+            <th>Cliente</th>
+            <th>Valor Bruto</th>
+            <th>Valor Total</th>
+            <th nowrap>Status</th>
+            <th>Visualizar</th>
+            <th>Excluir</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+
+            var tr_status = "";
+
+
+
+            var icon = "";
+            var tempoPassado = "";
+            
+                                    
+            <tr class=" @tr_status">
+                <td><i class="@icon"></i>@item.CSGPropostaId </td>
+                <td><small>@item.CSGPropostaGUID</small></td>
+                <td>@item.CSGClienteCPF</td>
+                <td>@item.CSGClienteNome</td>
+                <td>R$ @string.Format("{0:N2}", item.CSGCondFinanOperacaoValorBruto)</td>
+                <td>R$ @string.Format("{0:N2}", item.CSGCondFinanOperacaoValorTotal)</td>
+
+                <td><span class="badge "><small>Aguardando Processamento</small></span></td>
+
+
+                <td><a href="@Url.Content("~/CSGPropostas/View/" + item.CSGPropostaId + "/" + item.CSGPropostaGUID)" class="btn btn-outline btn-primary btn-xs fancybox fancybox.iframe" >Visualizar</a></td>
+
+                <td>
+                    @if (_PrcPropostas_Deletar)
+                    {
+                        <a href="@Url.Content("~/CSGPropostas/Deletar/" + item.CSGPropostaId + "/" + item.CSGPropostaGUID)" class="btn btn-outline btn-danger btn-xs" >Excluir</a>
+                    }
+                </td>
+
+
+
+            </tr>    
+                                  
+
+        }
+
+    </tbody>
+
+
+
+</table>

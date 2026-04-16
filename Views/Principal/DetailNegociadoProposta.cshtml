@@ -1,0 +1,136 @@
+﻿@model PetaPoco.Page<Models.PRCProposta>
+
+@{
+    ViewBag.Title = "Negociadores x Propostas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var bllUsuarios = new BLL.Usuarios();
+    var bllStatus = new BLL.EntidadesStatus();
+    var PRCPropostas_ViewAll = bllUsuarios.ControleAcesso("ViewAll", "PRCPropostas");
+    var PRCPropostas_ViewTriagem = bllUsuarios.ControleAcesso("ViewTriagem", "PRCPropostas");
+}
+
+
+
+
+@section Breadcrumb{
+    
+}
+
+
+
+<div class="content ">
+    <div class="row">
+
+             @if (bllUsuarios.ControleAcesso("ViewAll", "PRCPropostas"))
+            {
+                var listaUsuarios = bllUsuarios.Listar(BLL.Usuarios.GetEmpresaId());
+                var listaStatus = bllStatus.Listar("PRCPropostas", 0, false, BLL.Usuarios.GetFilialId());
+
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        
+                    </div>
+                    Negociadores x Propostas
+                </div>
+                <div class="panel-body">
+
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table table-condensed table-striped">
+                            <caption id="loading_table_negociadores_propostas"><i class="fa fa-spinner fa-pulse fa-fw"></i> Carregando</caption>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Total</th>
+                                    @foreach (var item in listaStatus)
+                                    {
+                                <th>@item.StatusNome</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in listaUsuarios)
+                                {
+                            <tr>
+                                <td>@item.UsuarioNome</td>
+                                <td><span id="@(item.UsuarioId + "_total")">0</span></td>
+                                @foreach (var itemb in listaStatus)
+                                {
+                            <td><span id="@(item.UsuarioId + "_" + itemb.EntidadeStatusId)">-</span></td>
+                                }
+                            </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+            }
+
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/datatables/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    
+}
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+    @Scripts.Render("~/bundles/fancybox/js")
+
+    
+    <script>
+        $(document).ready(function () {
+            GetListaQtdNegociadorStatus();
+        });
+
+        function GetListaQtdNegociadorStatus() {
+            $.getJSON('@Url.Content("~/ApiIntegracao/GetListaQtdNegociadorStatus/")', { id: "@BLL.Usuarios.GetUsuarioId()", visualizarTodas: "@PRCPropostas_ViewAll", visualizarTriagem: "@PRCPropostas_ViewTriagem", empresaid: "@BLL.Usuarios.GetEmpresaId()" }, function (result) {
+                  $('#loading_table_negociadores_propostas').css('display', 'inline');
+                  data = $.map(result, function (item, a) {
+
+                      $("#" + item.Descricao).html(item.Quantidade);
+
+                  });
+                  $('#loading_table_negociadores_propostas').css('display', 'none');
+
+              });
+          }
+
+    </script>
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,73 @@
+﻿@model Models.AgendamentoAnotacaoView
+
+@{
+
+    ViewBag.Title = " Anotações";
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+
+    
+}
+
+<legend><img src="~/Assets/img/ico-post-it-3.png" style="    margin-bottom: 10px;" />Anotações</legend>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.AgendamentoAnotacao.Guid);
+    @Html.HiddenFor(m => m.AgendamentoAnotacao.PessoaID);
+    @Html.HiddenFor(m => m.AgendamentoAnotacao.DataRef);
+    <div class="cwell">
+
+        <div class="row-fluid">
+            <div class="span12">
+
+                @Html.LabelFor(model => model.AgendamentoAnotacao.AgendamentoAnotacaoConteudo)
+
+                @Html.TextAreaFor(model => model.AgendamentoAnotacao.AgendamentoAnotacaoConteudo, new { @class = "input-block-level max", @rows = "3", @maxlength = "800" })
+                @Html.ValidationMessageFor(model => model.AgendamentoAnotacao.AgendamentoAnotacaoConteudo)
+
+            </div>
+        </div>
+
+
+        <div class="row-fluid">
+
+            <div class="span12">
+                <button name="salvar" value="true" type="submit" class="btn btn-primary pull-right">Salvar</button>
+            </div>
+
+        </div>
+
+    </div>
+      
+}
+
+
+@using (Html.BeginForm("AnotacaoApagar", "Agendamento", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.AgendamentoAnotacao.Guid);
+    @Html.HiddenFor(m => m.AgendamentoAnotacao.PessoaID);
+    @Html.HiddenFor(m => m.AgendamentoAnotacao.DataRef);
+    <table class="table table-hover table-condensed table-bordered ">
+        <thead>
+            <tr>
+                <th>Anotação</th>
+                <th>Data</th>
+                <th>Usuário</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ListAgendamentoAnotacao)
+            {
+            <tr>
+                <td width="100%">@item.AgendamentoAnotacaoConteudo</td>
+                <td nowrap><small>@item.RegDtInicio</small></td>
+                <td nowrap><small>@item.UsuarioNome</small></td>
+                <td nowrap><button name="apagar" value="@item.AgendamentoAnotacaoId" id="apagar-@item.AgendamentoAnotacaoId" type="submit"  onclick="return confirm('Confirma a exclusão da anotação?')"><i class="fa fa-trash"></i></button></td>
+            </tr>    
+            }
+        </tbody>
+    </table>
+}
+
+

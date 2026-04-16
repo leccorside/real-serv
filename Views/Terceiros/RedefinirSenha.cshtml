@@ -1,0 +1,77 @@
+﻿@model Models.ChangePasswordModel
+
+
+
+@{
+    
+
+    
+
+    var acao = "Alterar";
+
+
+    ViewBag.Title = acao + " Senha";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Terceiros", "Index")</li>
+}
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+        
+    @Html.HiddenFor(model => model.UsuarioId);
+
+    @Html.Hidden("oldPassword", Guid.NewGuid());
+     
+        
+    
+    <div class="control-group">
+        <label>@Html.LabelFor(model => model.newPassword)</label>
+        @Html.EditorFor(model => model.newPassword)
+        @*@Html.ValidationMessageFor(model => model.newPassword)*@
+    </div>
+        
+        
+    <div class="control-group">
+        <label>@Html.LabelFor(model => model.ConfirmPassword)</label>
+        @Html.EditorFor(model => model.ConfirmPassword)
+        @*@Html.ValidationMessageFor(model => model.ConfirmPassword)*@
+    </div>
+        
+        
+        
+      
+
+    <div class="form-actions">
+
+
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+    </div>
+            
+}
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

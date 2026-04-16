@@ -1,0 +1,78 @@
+﻿@model IEnumerable<Models.Trello.Lists.List>
+
+@{
+    ViewBag.Title = "Lists";
+    Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    var bllEmpresas = new BLL.Empresas();
+    var empresa = bllEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+    var organization = BLL.Trello.GetOrganization(empresa.EmpresaTrelloOrganization);
+}
+
+@section Styles{
+    <style>
+        .textcopy {
+            background: transparent !important;
+            border: 0px !important;
+            overflow: hidden !important;
+            color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .btncopy {
+            padding-top: -11px;
+            margin-left: 2px !important;
+            margin-top: 0px !important;
+            
+        }
+    </style>
+}
+<h2><i class="fa fa-trello"></i> Lists da @organization.displayName</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Id</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><a href="#" class="btn btn-mini copy btncopy" data-clipboard-target="#dadoscopia_@item.id"><i class="fa fa-cut"></i> </a></td>
+                <td>@item.name</td>
+                <td>@item.id<input type="text" class="textcopy" id="dadoscopia_@item.id" value="@item.id" />
+                    </td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>
+
+<a href="~/Trello/Boards" class="btn">Voltar</a>
+
+
+@section Scripts {
+    <script src="~/Assets/plugins/clipboard.js-master/clipboard.min.js"></script>
+
+    <script>
+
+
+        // copiar e colar
+        var clipboard = new Clipboard('.copy');
+
+        clipboard.on('success', function (e) {
+            e.clearSelection();
+        });
+
+        $('.copy').click( function(e) {
+            e.preventDefault();
+        });
+        // ./ copiar e colar
+
+
+    </script>
+}
+

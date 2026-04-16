@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Perfil";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+
+<div class="content animate-panel">
+
+
+    <div class="row">
+
+        <div class="col-md-6 col-md-offset-3" style="">
+
+            @BLL.Usuarios.GetEmpresaNome()
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        <a class="closebox"><i class="fa fa-times"></i></a>
+                    </div>
+                    Todas as configurações
+                </div>
+                <div class="panel-body no-padding">
+                    <ul class="list-group">
+
+                            <li class="list-group-item">
+                                <a href="@Url.Content("~/Principal/Index/")"><i class="fa fa-home"></i> Home</a>
+                            </li> 
+                        
+
+                             <li class="list-group-item">
+                    <a href="@Url.Content("~/Perfil/SeusDados/")">
+                        <i class="fa fa-pencil"></i>
+                        Seus dados
+                    </a>
+                </li> 
+
+             <li class="list-group-item">
+                    <a href="@Url.Content("~/Perfil/SuaSenha/")">
+                        <i class="fa fa-key"></i>
+                        Sua senha
+                    </a>
+                </li> 
+
+
+                        
+                @if (@BLL.Usuarios.GetManager())
+                {
+                     <li class="list-group-item">
+                    <a href="@Url.Content("~/Manager/Home")">
+                        <i class="fa fa-magic"></i>
+                       MANAGER
+                    </a>
+                </li> 
+                }
+               
+
+                <li class="list-group-item">
+
+                    <a href="@Url.Content("~/Principal/RenovaCredenciais")">
+                        <i class="fa fa-refresh"></i>
+                        Renovar Credenciais
+                    </a>
+                </li> 
+
+
+
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+
+
+</div>
+
+
+
+
+
+

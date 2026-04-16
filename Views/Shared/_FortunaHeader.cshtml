@@ -1,0 +1,241 @@
+﻿@{
+    //var nome_sistema = BLL.Configuracoes.Carregar("config.sistema.nome");
+
+    //menagens
+    var pesquisar = Request["pesquisar"];
+    var user = new BLL.Usuarios();
+
+    var pessoas_pesquisarapida = user.ControleAcesso("pesquisarapida", "pessoas");
+    var largura = BLL.Utils.Funcoes.GetMaxWidth();
+
+    var urlPesquisa = "~/Pessoas/PesquisaRapida/?";
+
+    var bllMetas = new BLL.Metas();
+    var listarMetas = bllMetas.ListarPorPerfilEUsuario(BLL.Usuarios.GetPerfilId(), BLL.Usuarios.GetUsuarioId(), "PRCPropostas");
+
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentPage = (currentController + "_" + currentAction).ToLower();
+    var showRightPanel = "";
+    //if (currentPage == "principal_index" && listarMetas.Count() > 0)
+    //{
+    //    showRightPanel = "sidebar-open";
+
+    //}
+    
+}
+
+
+<div class="color-line">
+</div>
+
+<div id="logo" class="light-version" style="overflow:hidden;">
+    <a class="brand" href="@Url.Content("~/Principal/Index")">
+        <img src="@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png?" + DateTime.Now.Month)" onerror="this.src='@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/semlogo.png")'" style="max-height:35px;max-width:130px;" /></a>
+</div>
+
+
+
+
+<nav role="navigation">
+    <div class="header-link hide-menu"><i class="fa fa-bars"></i></div>
+    <div class="small-logo">
+        @*<span class="text-primary">@nome_sistema</span>*@
+
+    </div>
+    @if (ViewBag.SearchAction != null)
+    {
+        <form role="search" class="navbar-form-custom" method="@ViewBag.SearchMethod" action="@Url.Content(ViewBag.SearchAction)">
+            <div class="form-group">
+                <input type="text" name="pesquisar" id="pesquisar" placeholder="@ViewBag.SearchPlaceHolder" class="form-control" name="search" value="@pesquisar">
+            </div>
+        </form>    
+    }
+
+    <div class="mobile-menu hide">
+        <button type="button" class="navbar-toggle mobile-menu-toggle" data-toggle="collapse" data-target="#mobile-collapse">
+            <i class="fa fa-chevron-down"></i> @currentPage
+        </button>
+        <div class="collapse mobile-navbar" id="mobile-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a class="" href="@Url.Action("Login", "CommonViews")">Login</a>
+                </li>
+                <li>
+                    <a class="" href="@Url.Action("Register", "CommonViews")">Logout</a>
+                </li>
+                <li>
+                    <a class="" href="@Url.Action("ProfilePage", "AppViews")">Profile</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="navbar-right">
+        <ul class="nav navbar-nav no-borders">
+
+            <li class="dropdown">
+                <a href="@Url.Content("~/Principal/Index")">
+                    <i class="pe-7s-home"></i>
+                </a>
+            </li>
+
+            <!--<li class="dropdown">
+                <a href="@Url.Content("~/Principal/IndexNew")">
+                    <i class="pe-7s-graph2"></i>
+                </a>
+            </li>-->
+
+            @if (user.ControleAcesso("BaseDeConhecimento", "Principal"))
+            {
+                
+                <li class="dropdown">
+                    <a href="@Url.Content("~/Principal/BaseDeConhecimento/0/")" class="btn ">
+                        <i class="pe-7s-study"></i>
+                    </a>
+                </li>
+            }
+
+
+            
+            @if (pessoas_pesquisarapida)
+            {
+                
+                <li class="dropdown">
+                    <a href="@Url.Content(urlPesquisa)" class="btn fancybox_full fancybox.iframe">
+                        <i class="pe-7s-search"></i>
+                    </a>
+                </li>
+            }
+
+
+
+
+
+            <li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                    <i class="pe-7s-keypad"></i>
+                </a>
+                <div class="dropdown-menu hdropdown bigmenu animated flipInX">
+                    <table>
+                        <tbody>
+                            <tr>
+
+                                <td>
+                                    <a href="@Url.Content("~/Perfil/SeusDados")">
+                                        <i class="pe pe-7s-user text-info"></i>
+                                        <h5>Seus Dados</h5>
+                                    </a>
+                                </td>
+
+
+                                <td>
+                                    <a href="@Url.Content("~/Perfil/SuaSenha")">
+                                        <i class="pe pe-7s-key text-warning"></i>
+                                        <h5>Sua Senha</h5>
+                                    </a>
+                                </td>
+
+                            </tr>
+                            <tr>
+
+
+
+
+                                <td>
+                                    <a href="@Url.Content("~/Principal/RenovaCredenciais")">
+                                        <i class="pe pe-7s-refresh text-success"></i>
+                                        <h5>Renovar Credenciais</h5>
+                                    </a>
+                                </td>
+
+                                @if (@BLL.Usuarios.GetManager())
+                                {
+                                    <td>
+                                        <a href="@Url.Content("~/Manager/Home")">
+                                            <i class="pe pe-7s-tools text-danger"></i>
+                                            <h5>Manager</h5>
+                                        </a>
+                                    </td>
+                                }
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+
+            @if (listarMetas.Count > 0)
+            {
+            <li>
+                <a href="#" id="sidebar" class="right-sidebar-toggle  label-menu-corner">
+                    <i class="pe-7s-target"></i>
+                    <span class="label label-success">@listarMetas.Count</span>
+                </a>
+            </li>    
+            }
+            
+
+            <li class="dropdown">
+                <a href="#" id="logoff" class="logoff">
+                    <i class="pe-7s-close"></i>
+                </a>
+            </li>
+
+
+        </ul>
+    </div>
+</nav>
+
+
+
+
+
+<!-- Right sidebar -->
+<div id="right-sidebar" class="animated fadeInRight @showRightPanel  ">
+
+    <div class="p-m">
+        <button id="sidebar-close" class="right-sidebar-toggle sidebar-button btn btn-default m-b-md">
+            <i class="pe pe-7s-close"></i>
+        </button>
+        <div>
+            <h4 class="font-bold no-margins">Suas Metas </h4>
+            <br>
+            
+            @foreach (var item in listarMetas)
+            {
+                var result = bllMetas.CalcularMeta(item, BLL.Usuarios.GetPerfilId(), BLL.Usuarios.GetUsuarioId(), item.PeriodicidadeValor, item.MetaVolume);
+            
+                <div>
+                    <br />
+                    <h5 class="font-extra-bold m-b-xs"><i class="pe-7s-target"></i> @item.MetaNome</h5>
+                    
+
+                    @if (item.PeriodicidadeValor > 0)
+                    {
+                    <small class="text-muted">Qtd. de Propostas / @result.Descricao <br />Esperado = @item.PeriodicidadeValor <br />Resultado = @result.Quantidade</small>
+                    <div class="progress m-t-xs full progress-striped">
+                        <div style="width: @(result.ResultPercentQuantidade > 100 ? "100%" : result.ResultPercentQuantidade+"%")" aria-valuemax="100" aria-valuemin="0" aria-valuenow="@(result.ResultPercentQuantidade)" role="progressbar" class=" progress-bar progress-bar-@result.ResultProgressBarQuantidade">
+                            @(result.ResultPercentQuantidade > 100 ? "100%" : result.ResultPercentQuantidade+"%") Completa
+                        </div>
+                    </div>    
+                    }
+                    
+                    @if (item.MetaVolume > 0)
+                    {
+                    <small class="text-muted">Volume R$ / @result.Descricao <br />Esperado = @string.Format("{0:N2}", item.MetaVolume)  <br />Resultado = @string.Format("{0:N2}", result.Volume)</small>
+                    <div class="progress m-t-xs full progress-striped">
+                        <div style="width: @(result.ResultPercentVolume > 100 ? "100%" : result.ResultPercentVolume+"%")" aria-valuemax="100" aria-valuemin="0" aria-valuenow="@(result.ResultPercentVolume)" role="progressbar" class=" progress-bar progress-bar-@result.ResultProgressBarVolume">
+                            @(result.ResultPercentVolume > 100 ? "100%" : result.ResultPercentVolume+"%") Completa
+                        </div>
+                    </div>    
+                    }
+                    
+                </div>    
+            }
+
+        </div>
+
+    </div>
+
+</div>
+

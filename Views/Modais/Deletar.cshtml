@@ -1,0 +1,68 @@
+﻿@model Models.Modal
+
+@{
+    ViewBag.Title = "Excluíndo Modais";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Breadcrumb{
+      
+   <li class="active"><span class="divider">/</span> @Html.ActionLink("Modais", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar essa Modal?
+</div>
+
+
+<div class="well">
+        <fieldset>
+
+            <legend>Modal</legend>
+            <div class="row-fluid">
+
+                <div class="span3">
+                    <div class="display-label">
+
+                        @Html.DisplayNameFor(model => model.Titulo)
+
+
+
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Titulo)
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </fieldset>
+        <br />
+
+        @using (Html.BeginForm())
+        {
+            <div class="row-fluid">
+                <div class="span12">
+                    @Html.HiddenFor(model => model.ModalId)
+                    <p class="pull-right">
+                        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+                    </p>
+
+                    <p class="pull-left">
+                        @Html.ActionLink("Voltar", "Index")
+                    </p>
+                </div>
+            </div>    
+        }
+
+
+
+    </div>

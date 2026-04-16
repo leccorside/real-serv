@@ -1,0 +1,189 @@
+﻿@model Models.MedGuiaItemView
+
+@{
+    string nome = "Guia " + Model.MedGuia.MedGuiaId + " de " + Model.MedGuia.PacienteNome;
+    nome = BLL.Utils.Formatacoes.GenerateSlug(nome);
+
+
+
+    ViewBag.Title = nome;
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+
+    //bool _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    //bool _PodeAlterar = BLL.MedGuias.
+    var bllMedGuias = new BLL.MedGuias();
+    var _PodeAlterar = bllMedGuias.PodeAlterar(Model.MedGuia);
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+}
+
+
+
+<div class="content animate-panel">
+                <div class="row">
+                <div class="col-lg-12" style="">
+
+
+
+                    <div class="hpanel">
+                        <div class="panel-heading">
+                            <div class="panel-tools">
+                                <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                            Lançamento de preço de custo
+                        </div>
+                        <div class="panel-body">
+                            <!-- dados aqui-->
+                            <div class="row">
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <label>Guia n.</label>
+                                    @Model.MedGuiaId
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Data</label><br />
+                                    @string.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedGuiaData)
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Total</label><br />
+                                    @string.Format("{0:C}", Model.MedGuia.TotalProdutos)
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Convênio</label><br />
+                                    @Model.MedGuia.ConvenioNome
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Plano</label><br />
+                                    @Model.MedGuia.ConvenioPlanoNome
+                                </div>
+
+
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <label>Médico</label><br />
+                                    @Model.MedGuia.MedicoNome
+                                </div>
+
+
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <label>Paciente</label><br />
+                                    @Model.MedGuia.PacienteNome
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>CPF</label><br />
+                                    @Model.MedGuia.PacienteCpf
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Banco</label><br />
+                                    @Model.MedGuia.BancoCod - @Model.MedGuia.BancoNome
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Agência</label><br />
+                                    @Model.MedGuia.BancoAgencia
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Conta</label><br />
+                                    @Model.MedGuia.BancoConta
+                                </div>
+
+                            </div>
+                            <br />
+                            <div class="row">
+                                @using (Html.BeginForm())
+                                {
+                                    @Html.ValidationSummary(true)
+
+                                    @Html.HiddenFor(m => m.MedGuia.MedGuiaId)
+                                    @Html.HiddenFor(m => m.MedGuiaId);
+
+
+
+                                                                     if (_FinanceiroLancamento)
+                                                                     {
+        
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <label>Preço total de custo dos exames</label>
+                                        @Html.TextBoxFor(m => m.MedGuia.TotalProdutosCusto, "{0:F2}", new { @class = "moeda form-control select-all" })
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <label>NFF/Fatura</label>
+
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(m => m.MedGuia.TotalProdutosCustoNff, new { @class = " form-control max", maxlength = "100" })
+                                            <span class="input-group-btn">
+                                                <button type="submit" class="btn btn-primary">Salvar</button>
+                                            </span>
+                                        </div>
+
+                                    </div>
+        
+                                                                     }
+                                                                     else
+                                                                     {
+                                    @Html.HiddenFor(m => m.MedGuia.TotalProdutosCusto);
+                                    @Html.HiddenFor(m => m.MedGuia.TotalProdutosCustoNff);
+                                                                     }
+
+
+
+
+
+                                }
+                            </div>
+                            <!-- ./ dados aqui-->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+</div>
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/datepicker/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+
+
+    <script>
+        $(document).ready(function () {
+            $("#MedGuia_TotalProdutosCusto").focus();
+        });
+
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $('.max').maxlength();
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+    </script>
+}
+

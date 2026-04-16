@@ -1,0 +1,85 @@
+﻿@model Models.Perfil
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.PerfilId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Perfil";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@section Breadcrumb{
+      
+<li class="active"><span class="divider">/</span> @Html.ActionLink("Empresas", "Index", "Empresas")</li>
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Perfis", "Index", new { @id = Model.EmpresaId })</li>
+}
+
+
+<div class="cwell">
+        @using (Html.BeginForm("Criar", "Perfis", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+            @Html.Hidden("EmpresaId", Model.EmpresaId); 
+        
+            
+            if (Model.PerfilId > 0)
+            {
+            @Html.Hidden("PerfilId", Model.PerfilId);
+                                                          acao = "Alterar";
+            }
+       
+            
+     
+            <div class="control-group">
+                @Html.LabelFor(model => model.Nivel, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.Nivel)
+                    @Html.ValidationMessageFor(model => model.Nivel)
+                </div>
+            </div>
+            
+            <div class="control-group">
+                @Html.LabelFor(model => model.PerfilNome, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.PerfilNome)
+                    @Html.ValidationMessageFor(model => model.PerfilNome)
+                </div>
+            </div>
+        
+    
+      
+
+            <div class="form-actions">
+
+
+                <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+            </div>
+            
+        }
+    <div>
+    @Html.ActionLink("Voltar", "Index", new { @id = Model.EmpresaId })
+</div>
+    </div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

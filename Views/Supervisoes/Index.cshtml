@@ -1,0 +1,197 @@
+@model PetaPoco.Page<Models.Supervisao>
+
+
+@{
+    var user = new BLL.Usuarios();
+    ViewBag.Title = "Supervis&otilde;es";
+    Layout = "~/Views/Shared/_Layout.cshtml";  
+
+    var bllSupervisoes = new BLL.Supervisoes();
+
+    var Supervisoes_criar = user.ControleAcesso("Inserir", "Supervisoes");
+
+    var Supervisoes_imprimir = user.ControleAcesso("Imprimir", "Supervisoes");
+    
+    string MinhasSupervisoes = Request["MinhasSupervisoes"];
+    string Pendente = Request["Pendente"];
+
+    string outrosCampos = Convert.ToString(ViewBag.Campos);
+    if (outrosCampos == null)
+    {
+        outrosCampos = "";
+    }
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "Supervisoes/Index";
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+@if (Supervisoes_criar)
+{
+    <div class="row-fluid">
+        <div class="span12">
+            @*@Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })*@
+        </div>
+    </div>
+    <br />    
+}
+
+<div class="row-fluid">
+    <div class="span12 cwell">
+
+        <div class="row-fluid ">
+            <div class="span10">
+
+                @using (Html.BeginForm("Index", "Supervisoes", FormMethod.Post, new { @class = "form-inline" }))
+                {
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <label>Pesquisar</label>
+                            <input type="text" name="pesquisar" title="Pesquisar" class="span12" placeholder="Pesquisar..." value="@Request["pesquisar"]">
+                        </div>
+                        <div class="span3">
+                            <label>Posto de Serviço</label>@Html.DropDownList("PostoDeServicoId", (SelectList)ViewBag.ddlPostosDeServicos, "--Selecione--", new { @class = "chosen-select span12 " })</div>
+                        <div class="span4">
+                            <label>Data</label><br />
+                            <input type="text" name="de" id="de" title="Data de" class="datepickerDe input-small tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+                            <input type="text" name="ate" id="ate" title="Data até" class="datepickerAte input-small tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+                        </div>
+                        <div class="span3">
+                            <label></label>
+                            <br />
+                            <button class="btn" type="submit">Pesquisar</button><button class="btn" type="button" onclick="parent.location='@strUrl'">Limpar</button>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <label class="checkbox">
+                                <input type="checkbox" name="MinhasSupervisoes" id="MinhasSupervisoes" value="true">Minhas Supervisões</label>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="span2">
+                @using (Html.BeginForm("Export", "Supervisoes", FormMethod.Post, new { @class = "form-inline " }))
+                {
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <br />
+                            <input type="hidden" name="pesquisar" value="@Request["pesquisar"]">
+                            <input type="hidden" name="PostoDeServicoId" value="@Request["PostoDeServicoId"]">
+                            <input type="hidden" name="MinhasSupervisoes" value="@Request["MinhasSupervisoes"]">
+                            <button class="btn pull-right" data-toggle="tooltip" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i></button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+
+        <table class="footable table-bordered table-striped table-pequeno">
+            <thead>
+                <tr>
+                    <th>@Html.CampoOrdenacao(" ", "RegAtualizado")</th>
+                    <th>
+                        @Html.CampoOrdenacao("Número", "SupervisaoId")
+                    </th>
+                    <th>
+                        @Html.CampoOrdenacao("Data", "Supervisoes.RegDtInicio")
+                    </th>
+                    <th>
+                        @Html.CampoOrdenacao("Check-in / Check-out", "Supervisoes.RegDtInicio")
+                    </th>
+                    <th>
+                        @Html.CampoOrdenacao("Posto de Serviço", "PostoDeServicoNome")
+                    </th>
+                    <th>
+                        @Html.CampoOrdenacao("Supervisor", "UsuarioNome")
+                    </th>
+                    
+                    <th data-hide="phone,tablet"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    var tr_status = "";
+                    <tr class="@tr_status">
+                        <td class="text-center"><a href="@Url.Content("~/Supervisoes/Blog/" + item.SupervisaoId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox iframe tip-top" data-toggle="tooltip" data-original-title="Visualizar histórico"  title="Visualizar histórico" data-placement="right"><i class="@(item.RegAtualizado ? "fa fa-spinner fa-spin fa-fw" : "fa fa-square-o")" aria-hidden="true"></i></a></td>
+                        <td class="text-center">@item.SupervisaoId</td>
+                        <td>@item.RegDtInicio </td>
+                        <td class="text-center"><strong>In:</strong> @item.PontoInicio - <strong>Out:</strong> @item.PontoFim - <strong>Total Horas:</strong> @BLL.Utils.Funcoes.ConvertDecimalToHour(item.PontoHoras)</td>
+                        <td>@item.PostoDeServicoNome</td>
+                        <td>@item.UsuarioNome</td>
+                        <td data-hide="phone,tablet" style="display: table-cell">
+                            <div class="btn-group">
+                                <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cogs"></i><span class="caret"></span></button>
+                                <ul class="dropdown-menu pull-right">
+                                    <li><a href="@Url.Content("~/Supervisoes/View/" + item.SupervisaoId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Visualizar"  title="Visualizar" data-placement="top"><i class="fa fa-search-plus" aria-hidden="true"></i>Visualizar</a></li>
+                                    <li><a href="@Url.Content("~/Supervisoes/Imprimir/" + item.SupervisaoId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Imprimir"  title="Imprimir" data-placement="top"><i class="fa fa-print" aria-hidden="true"></i>Imprimir</a></li>
+                                    <li><a href="@Url.Content("~/Supervisoes/Deletar/" + item.SupervisaoId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Excluir"  title="Excluir" data-placement="top"><i class="fa fa-trash" aria-hidden="true"></i>Excluir</a></li>
+                                    
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Paginacao(Convert.ToInt16(Model.TotalPages), outrosCampos)
+    </div>
+</div>
+
+
+@section Scripts {
+    @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>*@
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+
+
+            $("body").on("click", ".jquery-lightbox-overlay", function () {
+                window.location.reload(true);
+            });
+
+            $("body").on("click", ".jquery-lightbox-button-close", function () {
+                window.location.reload(true);
+            });
+
+
+            $("#SupervisaoTipoId").val("@Request["SupervisaoTipoId"]");
+            $("#de").mask("99/99/9999");
+            $("#ate").mask("99/99/9999");
+        });
+    </script>
+
+
+
+}

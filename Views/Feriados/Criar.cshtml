@@ -1,0 +1,87 @@
+﻿@model Models.Feriado
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.FeriadoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Feriado";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+
+
+
+@section Breadcrumb{
+      <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+<li class="active"><span class="divider">/</span>    @Html.ActionLink("Feriados", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+        @using (Html.BeginForm("Criar", "Feriados", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+            if (Model.FeriadoId > 0)
+            {
+            @Html.Hidden("FeriadoId", Model.FeriadoId);
+                                                          acao = "Alterar";
+            }
+            
+             <div class="control-group">
+                @Html.LabelFor(model => model.FeriadoData, new { @class = "control-label" })
+                <div class="controls">
+                        @Html.TextBoxFor(m => m.FeriadoData, "{0:dd/MM/yyyy}", new { @class = "datepickerDe input-small" })
+                    @Html.ValidationMessageFor(model => model.FeriadoData)
+                </div>
+            </div>
+       
+            <div class="control-group">
+                @Html.LabelFor(model => model.FeriadoDescricao, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.FeriadoDescricao)
+                    @Html.ValidationMessageFor(model => model.FeriadoDescricao)
+                </div>
+            </div>
+        
+    
+      
+
+            <div class="form-actions">
+
+
+                <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+            </div>
+            
+        }
+    <div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+    </div>
+
+
+
+
+
+@section Scripts {
+    <script>
+        jQuery(function () {
+            $("#FeriadoData").mask("99/99/9999");
+         
+        });
+
+
+    </script>
+
+}

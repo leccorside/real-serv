@@ -1,0 +1,99 @@
+﻿@model Models.Supervisao
+
+@{
+    ViewBag.Title = "Criar Supervisão";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";  
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    //var bllAnexos = new BLL.SupervisoesAnexos();
+    //var listaAnexos = bllAnexos.Listar(Model.SupervisaoId);
+
+    var _SupervisoesAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "Supervisoes");
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Supervisões", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">
+
+    <ul class="nav nav-tabs">
+        <li><a href="@Url.Content("~/Supervisoes/View/" + Model.SupervisaoId + "?Modal=" + Model.Modal)">Dados Gerais</a></li>
+        <li class="active"><a href="#">Histórico</a></li>
+    </ul>
+
+    <div class="row-fluid">
+        <div class="span2">
+            <label>Supervisão n.</label>
+            <span class="black">@Model.SupervisaoId</span>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <span class="black">@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</span>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <span class="black">@string.Format("{0:HH:mm}", Model.RegDtInicio)</span>
+        </div>
+
+        <div class="span6">
+            <label>Posto de Serviço</label>
+            @Model.PostoDeServicoNome
+        </div>
+
+    </div>
+
+    <br />
+    <div class="row-fluid">
+        <div class="span12">
+            <label>Descrição</label>
+            @Model.SupervisaoDescricao
+        </div>
+    </div>
+    <br />
+
+    <legend><i class="fa fa-comments"></i>Histórico</legend>
+    @if (_SupervisoesAdministrador && Model.RegAtualizado)
+    {
+        <a href="@Url.Content("~/Supervisoes/Blog/" + Model.SupervisaoId + "?Modal=" + Model.Modal + "&Atualizado=0")" class="btn btn-mini" onclick="return confirm('Ao clicar em OK, outros usuários não visualizarão que houve alterações nessa Supervisão. Confirma?')">Marcar como visualizado</a>    
+    }
+
+    @Html.CubeeBlog("Supervisoes", Model.SupervisaoId, "", BLL.Usuarios.GetUsuarioId(), _SupervisoesAdministrador)
+
+
+
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+
+

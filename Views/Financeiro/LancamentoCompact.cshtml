@@ -1,0 +1,350 @@
+﻿@model Models.LancamentoView
+
+
+
+
+@{
+    var vtipo = (string)Model.Lancamento.LancamentoTipo;
+    var vname = "";
+    switch (vtipo)
+    {
+        case "D":
+            vname = "Despesa";
+            break;  // Always break each case
+        case "R":
+            vname = "Receita";
+            break;
+        case "T":
+            vname = "Transferência";
+            break;
+        default:
+            vname = "";
+            break;
+
+    }
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("LancamentoCompact", "Financeiro");
+    var _FinanceiroLancamentoDel = BLL.Usuarios.VerificaAcesso("LancamentoCompactDel", "Financeiro");
+    
+}
+
+@{
+    ViewBag.Title = "Lançamento de " + vname;
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";    
+}
+
+
+@{
+    var valor = Model.Lancamento.Valor;
+
+    if (Model.Lancamento.LancamentoTipo == "D")
+    {
+        valor = valor * -1;
+    }
+    
+}
+
+<div class="content animate-panel">
+    @if (_FinanceiroLancamento)
+    {
+        <div class="row">
+            <div class="col-lg-12" style="">
+
+
+
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Lançamentos
+                    </div>
+                    <div class="panel-body">
+                        <!-- dados aqui-->
+
+
+
+
+                        @if (Model.Lancamento.Entidade == "medguias")
+                        {
+
+
+                            var bllMedGuias = new BLL.MedGuias();
+                            var guia = bllMedGuias.Carregar(Model.Lancamento.EntidadeId);
+            
+            
+                            <div class="row">
+                                @if (guia.PacienteResponsavel)
+                                {
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <label>Paciente</label>
+                                    <span class="black">@guia.PessoaDependenteNome</span>
+                                </div>    
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <label>Responsável</label>
+                                    <span class="black">@guia.PacienteNome</span>
+                                </div>    
+                                }
+                                else
+                                {
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <label>Paciente</label>
+                                    <span class="black">@guia.PacienteNome</span>
+                                </div>    
+                                }
+                                
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Guia n<sup>o</sup>.</label>
+                                    <span class="black">@guia.MedGuiaId</span>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <label>Valor NF</label>
+                                    <span class="black">R$ @string.Format("{0:F2}", guia.TotalProdutos)</span>
+                                </div>
+                            </div>
+                            <br />
+                        }
+
+
+                        @using (Html.BeginForm("LancamentoCompact", "Financeiro", FormMethod.Post, new { @class = "" }))
+                        {
+                            @Html.ValidationSummary(true)
+    
+                            @Html.HiddenFor(m => m.Lancamento.Entidade);
+                            @Html.HiddenFor(m => m.Lancamento.EntidadeId);
+                            @Html.HiddenFor(m => m.Lancamento.FilialID);
+                            @Html.HiddenFor(m => m.Lancamento.ContaId);
+
+                                                                       if (Model.Lancamento.LancamentoId > 0)
+                                                                       {
+                            @Html.HiddenFor(m => m.Lancamento.LancamentoId);
+                            @Html.HiddenFor(m => m.Lancamento.RecorrenciaGUID);
+                            @Html.HiddenFor(m => m.Lancamento.Recorrencia);
+                                                                       }
+
+                                                                       if (Model.Lancamento.PlanoId > 0)
+                                                                       {
+                            @Html.HiddenFor(m => m.Lancamento.PlanoId);
+                            @Html.HiddenFor(m => m.Lancamento.PessoaID);
+                                                                       }
+
+                                                     
+
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.Lancamento.LancamentoTipo)
+
+                                    @Html.DropDownListLancamentoTipo("Lancamento.LancamentoTipo", Model.Lancamento.LancamentoTipo, true, "form-control")
+                                    @Html.ValidationMessageFor(model => model.Lancamento.LancamentoTipo)
+
+                                </div>
+                                
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.Lancamento.CategoriaId)
+
+                                    @Html.DropDownListFor(model => model.Lancamento.CategoriaId, (SelectList)ViewBag.DdlCategorias, "--Selecione--", new { @class = "chosen-select form-control" })
+                                    @Html.ValidationMessageFor(model => model.Lancamento.CategoriaId)
+
+                                </div>
+                                
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Data</label><br />
+
+                                    @Html.TextBox("Lancamento.DataCompetencia", @String.Format("{0:dd/MM/yyyy}", Model.Lancamento.DataCompetencia), new { @class = "datepicker form-control", value = @DateTime.Now })
+                                    @Html.ValidationMessageFor(model => model.Lancamento.DataCompetencia)
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    @Html.LabelFor(model => model.Lancamento.Valor)<br />
+                                    @Html.TextBox("Lancamento.Valor", string.Format("{0:F2}", Model.Lancamento.Valor), new { @class = "moeda select-all form-control" })
+                                    @Html.ValidationMessageFor(model => model.Lancamento.Valor)
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label>Ref. Externa</label><br />
+                                    @Html.TextBoxFor(model=>model.Lancamento.RefExterna, new { @class = " form-control" })
+                                </div>
+                            </div>
+            
+        
+                            <br />
+                            <div class="row">
+
+                                
+                                <div class="col-lg-12 col-md-12 col-sm-12">@Html.LabelFor(model => model.Lancamento.Observacao)<br />
+                                    @Html.TextAreaFor(model => model.Lancamento.Observacao, new { @class = "form-control", @rows = "2" })
+                                    @Html.ValidationMessageFor(model => model.Lancamento.Observacao)
+                                </div>
+                                
+                                
+                            </div>
+                            <div class="row">
+                                
+                            </div>
+        
+        
+                                                         
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <input type="submit" value="Salvar" class="btn btn-primary" />
+                                </div>
+                            </div>
+
+
+
+                        }
+
+
+                        <!-- ./ dados aqui-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+                            <thead>
+                                <tr>
+                                    <th nowrap>Data</th>
+                                    <th nowrap>Conta</th>
+                                    <th nowrap></th>
+                                    <th width="100%">Descrição</th>
+                                    <th nowrap><span class="pull-right">Valor</span></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.LancamentoList)
+                                {
+                                    var urlExcluir = Url.Action("LancamentoCompactDel", "Financeiro", new { id = Model.Lancamento.EntidadeId, tipo = Model.Lancamento.Entidade, lancid = item.LancamentoId });
+                    
+                                    <tr>
+                                        <td nowrap>
+                                            @Html.DisplayFor(modelItem => item.DataVencimento)
+                                        </td>
+                                        <td nowrap>
+                                            <small>@item.ContaNome</small>
+                                        </td>
+                                        <td>
+                                            @if (item.LancamentoTipo == "R")
+                                            {
+                                                <span title="Receita" class="badge badge-success tip-top">R</span>
+
+                        }
+                                            @if (item.LancamentoTipo == "D")
+                                            {
+                                                <span title="Despesa" class="badge badge-important tip-top">D</span>
+                        }
+                                            @if (item.LancamentoTipo == "T")
+                                            {
+                                                <span title="Transferência" class="badge badge-info tip-top">T</span>
+                        }
+                                            @if (item.LancamentoTipo == "I")
+                                            {
+                                                <span title="Início de Saldo" class="badge  tip-top">I</span>
+                        }
+
+
+                                        </td>
+
+                                        <td width="100%">
+                                            @if (item.LancamentoTipo == "T")
+                                            {
+                                                <small class="text-info">Transferência - </small>
+                        }
+                                            <small class="text-info">@(item.CategoriaNome != null ? item.CategoriaNome + " - " : "")</small> <small>@item.Descricao</small> @if (item.PessoaNome != null)
+                                                                                                                                                                            {<small><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox">@item.PessoaNome</a></small> } <small>@item.RefExterna</small></td>
+                                        <td nowrap>
+                                            <span class="pull-right">
+                                                @Html.DisplayFor(modelItem => item.Valor)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (_FinanceiroLancamentoDel)
+                                            {
+                                                <a href="@urlExcluir" onclick="return confirm('Deseja realmente excluir o registro?')" class="btn btn-outline btn-danger btn-xs"><i class="fa fa-trash"></i></a>    
+                        }
+                                        </td>
+                                    </tr>
+            }
+
+
+                            </tbody>
+
+
+                            <tfoot>
+
+
+
+
+
+                                <!-- totais -->
+                                <tr>
+                                    <td nowrap colspan="4">
+                                        <h4 class="pull=right" style="color: #000;">Total Geral</h4>
+                                    </td>
+                                    <td nowrap>
+                                        <h4 class="pull-right" style="color: #000;">@String.Format("{0:c}", Model.LancamentoList.Sum(x => x.Valor))</h4>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <!-- ./totais -->
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/Assets/css/chosen.css")
+    @Styles.Render("~/bundles/datepicker/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.extend.js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+<script>
+    $('#Lancamento_ContaId').val(@BLL.Usuarios.GetContaId());
+</script>
+<script>
+    //ChosenAddNewItem("Lancamento_ContaId", "Contas", "ContaNome");
+    ChosenAddNewItem("Lancamento_CategoriaId", "Categorias", "CategoriaNome");
+    ChosenAddNewItem("Lancamento_PagamentoTipoId", "PagamentoTipos", "PagamentoNome");
+</script>
+
+<script>
+    $("#Lancamento_DataCompetencia").mask("99/99/9999");
+    $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+    $('.moeda').mask('000000000000000,00', { reverse: true });
+    $('.max').maxlength();
+    $('.chosen-select').chosen();
+    $(".select-all").click(function () {
+        $(this).select();
+    });
+</script>
+
+}
+
+

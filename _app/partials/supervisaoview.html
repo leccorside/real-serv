@@ -1,0 +1,122 @@
+<style>
+    label {
+        margin-left: 0px;
+        text-align: left;
+        font-size: 15px;
+        text-transform: uppercase;
+    }
+    
+    input[type="checkbox"] {
+        margin-right: 10px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #a70c0c;
+        border-radius: 1px;
+        box-sizing: border-box;
+        position: relative;
+        box-sizing: content-box;
+        border-width: 0;
+        transition: all .3s linear;
+    }
+    
+    input[type="checkbox"]:checked {
+        background-color: #2ECC71;
+    }
+    
+    input[type="checkbox"]:focus {
+        outline: 0 none;
+        box-shadow: none;
+    }
+
+</style>
+<div id="divtopo"></div>
+<div class="header-clear">
+</div>
+<div class="content-strip">
+    <div class="strip-content">
+        <h1>Supervisão {{Dados.SupervisaoId}}</h1>
+    </div>
+    <div class="overlay"></div> <img src="images/pictures/Sobre.png" alt="img"> </div>
+<div class="content">
+
+    <!-- erro -->
+    <div ng-show="error" class="static-notification bg-red-dark">
+        <h6><i class="fa fa-times-circle static-notification-icon"></i>Ooops!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{ errormsg }}
+        </p>
+    </div>
+
+
+    <!-- sucesso -->
+    <div ng-show="sucesso" class="static-notification bg-green-dark">
+        <h6><i class="fa fa-check static-notification-icon"></i>Tudo certo!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{sucessomsg}}
+        </p>
+    </div>
+
+
+
+    <div ng-show="!Dados"> <i class="fa fa-refresh fa-spin"></i> Carregando Formulário</div>
+
+    <div ng-show="Dados">
+
+
+        <div class="formFieldWrap">
+            <small>Posto de Serviço</small>
+            <h1>{{Dados.PostoDeServicoNome}}</h1>
+        </div>
+
+        <br />
+
+        <small>Checklist</small>
+        <h1>Serviços/Pessoas</h1>
+        <div class="formFieldWrap" ng-repeat="item in Dados.ListSupervisaoChecklist">
+
+            <div class="item-padrao item-{{item.SupervisaoChecklistEntidade}}">
+
+
+                <label><strong><i ng-class="item.SupervisaoChecklistChecado ? 'fa fa-check-square-o' : 'fa fa-square-o'"></i> {{item.SupervisaoChecklistDescricao}}</strong></label>
+                <!--<small>Observações</small>-->
+                <p>{{item.SupervisaoChecklistObservacoes}}</p>
+                <div class="decoration hide-if-responsive"></div>
+
+            </div>
+        </div>
+
+        <hr>
+
+
+        <hr>
+
+        <div class="formFieldWrap">
+            <h1>Observações Gerais</h1>
+            <p>{{Dados.SupervisaoDescricao}}</p>
+        </div>
+
+
+        <div class="formFieldWrap">
+            <h3>Horário Checkin / Checkout</h3>
+            <p>{{Dados.PontoJornada}}</p>
+        </div>
+
+        <div class="formFieldWrap">
+            <h3>Total Horas</h3>
+            <p>{{Dados.PontoHoras}}</p>
+        </div>
+
+        <br>
+
+
+        <div>
+            <a href="#!/supervisaoindex" class="button button-icon button-dark"><i class="fa fa-angle-left"></i> Lista de Supervisões</a>
+        </div>
+
+
+    </div>
+
+</div>

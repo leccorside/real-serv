@@ -1,0 +1,88 @@
+﻿@model Models.OcorrenciaTipo
+
+
+
+@{
+    var user = new BLL.Usuarios();
+
+
+    var acao = "Cadastrar";
+    if (Model.OcorrenciaTipoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Tipo de Ocorrência";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Tipos de Ocorrência", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "OcorrenciasTipos", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.OcorrenciaTipoId > 0)
+        {
+        @Html.Hidden("OcorrenciaTipoId", Model.OcorrenciaTipoId);
+                                                  acao = "Alterar";
+        }
+
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.OcorrenciaTipoNome, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.OcorrenciaTipoNome)
+                @Html.ValidationMessageFor(model => model.OcorrenciaTipoNome)
+            </div>
+        </div>
+        
+        <div class="control-group">
+            @Html.LabelFor(model => model.OcorrenciaTipoRegra, new { @class = "control-label" })
+            <div class="controls">
+                <select name="OcorrenciaTipoRegra" id="OcorrenciaTipoRegra" class="chosen-select">
+                    <option @(Model.OcorrenciaTipoRegra == "" || Model.OcorrenciaTipoRegra == null ? " selected " : "")>Nenhuma Regra</option>
+                    <option value="rep_advertencia" @(Model.OcorrenciaTipoRegra=="rep_advertencia"?" selected ":"" )>Relatório Advertência</option>
+                    <option value="rep_suspencao" @(Model.OcorrenciaTipoRegra=="rep_suspencao"?" selected ":"" )>Relatório Suspenção<option>
+                </select>
+
+                @Html.ValidationMessageFor(model => model.OcorrenciaTipoRegra)
+            </div>
+        </div>
+            
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+<br />
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,98 @@
+﻿@model Models.Agendamento
+
+<div class="row-fluid">
+<div class="span3">
+    <label>Tipo</label>
+            @Html.DropDownListFor(m => m.RecorrenciaObj.Tipo, new[] {
+                           new SelectListItem() {Text = "Diário", Value = Models.Recorrencia.ETipo.Diaria.ToString()},
+                           new SelectListItem() {Text = "Semanal", Value = Models.Recorrencia.ETipo.Semanal.ToString()},
+                           new SelectListItem() {Text = "Mensal", Value = Models.Recorrencia.ETipo.Mensal.ToString()},
+                           }, null, new { onchange = "TipoRecorrencia(this.value);" })
+
+</div>
+
+<div class="span3">
+    <label>Ocorrências</label>
+        @Html.TextBoxFor(model => model.RecorrenciaObj.Ocorrencias, new { @class = "input-mini"})
+                @Html.ValidationMessageFor(model => model.RecorrenciaObj.Ocorrencias)
+</div>
+
+@* <div class="span3">
+
+     <label>Início</label>
+ @Html.TextBox("RecorrenciaObj.Inicio", @String.Format("{0:dd/MM/yyyy}", Model.RecorrenciaObj.Inicio), new { @class = "datepicker input-small", value = @DateTime.Now })
+                @Html.ValidationMessageFor(model => model.RecorrenciaObj.Inicio)
+
+        <label>Fim</label>
+ @Html.TextBox("RecorrenciaObj.Fim", @String.Format("{0:dd/MM/yyyy}", Model.RecorrenciaObj.Fim), new { @class = "datepicker input-small", value = @DateTime.Now })
+                @Html.ValidationMessageFor(model => model.RecorrenciaObj.Fim)
+
+     </div>*@
+
+    
+
+
+<div class="span6" id="painel_mensal"><label>Informe o dia do mês</label>
+        @Html.TextBoxFor(model => model.RecorrenciaObj.Dia, new { @class = "input-mini"})
+                @Html.ValidationMessageFor(model => model.RecorrenciaObj.Dia)</div>
+
+    </div>
+
+
+
+<div class="row-fluid" id="painel_semanal">
+
+    <div class="span12">
+
+    <table class="table table-bordered">
+
+        <tbody>
+            <td><label class="checkbox">@Html.CheckBoxFor(model => model.RecorrenciaObj.Domingo) Domingo</label></td>
+            <td><label class="checkbox">@Html.CheckBoxFor(model => model.RecorrenciaObj.Segunda) Segunda</label></td>
+            <td><label class="checkbox">@Html.CheckBoxFor(model => model.RecorrenciaObj.Terca) Terça</label></td>
+            <td><label class="checkbox">@Html.CheckBoxFor(model => model.RecorrenciaObj.Quarta) Quarta</label></td>
+            <td><label class="checkbox">@Html.CheckBoxFor(model => model.RecorrenciaObj.Quinta) Quinta</label></td>
+            <td><label class="checkbox">@Html.CheckBoxFor(model => model.RecorrenciaObj.Sexta) Sexta</label></td>
+            <td><label class="checkbox">@Html.CheckBoxFor(model => model.RecorrenciaObj.Sabado) Sábado</label></td>
+        </tbody>
+
+    </table>
+
+        </div>
+
+</div>
+  
+
+    <script>
+
+        function TipoRecorrencia(jtipo) {
+
+
+            switch (jtipo) {
+                case "Diaria":
+                    $("#painel_semanal").hide();
+                    $("#painel_mensal").hide();
+                    break;
+                case "Semanal":
+                    $("#painel_semanal").show();
+                    $("#painel_mensal").hide();
+                    break;
+                case "Mensal":
+                    $("#painel_semanal").hide();
+                    $("#painel_mensal").show();
+                    break;
+                default:
+
+
+            }
+
+
+        }
+
+        
+
+        
+        
+        
+    </script>
+

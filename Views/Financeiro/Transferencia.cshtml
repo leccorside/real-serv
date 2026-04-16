@@ -1,0 +1,127 @@
+﻿@model Models.Lancamento
+
+@{
+    ViewBag.Title = "Transferência";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";      
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Financeiro", "Financeiro", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Extrato", "Index", "Financeiro")</li>
+}
+
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Transferencia", "Financeiro", FormMethod.Post, new { @class = "" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.LancamentoId > 0)
+        {
+        @Html.Hidden("LancamentoId", Model.LancamentoId);
+        }
+    
+        @Html.Hidden("LancamentoTipo", "T")
+        @Html.Hidden("RegIdInicio", BLL.Usuarios.GetUsuarioId())
+        @Html.Hidden("Baixado", true)
+
+         if (BLL.Usuarios.GetUtilizaFilial() == true) { 
+                <label class="control-label">@BLL.Usuarios.GetEntidadeFilial()</label>
+                <div class="controls">
+
+                    @Html.DropDownListFor(model => model.FilialID, (SelectList)ViewBag.DdlFiliais, "--Selecione--")
+
+                </div> 
+                }
+
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Conta origem</label>
+
+                @Html.DropDownListFor(model => model.ContaId, (SelectList)ViewBag.DdlContas, "--Selecione--", new { @class = "chosen-select" })
+                @Html.ValidationMessageFor(model => model.ContaId)
+
+            </div>
+            <div class="span4">
+                <label>Conta destino</label>
+
+                @Html.DropDownListFor(model => model.ContaIdDestino, (SelectList)ViewBag.DdlContas, "--Selecione--", new { @class = "chosen-select" })
+                @Html.ValidationMessageFor(model => model.ContaIdDestino)
+
+            </div>
+            <div class="span4">
+                @Html.LabelFor(model => model.DataVencimento, new { @class = "control-label" })
+
+                @Html.TextBox("DataVencimento", @String.Format("{0:dd/MM/yyyy}", DateTime.Now), new { @class = "datepicker input-small", value = @DateTime.Now })
+                @Html.ValidationMessageFor(model => model.DataVencimento)
+
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span4">
+                @Html.LabelFor(model => model.Valor, new { @class = "control-label" })
+
+
+                @Html.TextBox("Valor", string.Format("{0:n2}", Model.Valor), new { @class = "money", TabIndex = 2 })
+                @Html.ValidationMessageFor(model => model.Valor)
+
+            </div>
+            <div class="span8">
+                @Html.LabelFor(model => model.Descricao, new { @class = "control-label" })
+
+                @Html.TextBoxFor(model => model.Descricao, new { @class = "input-xxlarge", TabIndex = 1 })
+                @Html.ValidationMessageFor(model => model.Descricao)
+            </div>
+
+
+        </div>
+            
+
+
+        <div class="form-actions">
+            <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+
+
+            @{
+             
+        var vaction = "DeletarLancamento";
+        var vroute = "Financeiro";
+        var vid = Model.LancamentoId;
+
+
+        if (Model.LancamentoTipo == "I")
+        {
+            vaction = "Editar";
+            vroute = "Contas";
+            vid = Model.ContaId;
+        }
+                
+                
+            }
+
+            @if (Model.LancamentoId > 0)
+            {
+                @Html.ActionLink("Apagar", vaction, vroute, new { id = vid }, new { @class = "btn btn-danger pull-right" })    
+            }
+
+        </div>
+            
+
+
+
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

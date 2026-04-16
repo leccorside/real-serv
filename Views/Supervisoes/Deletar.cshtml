@@ -1,0 +1,90 @@
+﻿@model Models.Supervisao
+
+@{
+    ViewBag.Title = "Excluíndo Supervisão";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";  
+    }
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Supervisões", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+
+
+<div class="cwell">
+
+
+    <div class="row-fluid">
+        <div class="span2">
+            <label>Supervisão n.</label>
+            <h4 class="black">@Model.SupervisaoId</h4>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <h4 class="black">@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</h4>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <h4 class="black">@string.Format("{0:HH:mm}", Model.RegDtInicio)</h4>
+        </div>
+
+        
+        
+
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span12">
+            <label>Supervisão</label>
+            <h4 class="black">@Model.SupervisaoDescricao</h4>
+        </div>
+        
+    </div>
+
+
+    @using (Html.BeginForm())
+    {
+        <div class="row-fluid">
+            <div class="span12">
+                @Html.HiddenFor(model => model.SupervisaoId)
+                <p class="pull-right">
+                    <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+                </p>
+
+                <p class="pull-left">
+                    
+    @if (Model.Modal == false)
+    {
+        <div>
+            <a href="~/Supervisoes/Index" class="btn">Voltar</a>
+        </div>
+    }
+                </p>
+            </div>
+        </div>    
+    }
+
+
+
+</div>

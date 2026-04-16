@@ -1,0 +1,27 @@
+services:
+  realserv_app:
+    environment:
+      APP_ENV: "dev"
+      DEBUG: "true"
+      APP_CONNECTION_STRING: "Server=host.docker.internal,1433;Database=gruporealserv;User Id=sa;Password=YourSecurePassword123!@#"
+
+    volumes:
+      - type: bind
+        source: .
+        target: C:\inetpub\wwwroot
+
+      - type: bind
+        source: .\Views
+        target: C:\inetpub\wwwroot\Views
+
+      - type: bind
+        source: .\Scripts
+        target: C:\inetpub\wwwroot\Scripts
+
+      - type: bind
+        source: .\Content
+        target: C:\inetpub\wwwroot\Content
+
+    ports:
+      - "8085:80"
+      - "8090:8080"

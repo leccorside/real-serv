@@ -1,0 +1,90 @@
+﻿@model Models.EntidadeNome
+
+@{
+    ViewBag.Title = "Excluíndo Entidades";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    
+ <li class="active">  @Html.ActionLink("Entidades", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja apagar esse registro?
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    <div class="row">
+
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.EntidadeNomeId)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.EntidadeNomeId)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.EntidadeNomenclatura)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.EntidadeNomenclatura)
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.EntidadeDescricao)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.EntidadeDescricao)
+                            </div>
+
+                        </div>
+                        
+                        
+                    </div>
+
+
+
+
+                    <!-- ./conteudo aqui -->
+                </div>
+                <div class="panel-footer">
+
+                    @using (Html.BeginForm())
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.HiddenFor(model => model.EntidadeNomeId)
+                                    <input type="submit" value="Apagar" class="btn btn-danger" />
+                                
+                                    @Html.ActionLink("Voltar", "Index", new { id = 0 }, new { @class = "btn btn-outline btn-primary"})
+
+                            </div>
+                        </div>    
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,506 @@
+﻿@model Models.FichaCadastral
+@{
+    ViewBag.Title = "Confirme seus dados e assine digitalmente";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    
+    //http://thomasjbradley.ca/lab/signature-pad/#regenerate
+
+}
+@section Styles {
+
+
+    <link href="~/Assets/plugins/signature-pad/jquery.signaturepad.css" rel="stylesheet" />
+}
+
+<div class="cwell">
+
+    <legend>Dados Pessoais</legend>
+    <div class="row-fluid">
+        <div class="span9">
+            <label>Nome Completo</label>
+            @Model.Pessoa.Nome
+            
+        </div>
+        <div class="span3">
+            <label>Como nos conheceu?</label>
+            @Model.Pessoa.MidiaNome
+            
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <label>Documento</label>
+            @Model.Pessoa.Documento
+        </div>
+        <div class="span3">
+            <label>RG</label>
+            @Model.Pessoa.Rg
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                Data de Nascimento
+            </div>
+            <div class="editor-field">
+                @String.Format("{0:dd/MM/yyyy}", Model.Pessoa.DataNascimento)
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Sexo)
+            </div>
+            <div class="editor-field">
+                @Model.Pessoa.Sexo
+                
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3" id="div_ecivil">
+            <div class="editor-label">
+                Estado Civil
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.EstadoCivlNome
+            </div>
+        </div>
+        <div class="span3" id="div_profissao">
+            <label>Profissão</label>
+            @Model.Pessoa.Profissao
+        </div>
+        <div class="span3">
+            <label>Idade</label>
+            @BLL.Utils.Funcoes.CalculaIdade(Model.Pessoa.DataNascimento)
+        </div>
+    </div>
+
+    <legend>Contato</legend>
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Email)
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Email
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Telefone)
+            </div>
+            <div class="editor-field">
+                @Model.Pessoa.Telefone
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Celular)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Celular
+            </div>
+        </div>
+    </div>
+
+    <legend>Endereço</legend>
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Cep)
+            </div>
+            <div class="editor-field">
+                  @Model.Pessoa.Cep
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Endereco)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Endereco
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Numero)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Numero
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Complemento)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Complemento
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Bairro)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Bairro
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Cidade)
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Cidade
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span2">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Estado)
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Estado
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Pais)
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Pais
+            </div>
+        </div>
+        <div class="span6">
+            <div class="editor-label">
+                <label>Referência</label>
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Observacao
+            </div>
+        </div>
+    </div>
+
+
+
+    <legend>Dados Clínicos</legend>
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Diabetes)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Diabetes?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Hepatite)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Hepatite?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.HepatiteTipo)
+            </div>
+            <div class="editor-field">
+                @Model.PessoaDadoClinico.HepatiteTipo
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.HepatiteData)
+            </div>
+            <div class="editor-field">
+                @String.Format("{0:dd/MM/yyyy}", Model.PessoaDadoClinico.HepatiteData)
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Hemofilia)
+            </div>
+            <div class="editor-field">
+               <i class="@(Model.PessoaDadoClinico.Hemofilia?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Cicatrizacao)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Cicatrizacao?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Anemia)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Anemia?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Desmaios)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Desmaios?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Eplepsia)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Eplepsia?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.PressaoArterial)
+            </div>
+            <div class="editor-field">
+               @Model.PessoaDadoClinico.PressaoArterial
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Alergia)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Alergia?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.AlergiaTipos)
+            </div>
+            <div class="editor-field">
+                @Model.PessoaDadoClinico.AlergiaTipos
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecente)
+            </div>
+            <div class="editor-field">
+               <i class="@(Model.PessoaDadoClinico.TratamentoRecente?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecenteTipos)
+            </div>
+            <div class="editor-field">
+            @Model.PessoaDadoClinico.TratamentoRecenteTipos
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecenteDrugs)
+            </div>
+            <div class="editor-field">
+               @Model.PessoaDadoClinico.TratamentoRecenteDrugs
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.PessoaDadoClinicoMedico)
+            </div>
+            <div class="editor-field">
+              @Model.PessoaDadoClinico.PessoaDadoClinicoMedico
+            </div>
+        </div>
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.PessoaDadoClinicoMedicoTel)
+            </div>
+            <div class="editor-field">
+             @Model.PessoaDadoClinico.PessoaDadoClinicoMedicoTel
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Gestante)
+            </div>
+            <div class="editor-field">
+               <i class="@(Model.PessoaDadoClinico.Gestante?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.ConsumoDrugsUlt4Horas)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.ConsumoDrugsUlt4Horas?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+    </div>
+    <br />
+    <legend>Autorização</legend>
+    <div class="row-fluid">
+            <div class="span12">
+                <label>
+                    Por tempo indeterminado da imagem da tatuagem realizada neste estúdio junto ao nosso site, internet e mídias sociais
+                </label>
+                <i class="@(Model.PessoaDadoClinico.AutorizacaoUsoImagem?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span12 cwell">
+            <div class="editor-field">
+                 <label>Tatuador</label>
+                <small>Concordo, juntamente com meus representantes legais em isentar totalmente o estúdio Tattoo You e o Tatuador responsável (@Model.PessoaDadoClinico.PessoaIDIndicacaoNome) de qualquer responsabilidade por danos materiais, morais ou estéticos  provenientes de minha decisão e do resultado final da tatuagem.</small><br />
+                <small>Certifico que tenho 18 anos idade, não sofri de nenhuma doença ou anomalidade que possa me prejudicar ou a outros ao fazer a tatuagem.</small><br />
+                <small>Entendo que os resultados finais da tatuagem podem variar de acordo com fatores individuais, incluindo, mas não limitado ao histórico médico, tipo de pele, adesão as instruções após a sessão, e resposta individual a elaboração de tatuagem.</small><br />
+                <small>Entendo que existe a possibilidade de pequenas imperfeições na tatuagem pois não se trata de cópia mecânica de desenhos aplicados diretamente na pele.</small><br />
+                <small>Também me foi explicado sobre os materiais utilizados na tatuagem são descartáveis e as ponteiras esterilizadas em autoclave, e dos cuidados que devo seguir para a correta cicatrização e o sucesso da tatuagem  para evitar efeitos indesejados .</small><br />
+                <small>Estou totalmente consciente que minha condição é de preocupação estética e que a decisão de prosseguir é baseada somente no meu expresso desejo de fazê-lo.</small><br />
+                <small>Certifico que tive oportunidade de fazer perguntas e que li e entendi completamente o conteúdo deste informativo.</small><br />
+                <label class="checkbox">
+                    <i class="fa fa-check-square-o"></i> 
+                </label>
+                <br />
+                <small>ceito receber mensagens por e-mail e SMS com informativos/promoções.</small>
+                <label class="checkbox">
+                    <i class="@(Model.PessoaDadoClinico.AutorizoMensagens?"fa fa-check-square-o":"fa fa-square-o")"></i>
+                </label>
+            </div>
+        </div>
+    </div>
+     
+    
+     @using (Html.BeginForm("Corrigir", "FichaCadastral", FormMethod.Post, new { @class = "pull-right" }))
+      {
+          
+            @Html.Hidden("PessoaID", Model.Pessoa.PessoaID);
+          @Html.Hidden("PessoaDadoClinicoId", Model.PessoaDadoClinico.PessoaDadoClinicoId);
+        
+          
+          <button class="btn btn-mini pull-right" type="submit" name="btnSubmit" value="validar"><i class="fa fa-chevron-left"></i> Corrigir Dados</button>
+      }
+
+
+    @using (Html.BeginForm("Assinar", "FichaCadastral", FormMethod.Post, new { @class = "sigPad " }))
+    {
+        @Html.HiddenFor(m => m.Pessoa.PessoaID);
+        @Html.HiddenFor(m => m.PessoaDadoClinico.PessoaDadoClinicoId);
+        
+        <div class="row-fluid">
+            <div class="span12">
+                
+                <ul class="sigNav">
+                    <li><legend>Assinar</legend></li>
+                    <li class="clearButton"><a href="#clear"><i class="fa fa-trash-o fa-2x"></i></a></li>
+                </ul>
+                <div class="sig sigWrapper">
+                    <div class="typed"></div>
+                    @*<canvas class="pad" id="assinatura" width="300" height="80"></canvas>*@
+                    <canvas class="pad" id="assinatura" width="400" height="120"></canvas>
+                    <input type="hidden" name="output" class="output">
+                </div>
+                <small>Li e entendi por completo este formulário e sou completamente responsável se as informações que forneci não forem verdadeiras e/ou incorretas.</small><br />
+                <button type="submit" class="btn btn-primary">
+                    <h3>Finalizar</h3>
+                </button>
+            </div>
+        </div>
+        
+    
+    }
+
+
+
+      <div class="container">
+        <div class="row bs-wizard" style="border-bottom: 0;">
+            <div class="span3 bs-wizard-step complete">
+                <div class="text-center bs-wizard-stepnum">Etapa 1</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Validar Documento</div>
+            </div>
+
+            <div class="span3 bs-wizard-step active">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Etapa 2</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Preenchimento de dados cadastrais</div>
+            </div>
+
+            <div class="span3 bs-wizard-step active">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Etapa 3</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Assinatura Digital</div>
+            </div>
+            <div class="span3 bs-wizard-step disabled">
+                <!-- disabled -->
+                <div class="text-center bs-wizard-stepnum">
+                    <img src="~/Assets/img/icones/@BLL.Usuarios.GetEmpresaId()-cadastrofim.png" width="16" height="16" />
+                </div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">FIM</div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+<br />
+
+
+
+@section Scripts {
+    <!--[if lt IE 9]><script src="~/Assets/plugins/signature-pad/flashcanvas.js"></script><![endif]-->
+    <script src="~/Assets/plugins/signature-pad/jquery.signaturepad.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.sigPad').signaturePad({ drawOnly: true, lineTop: 80, errorMessageDraw: 'Por favor, assine o formulário' });
+        });
+
+        //para ver a assinatura
+        //<div class="assinado signed"> <div class="sigWrapper"> <div class="typed" style="display: none;">Sir John A. Macdonald</div> <canvas class="pad"  width="300" height="80"></canvas> </div> <p>Sir John A. Macdonald<br>July 1, 1867</p> </div>
+        //var sig = [{ "lx": 97, "ly": 53, "mx": 97, "my": 52 }, { "lx": 97, "ly": 55, "mx": 97, "my": 53 }, { "lx": 103, "ly": 55, "mx": 97, "my": 55 }, { "lx": 110, "ly": 54, "mx": 103, "my": 55 }, { "lx": 119, "ly": 47, "mx": 110, "my": 54 }, { "lx": 133, "ly": 23, "mx": 119, "my": 47 }, { "lx": 133, "ly": 22, "mx": 133, "my": 23 }, { "lx": 131, "ly": 23, "mx": 133, "my": 22 }, { "lx": 127, "ly": 32, "mx": 131, "my": 23 }, { "lx": 124, "ly": 43, "mx": 127, "my": 32 }, { "lx": 124, "ly": 52, "mx": 124, "my": 43 }, { "lx": 124, "ly": 55, "mx": 124, "my": 52 }, { "lx": 127, "ly": 57, "mx": 124, "my": 55 }, { "lx": 131, "ly": 58, "mx": 127, "my": 57 }, { "lx": 134, "ly": 59, "mx": 131, "my": 58 }, { "lx": 139, "ly": 60, "mx": 134, "my": 59 }, { "lx": 140, "ly": 61, "mx": 139, "my": 60 }, { "lx": 142, "ly": 64, "mx": 140, "my": 61 }, { "lx": 143, "ly": 67, "mx": 142, "my": 64 }, { "lx": 144, "ly": 70, "mx": 143, "my": 67 }, { "lx": 145, "ly": 72, "mx": 144, "my": 70 }, { "lx": 146, "ly": 73, "mx": 145, "my": 72 }, { "lx": 147, "ly": 73, "mx": 146, "my": 73 }, { "lx": 152, "ly": 72, "mx": 147, "my": 73 }, { "lx": 159, "ly": 69, "mx": 152, "my": 72 }, { "lx": 169, "ly": 62, "mx": 159, "my": 69 }, { "lx": 176, "ly": 56, "mx": 169, "my": 62 }, { "lx": 179, "ly": 55, "mx": 176, "my": 56 }, { "lx": 178, "ly": 55, "mx": 179, "my": 55 }];
+        //$(document).ready(function () {
+        //    $('.assinado').signaturePad({ displayOnly: true }).regenerate(sig);
+        //});
+    </script>
+
+    <script src="~/Assets/plugins/signature-pad/json2.min.js"></script>
+}

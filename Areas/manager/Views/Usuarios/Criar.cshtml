@@ -1,0 +1,129 @@
+﻿@model Models.Usuario
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.UsuarioId > 0)
+    {
+        acao = "Alterar";
+    }
+    
+
+    ViewBag.Title = acao + " Usuario";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Empresas", "Index", "Empresas")</li>
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Usuários", "Index", new { @id = Model.EmpresaId })</li>
+}
+
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "Usuarios", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.Hidden("EmpresaId", Model.EmpresaId); 
+        
+        if (Model.UsuarioId > 0)
+        {
+        @Html.Hidden("UsuarioId", Model.UsuarioId); 
+        acao = "Alterar";
+        }
+       
+           
+     
+        <div class="control-group">
+            <label>Nome:</label>
+            <div class="controls">
+                @Html.EditorFor(model => model.UsuarioNome)
+                @Html.ValidationMessageFor(model => model.UsuarioNome)
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>E-Mail:</label>
+            <div class="controls">
+                @Html.EditorFor(model => model.UsuarioEmail)
+                @Html.ValidationMessageFor(model => model.UsuarioEmail)
+            </div>
+        </div>
+      
+            
+        <div class="control-group">
+            <label>Login:</label>
+            <div class="controls">
+                @Html.EditorFor(model => model.UsuarioLogin)
+                @Html.ValidationMessageFor(model => model.UsuarioLogin)
+            </div>
+        </div>
+            
+            
+        if (Model.UsuarioId == 0)
+        {
+        <div class="control-group">
+            <label>Senha:</label>
+            @Html.EditorFor(model => model.DefinirSenha.newPassword)
+            @Html.ValidationMessageFor(model => model.DefinirSenha.newPassword)
+        </div>
+        
+        
+        <div class="control-group">
+            <label>Confirmar senha:</label>
+            @Html.EditorFor(model => model.DefinirSenha.ConfirmPassword)
+            @Html.ValidationMessageFor(model => model.DefinirSenha.ConfirmPassword)
+        </div>
+        }
+            
+
+        <div class="control-group">
+            <label>Perfil de acesso</label>
+            @Html.DropDownListFor(model => model.PerfilId, (SelectList)ViewBag.DdlPerfil, "--Selecione--")
+            
+        </div>
+            
+            
+        <div class="control-group">
+            <label class="checkbox">
+                @Html.CheckBoxFor(model => model.AcessoRestrito) Acesso restrito? 
+            </label>
+
+        </div>
+            
+        <div class="control-group">
+            <label>IP</label>
+            @Html.EditorFor(model => model.AcessoIP)
+        </div>
+            
+            
+            
+        <div class="form-actions">
+
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index", new { @id = Model.EmpresaId })
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

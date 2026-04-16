@@ -1,0 +1,204 @@
+﻿@model Models.Supervisao
+
+@{
+    ViewBag.Title = "Visualizar Supervisão";
+
+
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var bllAnexos = new BLL.SupervisoesAnexos();
+    var listaAnexos = bllAnexos.Listar(Model.SupervisaoId);
+
+}
+
+@section Styles{
+    <style>
+
+        tr.PostosDeServicosServicos
+        {
+            background:bisque;
+        }
+
+        tr.PostosDeServicosPessoas
+        {
+            background-color:aliceblue;
+        }
+
+        tr.SupervisoesTipos
+        {
+            background-color: #eaeaea;
+        }
+    </style>
+    
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Supervisões", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">Dados Gerais</a></li>
+        <li><a href="@Url.Content("~/Supervisoes/Blog/" + Model.SupervisaoId + "?Modal=true")">Histórico</a></li>
+    </ul>
+
+
+
+
+    <div class="row-fluid">
+        <div class="span2">
+            <label>Supervisão n.</label>
+            <span class="black">@Model.SupervisaoId</span>
+        </div>
+
+        <div class="span2">
+            <label>Data</label>
+            <span class="black">@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</span>
+        </div>
+
+        <div class="span2">
+            <label>Hora</label>
+            <span class="black">@string.Format("{0:HH:mm}", Model.RegDtInicio)</span>
+        </div>
+        <div class="span6">
+            <label>Posto de Serviço</label>
+            @Model.PostoDeServicoNome
+        </div>
+
+    </div>
+    <br />
+    <div class="row-fluid">
+         <div class="span2">
+            <label>Checkin</label>
+            <span class="black">@Model.PontoInicio</span>
+        </div>
+
+        <div class="span2">
+            <label>Checkout</label>
+            <span class="black">@Model.PontoFim</span>
+        </div>
+
+        <div class="span2">
+            <label>Total Horas</label>
+            <span class="black">@BLL.Utils.Funcoes.ConvertDecimalToHour(Model.PontoHoras)</span>
+        </div>
+        
+
+        <div class="span6">
+            <label>Supervisor</label>
+            <span class="black">@Model.UsuarioNome</span>
+        </div>
+
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span12">
+            <label>Checklist</label>
+            <table class="footable table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Checado</th>
+                        <th>Item</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ListSupervisaoChecklist)
+                    {
+                        <tr class="@item.SupervisaoChecklistEntidade">
+                            <td class="text-center">
+                                <i class="fa @(item.SupervisaoChecklistChecado ? "fa-check-square-o" : "fa-square-o")" aria-hidden="true"></i>
+                            </td>
+                            <td>@item.SupervisaoChecklistDescricao</td>
+                            <td>@item.SupervisaoChecklistObservacoes</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <br />
+
+    <div class="row-fluid">
+        <div class="span12">
+            <label>Descrição</label>
+            @Model.SupervisaoDescricao
+        </div>
+    </div>
+    <br />
+
+    @if (listaAnexos.Count() > 0)
+    {
+        <div class="row-fluid">
+            <div class="span12">
+                <label><i class="fa fa-paperclip"></i>Anexos</label>
+                <ul class="gallery-container">
+
+                    @foreach (var itemAnexo in listaAnexos)
+                    {
+                        var total_dias = (itemAnexo.Validade - DateTime.Now.Date).TotalDays;
+                        var classe = (total_dias < 1) ? "text-error" : "text-success";      
+                        <li>
+
+
+                            @if (itemAnexo.PathThumb != null)
+                            {
+                                <a href="@Url.Content(itemAnexo.Path)" class="ui-lightbox">
+                                    <img style="height: 146px; max-height:146px;" src="@Url.Content(itemAnexo.PathThumb)" alt="@itemAnexo.FileName" />
+                                </a><a href="@Url.Content(itemAnexo.Path)" class="preview"></a>
+                                <br />
+                            }
+                            else
+                            {
+                                <div style="height: 146px; max-height: 146px;">@itemAnexo.ContentType.ToString()<br />
+                                    <br />
+                                    <br />
+                                    <small>Sem visualização</small>
+                                </div>
+                            }
+
+
+                            <small>Formato: @itemAnexo.ContentType.ToString()</small><br />
+                            <small>Nome: @itemAnexo.FileName.ToString()</small><br />
+                            <small>Peso: @(itemAnexo.ContentLength / 1000) kb</small><br />
+                            <a href="@Url.Content("~/Supervisoes/DownloadAnexo/0/0/?Guid=" + itemAnexo.Guid)" class="btn btn-mini pull-left">Download</a>&nbsp;
+                        </li>                            
+                    }
+
+
+
+
+                </ul>
+            </div>
+        </div>
+    }
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+
+

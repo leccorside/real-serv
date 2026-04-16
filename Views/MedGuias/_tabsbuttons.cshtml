@@ -1,0 +1,134 @@
+﻿@model Models.MedGuia
+
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+    var _MedGuiasHistorico = BLL.Usuarios.VerificaAcesso("Historico", "MedGuias");
+    var _MedGuiasAnexos = BLL.Usuarios.VerificaAcesso("Anexos", "MedGuias");
+
+    //var link1 = Url.Content("~/MedGuias/Criar/" + Model.MedGuiaId);
+    //var link2 = @Url.Content("~/MedGuias/Produtos/" + Model.MedGuiaId);
+    //var link3 = @Url.Content("~/MedGuias/GuiaNF/" + Model.MedGuiaId);
+    //var link4 = @Url.Content("~/MedGuias/Historico/" + Model.MedGuiaId);
+    //var link5 = @Url.Content("~/MedGuias/Anexos/" + Model.MedGuiaId);
+
+    var link1 = Url.Content("~/MedGuias/Criar/" + Model.MedGuiaId);
+    var link2 = @Url.Content("~/MedGuias/Anexos/" + Model.MedGuiaId);
+    var link3 = @Url.Content("~/MedGuias/Produtos/" + Model.MedGuiaId);
+    var link4 = @Url.Content("~/MedGuias/GuiaNF/" + Model.MedGuiaId);
+    var link5 = @Url.Content("~/MedGuias/Historico/" + Model.MedGuiaId);
+
+
+
+
+    var btn1 = "";
+    var btn2 = "";
+    var btn3 = "";
+    var btn4 = "";
+    var btn5 = "";
+
+    var txt1 = "";
+    var txt2 = "";
+    var txt3 = "";
+    var txt4 = "";
+    var txt5 = "";
+    
+}
+
+@if (currentAction == "criar")
+{
+    link1 = "#";
+    link2 = "#";
+    link3 = "#";
+    link4 = "#";
+    link5 = "#";
+}
+
+@switch (currentAction)
+{
+    case "criar":
+        btn1 = "hidden";
+        btn2 = "";
+        txt2 = "Salvar e avançar";
+        btn3 = "hidden";
+        btn4 = "hidden";
+        btn5 = "hidden";
+        break;
+    case "anexos":
+        btn1 = "";
+        txt1 = "Anterior";
+        btn2 = "hidden";
+        btn3 = "";
+        txt3 = "Próximo";
+        btn4 = "hidden";
+        btn5 = "hidden";
+        break;
+    case "produtos":
+    case "produtosexcluirtudo":
+    case "produtosexcluir":
+        btn1 = "hidden";
+        btn2 = "";
+        txt2 = "Anterior";
+        btn3 = "hidden";
+        btn4 = "";
+        txt4 = "Próximo";
+        btn5 = "hidden";
+        break;
+    case "guianf":
+        btn1 = "hidden";
+        btn2 = "hidden";
+        btn3 = "";
+        txt3 = "Anterior";
+        btn4 = "hidden";
+        btn5 = "";
+        txt5 = "Próximo";
+        break;
+    case "historico":
+        btn1 = "hidden";
+        btn2 = "hidden";
+        btn3 = "hidden";
+        btn4 = "";
+        txt4 = "Anterior";
+        btn5 = "hidden";
+
+        break;
+    default:
+        break;
+}
+
+
+
+@if (_MedGuiasCriar)
+{
+    <a href="@link1" class="@btn1 btn btn-primary  bypassChanges">@txt1</a>
+}
+
+@if (_MedGuiasAnexos)
+{
+    <a href="@link2" class="@btn2 btn-submit-direciona btn btn-primary   bypassChanges"  data-val="anexos">@txt2 </a>    
+}
+
+@if (_MedGuiasProdutos)
+{
+    <a href="@link3" class="@btn3 btn-submit-direciona btn btn-primary   bypassChanges"  data-val="produtos">@txt3</a>   
+}
+
+@if (_MedGuiasGuiaNF)
+{
+    <a href="@link4" class="@btn4 btn-submit-direciona btn btn-primary   bypassChanges"  data-val="guianf">@txt4</a>    
+}
+
+@if (_MedGuiasHistorico)
+{
+    <a href="@link5" class="@btn5 btn-submit-direciona btn btn-primary   bypassChanges"  data-val="historico">@txt5</a>    
+}
+
+

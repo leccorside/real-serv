@@ -1,0 +1,111 @@
+﻿@model Models.Acesso
+
+@{
+    ViewBag.Title = "Excluíndo Acessos";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Breadcrumb{
+   <li class="active"><span class="divider">/</span>    @Html.ActionLink("Acessos", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse Acesso?
+</div>
+
+
+<div class="cwell">
+        <fieldset>
+
+            <legend>Acesso</legend>
+            <div class="row-fluid">
+
+                <div class="span3">
+                    <div class="display-label">
+
+                        @Html.DisplayNameFor(model => model.AcessoId)
+
+
+
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.AcessoId)
+                    </div>
+
+                </div>
+
+                <div class="span3">
+                    <div class="display-label">
+
+                        @Html.DisplayNameFor(model => model.Controle)
+
+
+
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Controle)
+                    </div>
+
+                </div>
+
+
+
+                 <div class="span3">
+                    <div class="display-label">
+
+                        @Html.DisplayNameFor(model => model.Acao)
+
+
+
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Acao)
+                    </div>
+
+                </div>
+
+
+                 <div class="span3">
+                    <div class="display-label">
+
+                        @Html.DisplayNameFor(model => model.Descricao)
+
+
+
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Descricao)
+                    </div>
+
+                </div>
+            </div>
+
+
+        </fieldset>
+        <br />
+
+        @using (Html.BeginForm())
+        {
+            <div class="row-fluid">
+                <div class="span12">
+                    @Html.HiddenFor(model => model.AcessoId)
+                    <p class="pull-right">
+                        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+                    </p>
+
+                    <p class="pull-left">
+                        @Html.ActionLink("Voltar", "Index")
+                    </p>
+                </div>
+            </div>    
+        }
+
+
+
+    </div>

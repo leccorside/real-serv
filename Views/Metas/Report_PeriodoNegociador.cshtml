@@ -1,0 +1,333 @@
+﻿@model List<Models.Meta>
+
+@{
+    ViewBag.Title = "Relatório por período x negociador";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "Metas/Report_PeriodoNegociador";
+
+
+    //
+    
+    var dataDe = DateTime.Parse(BLL.Usuarios.GetDateDe().ToString());
+    var dataAte = DateTime.Parse(BLL.Usuarios.GetDateAte().ToString());
+    
+    var totalDias = ((dataAte - dataDe).TotalDays) + 1;   
+    var dataInicialx = DateTime.Parse(BLL.Usuarios.GetDateDe().ToString());
+
+    //int 
+    int NegociadorId=0;
+    int PerfilId=0;
+
+    int.TryParse(Request["UsuarioId"], out NegociadorId);
+    int.TryParse(Request["PerfilId"], out PerfilId);
+    
+    var bllPropostas = new BLL.PRCPropostas();
+
+
+    var bllEntidadesStatusDados = new BLL.EntidadesStatusDados();
+    var listaDados = bllEntidadesStatusDados.ListarPorPeriodo("PRCPropostas", dataDe, dataAte);
+    //var listaPropostas = bllPropostas.ListarPorPeriodo(dataDe, dataAte, NegociadorId, PerfilId);
+    //var listaPropostas = new List<Models.PRCProposta>();
+
+    var bllMetas = new BLL.Metas();
+    
+    
+}
+
+
+
+@section Breadcrumb{
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    @using (Html.BeginForm("Report_PeriodoNegociador", "Metas", FormMethod.Get, new { @class = "  " }))
+                    {
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <small>Perfil</small>
+                                @Html.DropDownList("PerfilId", (SelectList)ViewBag.ddlPerfis, "--Selecione--", new { @class = "select2 form-control" })
+                            </div>
+
+                            <div class="col-lg-3">
+                                <small>Usuário</small>
+                                @Html.DropDownList("UsuarioId", (SelectList)ViewBag.ddlUsuarios, null, new { @class = "select2 form-control" })
+                            </div>
+
+
+                            <div class="form-group col-lg-6">
+                                <small>Período</small>
+                                <div class="row">
+
+                                    <div class="col-md-4" style="">
+                                        <input type="text" name="de" id="de" title="Data de" class="datepicker form-control tip-bottom select-all" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+                                    </div>
+                                    <div class="col-md-4" style="">
+                                        <input type="text" name="ate" id="ate" title="Data até" class="datepicker form-control tip-bottom select-all" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+                                    </div>
+                                    <div class="col-md-4" style="">
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button class="btn btn-outline btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                                            <button class="btn btn-outline btn-danger" type="button" onclick="parent.location='@strUrl'"><i class="fa fa-eraser"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+           
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table dataTable" id="table_produtos">
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var dtInicial = dataInicialx;
+
+                                    if (item.StatusMultiIds==null)
+                                    {
+                                        item.StatusMultiIds = "";
+                                    }
+                                    
+                                    var listIdsStatus = item.StatusMultiIds.Split(',').ToList();
+                                    
+                                    <tr>
+                                        <td>
+                                            <h4>Meta: <strong>@item.MetaNome</strong></h4>
+                                            <small>Periodicidade: @Html.GetLegendaPeriodicidade(item.PeriodicidadeTipo)</small>
+
+                                            
+                                            <table cellpadding="1" cellspacing="1" class="table" border="1">
+                                                <tr>
+                                                    @for (int i = 0; i < totalDias; i++)
+                                                    {
+
+                                                        //var newlist = listaPropostas.Where(x =>
+                                                        //    (x.NegociadorId == item.UsuarioId || x.NegociadorPerfilId == item.PerfilId) &&
+                                                        //    (x.EntidadeStatusDtAtualiza >= dtInicial && x.EntidadeStatusDtAtualiza <= dtInicial.AddHours(23).AddMinutes(59)) 
+                                                        //    );
+
+                                                        var newListDados = new List<Models.EntidadeStatusDado>();
+
+                                                        
+                                                        
+                                                        if (item.UsuarioId > 0 && item.PerfilId > 0)
+                                                        {
+                                                            // verifica usuario e perfil
+                                                            newListDados = listaDados.Where(x => (x.RegDia == dtInicial) && (x.UsuariosUsuarioId == item.UsuarioId || x.UsuariosPerfilId==item.PerfilId) && (listIdsStatus.Contains(x.EntidadeStatusId.ToString()))).ToList();
+                                                        }
+                                                        else if (item.UsuarioId > 0)
+                                                        {
+                                                            newListDados = listaDados.Where(x => (x.RegDia == dtInicial) && (x.UsuariosUsuarioId == item.UsuarioId) && (listIdsStatus.Contains(x.EntidadeStatusId.ToString()))).ToList();
+                                                        }
+                                                        else
+                                                        {
+                                                            //verifica so o perfil
+                                                            newListDados = listaDados.Where(x => (x.RegDia == dtInicial) && (x.UsuariosPerfilId == item.PerfilId) && (listIdsStatus.Contains(x.EntidadeStatusId.ToString()))).ToList();    
+                                                        }
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        <td>
+                                                            <h4>@dtInicial.ToShortDateString() <small class="pull-right">Semana @BLL.Utils.Funcoes.GetWeekNumber(dtInicial)</small></h4>
+                                                            <a class="fancybox fancybox.iframe btn-xs btn btn-outline btn-primary" href="@Url.Content("~/Metas/Report_PeriodoNegociadorAnalitico/?dataRef=" + dtInicial.ToShortDateString() + "&PerfilId=" + item.PerfilId + "&UsuarioId=" + item.UsuarioId + "&Entidade=" + item.Entidade + "&MetaId=" + item.MetaId)"><i class="fa fa-table" aria-hidden="true"></i> Detalhes</a>
+                                                            <table cellpadding="1" cellspacing="1" class="table" border="1">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Tipo</th>
+                                                                        <th>Meta</th>
+                                                                        <th>Resultado</th>
+                                                                        <th>%</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                <tbody>
+                                                                    @if (item.MetaVolume > 0)
+                                                                    {
+                                                                        var resultFinal = ((newListDados.Sum(x => x.ValorB) / item.MetaVolume) * 100);
+
+                                                                        var _class = "";
+                                                                        if (resultFinal > 80)
+                                                                        {
+                                                                            _class = "bg-success";
+                                                                        }
+                                                                        else if (resultFinal < 40)
+                                                                        {
+                                                                            _class = "bg-danger";
+                                                                        }else
+                                                                        {
+                                                                            _class = "bg-warning";
+                                                                        }
+                                                                        
+                                                                    <tr class="@_class">
+                                                                        <td>Volume R$</td>
+                                                                        <td>@string.Format("{0:F2}", item.MetaVolume)</td>
+                                                                        <td>@string.Format("{0:F2}", newListDados.Sum(x=>x.ValorB)) </td>
+                                                                        <td>@resultFinal</td>
+                                                                    </tr>    
+                                                                    }
+                                                                    @if (item.PeriodicidadeValor > 0)
+                                                                    {
+                                                                        var resultFinal = ((newListDados.Count() / item.PeriodicidadeValor) * 100);
+
+                                                                        var _class = "";
+                                                                        if (resultFinal > 80)
+                                                                        {
+                                                                            _class = "bg-success";
+                                                                        }
+                                                                        else if (resultFinal < 40)
+                                                                        {
+                                                                            _class = "bg-danger";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            _class = "bg-warning";
+                                                                        }
+                                                                    <tr class="@_class">
+                                                                        <td>Qtd.</td>
+                                                                        <td>@item.PeriodicidadeValor</td>
+                                                                        <td>@newListDados.Count()</td>
+                                                                        <td>@resultFinal</td>
+                                                                    </tr>    
+                                                                    }
+                                                                    
+                                                                </tbody>
+
+                                                            </table>
+
+                                                            @*//(result.Quantidade / maxQuantidade) * 100;*@
+                                                            
+                                                        </td>
+                                                        
+                                                        dtInicial = dtInicial.AddDays(1);
+                                                    }
+                                                </tr>
+                                            </table>
+
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+
+                    </div>
+
+
+                   
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section css{
+    
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/datatables/css")
+@Styles.Render("~/bundles/fancybox/css")
+}
+
+
+@section Scripts{
+    
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+
+    @Scripts.Render("~/bundles/select2/js")
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    <script>
+
+        $('.select2').select2();
+
+        // Initialize Example 2
+        $('.dataTable').dataTable({
+            "pageLength": 50,
+            "paging": true,
+            "ordering": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "info": true,
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar ",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+        });
+
+
+    </script>
+
+    <script>
+        $("#de").mask("99/99/9999");
+        $("#ate").mask("99/99/9999");
+
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('#telefone').mask(maskBehavior, options);
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+        $("#StatusNome").val('@Request["StatusNome"]').trigger('chosen:updated');
+        $("#StatusNome").val('@Request["StatusNome"]').trigger('change.select2');
+
+        $("#TipoConversaoId").val('@Request["TipoConversaoId"]').trigger('chosen:updated');
+        $("#TipoConversaoId").val('@Request["TipoConversaoId"]').trigger('change.select2');
+    </script>
+
+    <script>
+
+        $(".fancybox").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+
+            },
+        });
+
+    </script>
+
+
+}

@@ -1,0 +1,82 @@
+﻿@model Models.PostoDeServicoPessoaView
+@{
+    ViewBag.Title = "PessoasAlterar";
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+}
+
+<div class="cwell">
+
+
+    @using (Html.BeginForm("PessoasAlterar", "PostosDeServicos", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.DadosPostoDeServico.PostoDeServicoId);
+        
+        @Html.Hidden("PostoDeServicoPessoa.PostoDeServicoId", Model.DadosPostoDeServico.PostoDeServicoId);
+        
+        @Html.HiddenFor(model => model.PostoDeServicoPessoa.PostoDeServicoPessoaId);
+  
+        <div class="row-fluid">
+            <div class="span5">
+                <label>@Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</label>
+                @Html.DropDownList("PostoDeServicoPessoa.PessoaId", (SelectList)ViewBag.ddlPessoas, "--Selecione--", new { @class = "chosen-select span12" })
+            </div>
+            <div class="span5">
+                <label>Serviço</label>
+                @Html.DropDownList("PostoDeServicoPessoa.ServicoId", (SelectList)ViewBag.ddlServicos, "--Selecione--", new { @class = "chosen-select span12" })
+            </div>
+            @*<div class="span2">
+                <br />
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.PostoDeServicoPessoa.Folguista) Folguista
+                </label>
+            </div>*@
+
+        </div>
+        
+        <br />
+        @*<div class="row-fluid">
+            <div class="span2">
+                <label>Hr.Início</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sHoraDe, new { @class = "input-mini" })</div>
+            <div class="span2">
+                <label>Interv.de</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sIntervaloDe, new { @class = "input-mini" })</div>
+            <div class="span2">
+                <label>Interv.até</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sIntervaloAte, new { @class = "input-mini" })</div>
+            <div class="span2">
+                <label>Hr.Fim</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.sHoraAte, new { @class = "input-mini" })</div>
+            <div class="span2">
+                <label>Dias Trab.</label>@Html.TextBoxFor(model => model.PostoDeServicoPessoa.DiasTrabalho, new { @class = "input-mini numeric" })
+            </div>
+            <div class="span2">
+                <label>Dias Folga</label>
+                <div class="input-append">
+                    @Html.TextBoxFor(model => model.PostoDeServicoPessoa.DiasFolga, new { @class = "input-mini numeric" })
+                </div>
+            </div>
+        </div>*@
+    
+        <button id="btnAdicionar" type="submit" class="btn">Alterar</button>
+            
+    }
+
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+
+    <script>
+        $("#PostoDeServicoPessoa_PessoaId").focus();
+
+
+        $("#PostoDeServicoPessoa_sHoraDe").mask("99:99");
+        $("#PostoDeServicoPessoa_sHoraAte").mask("99:99");
+        $("#PostoDeServicoPessoa_sIntervaloDe").mask("99:99");
+        $("#PostoDeServicoPessoa_sIntervaloAte").mask("99:99");
+    </script>
+}

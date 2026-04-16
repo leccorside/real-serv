@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Models.ProdutoEstoque>
+
+@{
+    ViewBag.Title = "Histórico de Movimentação Estoque";
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+}
+
+
+
+<h2>Histórico de movimentação estoque</h2>
+<table class="table table-bordered table-striped table-highlight table-hover table-condensed ">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DataMovimento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoMovimento)
+            </th>
+            <th>Origem</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantidade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValorUnitario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValorTotal)
+            </th>
+
+        </tr>
+    </thead>
+
+    @foreach (var item in Model)
+    {
+        <tbody>
+            <tr class="@(item.TipoMovimento == "S" ? " text-error " : "")">
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataMovimento)
+                </td>
+
+                <td>
+                    @(item.TipoMovimento == "S" ? "Saída" : "Entrada")
+                </td>
+                <td>@item.PessoaFornecedorNome</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantidade) 
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorUnitario)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorTotal)
+                </td>
+
+            </tr>
+        </tbody>
+    }
+
+</table>
+
+@{
+    //Controles de paginação
+    int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);
+}
+@Html.Paginacao(qtdPaginas)

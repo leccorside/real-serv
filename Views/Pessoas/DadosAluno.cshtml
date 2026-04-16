@@ -1,0 +1,1000 @@
+﻿@model Models.Pessoa
+
+@{
+
+    ViewBag.Title = " Dados do Aluno";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    BLL.Erro alerta = BLL.Utils.Validacoes.IsAniversariante(Model.DataNascimento);
+    var user = new BLL.Usuarios();
+    var bllPessoas = new BLL.Pessoas();
+    var bllPessoasDependentes = new BLL.PessoasDependentes();
+    var planos = bllPessoas.PlanosAtivos(Model.PessoaID);
+    var vtipo = Model.PessoaCategoria;
+
+    var bllPessoasDadosClinicos = new BLL.PessoasDadosClinicos();
+    var bllMedGuias = new BLL.MedGuias();
+
+    var listaDadosClinicos = bllPessoasDadosClinicos.ListarPorPessoaId(Model.PessoaID);
+    var listaGuias = bllMedGuias.ListarPorPessoaId(Model.PessoaID);
+
+    var bllCupons = new BLL.Cupons();
+    var listaCupons = bllCupons.ListarPorPessoaId(Model.PessoaID);
+
+    var bllAgendamentos = new BLL.Agendamentos();
+    var listaAgendamentos = bllAgendamentos.ListarAgendamentosPessoa(Model.PessoaID);
+
+    var index_planos = user.ControleAcesso("Index", "Planos");
+
+    var agendamentos_programacaodia = user.ControleAcesso("ProgramacaoDia", "Agendamento");
+
+    var cupons_index = user.ControleAcesso("index", "cupons");
+
+    var pessoas_criarx = user.ControleAcesso("criar" + Model.PessoaCategoria, "pessoas");
+
+    var medguias_criar = user.ControleAcesso("Criar", "MedGuias");
+
+    var PostosDeServicos_Index = user.ControleAcesso("Index", "PostosDeServicos");
+
+    var registrarvalores_fichacadastral = user.ControleAcesso("registrarvalores", "fichacadastral");
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+
+
+    var _PessoasPlanosInscricoes_index = BLL.Usuarios.VerificaAcesso("index", "PessoasPlanosInscricoes");
+
+    var _dataNascimento = "<i class='fa fa-frown-o'></i>";
+    var _dataInicio = "<i class='fa fa-frown-o'></i>";
+
+    if (Model.DataNascimento != null)
+    {
+        _dataNascimento = Convert.ToDateTime(Model.DataNascimento).ToString("dd/MM/yyyy");
+    }
+
+    if (Model.DataInicio != null)
+    {
+        _dataInicio = Convert.ToDateTime(Model.DataInicio).ToString("dd/MM/yyyy");
+    }
+
+    var _idade = BLL.Utils.Funcoes.CalculaIdade(Model.DataNascimento);
+
+    var bllPessoasTermosAceite = new BLL.PessoasTermosAceite();
+
+    var listaAceites = bllPessoasTermosAceite.ListarPorPessoaId(Model.PessoaID);
+    var _PessoasTermosAceite = BLL.Usuarios.VerificaAcesso("TermosAceite", "Pessoas");
+    var _PessoasCriar = BLL.Usuarios.VerificaAcesso("Criar", "Pessoas");
+
+
+    var listaDependentes = bllPessoasDependentes.ListarTudoPorPessoaId(Model.PessoaID);
+
+    var bllConveniosPlanos = new BLL.ConveniosPlanos();
+
+    int convenioplanoid = 0;
+
+    int.TryParse(Model.ConvenioPlanoId.ToString(), out convenioplanoid);
+
+}
+
+
+
+<div class="content animate-panel">
+
+  
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            @if (alerta.NUMERO == BLL.Erro.Tipo.ComErro)
+            {
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>@alerta.MENSAGEM
+                </div>
+            }
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Dados Básicos 
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    @if (pessoas_criarx)
+                    {
+                        <div class="row">
+                            <div class="col-lg-12"><a href="@Url.Content("~/Pessoas/Criar/" + Model.PessoaID + "/" + Model.PessoaCategoria)" class="btn btn-outline btn-primary btn-xs pull-right" target="_top"><i class="fa fa-edit"></i> Alterar Cadastro</a></div>
+                        </div>
+                        
+                    }
+
+
+
+                    @if (Model.PessoaCategoria == "O")
+                    {
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>RE</label><br />
+                                @Model.RE
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>CPF</label><br />
+                                @Model.Documento
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>RG</label><br />
+                                @Model.Rg
+                            </div>
+                        </div>
+                        <br />
+                    }
+
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <label>Nome</label><br />
+                            <i class="fa text-warning fa-heart@(Model.Favorito ? "" : "-o")"></i> @Model.Nome
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4"><label>Email</label><br />@Model.Email</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4"><label>Celular</label>
+                             
+                            <br />@Model.Celular   @if (Model.Celular!= null)
+                                                   {
+                                        <a href="@Url.Content("https://api.whatsapp.com/send?1=pt_BR&phone=55" + BLL.Utils.Formatacoes.ApenasNumeros(Model.Celular))" target="_blank" class="btn btn-outline btn-success btn-xs"><i class="fa fa-whatsapp"></i></a>    
+                                                   }</div>
+                    </div>
+                    <br />
+
+                    @if (Model.PessoaTipo == "PF")
+                    {
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>CPF</label><br />@Model.Documento</div>
+                            <div class="col-lg-3 col-md-3 col-sm-3"><label>Nascimento</label><br />@Html.Raw(_dataNascimento)</div>
+                            <div class="col-lg-2 col-md-2 col-sm-2"><label>Idade</label><br />@_idade</div>
+                            <div class="col-lg-3 col-md-3 col-sm-3"><label>Sexo</label><br />@Model.Sexo</div>
+                        </div>
+                        <br />
+                        if (BLL.Usuarios.VerificaAcesso("Index", "MedGuias"))
+                        {
+
+                            var convenioPlano = bllConveniosPlanos.Carregar(convenioplanoid);
+                            
+                            <legend>Endereço</legend>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>Endereço</label><br />@Model.Endereco</div>
+                            <div class="col-lg-1 col-md-1 col-sm-1"><label>Número</label><br />@Model.Numero</div>
+                            <div class="col-lg-2 col-md-2 col-sm-2"><label>Complemento</label><br />@Model.Complemento</div>
+                            <div class="col-lg-3 col-md-3 col-sm-3"><label>Bairro</label><br />@Model.Bairro</div>
+                            <div class="col-lg-2 col-md-2 col-sm-2"><label>CEP</label><br />@Model.Cep</div>
+                        </div>
+                        <br />    
+                        <legend>Convênio</legend>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-3"><label>Convênio</label><br />@convenioPlano.ConvenioNome</div>
+                            <div class="col-lg-3 col-md-3 col-sm-3"><label>Plano</label><br />@convenioPlano.ConvenioPlanoNome</div>
+                            <div class="col-lg-3 col-md-3 col-sm-3"><label>Carteira</label><br />@Model.MedCarteiraConvenio</div>
+                            <div class="col-lg-2 col-md-2 col-sm-3"><label>Validade</label><br />@string.Format("{0:dd/MM/yyyy}",Model.MedCarteiraValidade)</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12"><label>Tituar</label><br />@Model.MedCarteiraTitular</div>
+                        </div>
+                        <br />    
+                        }
+
+                    }
+                    @if (Model.PessoaCategoria == "O")
+                    {
+                        <legend>Dados Profissionais</legend>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>PIS</label><br />@Model.PIS</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>CTPS</label><br />@Model.CTPS</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>Piso Salarial</label><br />@Model.PisoSalarial</div>
+                        </div>
+                        <br />
+                        <div class="row-fluid">
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>Carga Horária</label><br />@Model.CargaHoraria</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>Vale Transporte (diário)</label><br />@Model.ValeTransporteDia</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><label>Restrições</label><br />@Model.Restricoes</div>
+                        </div>
+                        <br />
+                    }
+
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @if (agendamentos_programacaodia)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Agendamentos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Tatuador</th>
+                <th>Situação</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in listaAgendamentos)
+            {
+                <tr>
+                    <td nowrap><a href="@Url.Content("~/Agendamento/ProgramacaoDia/?dataDe=" + item.Inicio.ToShortDateString())" target="_top" class="" data-toggle="tooltip" data-original-title="Visualizar dia"  title="Visualizar dia" data-placement="top">@item.Inicio.ToShortDateString()</a></td>
+                    <td nowrap>@item.Inicio.ToShortTimeString() até @item.Fim.ToShortTimeString()</td>
+                    <td nowrap>@item.Nome</td>
+                    <td nowrap class="text-center">
+                        @if (item.RegStatus == "E")
+                        {
+                            <span>Excluído</span>
+                        }
+                        else
+                        {
+                            <span>Marcado</span>
+                        }
+
+                    </td>
+                    <td nowrap width="100%" >@Html.Raw(item.Observacoes)</td>
+                </tr>    
+            }
+        </tbody>
+    </table>
+                    </div>
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>}
+
+    @if (index_planos)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Planos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <small>Início das Atividades</small><br />@Html.Raw(_dataInicio)
+            <ul>
+                @foreach (var obs in planos)
+                { 
+                    <li>@obs</li>
+                }
+            </ul>
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (registrarvalores_fichacadastral)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Dados Clínicos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Ficha</th>
+                <th colspan="2"></th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in listaDadosClinicos)
+            {
+                <tr>
+                    <td nowrap>@item.PessoaDadoClinicoId</td>
+                    <td width="100%">@item.RegDtInicio - @item.PessoaIDIndicacaoNome</td>
+                    <td nowrap class="text-center"><a target="_blank" href="@Url.Content("~/FichaCadastral/Visualizar/" + item.PessoaDadoClinicoId + "?lightbox[iframe]=true&lightbox[width]=600&lightbox[height]=360")" class="ui-lightbox btn btn-outline btn-primary btn-xs "><i class="fa fa-search-plus"></i>Visualizar</a></td>
+                    <td nowrap class="text-center">
+
+
+                        <a class="btn btn-outline btn-primary btn-xs imprimir" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Aguarde" data-val="@item.PessoaDadoClinicoId" href="@Url.Content("~/FichaCadastral/Imprimir/" + item.PessoaDadoClinicoId + "?lightbox[iframe]=true&lightbox[width]=600&lightbox[height]=360")"><i class="fa fa-print"></i>Imprimir</a>
+
+                    </td>
+                </tr>    
+            }
+        </tbody>
+    </table>
+                    </div>
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>}
+
+    @if (PostosDeServicos_Index && Model.ListEscalas != null)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Postos de Serviços
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Período</th>
+                    <th>Posto de Serviço</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model.ListEscalas.OrderByDescending(x=>x.DataDe))
+                {
+                    var url_posto = Url.Content("~/PostosDeServicos/VisualizarEscalaPapeletas/" + item.EscalaId + "?PessoaId=" + Model.PessoaID + "&lightbox[iframe]=true&lightbox[width]=620&lightbox[height]=380");
+                    <tr>
+                        <td nowrap class="text-center"><a href="@url_posto" class="ui-lightbox fancybox fancybox.iframe "><i class="fa fa-search-plus"></i></a></td>
+                        <td nowrap><a href="@url_posto" class="ui-lightbox ">@item.DataDe.ToString("dd/MM/yyyy") ~ @item.DataAte.ToString("dd/MM/yyyy")</a></td>
+                        <td width="100%"><a href="@url_posto" class="ui-lightbox ">@item.PostoDeServicoNome</a></td>
+                        <td><a href="@Url.Content("~/PostosDeServicos/ImprimirEscalaPapeletas/" + item.EscalaId + "?PessoaId=" + Model.PessoaID)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Papeletas</a></td>
+                        <td><a href="@Url.Content("~/PostosDeServicos/ImprimirEscalaPapeletasPlan/" + item.EscalaId + "?PessoaId=" + Model.PessoaID)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Planejamento</a></td>
+                        <td><a href="@Url.Content("~/PostosDeServicos/ImprimirEscala/" + item.EscalaId + "?PessoaId=" + Model.PessoaID)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Escala</a></td>
+                    </tr>    
+                }
+            </tbody>
+        </table>
+                    </div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (PostosDeServicos_Index)
+    {
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Espelho de Ponto
+                </div>
+                <div class="panel-body">
+                    <div id="espelhoPontoContainer">
+                        <div style="text-align:center;padding:20px;"><i class="fa fa-spinner fa-spin"></i> Carregando...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function() {
+        var pessoaId = @Model.PessoaID;
+        var apiUrl = '@Url.Content("~/Handlers/PontoHandler_vFinal.ashx")';
+        var hoje = new Date();
+        var de = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        function fmt(d) { return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2); }
+
+        fetch(apiUrl + '?busca=P' + pessoaId + '&dataInicial=' + fmt(de) + '&dataFinal=' + fmt(hoje))
+            .then(function(r){ return r.json(); })
+            .then(function(registros) {
+                var container = document.getElementById('espelhoPontoContainer');
+                if (!registros || registros.length === 0) {
+                    container.innerHTML = '<p class="text-muted" style="padding:10px;">Nenhum registro de ponto encontrado para o m&ecirc;s atual.</p>';
+                    return;
+                }
+                var html = '<div class="table-responsive"><table class="table table-condensed table-striped" style="font-size:13px;">';
+                html += '<thead><tr><th>Data</th><th style="color:#059669;">Prev. Entrada</th><th style="color:#059669;">Prev. Sa&iacute;da</th><th>Entrada</th><th>Sa&iacute;da</th><th>Posto</th><th>Situa&ccedil;&atilde;o</th></tr></thead><tbody>';
+                registros.forEach(function(r) {
+                    var dt = r.DataRegistro ? r.DataRegistro.substring(0, 10) : '';
+                    var dtFmt = dt ? dt.split('-').reverse().join('/') : '-';
+                    var prevEnt = r.PrevEntrada ? r.PrevEntrada.substring(11,16) : '--:--';
+                    var prevSai = r.PrevSaida   ? r.PrevSaida.substring(11,16)   : '--:--';
+                    var ent  = r.Entrada  || '--:--';
+                    var sai  = r.Saida    || '--:--';
+                    var sit  = r.Situacao || '';
+                    var sitClass = sit === 'Falta' ? 'text-danger' : (sit === 'Normal' ? 'text-success' : '');
+                    html += '<tr>';
+                    html += '<td>' + dtFmt + '</td>';
+                    html += '<td style="color:#059669;">' + prevEnt + '</td>';
+                    html += '<td style="color:#059669;">' + prevSai + '</td>';
+                    html += '<td>' + ent + '</td>';
+                    html += '<td>' + sai + '</td>';
+                    html += '<td>' + (r.PostoTrabalho || '') + '</td>';
+                    html += '<td class="' + sitClass + '">' + sit + '</td>';
+                    html += '</tr>';
+                });
+                html += '</tbody></table></div>';
+                container.innerHTML = html;
+            })
+            .catch(function(e) {
+                document.getElementById('espelhoPontoContainer').innerHTML = '<p class="text-danger">Erro ao carregar espelho de ponto.</p>';
+            });
+    })();
+    </script>
+    }
+
+    @if (cupons_index)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Cupons
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>Programa</th>
+                    <th>Cupom</th>
+                    <th>Valor</th>
+                    <th>Gerado</th>
+                    <th>Vencimento</th>
+                    <th>Utilizado</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in listaCupons)
+                {
+                    <tr class="">
+                        <td>@item.CupomTipoNome</td>
+                        <td class="text-center">@item.CupomNumber</td>
+
+                        <td class="text-center">
+                            @if (item.CupomTipo == 0)
+                            {
+                                <span>@item.CupomValor.ToString("C")</span>
+                            }
+                            else
+                            {
+                                <span>@item.CupomValor.ToString("P")</span>
+                            }
+
+                        </td>
+
+                        <td>@string.Format("{0:dd/MM/yyyy}", item.RegDtInicio)</td>
+                        <td>@string.Format("{0:dd/MM/yyyy}", item.CupomVencimento)</td>
+                        <td>
+                            @if (item.Utilizado)
+                            {
+                                <span>Sim - @item.UtilizadoData</span>
+                            }
+                            else
+                            {
+                                <span>Não</span>
+                            }
+
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+                    </div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    
+    @if (medguias_criar)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Dependentes
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <a href="@Url.Content("~/PessoasDependentes/Index/" + Model.PessoaID)" class="btn btn-outline btn-primary btn-xs tooltip-legenda fancybox_recarrega fancybox.iframe">Editar</a>
+                    @if (listaDependentes.Count() > 0)
+                    {
+                    <div class="table-responsive">
+                    <table class="data table table-condensed table-striped">
+                                    <tr>
+                                        <th>Nome
+                                        </th>
+                                        <th>Sexo
+                                        </th>
+                                        <th>Data Nascimento
+                                        </th>
+                                        <th>Grau Parentesco
+                                        </th>
+                                        
+                                    </tr>
+
+                                    @foreach (var item in listaDependentes)
+                                    {
+                                        <tr>
+                                            
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PessoaDependenteNome)
+                                            </td>
+                                            <td>
+                                                @switch (item.Sexo)
+                                                {
+                                                    case "M":
+                                                        <span>Masculino</span>
+                                                        break;
+                                                    case "F":
+                                                        <span>Feminino</span>
+                                                        break;
+                                                    default:
+                                                    <span>-</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @string.Format("{0:dd/MM/yyyy}", item.DataNascimento)
+                                            </td>
+                                            <td>
+                                                @item.GrauParentescoNome
+                                            </td>
+                                            
+                                        </tr>
+                                    }
+
+                                </table>    
+                    </div>
+                    }
+                    else
+                    {
+                        <small>Não possui</small>
+                    }
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (medguias_criar)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Guias
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    @using (Html.BeginForm("CriarGuiaRapida", "MedGuias", FormMethod.Post, new { target = "_top" }))
+                    {    
+            @Html.Hidden("id", Model.PessoaID);
+            @Html.Hidden("fid", Model.FilialID);
+            <button class="btn btn-outline btn-primary btn-xs " type="submit"  onclick="return confirm('Confirma a criação de nova guia para @Model.Nome?')">Criar</button>
+                    }
+        @Html.Partial("~/Views/MedGuias/_listguias.cshtml", listaGuias)
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (_PessoasTermosAceite)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Termos de Aceite
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <a href="#" class="btn btn-outline btn-primary btn-xs btn-reenviar tooltip-legenda"  data-style="zoom-in" data-val="@Model.PessoaID" data-toggle="tooltip" data-placement="top" data-original-title="Enviar novo SMS"><i class="fa fa-share" aria-hidden="true"></i> Enviar SMS</a>
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+                            <thead>
+                                <tr>
+                                    
+                                    <th nowrap>Data Enviado</th>
+                                    <th>Aceite</th>
+                                    <th nowrap>Date Aceite</th>
+                                    <th>Descrição</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in listaAceites)
+                                {
+                                   <tr>
+                                        <td nowrap class="text-center">@item.RegDtInicio</td>
+                                        <td class="text-center">
+                                            @if (item.PessoaTermoAceiteRealizado)
+                                            {
+                                                <i class="fa fa-check-square-o" aria-hidden="true"></i>
+
+                                            }
+                                            else
+                                            {
+                                                <i class="fa fa-square-o" aria-hidden="true"></i>
+
+                                            }
+
+                                        </td>
+                                        <td nowrap class="text-center">@item.PessoaTermoAceiteData</td>
+                                        <td >
+                                            Enviado para: @item.PessoaTermoAceiteCelular<br />
+                                            Link: @item.PessoaTermoAceiteLink<br />
+                                            Code: @item.PessoaTermoAceiteCode<br />
+                                            IP: @item.PessoaTermoAceiteIp<br />
+                                            <small>Guid: @item.PessoaTermoAceiteGuid</small></td>
+                                        
+                                    </tr>     
+                                }
+                            </tbody>
+                        </table></div>
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+
+       @if (Model.PessoaID > 0 && vtipo == "C" && _PessoasPlanosInscricoes_index)
+    {
+
+        var bllPessoasPlanosInscricoes = new BLL.PessoasPlanosInscricoes();
+        var listaInscricoes = bllPessoasPlanosInscricoes.ListarPorPessoaID(Model.PessoaID);
+        
+        <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Inscrições
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            
+                         
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Tipo</th>
+                                                <th>Dt. Validade </th>
+                                                <th>Tipo Pagto. </th>
+                                                <th>Status Pagto</th>
+                                                <th>Dt. Pagto. </th>
+                                                <th>Total</th>
+                                                <th>Status Doc.</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in listaInscricoes.Items.OrderByDescending(x=>x.PessoaPlanoInscricaoDtValidade))
+                                            {
+                                                var icon_status = "";
+                                                var class_status = "";
+                                                var panelColor = "hred";
+                                                bool statusPagto = false;
+                                                switch (item.PessoaPlanoPagtoStatus)
+                                                {
+                                                    case "Paga":
+                                                    case "Gratuito":
+                                                        class_status = " text-success ";
+                                                        icon_status = "fa fa-check";
+                                                        statusPagto = true;
+                                                        break;
+                                                    case "AguardandoPagamento":
+                                                        class_status = " text-warning ";
+                                                        icon_status = "fa fa-pause";
+                                                        break;
+                                                    default:
+                                                        class_status = "  ";
+                                                        break;
+                                                }
+
+                                                if (statusPagto && Model.CubeeAnexosStatusOk)
+                                                {
+                                                    panelColor = "hgreen";
+                                                }
+                                                else if (statusPagto || Model.CubeeAnexosStatusOk)
+                                                {
+                                                    panelColor = "hyellow";
+                                                }
+
+                                                var isPlano = (item.PessoaPlanoGrupoTipoId == 0 ? true : false);
+
+                                                
+                                                
+                                                <tr>
+                                                    <td>@item.PessoaPlanoInscricaoId</td>
+                                                    <td><small>@item.PessoaPlanoGrupoNome</small><br />@item.PessoaPlanoTitulo</td>
+                                                    <td>
+
+                                                        @if (item.PessoaPlanoGrupoTipoId==0)   {
+                                                            if (item.PessoaPlanoPagtoStatus=="AguardandoPagamento")
+                                                        {
+                                                            <small>Válido até @DateTime.Now.AddMonths(12).ToShortDateString() se pago em @DateTime.Now.ToShortDateString().</small>
+                                                        }
+                                                        else
+                                                        {
+                                                        
+                                                            if (item.PessoaPlanoInscricaoDtValidade != null)
+                                                            {
+                                                            <span>@Convert.ToDateTime(item.PessoaPlanoInscricaoDtValidade).ToShortDateString()</span>
+                                                            }
+                                                        
+                                                        }
+                                                        }else
+                                                        {
+                                                            <span>-</span>
+                                                        }
+
+                                                    </td>
+                                                    <td>@item.GatewayTipoPagamento</td>
+                                                    <td>
+                                                        @if (item.PessoaPlanoPagtoStatus == "AguardandoPagamento")
+                                                        {
+                                                            <a class="btn btn-outline btn-primary btn-xs" target="_blank" href="@Url.Content("~/Associados/GateWayPagamento/" + Model.EmpresaId + "/" + item.PessoaPlanoGUID)"> Realizar Pagamento</a>
+                                                        }
+                                                        else
+                                                        {
+                                                        <span class="@class_status">@item.PessoaPlanoPagtoStatus <i class="@icon_status"></i></span>
+                                                        }
+                                                        
+                                                        
+                                                    </td>
+                                                    <td>
+                                                        @if (item.PessoaPlanoInscricaoDtPagto != null)
+                                                        {
+                                                                <span>@Convert.ToDateTime(item.PessoaPlanoInscricaoDtPagto).ToShortDateString()</span>
+                                                        }
+                                                    </td>
+                                                    <td>@string.Format("{0:c}", item.PessoaPlanoVlrTotal) <i class=" @icon_status"></i></td>
+                                                    <td>
+                                                     <span class="@(Model.CubeeAnexosStatusOk ? "  text-success " : " text-warning ")">@(Model.CubeeAnexosStatusOk ? "Ok" : "Pendente") <i class="@(Model.CubeeAnexosStatusOk ? "fa fa-check" : " fa fa-pause ")"></i></span></td>
+                                                    <td>
+                                                        @if (item.PlanoAtivo)
+                                                        {
+                                                            <i class="fa fa-check text-success"></i>    
+                                                        }
+
+
+                                                    </td>
+                                                </tr>
+                                            }
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                              
+                        @*            
+                            <a class="fancybox_recarrega fancybox.iframe" href="@Url.Content("~/PessoasPlanosInscricoes/Criar/" + item.PessoaPlanoInscricaoId + "/" + item.PessoaPlanoGUID)">
+                                    @Html.Partial("~/Views/PessoasPlanosInscricoes/_detalheInscricao.cshtml", item)
+                                </a>
+                            *@
+                         
+                           
+                        </div>
+                    </div>
+                    
+                    
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+        
+    }
+
+</div>
+
+
+
+
+
+
+@section Styles{
+@Styles.Render("~/bundles/fancybox/css")
+}
+        
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    
+
+    @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/content/themes/base/js/application.js"></script>
+    <script src="~/Assets/js/bootstrap-button.js"></script>*@
+
+
+    <script>
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+    </script>
+    <script>
+     @*   $(".imprimir").click(function () {
+            $.get("@Url.Content("~/FichaCadastral/Imprimir/")", {id: $(this).data('val')}, function (data, status) {
+                console.log(data);
+            });
+        });*@
+
+
+
+        $('.imprimir').on('click', function () {
+            var $this = $(this);
+            $this.button('loading');
+            setTimeout(function () {
+                $this.button('reset');
+            }, 6000);
+        });
+    </script>
+    <script>
+        $('.btn-reenviar').click(function (e) {
+            var guid = $(this).attr('data-val');
+
+            e.preventDefault();
+
+
+
+
+            $.ajax({
+                url: '/Pessoas/ReenviaTermoAceite/' + guid,
+                error: function (data) {
+                    console.log(data);
+                    window.alert("Oops... Ocorreu um erro ao reenviar\n" + data.mensagem);
+
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (data.codigo == 200) {
+                        window.alert("SMS reenviado");
+                        location.reload();
+                    } else {
+                        window.alert("Oops... Ocorreu um erro ao reenviar\n" + data.mensagem);
+                    }
+
+                },
+                type: 'GET'
+            });
+
+
+        });
+    </script>
+
+}
+
+

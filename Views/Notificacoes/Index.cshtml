@@ -1,0 +1,162 @@
+﻿@model Models.NotificacaoView
+
+@{
+    ViewBag.Title = "Notificações";
+
+    if (Model.Notificacao.Modal)
+    {
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+
+
+    var bll = new BLL.EntidadesStatus();
+    var listaTodos = bll.Listar("PRCPropostas", 0);
+
+
+    var outrasOpcoes = "&tipo=" + Request["tipo"] + "&UsuarioId=" + Request["UsuarioId"] + "&Modal=" + Request["Modal"] + "";
+       
+}
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Entidades", "Entidades", new { id = 0, tipo = Model.Notificacao.Entidade })</li>
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-2">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0, tipo = Model.Notificacao.Entidade,  Modal = Model.Notificacao.Modal }, new { @class = "btn btn-primary" })
+                            </div>
+                            <div class="col-lg-10">
+                                <a class="btn btn-outline btn-warning2 btn-xs pull-right fancybox fancybox.iframe" href="@Url.Content("~/Notificacoes/ExecutarPropostasJSON/" + BLL.Usuarios.GetEmpresaId()+"/?qtd=1")">Executar Processo Notificações <i class="fa fa-play" aria-hidden="true"></i></a>
+                                <a class="btn btn-outline btn-warning2 btn-xs pull-right fancybox fancybox.iframe" href="@Url.Content("~/Notificacoes/PreviewExecutarRetornoSMS/" + BLL.Usuarios.GetEmpresaId()+"/")">Visualizar Retorno SMS<i class="fa fa-play" aria-hidden="true"></i></a>
+                                <a class="btn btn-outline btn-warning2 btn-xs pull-right fancybox fancybox.iframe" href="@Url.Content("~/Notificacoes/ExecutarRetornoSMS/" + BLL.Usuarios.GetEmpresaId()+"/")">Executar Processo Retorno SMS <i class="fa fa-play" aria-hidden="true"></i></a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+                                    <th>Notificação
+                                    </th>
+                                    <th>Status</th>
+                                    <th>Executar após</th>
+                                    <th>Ações</th>
+                                    <th data-hide="phone,tablet">Alterar / Excluir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.ListNotificacoes.Items)
+                                {
+
+                                 
+                                    
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NotificacaoNome)
+                                        </td>
+                                        <td>
+                                            @item.StatusNome
+                                        </td>
+                                        <td>@item.EntidadeStatusHoras <small>horas</small></td>
+
+                                        <td>
+                                            <i class="fa fa-envelope fa-2x @(item.NotificacaoEmailEnviar?"text-success":"muted")"></i> <i class="fa fa-comment fa-2x  @(item.NotificacaoSmsEnviar?"text-success":"muted")"></i> <i class="fa fa-file-text-o fa-2x  @(item.NotificacaoCartaGerar?"text-success":"muted")"></i> <i class="fa fa-database fa-2x  @(item.NotificacaoRetornarBase?"text-success":"muted")"></i> <i class="fa fa-retweet fa-2x  @(item.NotificacaoMudarNegociador?"text-success":"muted")"></i>
+
+                                        </td>
+                                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+
+                                            @Html.ActionLink("Alterar", "Criar", new { id = item.NotificacaoId, tipo = Model.Notificacao.Entidade, Modal = Model.Notificacao.Modal }, new { @class = "btn btn-outline btn-primary btn-xs" })&nbsp;
+                                    @Html.ActionLink("Excluir", "Deletar", new { id = item.NotificacaoId, tipo = Model.Notificacao.Entidade, Modal = Model.Notificacao.Modal }, new { @class = "btn btn-outline btn-danger btn-xs" })
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+                        <hr />
+
+
+
+
+
+
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.ListNotificacoes.TotalPages), outrasOpcoes)
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+<style>
+    i.muted {
+    color: #eaeaea;
+}
+
+</style>
+
+    }
+
+
+@section Scripts{
+    
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    
+    <script>
+
+        $(".fancybox").fancybox({
+            fitToView: false,
+            width: '48%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+
+            },
+        });
+
+    </script>
+
+
+}

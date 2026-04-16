@@ -1,0 +1,149 @@
+﻿@model Models.TemplateMensagem
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.TemplateMensagemId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Template Mensagem";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";   
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Templates Mensagens", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "TemplatesMensagens", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        if (Model.TemplateMensagemId > 0)
+                        {
+                        @Html.Hidden("TemplateMensagemId", Model.TemplateMensagemId);
+                                                                    acao = "Alterar";
+                        }
+    
+       
+                        <div class="row">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                <label>Tipo</label>
+                                @Html.DropDownListTemplatesMensagensTipos("TemplateMensagemTipo", Model.TemplateMensagemTipo, true, " form-control ")
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                <label>Título</label>
+                                @Html.TextBoxFor(model => model.TemplateMensagemTitulo, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Descrição</label>
+                                <select id="variaveis" class="form-control" name="variaveis">
+                                    <option value="">--Variáveis--</option>
+                                    <option value="#nome#">Nome do Paciente</option>
+                                    <option value="#filialnome#">Nome @BLL.Usuarios.GetEntidadeFilial()</option>
+                                    <option value="#statusnome#">Status</option>
+                                    <option value="#statusconteudo#">Status Descrição (digitado)</option>
+                                    <option value="#medguiaid#">Número da Guia</option>
+                                    <option value="#medguiadata#">Data da Guia</option>
+                                    <option value="#notafiscaldata#">Data da NF</option>
+                                    <option value="#totalprodutos#">Valor Total da Guia</option>
+                                    <option value="#totalprodutoscustonff#">NFF/Fatura</option>
+                                    <option value="#totalreembolso#">Valor Total Reembolso</option>
+                                    <option value="#imposto#">Valor do Imposto</option>
+                                    <option value="#notafiscal#">NF</option>
+                                    <option value="#boletourl#">Link Boleto</option>
+                                    <option value="#bancocod#">Cód. Banco</option>
+                                    <option value="#banconome#">Nome Banco</option>
+                                    <option value="#bancoagencia#">Agência Banco</option>
+                                    <option value="#bancoconta#">Conta Banco</option>
+                                </select>
+                                @Html.TextAreaFor(model => model.TemplateMensagemDescricao, new { @class = "form-control maxlen", maxlength = "4000", rows = 4 })
+                            </div>
+
+                         
+                        </div>
+         
+                        <br />
+
+                        <div class="row-fluid">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    </style>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/maxlenght/js")
+ 
+   @Scripts.Render("~/bundles/select2/js")
+
+    <script>
+  
+        $('.select2').select2();
+
+
+        $('#variaveis').on('change', function () {
+            var cursorPos = $('#TemplateMensagemDescricao').prop('selectionStart');
+            var v = $('#TemplateMensagemDescricao').val();
+            var textBefore = v.substring(0, cursorPos);
+            var textAfter = v.substring(cursorPos, v.length);
+            $('#TemplateMensagemDescricao').val(textBefore + $(this).val() + textAfter);
+            $("#variaveis").val("");
+        });
+
+
+        $('.maxlen').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+
+
+
+
+
+    </script>
+
+    
+}

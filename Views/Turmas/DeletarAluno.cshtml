@@ -1,0 +1,218 @@
+﻿@model Models.Pessoa
+
+@{
+    var vtipo = (string)Model.PessoaCategoria;
+    var vname = "";
+    var vlista = "";
+    switch (vtipo)
+    {
+        case "C":
+            vname = BLL.Usuarios.GetEntidadeCliente();
+            break;
+        case "F":
+            vname = BLL.Usuarios.GetEntidadeFornecedor();
+
+            break;
+
+        default:
+            vname = "Indefinido";
+
+            break;
+    }
+
+
+
+}
+
+
+@{
+    ViewBag.Title = "Excluir " + vname;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>  @Html.ActionLink(vname, "Index", new { id = 0, tipo = vtipo })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja excluir o registro?
+</div>
+
+
+<div class="cwell">
+    <fieldset>
+        <legend>Dados</legend>
+
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.PessoaID)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.PessoaID)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Nome)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Nome)
+                </div>
+            </div>
+            <div class="span3">
+
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Documento)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Documento)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.DataNascimento)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.DataNascimento)
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Email)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Email)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Telefone)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Telefone)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Celular)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Celular)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Observacao)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Observacao)
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Cep)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Cep)
+                </div>
+            </div>
+            <div class="span9">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Endereco) / @Html.DisplayNameFor(model => model.Numero)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Endereco), @Html.DisplayFor(model => model.Numero)
+                </div>
+            </div>
+
+
+        </div>
+        <br />
+        <div class="row-fluid">
+
+            <div class="span3">
+                <div class="span3">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Complemento)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Complemento)
+                    </div>
+                </div>
+
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Bairro)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Bairro)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Cidade)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Cidade)
+                </div>
+            </div>
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.Estado)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.Estado)
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <br />
+
+
+    @using (Html.BeginForm())
+    {
+
+        <div class="row-fluid">
+            <div class="span12">
+                @Html.HiddenFor(model => model.PessoaID)
+                @Html.HiddenFor(model => model.PessoaCategoria)
+                <input type="hidden" value="@Request["TurmaId"]"/>
+                <p class="pull-right">
+                    <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+
+                </p>
+
+                <p class="pull-left">
+                    @Html.ActionLink("Voltar", "Index", new { id = 0, tipo = vtipo })
+                </p>
+            </div>
+        </div>
+    }
+
+</div>
+
+
+
+
+
+
+
+
+

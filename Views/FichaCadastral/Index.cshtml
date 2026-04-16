@@ -1,0 +1,142 @@
+﻿@model Models.Pessoa
+
+@{
+    ViewBag.Title = "Ficha Cadastral";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+
+<div class="cwell">
+
+
+    @using (Html.BeginForm())
+    {
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Tipo de Pessoa:</label>
+                <div class="input-append">
+                @Html.DropDownListFor(m => m.PessoaTipo, new[] {
+                           new SelectListItem() {Text = "Pessoa Física", Value = "PF"},
+                           new SelectListItem() {Text = "Pessoa Jurídica", Value = "PJ"},
+                           new SelectListItem() {Text = "Estrangeiro", Value = "OU"},
+                           }, null, new { onchange = "Select(this.value);", @class="span12" })
+                    </div>
+            </div>
+            <div class="span8">
+                <label><p id="tpDocumento"></p></label>
+
+                <div class="input-append">
+                    @Html.TextBoxFor(model => model.Documento, new { @class="input-medium"})
+                    @if (ViewBag.cpfValido == true)
+                    {
+                        <button class="btn btn-success " type="submit" name="btnSubmit" value="validar"><i class="fa fa-check"></i></button>    
+                                            
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit" name="btnSubmit" value="validar">Verificar <i class="fa fa-chevron-right"></i></button>    
+                    }
+
+                </div>
+                <br />@Html.ValidationMessageFor(model => model.Documento)
+            </div>
+        </div>
+
+
+    }
+
+    <div class="container">
+        <div class="row bs-wizard" style="border-bottom: 0;">
+            <div class="span3 bs-wizard-step active">
+                <div class="text-center bs-wizard-stepnum">Etapa 1</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Validar Documento</div>
+            </div>
+
+            <div class="span3 bs-wizard-step disabled">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Etapa 2</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Preenchimento de dados cadastrais</div>
+            </div>
+
+            <div class="span3 bs-wizard-step disabled">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Etapa 3</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Assinatura Digital</div>
+            </div>
+            <div class="span3 bs-wizard-step disabled">
+                <!-- disabled -->
+                <div class="text-center bs-wizard-stepnum"><img src="~/Assets/img/icones/@BLL.Usuarios.GetEmpresaId()-cadastrofim.png" width="16" height="16" /></div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">FIM</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
+        @Html.ActionLink("Voltar", "Index", new { id = 0 })
+    </div>
+
+</div>
+    
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+            $('#Documento').focus();
+        });
+        function Select(jtipo) {
+
+            if (jtipo == "PJ") {
+                $("#painelPJ").slideDown();
+                $("#Documento").mask("99.999.999/9999-99");
+                $("#tpDocumento").html("CNPJ");
+            } else if (jtipo == "OU") {
+                $("#painelPJ").slideToggle();
+                $("#Documento").unmask();
+                $("#tpDocumento").html("Outros");
+            } else {
+                $("#painelPJ").slideToggle();
+                $("#Documento").mask("999.999.999-99");
+                $("#tpDocumento").html("CPF");
+            }
+
+        }
+
+        Select($('#PessoaTipo').val());
+
+        $("input[data-val-length-max]").each(function (index, element) {
+            var length = parseInt($(this).attr("data-val-length-max"));
+            $(this).prop("maxlength", length);
+        });
+
+
+
+    </script>
+
+}

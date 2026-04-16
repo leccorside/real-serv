@@ -1,0 +1,75 @@
+﻿@model Models.PostoDeServico
+
+
+@{
+    ViewBag.Title = "Excluíndo Posto de Serviço";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Posto de Serviço", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+<div class="cwell">
+    <fieldset>
+
+        <legend>Conta</legend>
+        <div class="row-fluid">
+
+            <div class="span3">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.PostoDeServicoId)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.PostoDeServicoId)
+                </div>
+            </div>
+            <div class="span9">
+                <div class="display-label">
+                    @Html.DisplayNameFor(model => model.PostoDeServicoNome)
+                </div>
+                <div class="display-field">
+                    @Html.DisplayFor(model => model.PostoDeServicoNome)
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+    <br />
+
+    @using (Html.BeginForm())
+    {
+        <div class="row-fluid">
+            <div class="span12">
+                @Html.HiddenFor(model => model.PostoDeServicoId)
+                <p class="pull-right">
+                    <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+                </p>
+                <p class="pull-left">
+                    @Html.ActionLink("Voltar", "Index")
+                </p>
+            </div>
+        </div>    
+            
+            
+          
+    }
+
+
+</div>
+
+
+
+

@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Models.PerfilTipo>
+
+@{
+    ViewBag.Title = "Tipos de Perfil";
+}
+
+@section Breadcrumb{
+
+
+}
+
+<p>
+    @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+</p>
+<table class="table table-bordered table-striped table-highlight table-hover table-condensed ">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>
+                @Html.DisplayNameFor(model => model.PerfilTipoNome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegDtInicio)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Ordem)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PerfilTipoNome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RegDtInicio)
+                </td>
+                <td>
+                    <a href="~/PerfisTipos/Criar/@item.PerfilTipoId" class="btn btn-mini"><i class="fa fa-pencil-square-o"></i>Alterar</a> | 
+            <a href="~/PerfisTipos/Deletar/@item.PerfilTipoId" class="btn btn-mini"><i class="icon-trash"></i>Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    //Controles de paginação
+    int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);   
+}
+@Html.Paginacao(qtdPaginas)

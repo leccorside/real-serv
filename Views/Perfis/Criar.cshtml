@@ -1,0 +1,167 @@
+﻿@model Models.Perfil
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.PerfilId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Perfil";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+
+    var _PRCPropostas_Index = BLL.Usuarios.VerificaAcesso("Index", "PRCPropostas");
+}
+
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Perfis", "Index", new { @id = Model.EmpresaId })</li>
+}
+
+
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "Perfis", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.Hidden("EmpresaId", Model.EmpresaId);
+
+
+                                                                  if (Model.PerfilId > 0)
+                                                                  {
+                        @Html.Hidden("PerfilId", Model.PerfilId);
+                                                                acao = "Alterar";
+                                                                  }
+       
+                        <div class="row">
+
+                            <div class="col-form col-lg-2 col-md-2 col-sm-2">
+                                @Html.LabelFor(model => model.Nivel)
+                                @Html.TextBoxFor(model => model.Nivel, new { @class = " form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-10 col-md-10 col-sm-10">
+                                @Html.LabelFor(model => model.PerfilNome)
+                                @Html.TextBoxFor(model => model.PerfilNome, new { @class = " form-control" })
+                            </div>
+
+                        </div>
+
+                                                                  if (_PRCPropostas_Index)
+                                                                  {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="checkbox">
+                                    <legend>
+                                        <label>@Html.CheckBoxFor(model => model.PRCPropostaRegraRange) <i class="fa fa-money"></i>Intervalo de Valor Bruto para criação de propostas</label></legend>
+                                </div>
+                            </div>
+                        </div>
+
+                            
+                        <div class="row" id="div_PRCPropostaRegraRange">
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>De</label>
+                                @Html.TextBox("PRCPropostaRegraVlrDe", string.Format("{0:F2}", Model.PRCPropostaRegraVlrDe), new { @class = "moeda form-control select-all" })
+                            </div>
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Até</label>
+                                @Html.TextBox("PRCPropostaRegraVlrAte", string.Format("{0:F2}", Model.PRCPropostaRegraVlrAte), new { @class = "moeda form-control select-all" })
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2>Meta máx/min de follow-up de propostas dias</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Teto Atendimento Dia</label>
+                                @Html.TextBoxFor(x => x.PRCPropostaRegraMetaTeto, new { @class = "number form-control select-all" })
+                            </div>
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Meta Follow Up</label>
+                                @Html.TextBoxFor(x => x.PRCPropostaRegraMetaFUP, new { @class = "number form-control select-all" })
+                            </div>
+                        </div>
+                        
+                                                                  }
+                        
+
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", new { @id = Model.EmpresaId }, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/mask/js")
+    <script>
+
+        $('#PRCPropostaRegraRange').change(function () {
+            verificaEmail(this.checked);
+        });
+
+        verificaEmail($("#PRCPropostaRegraRange").is(':checked'));
+
+        function verificaEmail(checado) {
+            if (checado) {
+                $("#div_PRCPropostaRegraRange").slideDown();
+            } else {
+                $("#div_PRCPropostaRegraRange").slideUp();
+            }
+        }
+
+    </script>
+
+    <script>
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $('.number').mask('0000');
+    </script>
+}

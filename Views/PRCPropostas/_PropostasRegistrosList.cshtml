@@ -1,0 +1,120 @@
+﻿@model IEnumerable<Models.PRCProposta>
+
+
+@{
+    
+    var _visualizarTodas = BLL.Usuarios.VerificaAcesso("ViewAll", "PRCPropostas");
+    var _PrcPropsotas_Deletar = BLL.Usuarios.VerificaAcesso("Deletar", "PRCPropostas");
+    var _PrcPropsotas_Criar = BLL.Usuarios.VerificaAcesso("Criar", "PRCPropostas");
+    var _PrcPropsotas_CriarPorId = BLL.Usuarios.VerificaAcesso("CriarPorId", "PRCPropostas");
+    var _regraVisualizaOutras = true;
+    
+}
+
+<table cellpadding="1" cellspacing="1" class="table dataTable" id="table_prcpropostas">
+    <thead>
+        <tr style="font-size: 12px;">
+            <th>Proposta</th>
+            <th>Fonte</th>
+            <th>Precatório</th>
+            <th>Status</th>
+            <th>Requerente</th>
+            <th>Negociador</th>
+            <th>Valor Bruto</th>
+            <th>Valor Proposta</th>
+            <th></th>
+
+            @if (_PrcPropsotas_Deletar)
+            {
+                <th></th>    
+            }
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+
+            var tr_status = "";
+
+
+
+            var icon = "";
+            var tempoPassado = "";
+            if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+            {
+                tr_status = "warning";
+                icon = "fa fa-bell-o";
+                tempoPassado = "<i class='fa fa-clock-o'></i> " + item.StatusTempoPassado + " hrs";
+            }
+            
+                                    
+            <tr class=" @tr_status">
+                <td><i class="@icon"></i>@item.PRCPropostaId </td>
+                <td><span class="badge @item.Fonte">@item.Fonte</span></td>
+                <td>@item.PRCPropostaPrecatorio
+                    @if (_visualizarTodas == false && _regraVisualizaOutras == true && item.NegociadorId != BLL.Usuarios.GetUsuarioId())
+                    {
+                        <br />
+                        <small>Negociador:<strong></small><br />
+                        <h5>@item.NegociadorNome</h5>
+                    }
+
+                </td>
+                
+                <td>@item.StatusNome @Html.Raw(tempoPassado)
+
+                    @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                    {
+                        List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                        foreach (var badge in badges)
+                        {
+                        <span class="label label-info">@badge</span>
+                        }
+                    }
+
+
+                </td>
+                <td>@item.RequerenteNome</td>
+                <td>@item.NegociadorNome</td>
+                <td>R$ @string.Format("{0:N2}", item.PRCPropostaValorBruto)</td>
+                <td>R$ @string.Format("{0:N2}", item.PRCPropostaFinalValor)</td>
+
+                @if (!item.Triagem || _visualizarTodas)
+                {
+
+
+                    if (_visualizarTodas == false && _regraVisualizaOutras == true && item.NegociadorId != BLL.Usuarios.GetUsuarioId())
+                    {
+                    <td></td>
+                    }
+                    else
+                    {
+                    <td><a href="@Url.Content("~/PRCPropostas/Editar/" + item.PRCPropostaId + "/" + item.PRCPropostaGUID)" class="btn btn-outline btn-primary btn-xs" >Editar</a></td>    
+                        if (_PrcPropsotas_Deletar)
+                        {
+                    <td><a href="@Url.Content("~/PRCPropostas/Deletar/" + item.PRCPropostaId + "/" + item.PRCPropostaGUID)" class="btn btn-outline btn-danger btn-xs" >Excluir</a></td>        
+                        }
+                    }
+
+
+
+
+                }
+                else
+                {
+                    <td colspan="2"></td>
+                }
+
+            </tr>    
+                                  
+
+        }
+
+    </tbody>
+
+
+
+</table>
+

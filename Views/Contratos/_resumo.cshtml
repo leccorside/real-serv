@@ -1,0 +1,64 @@
+﻿@model Models.ContratoView
+<div class="row">
+
+    <div class="col-lg-9">
+        
+    <div class="form-group col-lg-2 col-md-2 col-sm-2">
+        <label>#</label>
+        <p class="form-control-static">@Model.Contrato.ContratoId</p>
+    </div>
+
+    <div class="form-group col-lg-2 col-md-2 col-sm-2">
+        <label>Data</label>
+        <p class="form-control-static">@Convert.ToDateTime(Model.Contrato.RegDtInicio).ToShortDateString()</p>
+    </div>
+    <div class="form-group col-lg-5 col-md-5 col-sm-5">
+        <label>Campanha</label>
+        <p class="form-control-static">@Model.Contrato.CampanhaNome</p>
+
+    </div>
+
+    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+        <label>Tipo</label>
+        <p class="form-control-static"><span class="badge @(Model.Contrato.ContratoTipo==0?"badge-info":"badge-success") @Html.GetLegendaContratoTipo(Model.Contrato.ContratoTipo)">@Html.GetLegendaContratoTipo(Model.Contrato.ContratoTipo)</span></p>
+
+    </div>
+
+
+
+    
+    <div class="form-group col-lg-4 col-md-4 col-sm-4">
+        <label>Cliente</label>
+        <p class="form-control-static">@Model.Pessoa.Nome</p>
+    </div>
+
+    <div class="form-group col-lg-4 col-md-4 col-sm-4">
+        <label>Contato</label>
+        <p class="form-control-static">@Model.Pessoa.Celular <a href="@Url.Content("https://api.whatsapp.com/send?1=pt_BR&phone=55" + BLL.Utils.Formatacoes.ApenasNumeros(Model.Pessoa.Celular))" target="_blank" class="btn btn-outline btn-success btn btn-xs"><i class="fa fa-whatsapp"></i><small>Conversar</small></a>    </p>
+    </div>
+
+    <div class="form-group col-lg-4 col-md-4 col-sm-4">
+        <label>E-Mail</label>
+        <p class="form-control-static">@Model.Pessoa.Email</p>
+    </div>
+    </div>
+    <div class="col-lg-3">
+        
+         <label>Status</label>
+                <h4 class="">@Model.Contrato.StatusNome</h4>
+                <small>@Model.Contrato.StatusInstrucoes</small>
+
+                @foreach (var badge in Model.Contrato.ListEntidadeStatusSubStatus)
+                {
+                 
+                    <span class="label label-info">@badge</span> 
+                
+                }
+
+                @if (Model.Contrato.EntidadeStatusHistoricoData != null)
+                {
+                    <h3><small><i class="fa fa-list" aria-hidden="true"></i> TO-DO</small> @String.Format("{0:dd/MM/yyyy}", (DateTime)Model.Contrato.EntidadeStatusHistoricoData)</h3>
+                }
+    </div>
+
+</div>

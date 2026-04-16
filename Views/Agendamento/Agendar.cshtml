@@ -1,0 +1,82 @@
+﻿@model Models.PRCProposta
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+    var dia = DateTime.Now.AddDays(1);
+}
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="text-center m-b-md">
+                <h3>Olá @BLL.Utils.Funcoes.GetPrimeiroNome(Model.RequerenteNome), escolha o melhor dia e horário para entrarmos em contato.</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        @for (int i = 0; i < 3; i++)
+        {
+
+
+            var weekDay = Convert.ToInt16(dia.DayOfWeek);
+            switch (weekDay)
+            {
+                case 6:
+                    dia = dia.AddDays(2);
+                    break;
+                case 0:
+                    dia = dia.AddDays(1);
+                    break;
+                default:
+                    break;
+            }
+         
+            <div class="col-lg-4" style="">
+                    <div class="hpanel plan-box">
+                        <div class="panel-heading hbuilt text-center">
+                            <h4 class="font-bold"><i class="fa fa-calendar"></i> </h4>
+                        </div>
+                       <div class="panel-body text-center">
+                            <h5 class="font-bold">@dia.ToShortDateString()</h5>
+                            @using (Html.BeginForm())
+                            {
+                                @Html.HiddenFor(x=>x.PRCPropostaId)
+                                @Html.HiddenFor(x=>x.PRCPropostaGUID)
+                                @Html.Hidden("EntidadeStatusHistoricoData", dia)
+                                <button class="btn btn-warning btn-sm m-t-xs" type="submit">Agendar</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            
+            dia = dia.AddDays(1);
+            
+        }
+        
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="alert alert-warning">
+                <div class="">Entraremos em contato em horário comercial<br />(Entre 9h e 18h).<br /></div>
+            </div>
+
+            <br /><br />Número do processo: @Model.PRCPropostaId
+            
+
+        </div></div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            @if (_copyright == "" || _copyright == "true")
+            {
+                <span><strong>Fortuna</strong> - Gestor do seu negócio<br />
+                    2017 Copyright |  E-Bee</span>
+            }
+
+
+        </div>
+    </div>
+</div>

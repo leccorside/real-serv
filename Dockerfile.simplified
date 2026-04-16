@@ -1,0 +1,37 @@
+# Dockerfile usando Linux containers (Recomendado para produção)
+# Executa ASP.NET MVC em Mono dentro de um container Linux
+# Muito mais eficiente, leve e portável que Windows containers
+
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2022
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
+
+WORKDIR /inetpub/wwwroot
+
+# Copiar arquivos da aplicação
+COPY . .
+
+# Criar diretórios necessários
+RUN New-Item -ItemType Directory -Path 'Logs' -Force | Out-Null ; \
+    New-Item -ItemType Directory -Path 'bin' -Force | Out-Null
+
+# Copiar script de entrypoint
+COPY docker-entrypoint.ps1 /
+
+# Expor portas
+EXPOSE 80 443 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD powershell -Command try { \
+        $response = Invoke-WebRequest -Uri 'http://localhost' -UseBasicParsing -TimeoutSec 3; \
+        if ($response.StatusCode -eq 200) { exit 0 } else { exit 1 } \
+    } catch { exit 1 }
+
+# Variáveis de ambiente
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    LANG=pt_BR.UTF-8 \
+    TZ=America/Sao_Paulo
+
+# Entrypoint
+ENTRYPOINT ["powershell", "-NoProfile", "-File", "/docker-entrypoint.ps1"]

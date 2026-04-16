@@ -1,0 +1,130 @@
+﻿@model Models.TemplateMensagemView
+
+@{
+    ViewBag.Title = "Templates Mensagens";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";    
+    
+    
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+    
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table dataTablex" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+                                    <th>Enviar</th>
+                                    <th>
+                                        Mensagem
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><a href="https://api.whatsapp.com/send?1=pt_BR&amp;phone=55" + @BLL.Utils.Formatacoes.ApenasNumeros(Model.Pessoa.Celular))" target="_blank" class="btn btn-outline btn-success btn-xs"><i class="fa fa-whatsapp"></i></a></td>
+                                    <td width="100%">-escrever mensagem-</td>
+                                </tr>
+                                @foreach (var item in Model.ListTemplateMensagem)
+                                {
+                                    <tr>
+                                        <td><a href="@("https://api.whatsapp.com/send?1=pt_BR&phone=55" + BLL.Utils.Formatacoes.ApenasNumeros(Model.Pessoa.Celular) + "&text=" + item.TemplateMensagemDescricao)" target="_blank" class="btn btn-outline btn-success btn-xs"><i class="fa fa-whatsapp"></i></a></td>
+                                        <td>@item.TemplateMensagemDescricao</td>
+                                        
+                                        
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+                    
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section css{
+    @Styles.Render("~/bundles/datatables/css")
+    
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+
+    
+
+    <script>
+
+        // Initialize Example 2
+        $('.dataTable').dataTable({
+            "pageLength": 50,
+            "paging": true,
+            "ordering": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "info": true,
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar ",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+        });
+
+
+
+
+
+
+    </script>
+
+
+
+    
+
+}

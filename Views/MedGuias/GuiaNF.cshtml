@@ -1,0 +1,551 @@
+﻿@model Models.MedGuiaItemView
+
+@{
+    string nome = "Guia " + Model.MedGuia.MedGuiaId + " de " + Model.MedGuia.PacienteNome;
+    nome = BLL.Utils.Formatacoes.GenerateSlug(nome);
+
+
+
+    ViewBag.Title = nome;
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+
+    //bool _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    //bool _PodeAlterar = BLL.MedGuias.
+    var bllMedGuias = new BLL.MedGuias();
+    var _PodeAlterar = bllMedGuias.PodeAlterar(Model.MedGuia);
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    var _MedGuiasRecalcular = BLL.Usuarios.VerificaAcesso("Recalcular", "MedGuias");
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+    var _MedGuiasProdutos = BLL.Usuarios.VerificaAcesso("Produtos", "MedGuias");
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+    var _MedGuiasPrecoCusto = BLL.Usuarios.VerificaAcesso("PrecoCusto", "MedGuias");
+    var _MedGuiasRelatorios = BLL.Usuarios.VerificaAcesso("Relatorios", "MedGuias");
+    var _MedGuiasBoletos = BLL.Usuarios.VerificaAcesso("Boletos", "MedGuias");
+    var _Regras_guias_registra_nf = BLL.Usuarios.VerificaAcesso("guias_registra_nf", "Regras");
+    var _MedGuiasStatus = BLL.Usuarios.VerificaAcesso("Status", "MedGuias");
+
+    var _MedGuias_GuiaNF_Anexos_Apagar = BLL.Usuarios.VerificaAcesso("GuiaNF_Anexos_Apagar", "MedGuias");
+    
+    var _NFPreenchida = (Model.MedGuia.NotaFiscal != null && Model.MedGuia.NotaFiscal != "") && (Model.MedGuia.NotaFiscalData != null);
+
+    var col_lg = (_MedGuiasPrecoCusto) ? 6 : 9;
+
+    var _podeExcluirAnexos = (_MedGuiasAdministrador || _MedGuias_GuiaNF_Anexos_Apagar);
+    var _PodeAlterarAnexoNF = (_MedGuiasAdministrador || (_NFPreenchida));
+    var _PodeAlterarDocumentos = (_MedGuiasAdministrador || (_NFPreenchida));
+}
+@{
+    
+    
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Guias", "Index", new { id = 0 })</li>
+    <li class="active">Criar Guia / Valor e NF </li>
+}
+
+
+<div class="content ">
+    
+
+    <div class="row">
+        <div class="col-md-12" style="">
+            @if (!_PodeAlterar)
+            {
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Essa Guia não pode ser mais alterada. Caso seja necessário, entre em contato com o administrador do sistema
+                </div>
+            }
+            <div class="hpanel">
+                @Html.Partial("~/Views/MedGuias/_tabs.cshtml", Model.MedGuia)
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- conteudo aqui -->
+
+
+                            @if (Model.MedGuia.NotaFiscal != "" && Model.MedGuia.NotaFiscal != null && _MedGuiasRelatorios)
+                            {     
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="pull-right">
+                                            <a href="@Url.Content("~/MedGuias/ViewGuia/" + Model.MedGuia.MedGuiaId + "?")" class="btn btn-primary btn-xs btn-outline fancybox fancybox.iframe"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Guia</a>
+                                            <a href="@Url.Content("~/MedGuias/ViewPedidoMedico/" + Model.MedGuia.MedGuiaId + "?")" class="btn btn-primary btn-outline btn-xs fancybox fancybox.iframe"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Pedido</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+
+
+
+
+                            <div class="row">
+
+                                <div class="form-group col-lg-1">
+                                    <label>Guia n.</label>
+                                    <p class="form-control-static">@Model.MedGuiaId</p>
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label>Data</label>
+                                    <p class="form-control-static">@string.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedGuiaData)
+                                        <button class="btn btn-primary btn-xs copy btncopy btn-outline" data-clipboard-text="SERVIÇOS REALIZADOS EM @string.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedGuiaData)"><i class="fa fa-cut"></i></button>
+                                    </p>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label>Convênio</label>
+                                    <p class="form-control-static">@Model.MedGuia.ConvenioNome</p>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label>Plano</label>
+                                    <p class="form-control-static">@Model.MedGuia.ConvenioPlanoNome</p>
+                                </div>
+                                <div class="form-group col-lg-3">
+                                    <label>Médico</label>
+                                    <p class="form-control-static">@Model.MedGuia.MedicoNome <small>@Model.MedGuia.MedicoCRM</small></p>
+                                </div>
+
+                            </div>
+
+                            @if (@Model.MedGuia.PacienteResponsavel)
+                            {
+                                <div class="row">
+                                    <div class="form-group col-lg-6">
+                                        <label>Paciente</label>
+                                        <p class="form-control-static"><span id="PessoaDependenteNome">@Model.MedGuia.PessoaDependenteNome</span> <a href="#" class="btn btn-primary btn-xs copy btncopy btn-outline" data-clipboard-target="#PessoaDependenteNome"><i class="fa fa-cut"></i></a></p>
+
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Grau Parentesco</label>
+                                        <p class="form-control-static"><span id="GrauParentescoNome">@Model.MedGuia.GrauParentescoNome</span> </p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Data Nascimento</label>
+                                        <p class="form-control-static">@string.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedGuiaData)</p>
+                                    </div>
+                                    <div class="form-group col-lg-2">
+                                        <label>Sexo</label>
+                                        <p class="form-control-static"><span>@Model.MedGuia.Sexo</span> </p>
+                                    </div>
+                                </div>    
+                            }
+
+                            <div class="row">
+
+                                <div class="form-group col-lg-4">
+                                    <label>@(Model.MedGuia.PacienteResponsavel ? "Responsável" : "Paciente")</label>
+                                    @Html.TermoAceiteStatus(Model.MedGuia.PacienteTermoAceite)
+                                    <p class="form-control-static"><a href="@Url.Content("~/Pessoas/DadosAluno/" + Model.MedGuia.PacienteId)" class="fancybox_full fancybox.iframe btn btn-outline btn-default btn-xs"><i class="fa fa-search"></i></a><span id="pacientenome">@Model.MedGuia.PacienteNome</span> <a href="#" class="btn btn-primary btn-xs copy btncopy btn-outline" data-clipboard-target="#pacientenome"><i class="fa fa-cut"></i></a></p>
+                                </div>
+
+                                <div class="form-group col-lg-2">
+                                    <label>CPF</label>
+                                    <p class="form-control-static"><span id="pacientecpf">@Model.MedGuia.PacienteCpf</span> <a href="#" class="btn btn-primary btn-xs copy btncopy btn-outline" data-clipboard-target="#pacientecpf"><i class="fa fa-cut"></i></a></p>
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label>Banco</label>
+                                    <p class="form-control-static">@Model.MedGuia.BancoCod</p>
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label>Agência</label>
+                                    <p class="form-control-static">@Model.MedGuia.BancoAgencia</p>
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label>Conta</label>
+                                    <p class="form-control-static">@Model.MedGuia.BancoConta</p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="row">
+                                <div class="form-group col-lg-3">
+                                    <label>Total</label>
+                                    <p class="form-control-static">@string.Format("{0:C}", Model.MedGuia.TotalProdutos)</p>
+                                </div>
+
+                                <div class="form-group col-lg-3">
+                                    <label>Valor da Guia</label>
+                                    <p class="form-control-static">R$ <span id="totalguia">@string.Format("{0:F2}", Model.MedGuia.TotalProdutos)</span> <a href="#" class="btn btn-primary btn-xs copy btncopy btn-outline" data-clipboard-target="#totalguia"><i class="fa fa-cut"></i></a></p>
+                                </div>
+
+                                <div class="form-group col-lg-6">
+                                    @if (_MedGuiasBoletos)
+                                    {
+                                        <a class="btn btn-controles btn-outline @(Model.MedGuia.Quitado ? "btn-success" : "btn-warning") fancybox_recarrega fancybox.iframe" type="button" aria-expanded="true" href="@Url.Content("~/MedGuias/Boletos/" + Model.MedGuia.MedGuiaId + "/?")"><i class="pe-7s-cash fa-2x"></i>
+                                            <br />
+                                            <small>Boleto(s)</small> @if (Model.MedGuia.Quitado)
+                                                                     {<br />
+                                                <span class="label label-success ">Quitado</span>}</a>
+                                    }
+
+                                    @if (Model.MedGuia.PacienteId > 0 && Model.MedGuia.PacienteCelular != null)
+                                    {
+                                        <a href="@Url.Content("~/TemplatesMensagens/Enviar/?PessoaId=" + Model.MedGuia.PacienteId + "&MedGuiaId=" + Model.MedGuiaId)" target="_blank" class="fancybox_full fancybox.iframe  btn btn-controles btn-outline btn-success"><i class="fa fa-whatsapp fa-2x"></i>
+                                            <br />
+                                            <small>Iniciar Conversa</small></a>    
+                                                
+                                    }
+
+                                    @if ((_MedGuiasRecalcular && (Model.MedGuia.NotaFiscal == "" || Model.MedGuia.NotaFiscal == null)) || _MedGuiasAdministrador)
+                                    {
+                                        <a class="btn btn-controles btn-outline btn-primary" type="button" aria-expanded="true" href="#" onclick="return cubeeConfirm('Atenção','Deseja realmente recalcular a guia?','@Url.Content("~/MedGuias/Recalcular/" + Model.MedGuiaId)')"><i class="pe-7s-calculator fa-2x"></i>
+                                            <br />
+                                            <small>Recalcular<br />
+                                                Guia</small></a>
+                                    }
+                                </div>
+
+
+
+                            </div>
+
+
+                            <!-- ./ conteudo aqui-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- form aqui-->
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+
+            @Html.HiddenFor(m => m.MedGuia.MedGuiaId)
+            @Html.HiddenFor(m => m.MedGuiaId);
+
+            <div class="col-lg-3">
+                <h4>Dados da NF <i class="fa @(_NFPreenchida ? " fa-check text-success " : " ")"></i></h4>
+                <div class="hpanel @(_NFPreenchida ? "hgreen" : "hred")">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-sm-12 control-label text-left">Data NF:</label>
+                            <div class="col-sm-12">
+                                @if ((_Regras_guias_registra_nf && _NFPreenchida == false) || _MedGuiasAdministrador)
+                                {
+                                    @Html.TextBox("MedGuia.NotaFiscalData", String.Format("{0:dd/MM/yyyy}", Model.MedGuia.NotaFiscalData), new { @class = "datepicker form-control input-sm", value = DateTime.Now })
+                                }
+                                else
+                                {
+                                    <input type="text" class="disabled form-control input-sm" disabled="disabled" value="@String.Format("{0:dd/MM/yyyy}", Model.MedGuia.NotaFiscalData)"  data-toggle="tooltip" data-original-title="Caso precise alterar o número da NF, entre em contato com o Administrador do Sistema"  title="Caso precise alterar o número da NF, entre em contato com o Administrador do Sistema" data-placement="top" />
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-12 control-label text-left">Número da NF:</label>
+                            <div class="col-sm-12">
+                                @if ((_Regras_guias_registra_nf && _NFPreenchida == false) || _MedGuiasAdministrador)
+                                {
+
+                                    @Html.TextBoxFor(m => m.MedGuia.NotaFiscal, new { @class = "form-control input-sm" })
+                                }
+                                else
+                                {     
+                                    <input type="text" class="disabled form-control input-sm" disabled="disabled" value="@Model.MedGuia.NotaFiscal"  data-toggle="tooltip" data-original-title="Caso precise alterar o número da NF, entre em contato com o Administrador do Sistema"  title="Caso precise alterar o número da NF, entre em contato com o Administrador do Sistema" data-placement="top" />        
+                                }
+
+                            </div>
+                        </div>
+                        @if ((_Regras_guias_registra_nf && _NFPreenchida == false) || _MedGuiasAdministrador)
+                        {
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary disabled " data-toggle="tooltip" data-original-title="Caso precise alterar o número da NF, entre em contato com o Administrador do Sistema" title="Caso precise alterar o número da NF, entre em contato com o Administrador do Sistema" data-placement="top">Salvar</button>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+                        if (_MedGuiasPrecoCusto)
+                        {
+            <div class="col-lg-3">
+                <h4>Preço custo Exames <i class="fa @(Model.MedGuia.Quitado ? " fa-check text-success " : " ")"></i></h4>
+                <div class="hpanel @(Model.MedGuia.Quitado ? " hgreen" : " hred")">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-sm-12 control-label text-left">Preço total de custo dos exames:</label>
+                            <div class="col-sm-12">
+                                @Html.TextBoxFor(m => m.MedGuia.TotalProdutosCusto, "{0:F2}", new { @class = "moeda form-control input-sm" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-12 control-label text-left">NFF/Fatura</label>
+                            <div class="col-sm-12">
+                                @Html.TextBoxFor(m => m.MedGuia.TotalProdutosCustoNff, new { @class = " form-control input-sm max", maxlength = "100" })
+                            </div>
+                        </div>
+
+                        <div class="form-groupx">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.MedGuia.Quitado)
+                                    Quitado</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </div>
+            </div>    
+                        }
+                        else
+                        {
+            @Html.HiddenFor(m => m.MedGuia.TotalProdutosCusto);
+            @Html.HiddenFor(m => m.MedGuia.TotalProdutosCustoNff);
+                        }
+
+
+
+        }
+        <!-- form aqui-->
+
+        @if (_MedGuiasStatus)
+        {
+            <div class="col-lg-@col_lg">
+                <h4>Status</h4>
+                <div class="hpanel">
+                    <div class="panel-body">
+                        @Html.CubeeStatus("MedGuias", Model.MedGuiaId, "chosen-select form-control", BLL.Usuarios.GetUsuarioId(), _MedGuiasAdministrador, Model.MedGuia.ConvenioId, true)
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel collapsed">
+                <div class="panel-heading hbuilt">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Produtos / Exames <a href="#" class="btn btn-primary btn-xs copy btncopy btn-outline" data-clipboard-target="#dadoscopia_full"><i class="fa fa-cut"></i></a>
+                </div>
+                <div class="panel-body">
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                                <tr>
+                                    <th>AMB/TUSS</th>
+                                    <th>Produto / Exame</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ListMedGuiaItem)
+                                {
+                    
+                                    <tr>
+                                        <td>@item.MedProdutoCod</td>
+                                        <td>
+                                            @item.MedProdutoNome
+                                        </td>
+                                        <td class="text-right">R$ @string.Format("{0:F2}", item.Total)</td>
+                                    </tr>	 
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="text-right">
+                                        <p class="form-control-static">R$ @string.Format("{0:F2}", Model.MedGuia.TotalProdutos) <a href="#" class="btn btn-primary btn-xs btn-outline copy btncopy" data-clipboard-target="#totalguia"><i class="fa fa-cut"></i></a></p>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>Anexar NF <i class="fa @(_PodeAlterarAnexoNF ? " fa-unlock-alt " : " fa-lock ")"></i></h4>
+        </div>
+    </div>
+    @Html.CubeeAnexos("MedGuiasNF", Model.MedGuia.MedGuiaId, "NF", "form-control", true, _PodeAlterarAnexoNF, _podeExcluirAnexos, _MedGuiasCriar, false)
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>Documentos <i class="fa @(_PodeAlterarDocumentos ? " fa-unlock-alt " : " fa-lock ")"></i></h4>
+        </div>
+    </div>
+    @Html.CubeeAnexos("Pessoas", Model.MedGuia.PacienteId, " |RG|CPF|Carteirinha|RG / CPF|RG / CPF e Carteirinha", "form-control", true, _PodeAlterarDocumentos, _podeExcluirAnexos, _MedGuiasCriar, false, "", Model.MedGuia.EmpresaId)
+
+</div>
+
+
+
+<textarea rows="1" cols="1" class="textcopy" id="dadoscopia">
+NOME: @Model.MedGuia.PacienteNome
+CPF: @Model.MedGuia.PacienteCpf
+VALOR DA GUIA: R$ @string.Format("{0:F2}", Model.MedGuia.TotalProdutos)
+</textarea>
+
+
+<textarea rows="1" cols="1" class="textcopy" id="dadoscopia_full">
+@foreach (var item in Model.ListMedGuiaItem)
+{
+                    @(item.MedProdutoCod + " - " + item.MedProdutoNome + " - R$ " + string.Format("{0:F2}", item.Total) + Environment.NewLine)
+}
+</textarea>
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    <style>
+        .textcopy
+        {
+            background: transparent !important;
+            border: 0px !important;
+            overflow: hidden !important;
+            color: transparent !important;
+        }
+
+        .btncopy
+        {
+            padding-top: -11px;
+            margin-left: 2px!important;
+            margin-top: 0px !important;
+        }
+
+        .btn-controles
+        {
+            height: 80px;
+        }
+    </style>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+
+    <script>
+
+
+        // copiar e colar
+        var clipboard = new Clipboard('.copy');
+
+        clipboard.on('success', function (e) {
+            e.clearSelection();
+        });
+
+        $('.copy').click(function (e) {
+            e.preventDefault();
+        });
+        // ./ copiar e colar
+
+        $("#MedGuia_NotaFiscalData").mask("99/99/9999");
+
+        $("#PacienteCpf").mask("999.999.999-99");
+
+
+
+        $("#PacienteCpf").focusout(function () {
+            $.getJSON('@Url.Content("~/Pessoas/GetPessoas/")', { tipo: 'c', stype: 'Cpf', key: $(this).val() }, function (data) {
+                if (data.Objeto[0] != null) {
+                    $("#PacienteNome").prop("readOnly", false);
+                    $("#PacienteNome").val(data.Objeto[0].Nome);
+                    $("#PacienteId").val(data.Objeto[0].PessoaID);
+                    $("#PacienteNome").prop("readOnly", true);
+                    $("#btnerrado").attr("style", "display:show");
+                    //console.log(data.Objeto[0].Nome);
+                } else {
+                    $("#btnerrado").attr("style", "display:none");
+                    $("#PacienteNome").prop("readOnly", false);
+                    $("#PacienteNome").val('');
+                    $("#PacienteId").val('0');
+                    $("#PacienteNome").focus();
+                }
+            });
+        });
+
+        $("#btnerrado").click(function () {
+            $("#btnerrado").attr("style", "display:none");
+            $("#PacienteNome").prop("readOnly", false);
+            $("#PacienteNome").val('');
+            $("#PacienteId").val('0');
+            $("#PacienteNome").focus();
+        });
+
+
+
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+
+            $(".fancybox").fancybox({ fitToView: false, width: '80%', autoSize: true });
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+
+            $(".fancybox_recarrega").fancybox({
+                fitToView: false,
+                width: '98%',
+                autoSize: false,
+                padding: 0,
+                helpers: {
+                    overlay: {
+                        locked: true
+                    }
+                },
+                beforeClose: function () {
+                    RecarregaPagina();
+                },
+            });
+
+
+            function RecarregaPagina() {
+                window.location.reload(true);
+            }
+
+
+        });
+
+
+    </script>
+}
+

@@ -1,0 +1,123 @@
+﻿@model IEnumerable<Models.Empresa>
+
+
+@{
+    ViewBag.Title = "Empresas";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+
+<div class="row-fluid">
+    <div class="span12">
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+        <table class="footable table table-bordered table-striped">
+            <thead>
+                <tr>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.EmpresaNome)
+
+                    </th>
+                    <th data-hide="phone,tablet">
+                        @Html.DisplayNameFor(model => model.EmpresaRoute)
+                    </th>
+
+                    <th data-hide="phone,tablet">Agenda
+                    </th>
+
+                    <th data-hide="phone,tablet">Intervalo
+                    </th>
+
+                    <th nowrap data-hide="phone,tablet">
+                        @Html.DisplayNameFor(model => model.RegDtInicio)
+                    </th>
+                    <th data-hide="phone,tablet"></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td nowrap width="100%">
+                            @Html.DisplayFor(modelItem => item.EmpresaId) - @Html.DisplayFor(modelItem => item.EmpresaNome)
+                            @if (item.EmpresaTrelloKey != "" && item.EmpresaTrelloKey != null)
+                            {
+                                <br /><i class="fa fa-trello"></i> <small>Integrado Trello: @item.EmpresaTrelloOrganization</small>
+                            }
+                        </td>
+
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.EmpresaRoute)
+                        </td>
+
+
+                        <td nowrap>
+                            @String.Format("{0:t}", item.AgendaHoraIni) até  @String.Format("{0:t}", item.AgendaHoraFim)
+                        </td>
+
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.AgendaIntervaloMinutos) minutos
+                        </td>
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.RegDtInicio)
+                        </td>
+                        <td nowrap>
+                            <a href="~/Manager/Usuarios/Index/@item.EmpresaId" class="btn btn-mini"><i class="icon-user"></i>Usuários</a> | 
+                            <a href="~/Manager/Perfis/Index/@item.EmpresaId" class="btn btn-mini"><i class="icon-lock"></i>Perfis</a> | 
+                            <a href="~/Manager/Logs/Index/@item.EmpresaId" class="btn btn-mini"><i class="icon-zoom-in"></i>Logs</a>
+                            
+                        </td>
+
+                        <td nowrap>
+                            <a href="~/Manager/Empresas/Criar/@item.EmpresaId" class="btn btn-mini"><i class="icon-edit"></i>Alterar</a> | 
+                            <a href="~/Manager/Empresas/Deletar/@item.EmpresaId" class="btn btn-mini"><i class="icon-trash"></i>Excluir</a>
+
+                       
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+
+
+        </table>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+        });
+    </script>
+
+
+
+}

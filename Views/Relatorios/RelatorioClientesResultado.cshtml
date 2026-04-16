@@ -1,0 +1,77 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório de Clientes";
+    Layout = "~/Views/Shared/_Report.cshtml";
+    
+}
+
+
+@{
+    
+    //var aula = "";
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    //var AgendaHoraIni = empresa.AgendaHoraIni;
+    //var AgendaHoraFim = empresa.AgendaHoraFim;
+    //var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+  //  TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+//    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    //var horario = AgendaHoraIni;
+
+    //var obJagendamentos = new BLL.Agendamentos();
+
+    var pessoas = new BLL.Pessoas();
+    var objpessoas = pessoas.Listar();
+    //var objPessoas = pessoas.Carregar(ViewBag.PessoaId);
+
+  //  List<int> listAgendamentoIds = new List<int>();
+//    var rowspan = 0;
+    //var criaTd = false;
+
+
+
+    //int control = 1;
+
+
+
+    //int controlRemove = 1;
+    
+}
+
+    <table border="0" width="100%">
+        <tr>
+            <td align="center">Relatório de Clientes</td>
+        </tr>
+          <tr><td><br /><br /></td></tr>
+    </table>
+                
+    <table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="1">
+        
+       
+        
+        <tbody>
+            @foreach (var cli in objpessoas)
+            {   
+                
+                <tr>
+                    <td>@cli.Nome</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    
+                    <td></td>
+                </tr>
+                                               
+                       
+            }
+        </tbody>
+    </table>
+           
+       
+    
+
+

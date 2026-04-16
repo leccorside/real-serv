@@ -1,0 +1,560 @@
+﻿@model Models.DocumentoTemplate
+
+
+@{
+    
+    var pathFileman = "/Assets/plugins/fileman/index.html";
+
+    var acao = "Cadastrar";
+    if (Model.DocumentoTemplateId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Template";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var _MedGuias = BLL.Usuarios.VerificaAcesso("Index", "MedGuias");
+    var _PRCPropostas = BLL.Usuarios.VerificaAcesso("Index", "PRCPropostas");
+    
+}
+
+
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li>@Html.ActionLink("Layouts", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+                    <div class="col-lg-12" style="">
+
+                        @using (Html.BeginForm("Criar", "DocumentosTemplates", FormMethod.Post, new { @class = "form-horizontal" }))
+                        {
+                            @Html.ValidationSummary(true)
+
+                            if (Model.DocumentoTemplateId > 0)
+                            {
+                            @Html.HiddenFor(m => m.DocumentoTemplateId);
+                                                                       acao = "Alterar";
+                            }
+    
+    
+       
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    @Html.LabelFor(model => model.Entidade)
+                                    @Html.DropDownListFor(model => model.Entidade, (SelectList)ViewBag.ddlEntidadesNomes, "--Selecione--", new { @class = "chosen-select form-control " })
+                                </div>
+
+                                <div class="form-group col-lg-6">
+                                    @Html.LabelFor(model => model.DocumentoLayoutId)
+                                    @Html.DropDownListFor(model => model.DocumentoLayoutId, (SelectList)ViewBag.ddlDocumentosLayouts, "--Selecione--", new { @class = "chosen-select form-control " })
+                                </div>
+
+
+                                <div class="form-group col-lg-12">
+                                    @Html.LabelFor(model => model.DocumentoTemplateNome)
+                                    @Html.TextBoxFor(model => model.DocumentoTemplateNome, new { @class = " form-control " })
+                                </div>
+
+                                <div class="form-group col-lg-12">
+                                    @Html.LabelFor(model => model.DocumentoTemplateDescricao)
+                                    @Html.TextAreaFor(model => model.DocumentoTemplateDescricao, new { @class = " form-control " })
+                                </div>
+
+
+
+                                <div class="form-group col-lg-12">
+                                    @Html.LabelFor(model => model.PerfisIds)
+                                    @Html.ListBoxFor(model => model.PerfisIds, (SelectList)ViewBag.ddlPerfis, new { @class = "chosen-select form-control ", @data_placeholder = "Selecione os perfis com acesso", multiple = "multiple" })
+                                </div>
+
+
+
+
+                            </div>                  
+            
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label>Conteúdo</label>
+
+                                    <div class="input-group m-b">
+                                        <span class="input-group-addon">#</span>
+                                        <select id="variaveis" class="form-control" name="variaveis">
+                                            <option value="">--Selecionar Variável--</option>
+                                            <optgroup label="Variáveis Globais">
+         <option value="#hoje_dia#">Dia</option>
+        <option value="#hoje_mes#">Mês</option>
+        <option value="#hoje_ano#">Ano</option>
+        <option value="#hoje_data#">Data de Hoje</option>
+        <option value="#filialnome#">Nome @BLL.Usuarios.GetEntidadeFilial()</option>
+        <option value="#UsuarioNome#">Nome do Usuário</option>
+        <option value="#UsuarioEmail#">EMail do Usuário</option>
+    </optgroup>
+
+                                            @if (_PRCPropostas)
+                                            {
+                                                <optgroup label="Variáveis Requerente">
+                                                    <option value="#RemetenteNome#">Remetente Nome (negociador / nome empresa)</option>
+        <option value="#RequerenteNome#">Nome</option>
+        <option value="#RequerenteCpf#">CPF</option>
+        <option value="#RequerenteEndereco#">Endereço</option>
+        <option value="#RequerenteNumero#">Número</option>
+        <option value="#RequerenteBairro#">Bairro</option>
+        <option value="#RequerenteCEP#">CEP</option>
+        <option value="#RequerenteCidade#">Cidade</option>
+                                                    <option value="#RequerenteEstado#">Estado</option>                                                    
+        </optgroup>
+                                                                             <optgroup label="Variáveis Proposta">
+                                                    <option value="#prcpropostaprecatoro#">N. Precatório</option>
+        <option value="#prcpropostaid#">N. Proposta</option>
+        
+        </optgroup>
+                                            }
+    
+
+
+                      @if (_MedGuias)
+                      {
+                          
+                          <optgroup label="Variáveis @BLL.Usuarios.GetEntidadeClienteSingular()">
+        <option value="#pacientenome#">Nome</option>
+        <option value="#pacientecpf#">CPF</option>
+        <option value="#pacientecelular#">Celular</option>
+        <option value="#pacientesexo#">Sexo</option>
+        <option value="#pacienterg#">RG</option>
+        <option value="#pacienteestadocivil#">Estado Civil</option>
+        <option value="#pacienteemail#">EMail</option>
+        <option value="#pacientecep#">CEP</option>
+        <option value="#pacienteendereco#">Endereço</option>
+        <option value="#pacientenumero#">Número</option>
+        <option value="#pacientecomplemento#">Complemento</option>
+        <option value="#pacientebairro#">Bairro</option>
+        <option value="#pacientecidade#">Cidade</option>
+        <option value="#pacienteestado#">Estado</option>
+        <option value="#pacientepais#">País</option>
+        <option value="#bancocod#">Banco Cód.</option>
+        <option value="#banconome#">Banco Nome</option>
+        <option value="#bancoagencia#">Banco agência</option>
+        <option value="#bancoconta#">Banco conta</option>
+        <option value="#bancoobservacoes#">Banco observações</option>
+    </optgroup>
+	<optgroup label="Variáveis Guia">
+        <option value="#medguiaid#">Guid Id</option>
+        <option value="#medguiadata#">Guia Data</option>
+        <option value="#totalprodutoscustonff#">Valor Produtos</option>
+        <option value="#totalreembolso#">Total Reembolso</option>
+        <option value="#imposto#">Imposto</option>
+        <option value="#notafiscal#">NF</option>
+        <option value="#notafiscaldata#">NF Data</option>
+        <option value="#bancocod#">Banco cód</option>
+        <option value="#banconome#">Banco nome</option>
+        <option value="#bancoagencia#">Banco agênca</option>
+        <option value="#bancoconta#">Banco conta</option>
+        <option value="#MedicoNome#">Nome Médico</option>
+        <option value="#MedicoCRM#">CRM Médico</option>
+        <option value="#ConvenioNome#">Convênio</option>
+        <option value="#ConvenioPlanoNome#">Plano</option>
+        <option value="#MedCarteiraConvenio#">Carteira Convênio</option>
+        <option value="#MedCarteiraValidade#">Carteira Validade</option>
+        <option value="#MedCarteiraTitular#">Carteira Titular</option>
+        <option value="#MedCarteiraTitularNome#">Carteira Titular Nome</option>
+        <option value="#MedCarteiraTitularNomeMae#">Carteira Titular Nome Mãe</option>
+        <option value="#MedCarteiraTitularDataNascimento#">Carteira Data Nascimento</option>
+        <option value="#MedCarteiraTitularCpf#">Carteira CPF</option>
+        </optgroup>	 
+                      }                      
+    
+                                            
+                                        </select>
+                                    </div>
+
+
+                                    @Html.TextAreaFor(model => model.DocumentoTemplateConteudo, new { @class = "col-lg-12", @rows = 20 })
+                                </div>
+                            </div>
+         
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                                </div>
+
+                            </div>
+            
+                        }
+                    </div>
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/select2/js")
+    <script src="~/Assets/plugins/tinymce/tinymce.min.js"></script>
+
+    <script>
+        $('#variaveis').on('change', function () {
+            tinymce.activeEditor.execCommand('mceInsertContent', false, $(this).val());
+            $("#variaveis").val("");
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            select = $("#PerfisIds");
+            select.trigger('chosen:updated');
+
+
+            $('.chosen-select').select2();
+        });
+
+
+
+        tinymce.init({
+            selector: "#DocumentoTemplateConteudo",
+            //theme: "",
+            width: "100%",
+            height: 300,
+            relative_urls: false,
+            remove_script_host: false,
+            language: "pt_BR",
+            plugins: [
+                 "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
+                 "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+                 "save table contextmenu directionality emoticons template paste textcolor",
+                 "image",
+                 ""// outros plugins
+            ],
+            font_formats: 'Andale Mono=andale mono,times;' +
+                'Arial=arial,helvetica,sans-serif;' +
+                'Arial Black=arial black,avant garde;' +
+                'Book Antiqua=book antiqua,palatino;' +
+                'Courier New=courier new,courier;' +
+                'Georgia=georgia,palatino;' +
+                'Helvetica=helvetica;' +
+                'Impact=impact,chicago;' +
+                'Tahoma=tahoma,arial,helvetica,sans-serif;' +
+                'Terminal=terminal,monaco;' +
+                'Times New Roman=times new roman,times;' +
+                'Trebuchet MS=trebuchet ms,geneva;' +
+                'Verdana=verdana,geneva;' +
+                'Webdings=webdings;' +
+                'Wingdings=wingdings,zapf dingbats;',
+
+            file_browser_callback: function (field_name, url, type, win) {
+                var roxyFileman = '@pathFileman';
+                if (roxyFileman.indexOf("?") < 0) {
+                    roxyFileman += "?type=" + type;
+                }
+                else {
+                    roxyFileman += "&type=" + type;
+                }
+                roxyFileman += '&input=' + field_name + '&value=' + win.document.getElementById(field_name).value;
+                if (tinyMCE.activeEditor.settings.language) {
+                    roxyFileman += '&langCode=' + tinyMCE.activeEditor.settings.language;
+                }
+                tinyMCE.activeEditor.windowManager.open({
+                    file: roxyFileman,
+                    title: 'Banco de Arquivos / Imagens',
+                    width: 850,
+                    height: 650,
+                    resizable: "yes",
+                    plugins: "media",
+                    inline: "yes",
+                    close_previous: "no"
+                }, { window: win, input: field_name });
+                return false;
+            },
+
+            valid_elements: ""
++ "a[accesskey|charset|class|coords|dir<ltr?rtl|href|hreflang|id|lang|name"
++ "|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rel|rev"
++ "|shape<circle?default?poly?rect|style|tabindex|title|target|type],"
++ "abbr[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "acronym[class|dir<ltr?rtl|id|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "address[class|align|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "applet[align<bottom?left?middle?right?top|alt|archive|class|code|codebase"
++ "|height|hspace|id|name|object|style|title|vspace|width],"
++ "area[accesskey|alt|class|coords|dir<ltr?rtl|href|id|lang|nohref<nohref"
++ "|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup"
++ "|shape<circle?default?poly?rect|style|tabindex|title|target],"
++ "base[href|target],"
++ "basefont[color|face|id|size],"
++ "bdo[class|dir<ltr?rtl|id|lang|style|title],"
++ "big[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "blockquote[cite|class|dir<ltr?rtl|id|lang|onclick|ondblclick"
++ "|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout"
++ "|onmouseover|onmouseup|style|title],"
++ "body[alink|background|bgcolor|class|dir<ltr?rtl|id|lang|link|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onload|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|onunload|style|title|text|vlink],"
++ "br[class|clear<all?left?none?right|id|style|title],"
++ "button[accesskey|class|dir<ltr?rtl|disabled<disabled|id|lang|name|onblur"
++ "|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onmousedown"
++ "|onmousemove|onmouseout|onmouseover|onmouseup|style|tabindex|title|type"
++ "|value],"
++ "caption[align<bottom?left?right?top|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "center[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "cite[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "code[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "col[align<center?char?justify?left?right|char|charoff|class|dir<ltr?rtl|id"
++ "|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown"
++ "|onmousemove|onmouseout|onmouseover|onmouseup|span|style|title"
++ "|valign<baseline?bottom?middle?top|width],"
++ "colgroup[align<center?char?justify?left?right|char|charoff|class|dir<ltr?rtl"
++ "|id|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown"
++ "|onmousemove|onmouseout|onmouseover|onmouseup|span|style|title"
++ "|valign<baseline?bottom?middle?top|width],"
++ "dd[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style|title],"
++ "del[cite|class|datetime|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "dfn[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "dir[class|compact<compact|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "div[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "dl[class|compact<compact|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "dt[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style|title],"
++ "em/i[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "fieldset[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "font[class|color|dir<ltr?rtl|face|id|lang|size|style|title],"
++ "form[accept|accept-charset|action|class|dir<ltr?rtl|enctype|id|lang"
++ "|method<get?post|name|onclick|ondblclick|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|onreset|onsubmit"
++ "|style|title|target],"
++ "frame[class|frameborder|id|longdesc|marginheight|marginwidth|name"
++ "|noresize<noresize|scrolling<auto?no?yes|src|style|title],"
++ "frameset[class|cols|id|onload|onunload|rows|style|title],"
++ "h1[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "h2[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "h3[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "h4[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "h5[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "h6[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "head[dir<ltr?rtl|lang|profile],"
++ "hr[align<center?left?right|class|dir<ltr?rtl|id|lang|noshade<noshade|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|size|style|title|width],"
++ "html[dir<ltr?rtl|lang|version],"
++ "iframe[align<bottom?left?middle?right?top|class|frameborder|height|id"
++ "|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style"
++ "|title|width],"
++ "img[align<bottom?left?middle?right?top|alt|border|class|dir<ltr?rtl|height"
++ "|hspace|id|ismap<ismap|lang|longdesc|name|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|src|style|title|usemap|vspace|width],"
++ "input[accept|accesskey|align<bottom?left?middle?right?top|alt"
++ "|checked<checked|class|dir<ltr?rtl|disabled<disabled|id|ismap<ismap|lang"
++ "|maxlength|name|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|onselect"
++ "|readonly<readonly|size|src|style|tabindex|title"
++ "|type<button?checkbox?file?hidden?image?password?radio?reset?submit?text"
++ "|usemap|value],"
++ "ins[cite|class|datetime|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "isindex[class|dir<ltr?rtl|id|lang|prompt|style|title],"
++ "kbd[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "label[accesskey|class|dir<ltr?rtl|for|id|lang|onblur|onclick|ondblclick"
++ "|onfocus|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout"
++ "|onmouseover|onmouseup|style|title],"
++ "legend[align<bottom?left?right?top|accesskey|class|dir<ltr?rtl|id|lang"
++ "|onclick|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "li[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style|title|type"
++ "|value],"
++ "link[charset|class|dir<ltr?rtl|href|hreflang|id|lang|media|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|rel|rev|style|title|target|type],"
++ "map[class|dir<ltr?rtl|id|lang|name|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "menu[class|compact<compact|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "meta[content|dir<ltr?rtl|http-equiv|lang|name|scheme],"
++ "noframes[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "noscript[class|dir<ltr?rtl|id|lang|style|title],"
++ "object[align<bottom?left?middle?right?top|archive|border|class|classid"
++ "|codebase|codetype|data|declare|dir<ltr?rtl|height|hspace|id|lang|name"
++ "|onclick|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|standby|style|tabindex|title|type|usemap"
++ "|vspace|width],"
++ "ol[class|compact<compact|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|start|style|title|type],"
++ "optgroup[class|dir<ltr?rtl|disabled<disabled|id|label|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "option[class|dir<ltr?rtl|disabled<disabled|id|label|lang|onclick|ondblclick"
++ "|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout"
++ "|onmouseover|onmouseup|selected<selected|style|title|value],"
++ "p[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|style|title],"
++ "param[id|name|type|value|valuetype<DATA?OBJECT?REF],"
++ "pre/listing/plaintext/xmp[align|class|dir<ltr?rtl|id|lang|onclick|ondblclick"
++ "|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout"
++ "|onmouseover|onmouseup|style|title|width],"
++ "q[cite|class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "s[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style|title],"
++ "samp[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "script[charset|defer|language|src|type],"
++ "select[class|dir<ltr?rtl|disabled<disabled|id|lang|multiple<multiple|name"
++ "|onblur|onchange|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|size|style"
++ "|tabindex|title],"
++ "small[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "span[align<center?justify?left?right|class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "strike[class|class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title],"
++ "strong/b[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "style[dir<ltr?rtl|lang|media|title|type],"
++ "sub[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "sup[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title],"
++ "table[align<center?left?right|bgcolor|border|cellpadding|cellspacing|class"
++ "|dir<ltr?rtl|frame|height|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|rules"
++ "|style|summary|title|width],"
++ "tbody[align<center?char?justify?left?right|char|class|charoff|dir<ltr?rtl|id"
++ "|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown"
++ "|onmousemove|onmouseout|onmouseover|onmouseup|style|title"
++ "|valign<baseline?bottom?middle?top],"
++ "td[abbr|align<center?char?justify?left?right|axis|bgcolor|char|charoff|class"
++ "|colspan|dir<ltr?rtl|headers|height|id|lang|nowrap<nowrap|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|rowspan|scope<col?colgroup?row?rowgroup"
++ "|style|title|valign<baseline?bottom?middle?top|width],"
++ "textarea[accesskey|class|cols|dir<ltr?rtl|disabled<disabled|id|lang|name"
++ "|onblur|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|onselect"
++ "|readonly<readonly|rows|style|tabindex|title],"
++ "tfoot[align<center?char?justify?left?right|char|charoff|class|dir<ltr?rtl|id"
++ "|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown"
++ "|onmousemove|onmouseout|onmouseover|onmouseup|style|title"
++ "|valign<baseline?bottom?middle?top],"
++ "th[abbr|align<center?char?justify?left?right|axis|bgcolor|char|charoff|class"
++ "|colspan|dir<ltr?rtl|headers|height|id|lang|nowrap<nowrap|onclick"
++ "|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown|onmousemove"
++ "|onmouseout|onmouseover|onmouseup|rowspan|scope<col?colgroup?row?rowgroup"
++ "|style|title|valign<baseline?bottom?middle?top|width],"
++ "thead[align<center?char?justify?left?right|char|charoff|class|dir<ltr?rtl|id"
++ "|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup|onmousedown"
++ "|onmousemove|onmouseout|onmouseover|onmouseup|style|title"
++ "|valign<baseline?bottom?middle?top],"
++ "title[dir<ltr?rtl|lang],"
++ "tr[abbr|align<center?char?justify?left?right|bgcolor|char|charoff|class"
++ "|rowspan|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title|valign<baseline?bottom?middle?top],"
++ "tt[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style|title],"
++ "u[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress|onkeyup"
++ "|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style|title],"
++ "ul[class|compact<compact|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown"
++ "|onkeypress|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover"
++ "|onmouseup|style|title|type],"
++ "var[class|dir<ltr?rtl|id|lang|onclick|ondblclick|onkeydown|onkeypress"
++ "|onkeyup|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|style"
++ "|title]",
+
+            toolbar: "insertfile undo redo | styleselect | fontselect | fontsizeselect bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview media fullpage | forecolor backcolor emoticons",
+
+        });
+    </script>
+
+}

@@ -1,0 +1,70 @@
+﻿@model Models.ProdutoSecao
+
+@{
+    
+    
+    var acao = "Cadastrar";
+    if (Model.ProdutoSecaoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+
+    ViewBag.Title = acao + " " + "Tipos de Seções";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Breadcrumb{
+    
+        <li class="active"><span class="divider">/</span>    @Html.ActionLink("Tipos de Seções", "Index")</li>
+    
+}
+
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    
+    if (Model.ProdutoSecaoId > 0)
+    {
+    @Html.Hidden("ProdutoSecaoId", Model.ProdutoSecaoId);
+    }
+    <legend>Dados da Seção</legend>
+    
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ProdutoSecaoNome)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.ProdutoSecaoNome, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.ProdutoSecaoNome)*@
+            </div>
+        </div>
+
+        
+    </div>
+    
+    
+    
+    
+    <div class="form-actions">
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+    </div>
+}
+
+
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+
+
+}

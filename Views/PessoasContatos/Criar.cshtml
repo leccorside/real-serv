@@ -1,0 +1,189 @@
+﻿@model Models.PessoaContato
+
+@{
+    
+    ViewBag.Title = "Adicionar novo meio de contato";
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+}
+
+
+
+<div class="content animate-panel">
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel ">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Cadastro de Contato
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="row">
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>CPF</label>
+                            @Model.Pessoa.Documento
+                        </div>
+
+
+
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <label>Nome</label><br />
+                            @Model.Pessoa.Nome
+                        </div>
+
+                    </div>
+
+                    <br />
+                    @using (Html.BeginForm("Criar", "PessoasContatos", FormMethod.Post))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.PessoaID)
+
+                        if (Model.PessoaContatoId > 0)
+                        {
+                        @Html.HiddenFor(m => m.PessoaContatoId);
+                        }
+                        
+                            
+                        @Html.HiddenFor(m=>m.PessoaDependenteId)
+        
+                        <div class="row">
+
+                            <div class="form-group col-lg-2">
+                                <label>Tipo</label>
+                                @Html.DropDownListPessoaContatoTipo("PessoaContatoTipo", Model.PessoaContatoTipo, true, " form-control ")
+                            </div>
+                            
+
+                            <div class="form-group col-lg-6">
+                                <label>Categoria</label>
+                                @Html.DropDownListPessoaContatoCategoria("PessoaContatoCategoria", Model.PessoaContatoCategoria, true, " form-control ")
+                            </div>
+
+
+                            <div class="form-group col-lg-6">
+                                <label id="lblPessoaContatoValor"></label>
+                                @Html.TextBoxFor(m => m.PessoaContatoValor, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6">
+                                <label>Observação</label>
+                                @Html.TextBoxFor(m => m.PessoaContatoDescricao, new { @class = "form-control" })
+                            </div>
+                            
+
+
+
+
+
+
+
+
+
+
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                                <a href="@Url.Content("~/PessoasContatos/Index/" + Model.Pessoa.PessoaID)" class="btn btn-outline btn-primary ">Voltar</a>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/datepicker/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+
+
+    <script>
+        
+        function Tipo(selectedText) {
+            if (selectedText == "Telefone") {
+                $('#PessoaContatoValor').text("");
+                $('#PessoaContatoValor').mask(maskBehavior, options);
+                $("#lblPessoaContatoValor").text("Telefone");
+            } else if (selectedText == "Email") {
+
+                $('#PessoaContatoValor').text("");
+                $('#PessoaContatoValor').unmask();
+                $("#lblPessoaContatoValor").text("E-Mail");
+            } else {
+                
+            }
+        }
+        $('#PessoaContatoTipo').on('change', function (e) {
+            var selectedValue = this.selectedOptions[0].value;
+            var selectedText = this.selectedOptions[0].text;
+
+            Tipo(selectedText);
+
+        })
+
+
+        Tipo($("#PessoaContatoTipo option:selected").text());
+
+
+
+
+        $('.max').maxlength();
+        
+
+        $(document).ready(function () {
+
+            $(".fancybox").fancybox({ fitToView: false, width: '80%', autoSize: true });
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+}
+

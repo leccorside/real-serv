@@ -1,0 +1,77 @@
+﻿@model Models.Sindicato
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.SindicatoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Sindicato";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Sindicatos", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "Sindicatos", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.SindicatoId > 0)
+        {
+        @Html.Hidden("SindicatoId", Model.SindicatoId);
+                                            acao = "Alterar";
+        }
+    
+     
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.SindicatoNome, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.SindicatoNome)
+                @Html.ValidationMessageFor(model => model.SindicatoNome)
+            </div>
+        </div>
+        
+            
+     
+            
+            
+                       
+            
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

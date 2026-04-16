@@ -1,0 +1,82 @@
+﻿@model Models.AutenticationModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+    // Get host name
+    String strHostName = Dns.GetHostName();
+
+    // Find host by name
+    var iphostentry = Dns.GetHostByName(strHostName);
+}
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+
+               
+
+                <h3>Entre com seu e-mail e senha</h3>
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+                     @if (ViewBag.EmpresaId != null)
+                {
+                    <h1 class="text-center">
+                        <img src="@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/" + ViewBag.EmpresaId + ".png")" /></h1>
+                
+                }
+
+                    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @id = "loginForm" }))
+                    {
+                        @Html.Hidden("EmpresaRoute", (string)ViewBag.EmpresaRoute);
+                    
+                        
+                        <div class="form-group">
+                            <label class="control-label" for="username">E-Mail</label>
+                            @Html.TextBoxFor(model => model.LoginOrEmail, null, new { @class = "form-control", placeholder = "Seu e-mail", required = "preencha o campo", autofocus = "" })
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="password">Senha</label>
+                            @Html.PasswordFor(model => model.UsuarioSenha, new { @class = "form-control", placeholder = "******", required = "", autofocus = "" })
+                        </div>
+                            
+                        <button type="submit" class="btn btn-success btn-block">Login</button>
+                        
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        @*<div class="row">
+    <div class="span12">
+
+        <ul>
+            @foreach (var item in iphostentry.AddressList)
+            {
+                <li>@item.MapToIPv4()</li>
+            }
+        </ul>
+        
+    </div>
+</div>*@
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            @if (_copyright == "" || _copyright == "true")
+            {
+                <span><strong>Fortuna</strong> - Gestor do seu negócio<br />
+                    2017 Copyright |  E-Bee</span>
+            }
+
+
+        </div>
+    </div>
+</div>

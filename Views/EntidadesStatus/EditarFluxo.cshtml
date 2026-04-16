@@ -1,0 +1,167 @@
+﻿@model Models.EntidadeStatus
+
+
+
+@{
+    ViewBag.Title = "Edição de Fluxo";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";    
+}
+
+
+<div class="content animate-panel">
+        <div class="row">
+            <div class="col-lg-12" style="">
+
+
+
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        <h3>@Model.StatusNome</h3>
+                    </div>
+                    <div class="panel-body">
+                        <!-- dados aqui-->
+
+
+                        @using (Html.BeginForm("EditarFluxo", "EntidadesStatus", FormMethod.Post, new { @class = "" }))
+                        {
+                            @Html.ValidationSummary(true)
+    
+                      
+                            @Html.HiddenFor(m=>m.EntidadeStatusId)
+                                                     
+
+                            <div class="row">
+                            
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Status</label>
+                                @Html.TextBoxFor(model => model.StatusNome, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.StatusNome)
+                            </div>
+                        
+                            <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                <label>Instrução do Status</label>
+                                @Html.TextBoxFor(model => model.StatusInstrucoes, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.StatusInstrucoes)
+                            </div>
+
+
+
+                                
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Sequência</label>
+                                @Html.TextBoxFor(model => model.StatusSequencia, new { @class = "number form-control" })
+                                @Html.ValidationMessageFor(model => model.StatusSequencia)
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Tempo Máximo em Horas</label>
+                                @Html.TextBoxFor(model => model.StatusTempoMaximo, new { @class = "number form-control" })
+                                <small>(deixe 0 para status sem prazo)</small>
+                                @Html.ValidationMessageFor(model => model.StatusTempoMaximo)
+                            </div>
+
+                               <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Tipo de Status</label>
+                                @Html.DropDownListStatusTipos("StatusTipo", Model.StatusTipo.ToString(), false, "form-control")
+                                
+                            </div>
+                            
+
+                         
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status Anterior</label>
+                                <select id="StatusAnterior" name="StatusAnterior" class="form-control chosen-select"></select>
+                            </div>
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status Posterior</label>
+                                <select id="StatusPosterior" name="StatusPosterior" class="form-control chosen-select"></select>
+                            </div>
+                            
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status Posterior (Exceção)</label>
+                                <select id="StatusExcecao" name="StatusExcecao" class="form-control chosen-select"></select>
+                            </div>
+                            
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Status de Cancelamento</label>
+                                <select id="StatusCancela" name="StatusCancela" class="form-control chosen-select"></select>
+                            </div>
+
+                        </div>
+            
+        
+        
+                                                         
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <input type="submit" value="Salvar" class="btn btn-primary" />
+                                </div>
+                            </div>
+
+
+
+                        }
+
+
+                        <!-- ./ dados aqui-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
+@section Styles{
+    <style>
+     option:disabled {
+    background-color: #afafaf !important;
+    color: #ffffff !important;
+}
+ </style>   
+}
+
+
+
+@section Scripts {
+    <script>
+      function carregaStatus(TabelaAux1Id, Entidade, EntidadeStatusId, ddlId) {
+          if (TabelaAux1Id == null || TabelaAux1Id == "") {
+              TabelaAux1Id = 0;
+          }
+
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetEntidadesStatus/")", { id: TabelaAux1Id, Entidade: Entidade }, function (result) {
+                data = $.map(result, function (item, a) {
+                        var select = (EntidadeStatusId == item.EntidadeStatusId) ? " selected='selected' " : "";
+                        var disabled = (item.EntidadeStatusId == '@Model.EntidadeStatusId') ? " disabled='disabled' " : "";
+                        return "<option value=" + item.EntidadeStatusId + " " + select + " "+disabled+">" + item.StatusNome + "</option>";
+                    
+                    
+                });
+                $("#" + ddlId).empty();
+                $('#' + ddlId).append($('<option>', {
+                    value: 0,
+                    text: '--Nenhum--'
+                }));
+                $("#" + ddlId).append(data.join(""));
+
+                $("#" + ddlId).trigger('chosen:updated');
+                $("#" + ddlId).trigger('change.select2');
+
+            });
+        }
+
+        carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusAnterior', 'StatusAnterior');
+        carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusPosterior', 'StatusPosterior');
+        carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusCancela', 'StatusCancela');
+        carregaStatus('@Model.TabelaAux1Id', '@Model.Entidade', '@Model.StatusExcecao', 'StatusExcecao');
+    </script>
+}
+
+

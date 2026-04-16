@@ -1,0 +1,90 @@
+﻿@model Models.TransferenciaAssincrona
+
+
+
+
+@{
+    ViewBag.Title = "UploadGerar";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+}
+
+
+@using (Html.BeginForm("UploadGerar", "Trj", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.Hidden("Entidade", "Trj")
+    @Html.Hidden("EntidadeId", "0")
+    
+    <div class="content animate-panel">
+
+        <div class="row">
+
+            <div class="col-lg-12 col-md-12 col-sm-12">
+
+                <div class="hpanel">
+
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Upload de Arquivo TJ-SP
+                        
+                    </div>
+
+                    <div class="panel-body">
+                         <h4>Serão aceitos arquivos de até 30MB no formato XLSX.</h4>
+                        <h6>Atenção! Confirme se o arquivo que você está subindo está em formato válido (XLSX) aceito pelo Excel.<br />Para garantir que é um arquivo válido, abra o arquivo e salve como excel.</h6>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="file" name="Arquivo" class="filestyle" data-input="false"> <span id="div_texto"></span>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="panel-footer">
+
+
+                        <div class="btn-group ">
+                            <button type="submit" class="btn btn-primary pull-right">Salvar <i class="fa  fa-save"></i></button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+}
+
+
+
+
+@section Scripts {
+
+    <script>
+        
+        $('.tooltip-legenda').tooltip()
+
+        $('#Arquivo').change('change', function () {
+            $("#div_texto").text("Aguarde, estamos carregando seu arquivo...");
+            var objarquivo = $(this);
+            var size = objarquivo[0].files[0].size;
+            console.log(size);
+            
+            if (size != null) {
+                if (size > 30097152) {
+                    $(this).filestyle('clear');
+                    sweetAlert("Oops...", 'Esse arquivo é muito grande!\nSelecione um arquivo menor que 30mb', "error");
+                }
+                
+            }
+            $("#div_texto").text("Pronto!");
+        });
+    </script>
+}

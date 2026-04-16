@@ -1,0 +1,96 @@
+﻿@model Models.MedGuiaItemView
+
+@{
+    
+
+
+
+    ViewBag.Title = "Status";
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    var bllMedGuias = new BLL.MedGuias();
+   
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    
+    var _MedGuiasStatus = BLL.Usuarios.VerificaAcesso("Status", "MedGuias");
+    
+}
+
+
+<div class="content animate-panel">
+        <div class="row">
+            <div class="col-lg-12" style="">
+
+                @if (Model.MedGuia.StatusTempoMaximo > 0 && Model.MedGuia.StatusTempoPassado >= Model.MedGuia.StatusTempoMaximo)
+    {
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção!</strong> @Model.MedGuia.StatusInstrucoes<br />Tempo nesse status: <i class="fa fa-clock-o"></i> @Model.MedGuia.StatusTempoPassado hrs
+                </div>
+            }
+
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Status: @Html.CubeeStatusAtual("MedGuias", Model.MedGuiaId)
+                    </div>
+                    <div class="panel-body">
+                        <!-- dados aqui-->
+                         @Html.CubeeStatus("MedGuias", Model.MedGuiaId, "chosen-select form-control", BLL.Usuarios.GetUsuarioId(), _MedGuiasAdministrador, Model.MedGuia.ConvenioId, true, 0)
+                        <!-- ./ dados aqui-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <br />
+    
+    
+</div>
+
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+
+    <style>
+
+        .EntidadeStatusId_selected
+        {
+            background-color: #afafaf !important;
+            color: #ffffff !important;
+        }
+    </style>
+
+    }
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/Assets/js/jquery.maskedinput.js")
+    @Scripts.Render("~/Assets/js/jquery.maskMoney.js")
+        
+
+    <script>
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+
+    </script>
+    
+}
+

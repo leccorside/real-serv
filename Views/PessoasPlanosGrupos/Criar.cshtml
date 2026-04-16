@@ -1,0 +1,511 @@
+﻿@model Models.PessoaPlanoGrupo
+
+
+@{
+    
+    var pathFileman = "/Assets/plugins/fileman/index.html";
+
+    ViewBag.Title = "Grupos de Planos e Eventos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("LancamentoCompact", "Financeiro");
+    var _FinanceiroLancamentoDel = BLL.Usuarios.VerificaAcesso("LancamentoCompactDel", "Financeiro");
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li>@Html.ActionLink("Grupos de Planos e Eventos", "Index", "PessoasPlanosGrupos")</li>
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+                    @using (Html.BeginForm("Criar", "PessoasPlanosGrupos", FormMethod.Post, new { enctype = "multipart/form-data", @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        if (Model.PessoaPlanoGrupoId > 0)
+                        {
+                        @Html.HiddenFor(m => m.PessoaPlanoGrupoId);
+                        }
+                        @Html.HiddenFor(m => m.PessoaPlanoGrupoGUID)
+    
+                        
+                        <div class="row">
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Campanha</label>
+                                @Html.DropDownListFor(model => model.CampanhaId, (SelectList)ViewBag.ddlCampanhas, null, new { @class = "chosen-select form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+
+                                <label>@BLL.Usuarios.GetEntidadeFilial():</label><br />
+                                @Html.DropDownListFiliais(Model.FilialID, "FilialID", Model.FilialID.ToString(), true, "chosen-select form-control ", true)
+
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Tipo</label><br />
+                                @Html.DropDownListPlanoGrupoTipo("PessoaPlanoGrupoTipoId", Model.PessoaPlanoGrupoTipoId.ToString(), true, "chosen-select form-control")
+                            </div>
+
+
+
+
+
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Nome</label>
+                                @Html.TextBoxFor(model => model.PessoaPlanoGrupoNome, new { @class = "form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Local</label>
+                                @Html.TextBoxFor(model => model.PessoaPlanoGrupoLocal, new { @class = "form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Descrição</label>
+                                @Html.TextAreaFor(model => model.PessoaPlanoGrupoDescricao, new { @class = "form-control" })
+                            </div>
+
+
+                        </div>
+                        
+                        <!-- email -->
+                        <br />
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <label>Gratuíto</label>
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.PessoaPlanoGrupoGratis) Sim</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <label>Período Indeterminado</label>
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.PessoaPlanoGrupoDtIndeterminado) Sim</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Público</label>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="input-group m-b">
+                                            <span class="input-group-addon">Estimado</span>
+                                            @Html.TextBoxFor(model => model.PessoaPlanoGrupoPublicoEstimado, new { @class = " form-control number select-all " })
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="input-group m-b">
+                                            <span class="input-group-addon">Realizado</span>
+                                            @Html.TextBoxFor(model => model.PessoaPlanoGrupoPublicoRealizado, new { @class = " form-control number select-all " })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row" id="div_Periodo">
+                            <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                <label>Data evento</label>
+                                <div class="row">
+                                    <div class="col-lg-4">@Html.TextBox("PessoaPlanoGrupoDtInicioStr", String.Format("{0:dd/MM/yyyy}", Model.PessoaPlanoGrupoDtInicio), new { @class = "datepicker maskdate form-control col-lg-4", value = DateTime.Now })</div>
+                                    <div class="col-lg-1 text-center">até</div>
+                                    <div class="col-lg-4">@Html.TextBox("PessoaPlanoGrupoDtFimStr", String.Format("{0:dd/MM/yyyy}", Model.PessoaPlanoGrupoDtFim), new { @class = "datepicker maskdate form-control", value = DateTime.Now })</div>
+                                    <div class="col-lg-3"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-form col-lg-6 col-md-6 col-sm-6">
+                                <label>Divulgação</label>
+
+                                <div class="row">
+                                    <div class="col-lg-4">@Html.TextBox("PessoaPlanoGrupoDivulgacaoDtInicio", String.Format("{0:dd/MM/yyyy}", Model.PessoaPlanoGrupoDivulgacaoDtInicio), new { @class = "datepicker maskdate form-control", value = DateTime.Now })</div>
+                                    <div class="col-lg-1 text-center">até</div>
+                                    <div class="col-lg-4">@Html.TextBox("PessoaPlanoGrupoDivulgacaoDtFim", String.Format("{0:dd/MM/yyyy}", Model.PessoaPlanoGrupoDivulgacaoDtFim), new { @class = "datepicker maskdate form-control", value = DateTime.Now })</div>
+                                    <div class="col-lg-3"></div>
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                        <!-- ./email -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <label>Arquivo</label>
+                                @if (BLL.Utils.Validacoes.ToStringNullSafe(Model.PessoaPlanoGrupoPath) != "")
+                                {
+                                    var urlDownload = Url.Content("~/ApiIntegracao/PessoaPlanoGrupoDownload/?guid=" + Model.PessoaPlanoGrupoGUID + "");
+                                    
+                                    <br />
+                                    <span>@Model.PessoaPlanoGrupoFileName -</span> <span>@Model.PessoaPlanoGrupoContentType -</span>  <a class="btn btn-xs btn-outline btn-primary" href="@urlDownload" data-toggle="tooltip" data-original-title="Download @Model.PessoaPlanoGrupoFileName" title="" data-placement="top"><i class="fa fa-download"></i> Download</a><br />
+                                    <br />
+                                }
+                                <input id="Arquivo" type="file" name="Arquivo" />
+                            </div>
+                        </div>
+                        
+                        <br />
+                        
+                                if (Model.PessoaPlanoGrupoId > 0)
+                                {
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <legend><i class="fa fa-users"></i>Participantes</legend>
+                                <a href="@Url.Content("~/PessoasPlanosGruposParticipantes/Criar/0/?PessoaPlanoGrupoId=" + Model.PessoaPlanoGrupoId)" class="btn btn-outline btn-primary btn-xs fancybox_recarrega fancybox.iframe">Incluir+</a>
+                                <button type="submit" class="btn btn-xs btn-outline btn-success"><i class="fa fa-refresh"></i>Atualizar</button>
+                                <div class="table-responsive">
+                                    <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Nome</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.ListPessoaPlanoGrupoParticipante)
+                                            {
+                                                <tr>
+                                                    <td>@item.PessoaPlanoGrupoParticipanteTipoNome</td>
+                                                    <td>
+                                                        @item.PessoaPlanoGrupoParticipanteNome
+                                                    </td>
+
+                                                    <td><a href="@Url.Content("~/PessoasPlanosGruposParticipantes/Criar/" + item.PessoaPlanoGrupoParticipanteId + "/?PessoaPlanoGrupoId=" + item.PessoaPlanoGrupoId)" class="btn btn-outline btn-primary btn-xs fancybox_recarrega fancybox.iframe">Editar</a>    </td>
+                                                    <td><a href="@Url.Content("~/PessoasPlanosGruposParticipantes/Deletar/" + item.PessoaPlanoGrupoParticipanteId + "/?PessoaPlanoGrupoId=" + item.PessoaPlanoGrupoId)" class="btn btn-outline btn-danger btn-xs fancybox_recarrega fancybox.iframe">Excluir</a></td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <legend><i class="fa fa-calendar"></i>Programação </legend>
+                                <a href="@Url.Content("~/PessoasPlanosGruposAgendamentos/Criar/0/?PessoaPlanoGrupoId=" + Model.PessoaPlanoGrupoId)" class="btn btn-outline btn-primary btn-xs fancybox_recarrega fancybox.iframe">Incluir+</a>
+                                <button type="submit" class="btn btn-xs btn-outline btn-success"><i class="fa fa-refresh"></i>Atualizar</button>
+                                <div class="table-responsive">
+                                    <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                                        <thead>
+                                            <tr>
+                                                <th>Data</th>
+                                                <th>Horário</th>
+                                                <th>Descrição</th>
+
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.ListPessoaPlanoGrupoAgendamento)
+                                            {
+                                                <tr>
+                                                    <td>@item.PessoaPlanoGrupoAgendamentoDt.ToShortDateString()</td>
+                                                    <td>@item.PessoaPlanoGrupoAgendamentoHrIni<br />
+                                                        @item.PessoaPlanoGrupoAgendamentoHrFim</td>
+                                                    <td>
+                                                        <h5>@item.PessoaPlanoGrupoAgendamentoDescricao</h5>
+                                                        <small>@item.PessoaPlanoGrupoAgendamentoNome</small></td>
+                                                    <td><a href="@Url.Content("~/PessoasPlanosGruposAgendamentos/Criar/" + item.PessoaPlanoGrupoAgendamentoId + "/?PessoaPlanoGrupoId=" + item.PessoaPlanoGrupoId)" class="btn btn-outline btn-primary btn-xs fancybox_recarrega fancybox.iframe">Editar</a>    </td>
+                                                    <td><a href="@Url.Content("~/PessoasPlanosGruposAgendamentos/Deletar/" + item.PessoaPlanoGrupoAgendamentoId + "/?PessoaPlanoGrupoId=" + item.PessoaPlanoGrupoId)" class="btn btn-outline btn-danger btn-xs fancybox_recarrega fancybox.iframe">Excluir</a></td>
+                                                </tr>   
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <legend><i class="fa fa-money"></i>Orçamento</legend>
+                                <a href="@Url.Content("~/Financeiro/LancamentoCompact/" + Model.PessoaPlanoGrupoId + "/pessoasplanosgrupos/?&filialid=" + Model.FilialID)" class="btn btn-outline btn-primary fancybox_recarrega fancybox.iframe " data-toggle="tooltip" data-original-title="Lançar recebimentos"  title="Lançar recebimentos" data-placement="top">Lançar Orçamento</a>
+                                <div class="table-responsive">
+                                    <table class="table table-condensed table-striped" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th nowrap>Data</th>
+                                                <th nowrap>Conta</th>
+                                                <th nowrap></th>
+                                                <th width="100%">Descrição</th>
+                                                <th nowrap><span class="pull-right">Valor</span></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @foreach (var item in Model.ListLancamento)
+                                            {
+                                                var urlExcluir = Url.Action("LancamentoCompactDel", "Financeiro", new { id = Model.PessoaPlanoGrupoId, tipo = "pessoasplanosgrupos", lancid = item.LancamentoId });
+                    
+                                                <tr>
+                                                    <td nowrap>
+                                                        @Html.DisplayFor(modelItem => item.DataVencimento)
+                                                    </td>
+                                                    <td nowrap>
+                                                        <small>@item.ContaNome</small>
+                                                    </td>
+                                                    <td>
+                                                        @if (item.LancamentoTipo == "R")
+                                                        {
+                                                            <span title="Receita" class="badge badge-success tip-top">R</span>
+
+                                                        }
+                                                        @if (item.LancamentoTipo == "D")
+                                                        {
+                                                            <span title="Despesa" class="badge badge-important tip-top">D</span>
+                                                        }
+                                                        @if (item.LancamentoTipo == "T")
+                                                        {
+                                                            <span title="Transferência" class="badge badge-info tip-top">T</span>
+                                                        }
+                                                        @if (item.LancamentoTipo == "I")
+                                                        {
+                                                            <span title="Início de Saldo" class="badge  tip-top">I</span>
+                                                        }
+
+
+                                                    </td>
+
+                                                    <td width="100%">
+                                                        @if (item.LancamentoTipo == "T")
+                                                        {
+                                                            <small class="text-info">Transferência - </small>
+                                                        }
+                                                        <small class="text-info">@(item.CategoriaNome != null ? item.CategoriaNome + " - " : "")</small> <small>@item.Descricao</small> @if (item.PessoaNome != null)
+                                                                                                                                                                                        {<small><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox">@item.PessoaNome</a></small> } <small>@item.RefExterna</small></td>
+                                                    <td nowrap>
+                                                        <span class="pull-right">
+                                                            @Html.DisplayFor(modelItem => item.Valor)
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        @if (_FinanceiroLancamentoDel)
+                                                        {
+                                                            <a href="@urlExcluir" onclick="return confirm('Deseja realmente excluir o registro?')" class="btn btn-outline btn-danger btn-xs"><i class="fa fa-trash"></i></a>    
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+
+
+                                        </tbody>
+
+
+                                        <tfoot>
+
+
+
+
+
+                                            <!-- totais -->
+                                            <tr>
+                                                <td nowrap colspan="4">
+                                                    <h4 class="pull=right" style="color: #000;">Total Geral</h4>
+                                                </td>
+                                                <td nowrap>
+                                                    <h4 class="pull-right" style="color: #000;">@String.Format("{0:c}", Model.ListLancamento.Sum(x => x.Valor))</h4>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <!-- ./totais -->
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                                }
+                        
+                        <br />
+                        <div class="row-fluid">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles{
+    @Styles.Render("~/Assets/css/chosen.css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/ladda/css")
+    @Styles.Render("~/redactor/redactor.css")
+
+
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.extend.js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+    @Scripts.Render("~/bundles/ladda/js")
+    @Scripts.Render("~/redactor/redactor.min.js")
+
+
+    <script type="text/javascript">
+
+
+        $("#Requerente_Documento").mask("999.999.999-99");
+        $('#Requerente_Celular').mask(maskBehavior, options);
+        $('#Requerente_Telefone').mask(maskBehavior, options);
+        $("#Requerente_DataNascimento").mask("99/99/9999");
+        $("#Requerente_Cep").mask("99999-999");
+
+        $('.chosen-select').select2();
+
+        $('.chosen-select-add').chosen().trigger("chosen:updated");
+
+
+        $('#PessoaPlanoGrupoFormasPagtoArray').trigger("chosen:updated");
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $('.max').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+        $('.number').mask('0000', { reverse: true });
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+    </script>
+
+    <script>
+
+        function atualiza() {
+            var url = "@Url.Content("~/XXXXX/EditarJSON")"; // the script where you handle the form input.
+            calculaVlLiq();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#form-criar").serialize(),
+                success: function (result) {
+                    if (result.NUMERO != 0) {
+                        swal({ title: "Atencão!", text: result.MENSAGEM, type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                    }
+
+                },
+                error: function (result) {
+                    swal({ title: "Atencão!", text: "Ocorreu um erro ao tentar salvar os dados da proposta", type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                }
+            });
+
+
+        }
+
+
+        $("input[type=text], textarea, select, :checkbox").change(function () {
+            //atualiza();
+
+        });
+
+
+    </script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            $('#PessoaPlanoGrupoDescricao').redactor({
+                focus: true,
+                imageUpload: '@Url.Content("~/Redactor/ImageUpload")'
+            });
+        });
+
+
+        function verifica(checado) {
+            if (checado) {
+                $("#div_Periodo").slideUp();
+            } else {
+                $("#div_Periodo").slideDown();
+            }
+        }
+
+        $('#PessoaPlanoGrupoDtIndeterminado').change(function () {
+            verifica(this.checked);
+        });
+
+        verifica($("#PessoaPlanoGrupoDtIndeterminado").is(':checked'));
+
+    </script>
+
+    <script>
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        function RecarregaPagina() {
+            //window.location.reload(true);
+        }
+    </script>
+
+}
+
+
+
+

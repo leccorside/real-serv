@@ -1,0 +1,94 @@
+﻿@model Models.PagamentoTipo
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.PagamentoTipoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Pagamento tipo";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Tipos de pagamento", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "PagamentoTipos", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.PagamentoTipoId > 0)
+        {
+        @Html.Hidden("PagamentoTipoId", Model.PagamentoTipoId);
+                                                              acao = "Alterar";
+        }
+
+
+        if (BLL.Usuarios.GetUtilizaFilial() == true && BLL.Usuarios.GetFilialIDMaster() == 0)
+            { 
+            <div class="control-group">
+                <label class="control-label" for="ContaTipoId">@BLL.Usuarios.GetEntidadeFilial():</label>
+                <div class="controls">
+                    @Html.DropDownListFor(model => model.FilialID, (SelectList)ViewBag.DdlFiliais, "--Nenhuma--", new { @class = "chosen-select" })
+                </div>
+            </div>
+            } else
+                    {
+                        <input type="hidden" name="FilialID" value="@BLL.Usuarios.GetFilialIDMaster()"/>
+                    }
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.PagamentoNome, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.PagamentoNome)
+                @Html.ValidationMessageFor(model => model.PagamentoNome)
+            </div>
+        </div>
+        
+            
+            
+                
+         
+            
+            
+                       
+            
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        
+    </script>
+}

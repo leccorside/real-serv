@@ -1,0 +1,159 @@
+﻿@model Models.Pessoa
+
+@using (Html.BeginForm("SeusDados", "Associados", FormMethod.Post, new { @id = "form" }))
+{
+    @Html.HiddenFor(x => x.PessoaID);
+    @Html.HiddenFor(x => x.EmpresaId);
+    @Html.HiddenFor(x => x.Documento);
+    @Html.Hidden("PessoaCategoria", "C");
+    @Html.Hidden("PessoaTipo", "PF");
+    <div class="row">
+        <div class="col-lg-12">
+            <legend>Dados Pessoais</legend>
+        </div>
+        <div class="form-group col-lg-3">
+            <label>CPF</label>
+            <p class="form-control-static">@Model.Documento</p>
+        </div>
+
+        <div class="form-group col-lg-9">
+            <label>Nome Completo</label>
+            <p class="form-control-static">@Model.Nome</p>
+        </div>
+        <div class="col-lg-12">
+            <legend>Dados de Contato</legend>
+        </div>
+
+        <div class="form-group col-lg-4">
+            <label>Celular</label>
+            @Html.TextBoxFor(x => x.Celular, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group col-lg-8">
+            <label>Seu e-mail</label>
+            @Html.TextBoxFor(x => x.Email, new { @class = "form-control" })
+        </div>
+
+        <div class="col-lg-12">
+            <legend>Endereço</legend>
+        </div>
+
+
+        <div class="form-group col-lg-3">
+            <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+
+            <div class="input-group">
+                @Html.TextBoxFor(model => model.Cep, new { @class = "form-control" })
+                <span class="input-group-btn">
+                    <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+
+
+        </div>
+        <div class="form-group col-lg-4">
+            <label>Endereço</label>
+            @Html.TextBoxFor(model => model.Endereco, new { @class = "  form-control " })
+        </div>
+        <div class="form-group col-lg-2">
+            <label>Número</label>
+            @Html.TextBoxFor(model => model.Numero, new { @class = "  form-control " })
+        </div>
+        <div class="form-group col-lg-3">
+            <label>Complemento</label>
+            @Html.TextBoxFor(model => model.Complemento, new { @class = "  form-control " })
+        </div>
+        <div class="form-group col-lg-5">
+            <label>Bairro</label>
+            @Html.TextBoxFor(model => model.Bairro, new { @class = "  form-control " })
+        </div>
+        <div class="form-group col-lg-5">
+            <label>Cidade</label>
+            @Html.TextBoxFor(model => model.Cidade, new { @class = "  form-control " })
+        </div>
+        <div class="form-group col-lg-2">
+            <label>Estado</label>
+            @Html.TextBoxFor(model => model.Estado, new { @class = "  form-control " })
+        </div>
+
+
+    </div>
+                                
+    <div class="row">
+        <div class="col-lg-12">
+            <legend>Seu Perfil</legend>
+        </div>
+        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+            @Html.TextAreaFor(model => model.PessoaPerfil, new { @class = "max form-control", maxlength = "800" })
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <legend>Mídias Sociais</legend>
+        </div>
+        
+        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+            <label><i class="fa fa-globe" aria-hidden="true"></i> Seu Site</label>
+            
+                @Html.TextBoxFor(model => model.PessoaSite, new { @class = "form-control" })
+            
+        </div>
+        
+        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+            <label><i class="fa fa-linkedin-square" aria-hidden="true"></i> Linkedin</label>
+            <div class="input-group m-b">
+                <span class="input-group-addon">https://www.linkedin.com/</span>
+                @Html.TextBoxFor(model => model.PessoaLinkedin, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+            <label><i class="fa fa-facebook-official" aria-hidden="true"></i> Facebook</label>
+            <div class="input-group m-b">
+                <span class="input-group-addon">https://www.facebook.com/</span>
+                @Html.TextBoxFor(model => model.PessoaFacebook, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+            <label><i class="fa fa-instagram" aria-hidden="true"></i> Instagram</label>
+            <div class="input-group m-b">
+                <span class="input-group-addon">https://www.instagram.com/</span>
+                @Html.TextBoxFor(model => model.PessoaInstagram, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+            <label><i class="fa fa-twitter-square" aria-hidden="true"></i> Twitter</label>
+            <div class="input-group m-b">
+                <span class="input-group-addon">https://www.twitter.com/</span>
+                @Html.TextBoxFor(model => model.PessoaTwitter, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+            <label><i class="fa fa-youtube" aria-hidden="true"></i> YouTube</label>
+            <div class="input-group m-b">
+                <span class="input-group-addon">https://www.youtube.com/</span>
+                @Html.TextBoxFor(model => model.PessoaYouTube, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+            <label><i class="fa fa-pinterest-square" aria-hidden="true"></i> Pinterest</label>
+            <div class="input-group m-b">
+                <span class="input-group-addon">https://www.pinterest.com/</span>
+                @Html.TextBoxFor(model => model.PessoaPinterest, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>                
+                                
+    <div class="text-center">
+        <button class="btn btn btn-primary btn-lg">Finalizar</button>
+    </div>
+}
+
+
+
+

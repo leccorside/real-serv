@@ -1,0 +1,813 @@
+@{
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentTipo = ViewContext.RouteData.Values["tipo"] as string ?? "";
+
+    var currentId = ViewContext.RouteData.Values["id"] as string ?? "0";
+
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    currentTipo = currentTipo.ToLower();
+    var currentPage = (currentController + "-" + currentAction + currentTipo).ToLower();
+
+    var user = new BLL.Usuarios();
+    var controleAcesso = user.ControleAcesso(currentAction, currentController);
+
+    var dadosUser = user.Carregar(BLL.Usuarios.GetUsuarioId());
+
+    var bllFiliais = new BLL.Filiais();
+    var bllUsuariosFiliais = new BLL.UsuariosFiliais();
+    SelectList listaFiliais;
+
+    listaFiliais = (SelectList)bllFiliais.ListarTipos(true);
+    if (BLL.Usuarios.GetVisualizaOutrasFiliais())
+    {
+        //filiaisSelecionadas
+        listaFiliais = (SelectList)bllUsuariosFiliais.ListarTiposAcessos(BLL.Usuarios.GetUsuarioId());    
+    }
+    
+    SelectListItem selected = listaFiliais.FirstOrDefault(x => x.Value == BLL.Usuarios.GetFilialId().ToString());
+    if (selected != null)
+    {
+        listaFiliais = new SelectList(listaFiliais, "value", "text", selected.Value);
+    }
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+    
+
+    string bg = BLL.Usuarios.GetEmpresaId().ToString();
+
+    if (BLL.Usuarios.GetFilialId() > 0)
+    {
+        bg += "_" + BLL.Usuarios.GetFilialId().ToString();
+    }
+
+
+
+    var index_agendamento = user.ControleAcesso("index", "agendamento");
+    var pessoas_pesquisarapida = user.ControleAcesso("pesquisarapida", "pessoas");
+    var agenda_agendamento = user.ControleAcesso("agenda", "agendamento");
+    var calendario_agendamento = user.ControleAcesso("calendario", "agendamento");
+    var regras_nobreadcrumb = user.ControleAcesso("nobreadcrumb", "regras");
+
+    var largura = BLL.Utils.Funcoes.GetMaxWidth();
+
+    var urlPesquisa = "~/Pessoas/PesquisaRapida/?lightbox[iframe]=true&lightbox[width]=" + largura + "&lightbox[height]=520";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title - @BLL.Usuarios.GetFilialId()</title>
+
+
+
+    <!-- Stylesheets -->
+    <link href="~/Assets/themes/metro/style/bootstrap.css" rel="stylesheet" />
+    <link href="~/Assets/themes/metro/style/bootstrap-responsive.css" rel="stylesheet">
+    <link href="~/Assets/themes/metro/style/font-awesome.css" rel="stylesheet" />
+    <link href="~/Assets/themes/metro/css/font-awesome.css" rel="stylesheet" />
+
+    <link href="~/Assets/themes/metro/style/prettyPhoto.css" rel="stylesheet">
+    <!-- Parallax slider -->
+    <link rel="stylesheet" href="~/Assets/themes/metro/style/slider.css">
+    <!-- Flexslider -->
+    <link rel="stylesheet" href="~/Assets/themes/metro/style/flexslider.css">
+
+    <link href="~/Assets/themes/metro/style/style.css" rel="stylesheet">
+
+    <!-- Colors - Orange, Purple, Light Blue (lblue), Red, Green and Blue -->
+    <link href="~/Assets/themes/metro/style/Blue.css" rel="stylesheet">
+
+
+
+
+
+    @Styles.Render("~/Assets/css/chosen.css")
+
+
+    <link href="~/Content/themes/base/js/plugins/lightbox/themes/evolution-dark/jquery.lightbox.css" rel="stylesheet" />
+
+    @Styles.Render("~/Assets/css/custom.css?v=1.4")
+
+    <link href="~/Assets/themes/metro/style/footable.core.css" rel="stylesheet" />
+    <link href="~/Assets/plugins/bootstrap-datepicker-1.4.0-dist/css/bootstrap-datepicker.standalone.css" rel="stylesheet" />
+
+
+
+    @if (Request.Browser.IsMobileDevice)
+    {
+        // testando fora
+
+
+
+    }
+
+    <style>
+        .ajax-loader
+        {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -32px; /* -1 * image width / 2 */
+            margin-top: -32px; /* -1 * image height / 2 */
+            z-index: 900;
+        }
+    </style>
+
+    @RenderSection("Styles", false)
+
+    <style>
+
+html {
+    min-height: 100%;
+    background: #eaeaea url('@VirtualPathUtility.ToAbsolute("~/Assets/img/bg/" + bg + "Interna.jpg")') 100% 100% no-repeat;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+    </style>
+
+    <style>
+        body
+        {
+            min-height: 100%;
+            /*xxxfont: 20px/1.4 'PT Sans', sans-serif;*/
+            color: #000;
+            /*text-shadow: 0 1px 2px rgba(0, 0, 0, 0.66);*/
+            background: transparent;
+        }
+
+        table
+        {
+            background: #eaeaea;
+        }
+
+        h1, h2, h3, h4, h5, h6
+        {
+            color: #fff;
+        }
+    </style>
+
+    @if (regras_nobreadcrumb)
+    {
+        <style>
+            .breadcrumb
+            {
+                margin-top: 0px;
+                background-color: #eaeaea;
+                font-size: 10px;
+                padding-top: 1px;
+                padding-bottom: 1px;
+                margin-bottom: 7px;
+                opacity: 0.7;
+            }
+        </style>
+    }
+
+
+</head>
+<div id="ajax_painel" style="display: none;">
+    <div id="wait" style="display: none;">
+        <img src="~/Assets/plugins/lightbox/themes/default/images/loading.gif" class="ajax-loader" />
+    </div>
+</div>
+<body>
+
+    <!-- Header Starts -->
+    <header></header>
+
+
+    <!-- Navigation bar starts -->
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span>Menu</span>
+                </a>
+                <a class="brand" href="@Url.Content("~/Principal")">
+                    <img src="@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png")" onerror="this.src='@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/semlogo.png")'" style="max-height:35px;" />
+                </a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+
+
+                        <li class="@(currentPage == "principal-index" ? "active" : "")"><a href="@Url.Content("~/Principal")"><i class="icon icon-home"></i></a></li>
+
+
+                        @*  @if (user.ControleAcesso("busca", "agendamento"))
+                        {
+                        <li class="@(currentPage == "agendamento-busca" ? "active" : "")"><a href="@Url.Content("~/Agendamento/Busca/0/")"><i class="fa fa-star "></i><span>Busca ninja</span></a></li>    
+                        }*@
+
+                        @if (index_agendamento || agenda_agendamento || calendario_agendamento)
+                        {
+                        
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-calendar"></i><span>Agenda</span> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+
+                                    @if (index_agendamento)
+                                    {
+                                        <li class="@(currentPage == "agendamento-programacaodia" ? "active" : "")"><a href="@Url.Content("~/Agendamento/ProgramacaoDia")"><i class="fa fa-tasks"></i><span>Programação do Dia</span></a></li>
+                                    }
+
+                                    @if (agenda_agendamento)
+                                    {
+                                        <li class="@(currentPage == "agendamento-agenda" ? "active" : "")"><a href="@Url.Content("~/Agendamento/Agenda")"><i class="icon-calendar"></i><span>Agenda Geral</span></a></li>
+                                    }
+
+                                    @if (calendario_agendamento)
+                                    {
+                                        <li class="@(currentPage == "agendamento-calendario" ? "active" : "")"><a href="@Url.Content("~/Agendamento/Calendario")"><i class="icon-check"></i><span>Minha Agenda</span></a></li>
+                                    }
+
+                                </ul>
+                            </li>
+                        }
+
+
+                        @if (user.ControleAcesso("index", "financeiro"))
+                        {
+                            <li class="dropdown @(currentController == "financeiro" ? "active " : "") @(currentController == "contas" ? "active " : "") @(currentController == "categorias" ? "active " : "")  @(currentController == "contatipos" ? "active " : "")">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-money"></i><span>Financeiro</span>  <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+
+
+                                    <li class="@(currentPage == "financeiro-index" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/")">Extrato</a></li>
+                                    <li class="@(currentPage == "financeiro-indexr" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/R")">Contas a receber</a></li>
+                                    <li class="@(currentPage == "financeiro-indexd" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/D")">Contas a pagar</a></li>
+                                    <li class="@(currentPage == "financeiro-indext" ? "active" : "")"><a href="@Url.Content("~/Financeiro/Index/0/T")">Transferências</a></li>
+                                    <li class="@(currentPage == "financeiro-visaogeral" ? "active" : "")"><a href="@Url.Content("~/Financeiro/VisaoGeral/")">Visão Geral</a></li>
+                                    <li class="@(currentPage == "principal-integracoes" ? "active" : "")"><a href="@Url.Content("~/Principal/Integracoes/")">Integrações</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        @if (user.ControleAcesso("index", "medguias"))
+                        {
+                            <li class="@(currentController == "MedGuias" ? "active" : "")"><a href="@Url.Content("~/MedGuias/Index/0/")"><i class="fa fa-file-text"></i>Guias</a></li>
+                        }
+
+
+                        @if (user.ControleAcesso("index", "postosdeservicos"))
+                        {
+                            <li class="@(currentController == "PostosDeServicos" ? "active" : "")"><a href="@Url.Content("~/PostosDeServicos/Index/0/")"><i class="fa fa-building-o"></i>Postos de Serviços</a></li>
+                        }
+
+                        @if (user.ControleAcesso("index", "ocorrencias"))
+                        {
+                            <li class="@(currentController == "Ocorrencias" ? "active" : "")"><a href="@Url.Content("~/Ocorrencias/Index/0/")"><i class="fa fa-comments-o"></i>Ocorrências</a></li>
+                        }
+
+                        @if (user.ControleAcesso("index", "supervisoes"))
+                        {
+                            <li class="@(currentController == "supervisoes" ? "active" : "")"><a href="@Url.Content("~/Supervisoes/Index/0/")"><i class="fa fa-map-marker"></i>Supervisões</a></li>
+                        }
+
+                        @if (user.ControleAcesso("registrarvalores", "fichacadastral"))
+                        {
+                            <li class="@(currentController == "fichacadastral" ? "active" : "")"><a href="@Url.Content("~/fichacadastral/registrarvalores")"><i class="fa fa-usd"></i>Fichas Cadastrais</a></li>
+                        }
+
+
+
+                        @if (user.ControleAcesso("index", "pessoas"))
+                        {
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-globe"></i><span>Pessoas</span> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    @if (user.ControleAcesso("CriarC", "pessoas"))
+                                    {
+                                        <li class="@(currentPage == "pessoas-indexc" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/C")"><i class="icon-group"></i>@Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("CriarF", "pessoas"))
+                                    {
+                                        <li class="@(currentPage == "pessoas-indexf" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/F")"><i class="icon-truck"></i>@Html.Raw(BLL.Usuarios.GetEntidadeFornecedor())</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("CriarO", "pessoas"))
+                                    {
+                                        <li class="@(currentPage == "pessoas-indexo" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/O")"><i class="icon-briefcase"></i>@Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("modulo_atletas", "regras") && user.ControleAcesso("CriarA", "pessoas"))
+                                    {
+                                        <li class="@(currentPage == "pessoas-indexa" ? "active" : "")"><a href="@Url.Content("~/Pessoas/Index/0/A")"><i class="icon-user"></i>@Html.Raw(BLL.Usuarios.GetEntidade4())</a></li>
+                                    }
+
+
+                                    @if (user.ControleAcesso("Index", "Planos"))
+                                    {
+                                        <li class="@(currentPage == "pessoas-indexf" ? "active" : "")"><a href="@Url.Content("~/Planos/Index/")"><i class="icon-briefcase"></i>Matrícula</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("PreCadastroIndex", "Pessoas"))
+                                    {  <li class="nav-header">Pré-Cadastros</li>
+                                        <li class="@(currentPage == "pessoas-indexc" ? "active" : "")"><a href="@Url.Content("~/Pessoas/PreCadastroIndex/0")"><i class="icon-beaker"></i>Pré-Cadastro @Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>
+   
+                                    }
+
+
+                                </ul>
+                            </li>
+                        }
+
+                        @if (user.ControleAcesso("index", "produtos"))
+                        {
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cubes"></i><span>Produtos</span> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li class="@(currentPage == "produtos-index" ? "active" : "")"><a href="@Url.Content("~/Produtos/Index/0")"><i class="fa fa-cube"></i><span>Listar produtos</span></a></li>
+                                    @if (user.ControleAcesso("index", "produtosstatus"))
+                                    {
+                                        <li class="@(currentController == "produtosstatus" ? "active" : "")"><a href="@Url.Content("~/ProdutosStatus/Index/0/")"><i class="fa fa-ellipsis-h"></i>Status de Produto</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "produtosunidades"))
+                                    {
+                                        <li class="@(currentController == "produtosunidades" ? "active" : "")"><a href="@Url.Content("~/ProdutosUnidades/Index/0/")"><i class="fa fa-neuter"></i>Unid. Med. Produto</a></li>
+                                    }
+                                </ul>
+                            </li>
+                              
+                            
+                        }
+
+                        @if (BLL.Usuarios.VerificaAcessoPorControle("relatorios"))
+                        {
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-list-alt"></i><span>Relat&oacute;rios</span> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+
+                                    @if (user.ControleAcesso("AgendaProfissional", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/AgendaProfissional/")">Agenda @Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("ListaPresencaProfissional", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/ListaPresencaProfissional/")">Lista de presença</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("Fechamento", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/Fechamento/")">Fechamento</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("FechamentoFinanceiro", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/FechamentoFinanceiro/")">Fechamento Financeiro</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("RelatorioFichas", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/RelatorioFichas/")">Relatório Fichas</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("RelatorioClientes", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/RelatorioClientes/")">@Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("RelatorioAniversariantes", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/RelatorioAniversariantes/")">Aniversariantes</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("ListaPresencaAluno", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/ListaPresencaAluno/")">Presença - @Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("MedGuiasReembolsos", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/MedGuiasReembolsos/")">Guias - Reembolsos</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("MedGuiasReembolsosStatus", "relatorios"))
+                                    {
+                                        <li><a href="@Url.Content("~/Relatorios/MedGuiasReembolsosStatus/")">Guias - Status</a></li>
+                                    }
+
+                                    <li><a href="@Url.Content("~/Relatorios/PontoEletronico.aspx")">Ponto Eletr&ocirc;nico</a></li>
+
+                                </ul>
+                            </li>
+                        }
+
+
+                        @if (user.ControleAcesso("index", "cupons") || user.ControleAcesso("Multiplus", "principal"))
+                        {
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-smile-o"></i><span>Fidelidade</span> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+
+                                    @if (user.ControleAcesso("index", "cupons"))
+                                    {
+                                        <li class="@(currentController == "cupons" ? "active" : "")"><a href="@Url.Content("~/Cupons/Index")"><i class="fa fa-ticket"></i>Cupons</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("Multiplus", "principal"))
+                                    {
+                                        <li class="@(currentController == "Multiplus" ? "active" : "")"><a href="@Url.Content("~/Principal/Multiplus")"><i class="fa fa-th"></i>Multiplus</a></li>
+                                    }
+
+                                </ul>
+                            </li>
+                        }
+
+
+
+
+                        @if (user.ControleAcesso("configuracoes", "principal"))
+                        {
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon icon-cog"></i><span>Configura&ccedil;&otilde;es</span> <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    @if (user.ControleAcesso("criar", "contas"))
+                                    {
+                                        <li class="@(currentController == "contas" ? "active" : "")">@Html.ActionLink("Contas bancárias", "Index", "Contas")</li>}
+                                    @if (user.ControleAcesso("criar", "contatipos"))
+                                    {
+                                        <li class="@(currentController == "contatipos" ? "active" : "")"><a href="@Url.Content("~/ContaTipos/Index/")">Tipos de contas</a></li>}
+                                    @if (user.ControleAcesso("criar", "servicos"))
+                                    {
+                                        <li class="@(currentController == "servicos" ? "active" : "")"><a href="@Url.Content("~/Servicos/Index/")">Serviços</a></li>}
+                                    @if (user.ControleAcesso("criar", "categorias"))
+                                    {
+                                        <li class="@(currentController == "categorias" ? "active" : "")"><a href="@Url.Content("~/Categorias/Index/")">Categorias</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "convenios"))
+                                    {
+                                        <li class="@(currentController == "convenios" ? "active" : "")"><a href="@Url.Content("~/Convenios/Index/")">Convênios</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "medprodutos"))
+                                    {
+                                        <li class="@(currentController == "medprodutos" ? "active" : "")"><a href="@Url.Content("~/MedProdutos/Index/")">Produtos & Exames</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "medprodutosfavoritos"))
+                                    {
+                                        <li class="@(currentController == "medprodutosfavoritos" ? "active" : "")"><a href="@Url.Content("~/MedProdutosFavoritos/Index/")">Produtos & Exames Favoritos</a></li>
+                                    }
+
+                                    @if (BLL.Usuarios.GetModuloPlanoContas())
+                                    {
+                                        if (user.ControleAcesso("criar", "planocontas"))
+                                        {
+                                        <li class="@(currentController == "planocontas" ? "active" : "")"><a href="@Url.Content("~/PlanoContas/Index/")">Plano de Contas</a></li>}
+                                    }
+                                    @if (user.ControleAcesso("criar", "salas"))
+                                    {
+                                        <li class="@(currentController == "salas" ? "active" : "")"><a href="@Url.Content("~/Salas/Index/")">Salas</a></li>}
+                                    @if (user.ControleAcesso("criar", "pagamentotipos"))
+                                    {
+                                        <li class="@(currentController == "salas" ? "active" : "")"><a href="@Url.Content("~/PagamentoTipos/Index/")">Tipos de pagamento</a></li>}
+                                    @if (user.ControleAcesso("criar", "midias"))
+                                    {
+                                        <li class="@(currentController == "midias" ? "active" : "")"><a href="@Url.Content("~/Midias/Index/")">Mídias</a></li>}
+                                    @if (user.ControleAcesso("criar", "feriados"))
+                                    {
+                                        <li class="@(currentController == "feriados" ? "active" : "")"><a href="@Url.Content("~/Feriados/Index/")">Feriado</a></li>}
+
+                                    @if (user.ControleAcesso("criar", "usuarios"))
+                                    {
+                                        <li class="@(currentController == "usuarios" ? "active" : "")"><a href="@Url.Content("~/Usuarios/Index/")">Usuários</a></li>}
+
+                                    @if (user.ControleAcesso("criar", "filiais") && BLL.Usuarios.GetFilialIDMaster() == 0)
+                                    {
+                                        <li class="@(currentController == "filiais" ? "active" : "")"><a href="@Url.Content("~/Filiais/Index/")">Filiais</a></li>
+                                    }
+                                    @if (user.ControleAcesso("index", "tiposanexos"))
+                                    {
+                                        <li class="@(currentController == "usuarios" ? "active" : "")"><a href="@Url.Content("~/TiposAnexos/Index/")">Tipos Anexos</a></li>}
+                                    @if (user.ControleAcesso("index", "turmas"))
+                                    {
+                                        <li class="@(currentController == "turmas" ? "active" : "")"><a href="@Url.Content("~/Turmas/Index/0/")">Turmas</a></li>}
+
+                                    @if (user.ControleAcesso("index", "sindicatos"))
+                                    {
+                                        <li class="@(currentController == "sindicatos" ? "active" : "")"><a href="@Url.Content("~/Sindicatos/Index/0/")">Sindicatos</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "companhias"))
+                                    {
+                                        <li class="@(currentController == "companhias" ? "active" : "")"><a href="@Url.Content("~/Companhias/Index/0/")">Companhias</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "Funcoes"))
+                                    {
+                                        <li class="@(currentController == "Funcoes" ? "active" : "")"><a href="@Url.Content("~/Funcoes/Index/0/")">Funções</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "OcorrenciasTipos"))
+                                    {
+                                        <li class="@(currentController == "OcorrenciasTipos" ? "active" : "")"><a href="@Url.Content("~/OcorrenciasTipos/Index/0/")">Tipos de Ocorrências</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "cuponstipos"))
+                                    {
+                                        <li class="@(currentController == "cuponstipos" ? "active" : "")"><a href="@Url.Content("~/CuponsTipos/Index/0/")">Cupons Tipos</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "Perfis"))
+                                    {
+                                        <li class="@(currentController == "Perfis" ? "active" : "")"><a href="@Url.Content("~/Perfis/Index/0/")">Perfis de Acesso</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "EntidadesNomes"))
+                                    {
+                                        <li class="@(currentController == "EntidadesNomes" ? "active" : "")"><a href="@Url.Content("~/EntidadesNomes/Index/0/")">Entidades</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("entidades", "EntidadesStatus"))
+                                    {
+                                        <li class="@(currentController == "EntidadesStatus" ? "active" : "")"><a href="@Url.Content("~/EntidadesStatus/Entidades/0/")">Status</a></li>
+                                    }
+
+
+                                    @if (user.ControleAcesso("index", "SupervisoesTipos"))
+                                    {
+                                        <li class="@(currentController == "SupervisoesTipos" ? "active" : "")"><a href="@Url.Content("~/SupervisoesTipos/Index/0/")">Itens Supervisão</a></li>
+                                    }
+
+
+                                    @if (user.ControleAcesso("index", "DocumentosLayouts"))
+                                    {
+                                        <li class="@(currentController == "DocumentosLayouts" ? "active" : "")"><a href="@Url.Content("~/DocumentosLayouts/Index/0/")">Layout Base de Documentos</a></li>
+                                    }
+                                    @if (user.ControleAcesso("index", "DocumentosTemplates"))
+                                    {
+                                        <li class="@(currentController == "DocumentosTemplates" ? "active" : "")"><a href="@Url.Content("~/DocumentosTemplates/Index/0/")">Templates de Documentos</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "ConveniosFaixasFatoresFiliais"))
+                                    {
+                                        <li class="@(currentController == "ConveniosFaixasFatoresFiliais" ? "active" : "")"><a href="@Url.Content("~/ConveniosFaixasFatoresFiliais/Index/0/")">Definição de Fatores por @BLL.Usuarios.GetEntidadeFilial()</a></li>
+                                    }
+
+                                    @if (user.ControleAcesso("index", "Logs"))
+                                    {
+                                        <li class="@(currentController == "Logs" ? "active" : "")"><a href="@Url.Content("~/Logs/Index/0/")">Logs do Sistema</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+
+                    </ul>
+                    <ul class="nav pull-right">
+
+
+
+                        @if (BLL.Usuarios.GetSimulaUsuario().UsuarioId != 0)
+                        {
+                            <li class="dropdown ">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span><i class="fa fa-space-shuttle fa-spin"></i></span><b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="@Url.Content("~/Principal/Perfil")"><i class="fa fa-reddit"></i><span>Logado como: @BLL.Usuarios.GetUsuarioNome()</span></a></li>
+                                    <li><a href="@Url.Content("~/Manager/Acessos/SairModoAvatar")"  onclick="return confirm('Deseja realmente sair do modo Avatar?')"><i class="fa fa-sign-out"></i><span>Sair do Modo Avatar</span></a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li><a href="@Url.Content("~/Principal/Perfil")"><i class="icon-user"></i><span>@BLL.Usuarios.GetUsuarioNome()</span></a></li>    
+                        }
+                        <li><a href="@Url.Content("~/Home/Logoff")" onclick="return confirm('Deseja realmente sair do sistema?')"><i class="icon-off"></i><span>Sair</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <div id="content">
+
+
+        <div class="container-fluid">
+            <span class="cwell hidden">
+                <small>@BLL.Usuarios.GetUtilizaFilial() / GetFilialId: @BLL.Usuarios.GetFilialId() / GetFilialIDMaster: @BLL.Usuarios.GetFilialIDMaster() / GetVisualizaOutrasFiliais: @BLL.Usuarios.GetVisualizaOutrasFiliais()</small>
+            </span>
+            
+            <div class="row-fluid">
+                @if (pessoas_pesquisarapida)
+                {
+                    <div class="span6">
+                        <a href="@Url.Content(urlPesquisa)" class="btn ui-lightbox">Pesquisar <i class="fa fa-search"></i></a>
+                    </div>
+                }
+                    
+                    @if (BLL.Usuarios.GetUtilizaFilial() && (BLL.Usuarios.GetFilialIDMaster() == 0 || BLL.Usuarios.GetVisualizaOutrasFiliais()))
+                    {
+                    <div class="span6">
+                        @using (Html.BeginForm("DefinirFilial", "Acessos", FormMethod.Post, new { @class = "" }))
+                        {
+                            <input type="hidden" value="@currentController" name="controle" />
+                            <input type="hidden" value="@currentAction" name="acao" />
+                            <input type="hidden" value="@currentTipo" name="tipo" />
+                            <input type="hidden" value="@currentId" name="currentId" />
+
+
+                            <!-- controle de filiais-->
+                            <div class="input-append input-prepend pull-right">
+                                <span class="add-on">@BLL.Usuarios.GetEntidadeFilial():</span>
+                                @Html.DropDownList("FilialIDMaster", (SelectList)listaFiliais, null, new { @class = "chosen-select  tip-top", @Value = BLL.Usuarios.GetFilialId(), @title = "Filial" })
+
+
+
+                                <button class="btn " type="submit">Ok</button>
+                            </div>
+                            <!-- ./controle de filiais-->
+                        }
+                    </div>
+                    }
+                </div>
+
+            <div class="row-fluid">
+
+                @if (!regras_nobreadcrumb)
+                {
+                    <h6>@ViewBag.Title</h6>    
+                }
+
+                <!-- breadcrumb -->
+                <ul class="breadcrumb">
+                    <li><a href="@Url.Content("~/Principal")" title="Ir para Home" class="tip-bottom"><i class="icon-home"></i>Home</a></li>
+
+                    @RenderSection("breadcrumb", required: false)
+
+                    @if (currentPage != "principal-index")
+                    {
+                        <li class="active"><span class="divider">/</span> @ViewBag.Title</li>
+                    }
+
+                </ul>
+                <!-- ./breadcrumb -->
+            </div>
+
+
+
+
+
+            @if (!@Html.ViewData.ModelState.IsValid)
+            {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-error" id="alert-error">
+                            <h4>Ooops... alguns erros ocorreram</h4>
+                            <br />
+                            @Html.ValidationSummary("", new { @class = "unstyled" })
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (TempData["message"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-success" id="alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Sucesso!</h4>
+                        @Html.Raw(TempData["message"])
+                    </div>
+                </div>
+            </div>
+            }
+            @if (TempData["error"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-danger" id="alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @Html.Raw(TempData["error"])
+                    </div>
+                </div>
+            </div>
+            }
+
+            @if (TempData["alert"] != null)
+            { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-block" id="alert-block">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @Html.Raw(TempData["alert"])
+                    </div>
+                </div>
+            </div>
+            }
+
+
+        
+
+            @RenderBody()
+
+
+            
+            <div class="row-fluid" style="margin-top:300px;">
+                <div id="footer" class="span12">
+
+                    @if (_copyright == "" || _copyright == "true")
+                    {
+                        <span class="muted pull-right">@DateTime.Today.ToString("yyyy") &copy; Powered By <a href="http://www.e-bee.com.br" target="_blank" style="color: #ff7518; font-weight: bold">E-Bee</a>    </span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    @Scripts.Render("~/Assets/themes/metro/js/jquery.js")
+    @Scripts.Render("~/Assets/themes/metro/js/bootstrap.js")
+
+    <!-- necessários -->
+    @*@Scripts.Render("~/Assets/js/bootstrap-datepicker.js")*@
+    @Scripts.Render("~/Assets/plugins/bootstrap-datepicker-1.4.0-dist/js/bootstrap-datepicker.js")
+    @Scripts.Render("~/Assets/plugins/bootstrap-datepicker-1.4.0-dist/locales/bootstrap-datepicker.pt-BR.min.js")
+
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/jquery.maskedinput.js")
+    @Scripts.Render("~/Assets/js/jquery.maskMoney.js")
+    @Scripts.Render("~/Assets/js/bootstrap-maxlength.js")
+    @Scripts.Render("~/Assets/js/custom.js?v=1.1")
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/content/themes/base/js/application.js"></script>
+    <!-- ./necessários -->
+    @*@Scripts.Render("~/Assets/themes/unicorn/js/jquery.ui.custom.js")
+
+        @Scripts.Render("~/Assets/themes/unicorn/js/jquery.flot.min.js")
+        @Scripts.Render("~/Assets/themes/unicorn/js/jquery.flot.resize.min.js")
+        @Scripts.Render("~/Assets/themes/unicorn/js/jquery.peity.min.js")
+        @Scripts.Render("~/Assets/themes/unicorn/js/fullcalendar.min.js")
+        @Scripts.Render("~/Assets/themes/unicorn/js/unicorn.js")
+
+        @Scripts.Render("~/Assets/themes/unicorn/js/unicorn.calendar.js")
+
+        @Scripts.Render("~/Assets/themes/unicorn/js/unicorn.dashboard.js")
+        @Scripts.Render("~/Assets/themes/unicorn/js/form_common.js")*@
+
+    @RenderSection("scripts", required: false)
+
+    <script>
+
+
+        $(document).ready(function () {
+
+            //$('.max').maxlength({ alwaysShow: true, });
+            $("input[data-val-length-max]").each(function (index, element) {
+                var length = parseInt($(this).attr("data-val-length-max"));
+                $(this).prop("maxlength", length);
+            });
+
+            $('input[maxlength]').maxlength({
+                warningClass: 'label label-success max-custom',
+                limitReachedClass: 'label label-important label-danger max-custom',
+            });
+
+            $(document).ajaxStart(function () {
+                $("#wait").css("display", "block");
+                $("#wait").css("top", ($(document).height() / 2) + "px");
+                $("#wait").css("position", "relative");
+                $("#ajax_painel").css("position", "absolute");
+                $("#ajax_painel").css("display", "block");
+                $("#ajax_painel").css("height", ($(document).height()) + "px");
+                $("#ajax_painel").css("width", "100%");
+                $("#ajax_painel").css("z-index", "9000");
+                $("#ajax_painel").css("background-color", "#000");
+                $("#ajax_painel").css({ opacity: 0.6 });
+
+
+            });
+            $(document).ajaxComplete(function () {
+                $("#wait").css("display", "none");
+                $("#ajax_painel").css("display", "none");
+                $("#ajax_painel").css({ opacity: 1 });
+
+            });
+        });
+
+
+        $('#btn_pesquisar').click(function () {
+            var searchq = $("#searchq").val();
+            console.log("pesquisar:" + searchq);
+
+        });
+
+
+    </script>
+</body>
+</html>
+

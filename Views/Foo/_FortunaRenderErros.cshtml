@@ -1,0 +1,121 @@
+﻿@if (!@Html.ViewData.ModelState.IsValid)
+{
+    var erro = BLL.Utils.Formatacoes.LimpaValidationSummary(Html.ValidationSummary().ToString(), "\\n");
+    <script type="text/javascript">
+        $(window).load(function () {
+            console.log('@erro');
+            sweetAlert("Oops...", '@Html.Raw(erro)', "error");
+        });
+    </script>
+}
+
+@if (TempData["messageold"] != null)
+{ 
+    <script type="text/javascript">
+        $(window).load(function () {
+            swal("Tudo certo!", "@Html.Raw(TempData["message"])", "success");
+        });
+    </script>
+}
+
+
+@if (TempData["messagerepeat"] != null)
+{ 
+    
+    <script type="text/javascript">
+        $(window).load(function () {
+            swal({ title: "Tudo certo!", text: "@Html.Raw(TempData["messagerepeat"])", type: "success", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { parent.location = "@Url.Content(TempData["messageurl"].ToString())"; });
+        });
+    </script>
+    
+}
+
+@if (TempData["messageredirect"] != null)
+{ 
+    
+    <script type="text/javascript">
+        $(window).load(function () {
+            swal({ title: "Atenção", text: "@Html.Raw(TempData["messageredirect"])", type: "warning", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { parent.location = "@Url.Content(TempData["messageredirecturl"].ToString())"; });
+        });
+    </script>
+    
+}
+
+@if (TempData["error"] != null)
+{
+    var erro = BLL.Utils.Formatacoes.LimpaValidationSummary(TempData["error"].ToString(), "\\n");
+    erro = erro.Replace("<br>","\\n");
+    <script type="text/javascript">
+        $(window).load(function () {
+            sweetAlert("Oops...", "@Html.Raw(erro)", "error");
+        });
+    </script>
+}
+
+@if (TempData["alert"] != null)
+{ 
+    <script type="text/javascript">
+        $(window).load(function () {
+            swal({
+                title: "Atenção",
+                text: "@Html.Raw(TempData["alert"])"
+            });
+        });
+    </script>
+}
+
+
+@if (TempData["alertredirect"] != null)
+{ 
+    
+    <script type="text/javascript">
+        $(window).load(function () {
+            swal({ title: "Atencão!", text: "@Html.Raw(TempData["alertredirect"])", type: "success", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { parent.location = "@Url.Content(TempData["alertredirecturl"].ToString())"; });
+        });
+    </script>
+    
+}
+
+
+
+ @if (TempData["message"] != null)
+            {
+                var message = BLL.Utils.Formatacoes.LimpaValidationSummary(TempData["message"].ToString(), "\\n");
+              <script>
+                  toastr.options = {
+                      "debug": false,
+                      "newestOnTop": false,
+                      "positionClass": "toast-top-center",
+                      "closeButton": true,
+                      "toastClass": "animated fadeInDown",
+                  };
+
+
+
+                  toastr.success('@message')
+
+
+              </script>
+            }
+
+
+
+ @if (TempData["info"] != null)
+            {
+                var erro = BLL.Utils.Formatacoes.LimpaValidationSummary(TempData["info"].ToString(), "\\n");
+              <script>
+                  toastr.options = {
+                      "debug": false,
+                      "newestOnTop": false,
+                      "positionClass": "toast-top-center",
+                      "closeButton": true,
+                      "toastClass": "animated fadeInDown",
+                  };
+
+
+
+                  toastr.warning('@erro')
+
+
+              </script>
+            }

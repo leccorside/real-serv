@@ -1,0 +1,47 @@
+﻿@model Models.AjaxResult
+@{
+    ViewBag.Title = "Carregando propostas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading ">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <i class="fa fa-user-circle-o" aria-hidden="true"></i>Propostas @Model.Mensagem
+                </div>
+                <div class="panel-body">
+
+                    <h1><i id="icon" class="fa fa-spinner fa-pulse fa-fw"></i><span id="h1">Carregando propostas</span></h1>
+                    
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+@section Scripts {
+    <script>
+        function Direciona() {
+
+           parent.location = "@Model.Mensagem";
+
+        }
+
+        
+        Direciona();
+
+
+    </script>
+}

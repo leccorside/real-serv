@@ -1,0 +1,98 @@
+﻿@model IEnumerable<Models.EntidadeNome>
+
+@{
+    ViewBag.Title = "Entidades";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+
+
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+
+                            <div class="table-responsive">
+
+
+                                    <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.EntidadeNomenclatura)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.EntidadeDescricao)
+                                            </th>
+                                            <th>Tabela Auxiliar
+                                            </th>
+
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.RegDtInicio)
+                                            </th>
+                                            <th>Alterar</th>
+                                            <th>Excluir</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.EntidadeNomenclatura)
+                                                </td>
+                                                <td>@Html.DisplayFor(modelItem => item.EntidadeDescricao)</td>
+                                                <td>@item.TabelaAux1Nome <small>(@item.TabelaAux1CampoId / @item.TabelaAux1CampoValue)</small></td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.RegDtInicio)
+                                                </td>
+                                                <td>
+                                                    @Html.ActionLink("Alterar", "Criar", new { id = item.EntidadeNomeId }, new { @class = "btn btn-outline btn-primary btn-xs" })
+                                                </td>
+                                                <td>@Html.ActionLink("Excluir", "Deletar", new { id = item.EntidadeNomeId }, new { @class = "btn btn-outline btn-danger btn-xs" })</td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+
+
+
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+
+   
+
+
+}

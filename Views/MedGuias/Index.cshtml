@@ -1,0 +1,327 @@
+﻿@model PetaPoco.Page<Models.MedGuia>
+
+
+@{
+    var user = new BLL.Usuarios();
+    ViewBag.Title = "Guias";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+    var _MedGuiasExport = BLL.Usuarios.VerificaAcesso("Export", "MedGuias");
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "MedGuias/Index";
+
+
+   
+    
+}
+
+@section Breadcrumb{
+
+}
+
+<div class="content ">
+
+    <div class="row">
+
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+
+                        @using (Html.BeginForm("Index", "MedGuias", FormMethod.Get, new { @class = "  " }))
+                        {
+                            <input type="hidden" name="realizaconsulta" value="true" />
+                            
+                            <div class="row">
+                                <div class="form-group col-lg-4">
+                                    <label>Pesquisar</label>
+                                    <input type="text" name="pesquisar" id="pesquisar" title="Pesquisar" class="form-control" placeholder="Pesquisar..." value="@Request["pesquisar"]">
+                                </div>
+                                <div class="form-group col-lg-4">
+                                    <label>Convênios</label>@Html.DropDownList("ConvenioId", (SelectList)ViewBag.ddlConvenios, new { @class = "chosen-select form-control " })
+                                </div>
+
+                                <div class="form-group col-lg-4">
+                                        <label>Plano</label>
+                                        <select data-placeholder="Selecione um convênio..." class="form-control chosen-select " data-val="true" data-val-required="O campo Plano é obrigatório" id="ConvenioPlanoId" name="ConvenioPlanoId"></select>
+                                    </div>
+
+                                <div class="form-group col-lg-4">
+                                    <label>Médicos</label>@Html.DropDownList("MedicoId", (SelectList)ViewBag.ddlMedicos, new { @class = "chosen-select form-control " })
+                                </div>
+                                    <div class="form-group col-lg-4">
+                                        <label>Status</label>@Html.DropDownList("StatusNome", (SelectList)ViewBag.ddlStatusAgrupado, new { @class = "chosen-select form-control " })
+                                    </div>
+                                
+
+                                <div class="form-group col-lg-4">
+                                    <label>Data</label>
+                                    <div class="row">
+                                        <div class="col-md-6" style="">
+                                            <input type="text" name="de" id="de" title="Data de" class="datepicker form-control tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+                                        </div>
+                                        <div class="col-md-6" style="">
+                                            <input type="text" name="ate" id="ate" title="Data até" class="datepicker form-control tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+
+                                
+
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4" style="">
+                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                <button class="btn btn-outline btn-primary" type="submit"><i class="fa fa-search"></i> Pesquisar</button>
+                                                <button class="btn btn-outline btn-danger" type="button" onclick="parent.location='@strUrl'"><i class="fa fa-eraser"></i> Limpar</button>
+                                            </div>
+                                        </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="btn-group">
+                                @if (_MedGuiasCriar && BLL.Usuarios.GetFilialId() > 0)
+                                {
+                                    <a href="@Url.Content("~/Medguias/Criar/0")" class="btn btn-primary"><i class="fa fa-plus"></i>Criar</a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="btn-group pull-right">
+                                @using (Html.BeginForm("Export2", "MedGuias", FormMethod.Post, new { @class = "form-inline " }))
+                                {
+                                    if (_MedGuiasAdministrador || _MedGuiasExport)
+                                    {
+                                    <input type="hidden" name="pesquisar" value="@Request["pesquisar"]">
+                                    <input type="hidden" name="ConvenioId" value="@Request["ConvenioId"]">
+                                    <input type="hidden" name="MedicoId" value="@Request["MedicoId"]">
+                                    <input type="hidden" name="StatusNome" value="@Request["StatusNome"]">
+                                    <input type="hidden" name="de" value="@Request["de"]">
+                                    <input type="hidden" name="ate" value="@Request["ate"]">
+                                    <button class="btn btn-outline btn-primary btn-sm" data-toggle="tooltip" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i></button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- tirei daqui-->
+
+                </div>
+                <br />
+                @Html.Partial("~/Views/MedGuias/_listguias.cshtml", Model)
+
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+@section Styles{
+    <style>
+        .listAnexos
+        {
+            list-style: none;
+            font-size: 10px;
+            margin-left: 0px;
+            padding-left: 0px;
+        }
+
+        .li_acoes
+        {
+            display: flex;
+        }
+
+        .div_guia p.form-control-static
+        {
+            padding-top:0px;
+        }
+
+            .div_guia label
+            {
+                font-size: 10px !important;
+                font-weight: normal !important;
+                color: #c7c7c7 !important;
+            }
+
+        .panel-body.div_guia.warning
+        {
+            background-color: #fffff3 !important;
+        }
+    </style>
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+
+    <script type="text/javascript">
+        $(function () {
+
+
+            $(document).ready(function () {
+                $('.chosen-select').select2();
+                $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+
+
+                $(".fancybox_recarrega").fancybox({
+                    fitToView: false,
+                    width: '98%',
+                    autoSize: false,
+                    padding: 0,
+                    helpers: {
+                        overlay: {
+                            locked: true
+                        }
+                    },
+                    beforeClose: function () {
+                        RecarregaPagina();
+                    },
+                });
+                $(".fancybox").fancybox({
+                    toolbar: false,
+                    padding: 0,
+                    fitToView: false,
+                    width: '80%',
+                    autoSize: true,
+                    helpers: {
+                        overlay: {
+                            locked: true
+                        }
+                    }
+                });
+                $(".fancybox_full").fancybox({
+                    padding: 0,
+                    fitToView: false,
+                    width: '98%',
+                    autoSize: false,
+                    closeClick: false,
+                    openEffect: 'none',
+                    closeEffect: 'none',
+                    helpers: {
+                        overlay: {
+                            locked: true
+                        }
+                    }
+                });
+
+                $(".fancybox_mini").fancybox({
+                    padding: 0,
+                    fitToView: false,
+                    width: '50%',
+                    autoSize: false,
+                    closeClick: false,
+                    openEffect: 'none',
+                    closeEffect: 'none',
+                    helpers: {
+                        overlay: {
+                            locked: true
+                        }
+                    }, beforeClose: function () {
+                        RecarregaPagina();
+                    },
+                });
+
+
+
+            });
+
+
+
+            $("#MedGuiaTipoId").val("@Request["MedGuiaTipoId"]");
+
+            $('#ConvenioId').val('@Request["ConvenioId"]');
+            $('#MedicoId').val('@Request["MedicoId"]');
+            $('#StatusNome').val('@Request["StatusNome"]');
+            $("#de").mask("99/99/9999");
+            $("#ate").mask("99/99/9999");
+
+            $("#pesquisar").select();
+
+        });
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+        function FiltroProdutoClear() {
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '/ApiIntegracao/FiltroProdutoClear/',
+                data: "",
+                success: function (data) {
+                    //console.log(data);
+                }
+            });
+            return false;
+        }
+
+        FiltroProdutoClear();
+
+
+        $('#ConvenioId').on('change', function () {
+            carregaPlanos($(this).val(), null);
+        });
+
+
+        function carregaPlanos(ConvenioId, ConvenioPlanoId) {
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetConveniosPlanos/")", { id: ConvenioId, FilialId: "@BLL.Usuarios.GetFilialId()" }, function (result) {
+                data = $.map(result.ListConvenioPlano, function (item, a) {
+                    var select = (ConvenioPlanoId == item.ConvenioPlanoId) ? " selected='selected' " : "";
+                    return "<option value=" + item.ConvenioPlanoId + " " + select + ">" + item.ConvenioPlanoNome + "</option>";
+                });
+                $("#ConvenioPlanoId").empty();
+                $('#ConvenioPlanoId').append($('<option>', {
+                    value: 0,
+                    text: '--Selecione--'
+                }));
+                $("#ConvenioPlanoId").append(data.join(""));
+
+                $("#ConvenioPlanoId").val(ConvenioPlanoId).trigger('chosen:updated');
+                $("#ConvenioPlanoId").val(ConvenioPlanoId).trigger('change.select2');
+
+            });
+        }
+
+        carregaPlanos("@Request["ConvenioId"]", "@Request["ConvenioPlanoId"]");
+
+        
+    </script>
+
+   
+
+
+}
+

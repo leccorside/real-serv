@@ -1,0 +1,223 @@
+﻿@model List<Models.PessoaServicosValores>
+
+@{
+    var id = ViewContext.RouteData.Values["id"];
+    var currentTipo = ViewContext.RouteData.Values["tipo"];
+
+    var rpessoaIDIndicacao = Request["PessoaIDIndicacao"];
+
+    int PessoaIDIndicacao = int.TryParse(rpessoaIDIndicacao, out PessoaIDIndicacao) ? PessoaIDIndicacao : 0;
+    
+    var vname = "";
+
+
+    switch (currentTipo.ToString())
+    {
+        case "C":
+            vname = BLL.Usuarios.GetEntidadeCliente();
+            break;
+        case "F":
+            vname = BLL.Usuarios.GetEntidadeFornecedor();
+
+            break;
+
+        case "O":
+            vname = BLL.Usuarios.GetEntidadeFuncionario();
+
+            break;
+
+        default:
+            vname = "Indefinido";
+
+            break;
+    }
+
+    BLL.Pessoas obj = new BLL.Pessoas();
+    var pessoa = obj.Carregar(Convert.ToInt32(id));
+
+    Models.Pessoa pessoaIndicada = new Models.Pessoa();
+    if (PessoaIDIndicacao>0)
+    {
+        pessoaIndicada = obj.Carregar(Convert.ToInt16(PessoaIDIndicacao));
+    }
+
+    var user = new BLL.Usuarios();
+
+    ViewBag.Title = "Alterar " + vname;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>@Html.ActionLink(vname, "Index", new { id = 0, tipo = currentTipo })</li>
+}
+
+@using (Html.BeginForm("DefinirValores", "Pessoas", FormMethod.Post, new { @class = "form-inline" }))
+{ 
+
+      @Html.Hidden("PessoaIDIndicacao", PessoaIDIndicacao);
+    
+    <div class="cwell">
+
+             
+
+            <ul class="nav nav-tabs">
+                <li>
+                    @Html.ActionLink("Dados Cadastrais", "Criar", new { id = pessoa.PessoaID, tipo = currentTipo }, new { @class = "" })
+                </li>
+                  @if (currentTipo.ToString() == "O" && user.ControleAcesso("pessoas_funcionario_completo", "Regras"))
+            {
+                <li>@Html.ActionLink("Produtos", "Produtos", new { id = pessoa.PessoaID, tipo = currentTipo }, new { @class = "" })</li>
+            }
+                <li class="active"><a href="#">Valores do Serviços prestados</a></li>
+                <li>@Html.ActionLink("Indicações", "Indicacoes", new { id = pessoa.PessoaID, tipo = currentTipo }, new { @class = "" })</li>
+            </ul>
+
+            <div class="alert alert-info" id="alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                       Aqui você define o valor que os @vname receberão por serviço.
+                    </div> 
+
+
+            <div class="cwell">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <span>Definição de valores: </span><a href="@Url.Content("~/Pessoas/DefinirValores/"+pessoa.PessoaID+"/"+pessoa.PessoaCategoria)">@pessoa.Nome</a>
+   
+                        @if (PessoaIDIndicacao>0)
+                        {<br />
+                            <span>Pessoa indicada: @pessoaIndicada.Nome</span>
+                        }
+
+	                    
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="cwell">
+                
+                <div class="widget-content nopadding">
+
+
+
+                    <table class="table table-bordered table-striped">
+                        <tr>
+
+                            <th>Serviço
+                            </th>
+                            <th nowrap width="160">Valor do Serviço</th>
+
+                            <th nowrap width="160">Valor à receber</th>
+                            <th nowrap width="160">% à receber</th>
+                        </tr>
+
+                        @for (var i = 0; i < Model.Count(); i++)
+                        {
+                                @Html.Hidden("[" + i + "].IdIndicado", PessoaIDIndicacao);
+                            @Html.HiddenFor(m => m[i].PessoaID)
+                            @Html.HiddenFor(m => m[i].EmpresaId)
+                            @Html.HiddenFor(m => m[i].ServicoId)
+                            @Html.HiddenFor(m => m[i].ServicoNome)
+                            @Html.HiddenFor(m => m[i].Valor)
+                            <tr>
+                                <td>@Model[i].ServicoNome</td>
+
+
+
+                                <td>
+                                  R$  @string.Format("{0:n2}", Model[i].Valor)
+
+
+                                </td>
+                                
+                                <td>R$ @Html.TextBox("[" + i + "].ValorServico", string.Format("{0:n2}", Model[i].ValorServico), new { @id = i + "_ValorServico", @class = "money input-small" })</td>
+                                
+                                <td nowrap>
+                                    <div class="form-inline">
+                                        <label class="checkbox" tabindex="10">
+                                            @Html.CheckBoxFor(m => Model[i].TipoValor, new { @id = i + "_TipoValor", @onclick = "Select('" + i + "');" }) %
+                                        </label>
+                                        @Html.TextBoxFor(m => Model[i].ValorPercentual, new { @id = i + "_ValorPercentual", @class = "number input-small" })
+                                        
+                                    </div>
+
+                                </td>
+                            </tr>
+                            
+                            
+                        }
+                    </table>
+
+
+                </div>
+            </div>
+
+
+
+            <span>
+                <input type="submit" value="Alterar valores" class="btn btn-primary btn-large" tabindex="10" />
+            </span>
+
+        <div>
+
+
+    @Html.ActionLink("Voltar", "Index", new { id = 0, tipo = currentTipo })
+
+
+
+</div>
+
+        </div>
+}
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+
+    <script>
+
+
+
+        function Select(id) {
+
+
+            var b = $("#" + id + "_TipoValor").prop("checked");
+
+            
+
+            if (b) {
+                $("#" + id + "_ValorPercentual").prop("disabled", false);
+                $("#" + id + "_ValorServico").prop("disabled", true);
+                
+            } else {
+                $("#" + id + "_ValorPercentual").prop("disabled", true);
+                $("#" + id + "_ValorServico").prop("disabled", false);
+            }
+      
+        }
+
+      
+
+          
+        
+    </script>
+
+    @for (var i = 0; i < Model.Count(); i++)
+    {
+           
+        <script>
+
+            Select('@i');
+        </script>
+           
+    }
+
+}

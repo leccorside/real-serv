@@ -1,0 +1,155 @@
+﻿@model Models.EscalaRegistroView
+
+@{
+
+    ViewBag.Title = "ImprimirEscala";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    var user = new BLL.Usuarios();
+
+
+    var dias = (Model.Escala.DataAte - Model.Escala.DataDe).TotalDays; dias++;
+
+
+}
+
+@section Styles{
+    <style>
+        .horario
+        {
+            font-size: 10px !important;
+        }
+
+        .opcional
+        {
+            background-color: lightyellow !important;
+        }
+
+        .altura
+        {
+            height: 40px;
+        }
+    </style>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Escala de @String.Format("{0:dd/MM/yyyy}", Model.Escala.DataDe) até @String.Format("{0:dd/MM/yyyy}", Model.Escala.DataAte)
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <h5>Planejado</h5>
+                    @using (Html.BeginForm())
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.Escala.EscalaId);
+                        @Html.HiddenFor(m => m.Escala.PessoaId);
+
+                                                               for (int i = 0; i < Model.ListaEscalaRegistro.Count(); i++)
+                                                               {
+            
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].EscalaRegistroId);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].EscalaId);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].ServicoId);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].PessoaId);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].PostoDeServicoId);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].TipoEscalaId);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].EscalaRegistroSequencia);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].EscalaRegistroData);
+                        @Html.HiddenFor(model => Model.ListaEscalaRegistro[i].EscalaRegistroTipo);
+        
+
+    
+    
+    
+    
+    
+                        <div class="row altura">
+                            <div class="col-lg-2 col-md-2 col-sm-2">@String.Format("{0:dd/MM/yyyy - ddd}", Model.ListaEscalaRegistro[i].EscalaRegistroData)</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">@Html.DropDownListEscalaSituacoes("ListaEscalaRegistro_" + i + "__Situacao", Model.ListaEscalaRegistro[i].Situacao, true, "span12 ddlsituacao form-control", "verifica(" + i + ")", "ListaEscalaRegistro[" + i + "].Situacao")</div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div id="@("painel_" + i)">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">@Html.TextBoxFor(m => m.ListaEscalaRegistro[i].Inicio, new { @class = "col-lg-12 form-control horario" })</div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">@Html.TextBoxFor(m => m.ListaEscalaRegistro[i].IntervalInicio, new { @class = "col-lg-12 form-control horario opcional" })</div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">@Html.TextBoxFor(m => m.ListaEscalaRegistro[i].IntervalFim, new { @class = "col-lg-12 form-control horario opcional" }) </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">@Html.TextBoxFor(m => m.ListaEscalaRegistro[i].Fim, new { @class = "col-lg-12 form-control horario" })</div>
+                                    </div>
+                                    
+                                    
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+            
+        
+        
+                                                               }
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <input type="submit" value="Alterar" class="btn btn-primary" />
+                            </div>
+                        </div>
+
+                    }
+
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script>
+
+        function verifica(id) {
+            var situacao = $("select#ListaEscalaRegistro_" + id + "__Situacao option:selected").attr('value');
+
+            if (situacao == "F" || situacao == "D" || situacao == "X" || situacao == "O" || situacao == "A") {
+                $("#painel_" + id).slideUp();
+            } else {
+                $("#painel_" + id).slideDown();
+            }
+        }
+
+
+        $('.ddlsituacao').each(
+            function (index) {
+                var input = $(this);
+                verifica(index);
+            }
+        );
+
+
+        jQuery(function () {
+
+            $(".horario").mask("99:99");
+        });
+
+    </script>
+}

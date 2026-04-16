@@ -1,0 +1,57 @@
+﻿@model Models.MedGuia
+
+@{
+    ViewBag.Title = "ProdutosImportar";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    var erroMsg = ViewBag.ErroDetalhes as string ?? "";
+}
+
+<div class="content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+
+                    </div>
+                    Importar Arquivo JSON
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("ProdutosImportar", "MedGuias", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+                    {
+                        @Html.HiddenFor(x => x.MedGuiaId)
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input id="file" type="file" name="file" /><br />
+                                <button type="submit" class="btn btn-outline btn-primary">Importar</button>
+                            </div>
+                        </div>
+                    
+                    
+                        if (erroMsg != "")
+                        {
+                        <br />
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="alert alert-danger">
+                                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <strong>Ooops!</strong> Ocorreu um erro...
+                                </div>
+                                <br />
+                                <pre>
+                            @ViewBag.ErroDetalhes
+                        </pre>
+                            </div>
+                        </div>
+                            
+                        }
+
+
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

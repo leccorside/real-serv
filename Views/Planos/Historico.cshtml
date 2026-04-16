@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Histórico do Plano";
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    
+    var lancamentos = ViewBag.lista_lancamentos;
+    var status = "";
+}
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>
+                Número do Lançamento
+            </th>
+            <th>
+                Data de Vencimento
+            </th>
+            <th>
+                Valor
+            </th>
+            <th>
+                Status
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            foreach (var item in lancamentos)
+            {
+                <tr>
+                    <td>   @item.LancamentoId</td>
+                    <td>  @Convert.ToDateTime(item.DataVencimento).ToShortDateString()</td>
+                    <td> @String.Format("{0:c}",item.Valor)</td>
+                    <td>  
+                    @if (item.Baixado == true)
+                    {
+
+                        status = "Pago";
+
+                    }
+
+                    else
+
+                    {
+                       status = "Em aberto";
+                    }
+                        @status
+</td>
+                </tr>
+            }
+        }
+
+    </tbody>
+
+    
+</table>

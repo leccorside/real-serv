@@ -1,0 +1,127 @@
+﻿@model Models.PessoaPlanoInscricaoView
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.EmpresaId);
+
+
+    var associe_obrigado_texto = BLL.Configuracoes.CarregarPorEmpresaId("associe_obrigado_texto", Model.EmpresaId);
+    var associe_obrigado_urlredirect = BLL.Configuracoes.CarregarPorEmpresaId("associe_obrigado_urlredirect", Model.EmpresaId);
+}
+
+<div class="content-boxed">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho)
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+
+                 <div class="row">
+                        <div class="col-lg-12">
+                            <h3><i class="fa fa-spinner fa-spin"></i> @Model.Pessoa.Nome, aguarde! Estamos conectando com o meio de pagamento...</h3>
+                        </div>
+                    </div>
+                    
+
+                    <form method="post" action="@BLL.Configuracoes.CarregarPorEmpresaId("pagseguro.urlcheckout",Model.Pessoa.EmpresaId)" target="_self" name="pagto" id="pagto">
+
+                        <!-- Campos obrigatórios -->
+                        <input name="receiverEmail" type="hidden" value="financeiro@abd.org.br">
+                        <input name="currency" type="hidden" value="BRL">
+
+
+
+
+                        <!-- Itens do pagamento (ao menos um item é obrigatório) -->
+
+                        <input name="@("itemId1")" type="hidden" value="0">
+                        <input name="@("itemDescription1")" type="hidden" value="Inscricao">
+                        <input name="@("itemAmount1")" type="hidden" value="@Model.PessoaPlanoInscricao.PessoaPlanoVlrInscricao.ToString("F").Replace(",", ".")">
+                        <input name="@("itemQuantity1")" type="hidden" value="1">
+
+
+                        <input name="@("itemId2")" type="hidden" value="0">
+                        <input name="@("itemDescription2")" type="hidden" value="Anuidade">
+                        <input name="@("itemAmount2")" type="hidden" value="@Model.PessoaPlanoInscricao.PessoaPlanoVlr.ToString("F").Replace(",", ".")">
+                        <input name="@("itemQuantity2")" type="hidden" value="1">
+
+
+                        <!-- Código de referência do pagamento no seu sistema (opcional) -->
+                        <input name="reference" type="hidden" value="@Model.PessoaPlanoInscricao.PessoaPlanoInscricaoId">
+                        <input name="extras" type="hidden" value="0">
+                        @*<input name="extraAmount" type="hidden" value="0">*@
+
+                        <input name="shippingType" type="hidden" value="3">
+                        <!-- Informações de frete (opcionais) -->
+                        <!--
+                            <input name="shippingType" type="hidden" value="1">
+                            <input name="shippingAddressPostalCode" type="hidden" value="#pedidocep">
+                            <input name="shippingAddressStreet" type="hidden" value="#pedidoendereco">
+                            <input name="shippingAddressNumber" type="hidden" value="#pedidonumero">
+                            <input name="shippingAddressComplement" type="hidden" value="#pedidocomplemento">
+                            <input name="shippingAddressDistrict" type="hidden" value="#pedidobairro">
+                            <input name="shippingAddressCity" type="hidden" value="#pedidocidade">
+                            <input name="shippingAddressState" type="hidden" value="#pedidoestado">
+                            <input name="shippingAddressCountry" type="hidden" value="BRA">
+                    -->
+
+
+                        <!-- Dados do comprador (opcionais) -->
+                        <input name="senderName" type="hidden" value="@Model.Pessoa.Nome">
+                        <input name="senderAreaCode" type="hidden" value="@BLL.Utils.Funcoes.Between(Model.Pessoa.Celular, "(", ")", "11")">
+                        <input name="senderPhone" type="hidden" value="@Model.Pessoa.Celular">
+                        <input name="senderEmail" type="hidden" value="@Model.Pessoa.Email">
+
+                        <!-- submit do form (obrigatório) -->
+                        @*<input type="submit" value="Pagar c/ PagSeguro" class="btn btn-primary btn-large pull-right">*@
+                    </form>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            @associe_rodape
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+
+    
+    <script>
+        setTimeout(function () { $('form#pagto').submit(); }, 3000);
+    </script>
+}
+

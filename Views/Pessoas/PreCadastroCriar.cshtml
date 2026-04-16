@@ -1,0 +1,176 @@
+﻿@model Models.PessoaPreCadastro
+
+
+
+
+@{
+    var vname = BLL.Usuarios.GetEntidadeCliente();
+
+    var acao = "Cadastrar";
+
+    if (Model.PessoaID > 0)
+    {
+        acao = "Alterar";
+    }
+    
+}
+
+@{
+    ViewBag.Title = acao;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Pré-cadastro de " + vname, "PreCadastroIndex", new { id = 0 })</li>
+}
+
+
+
+
+
+
+
+@using (Html.BeginForm())
+{ 
+    
+    
+
+    
+    
+   
+    <div class="cwell">
+
+        <span class="text-error">
+            @Html.ValidationSummary(false, "Ocorreram erros no pré-cadastro. Por favor, corrija os erros e tente novamente.")
+        </span>
+
+
+
+
+        @if ((int)Model.PessoaID > 0)
+        {
+            @Html.Hidden("PessoaID", Model.PessoaID);
+
+
+
+
+
+        }
+
+
+        <div class="row-fluid">
+
+            <div class="span8">
+                <label>Nome Completo</label>
+                @Html.TextBoxFor(model => model.Nome, new { @class = "input-xlarge" })<br />@Html.ValidationMessageFor(model => model.Nome)
+            </div>
+            <div class="span4">
+                <label>Apelido</label>
+                @Html.TextBoxFor(model => model.Apelido, new { @class = "input-xlarge" })
+                <br />@Html.ValidationMessageFor(model => model.Apelido)
+            </div>
+
+        </div>
+
+
+        <div class="row-fluid">
+
+            <div class="span4">
+                @Html.LabelFor(model => model.Email)
+                @Html.EditorFor(model => model.Email)
+                <br />@Html.ValidationMessageFor(model => model.Email)
+            </div>
+            <div class="span4">
+                @Html.LabelFor(model => model.Telefone)
+
+                @Html.EditorFor(model => model.Telefone)
+                <br />@Html.ValidationMessageFor(model => model.Telefone)
+            </div>
+            <div class="span4">
+                @Html.LabelFor(model => model.Celular)
+
+                @Html.EditorFor(model => model.Celular)
+                <br />@Html.ValidationMessageFor(model => model.Celular)
+            </div>
+        </div>
+
+        <div class="row-fluid">
+
+            <div class="span4">
+                <label>Como nos conheceu?</label>
+                @Html.DropDownListFor(model => model.MidiaId, (SelectList)ViewBag.DdlMidias, "--Selecione--")
+            </div>
+            <div class="span4">
+                <label>Quem indicou?</label>
+                @Html.DropDownListFor(model => model.PessoaIDIndicacao, (SelectList)ViewBag.DdlApresentadoPor, "--Ninguém--")
+            </div>
+
+             @if (BLL.Usuarios.GetUtilizaFilial()) { 
+                        <div class="span4">
+                            <label>@BLL.Usuarios.GetEntidadeFilial():</label>
+                            @Html.DropDownListFor(model => model.FilialID, (SelectList)ViewBag.DdlFiliais, "--Nenhuma--")
+                        </div>
+                    }else
+	{
+                 <input type="hidden" name="FilialID" value="@BLL.Usuarios.GetFilialIDMaster()"/>
+	}
+
+        
+
+
+
+        </div>
+
+           <div class="row-fluid">
+
+            <div class="span12">
+                <label>Observação</label>
+
+                @Html.TextAreaFor(model => model.Observacao, new { @class = "input-xxlarge" })
+                <br />@Html.ValidationMessageFor(model => model.Observacao)
+            </div>
+
+
+        </div>
+
+
+
+        <div class="row-fluid">
+            <div class="span6">
+                <input type="submit" value="@acao @vname" class="btn btn-primary btn-large"  /></div>
+            @if (Model.PessoaID>0)
+            {
+            
+            <div class="span6"><a href="@Url.Content("~/Pessoas/PreCadastroDeletar/"+Model.PessoaID)" class="btn btn-danger pull-right">Excluir</a></div>
+    
+            }
+            
+        </div>
+
+
+
+        <div>
+            @Html.ActionLink("Voltar", "PreCadastroIndex", new { id = 0 })
+        </div>
+    </div>
+    
+    
+    
+
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+
+        $("#Telefone").mask("(99)9999-9999?9");
+        $("#Celular").mask("(99)9999-9999?9");
+    </script>
+
+}

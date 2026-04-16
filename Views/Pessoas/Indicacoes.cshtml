@@ -1,0 +1,186 @@
+﻿@model IEnumerable<Models.Pessoa>
+
+@{
+    var id = ViewContext.RouteData.Values["id"];
+    var currentTipo = ViewContext.RouteData.Values["tipo"];
+    var pagina = Request["pagina"];
+    var paginaAtual = (pagina == "" || pagina == null) ? 1 : int.Parse(pagina);
+    var qtdPaginas = ViewBag.qtdPaginas;
+
+    var ordenacao = Request["tipoordenacao"];
+    var tipoordenacao = (ordenacao == "" || pagina == null) ? "asc" : ordenacao;
+    tipoordenacao = (tipoordenacao == "asc") ? "desc" : "asc";
+
+    var vname = "";
+
+
+    switch (currentTipo.ToString())
+    {
+        case "C":
+            vname = BLL.Usuarios.GetEntidadeCliente();
+            break;
+        case "F":
+            vname = BLL.Usuarios.GetEntidadeFornecedor();
+
+            break;
+
+        case "O":
+            vname = BLL.Usuarios.GetEntidadeFuncionario();
+
+            break;
+
+        default:
+            vname = "Indefinido";
+
+            break;
+    }
+
+    BLL.Pessoas obj = new BLL.Pessoas();
+    var pessoa = obj.Carregar(Convert.ToInt16(id));
+
+    var user = new BLL.Usuarios();
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>@Html.ActionLink(vname, "Index", new { id = 0, tipo = currentTipo })</li>
+}
+
+
+<div class="cwell">
+
+
+
+    <ul class="nav nav-tabs">
+        <li>
+            @Html.ActionLink("Dados Cadastrais", "Criar", new { id = pessoa.PessoaID, tipo = currentTipo }, new { @class = "" })
+        </li>
+          @if (currentTipo.ToString() == "O" && user.ControleAcesso("pessoas_funcionario_completo", "Regras"))
+            {
+                <li>@Html.ActionLink("Produtos", "Produtos", new { id = pessoa.PessoaID, tipo = currentTipo }, new { @class = "" })</li>
+            }
+        <li>@Html.ActionLink("Valores do Serviços prestados", "DefinirValores", new { id = pessoa.PessoaID, tipo = currentTipo }, new { @class = "" })</li>
+        <li class="active"><a href="#">Indicações</a></li>
+
+    </ul>
+
+
+       <div class="alert alert-info" id="alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                       Aqui você define o valor que os @vname receberão por @BLL.Usuarios.GetEntidadeCliente() / Serviço(s).
+                    </div> 
+
+
+       <div class="cwell">
+                <div class="row-fluid">
+                    <div class="span12">
+                        @BLL.Usuarios.GetEntidadeCliente() indicado(s) por @pessoa.Nome
+   
+	                    
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+    <div class="cwell">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=PessoaCount&tipoordenacao=@tipoordenacao">Nro.</a>
+                    </th>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Nome&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Nome)</a>
+                    </th>
+
+                    <th nowrap>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Email&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Email)</a>
+                    </th>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Telefone&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Telefone)</a>
+                    </th>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Celular&tipoordenacao=@tipoordenacao">@Html.DisplayNameFor(model => model.Celular)</a>
+                    </th>
+                    <th>
+                        <a href="@Url.Content("~/Pessoas/Index/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=Ativo&tipoordenacao=@tipoordenacao">Ativo</a>
+                    </th>
+                    <th><a href="@Url.Content("~/Pessoas/Index/0/" + ViewBag.tipo)?pagina=@paginaAtual&ordenacao=RegDtInicio&tipoordenacao=@tipoordenacao">Data de Cadastro</a></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.PessoaCount)
+                        </td>
+                        <td width="100%">
+                            <a href="@Url.Content("~/Pessoas/Alterar/" + item.PessoaID + "/" + item.PessoaCategoria)">@Html.DisplayFor(modelItem => item.Nome)</a>
+                        </td>
+
+
+
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.Telefone)
+                        </td>
+                        <td nowrap>
+                            @Html.DisplayFor(modelItem => item.Celular)
+                        </td>
+                        <td nowrap>
+                            @if (item.Ativo)
+                            {
+                                <i class=" icon-ok"></i>    
+                            }
+                        </td>
+                        <td nowrap>
+
+                            @Html.DisplayFor(modelItem => item.RegDtInicio)
+                        </td>
+
+                        <td nowrap>
+                            @Html.ActionLink("Definir Valores", "DefinirValores", new { id = id, tipo = currentTipo, @PessoaIDIndicacao = item.PessoaID }, new { @class = "btn btn-mini" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+
+        <div class="pagination">
+            <ul>
+
+                <li class="@(paginaAtual == 1 ? " disabled " : "")"><a href="@Url.Content("~/Pessoas/Indicacoes/" + id + "/" + currentTipo)?pagina=@(paginaAtual > 1 ? paginaAtual - 1 : paginaAtual)">«</a></li>
+                @for (int i = 1; i < qtdPaginas + 1; i++)
+                {
+                    <li class="@(paginaAtual == i ? " active " : "")"><a href="@Url.Content("~/Pessoas/Indicacoes/" + id + "/" + currentTipo)?pagina=@i">@i</a></li>      
+                      
+                }
+
+
+                <li class="@(paginaAtual >= qtdPaginas ? " disabled " : "")"><a href="@Url.Content("~/Pessoas/Indicacoes/" + id + "/" + currentTipo)?pagina=@(paginaAtual < qtdPaginas ? paginaAtual + 1 : paginaAtual)">»</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+
+
+    <div>
+
+
+        
+
+    </div>
+
+</div>
+
+

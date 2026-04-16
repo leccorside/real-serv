@@ -1,0 +1,49 @@
+@model IEnumerable<Models.SupervisaoTipo>
+
+@{
+    ViewBag.Title = "Tipos de Supervis&atilde;o";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configura&ccedil;&otilde;es", "Configuracoes", "Principal")</li>
+}
+
+@section Styles {
+@Html.Partial("_TableStyles")
+}
+
+<div class="ponto-container">
+    <div class="ponto-header">
+        <div class="ponto-title"><h2><i class="pe-7s-link"></i> Tipos de Supervis&atilde;o</h2></div>
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn-create" })
+    </div>
+    <div class="ponto-table-container">
+        <table class="ponto-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Supervis&atilde;o</th>
+                    <th style="width:140px">A&ccedil;&otilde;es</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(m => item.SupervisaoTipoId)</td>
+                        <td width="100%">@Html.DisplayFor(m => item.SupervisaoTipoNome)</td>
+                        <td nowrap>@Html.DisplayFor(m => item.RegDtInicio)</td>
+                        <td nowrap>
+                            <div class="actions-cell">
+                                @Html.ActionLink("Alterar", "Criar", new { id = item.SupervisaoTipoId }, new { @class = "btn-alterar" })
+                                @Html.ActionLink("Excluir", "Deletar", new { id = item.SupervisaoTipoId }, new { @class = "btn-excluir" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@model Models.Pessoa
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    
+    var bllPessoasCategoriasSubs = new BLL.PessoasCategoriasSubs();
+    var categoriaSub = bllPessoasCategoriasSubs.Carregar(Model.PessoaCategoriaSubId, Model.EmpresaId);
+
+    
+    
+    //tudo isso para verificar se pode alterar
+    var bllPessoasPlanosInscricoes = new BLL.PessoasPlanosInscricoes();
+    var ultInscricaoAtiva = bllPessoasPlanosInscricoes.GetUltInscricaoAtiva(Model.PessoaID, Model.EmpresaId);
+
+    var podeAlterar = true;
+    if (ultInscricaoAtiva.EntidadeStatusId > 0)
+    {
+        var bllEntidadesStatus = new BLL.EntidadesStatus();
+        var status = bllEntidadesStatus.Carregar(ultInscricaoAtiva.EntidadeStatusId, Model.EmpresaId);
+        if (status.StatusTipo == 2)
+        {
+            podeAlterar = false;
+        }
+    }
+    
+    
+    
+    
+
+}
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+             <legend>Seus Documentos </legend>
+            @Html.CubeeAnexos("Pessoas", Model.PessoaID, categoriaSub.DocumentosPadrao, "col-lg-12 col-md-12 col-sm-12", true, podeAlterar, podeAlterar, podeAlterar, false, categoriaSub.DocumentosObrigatorios, Model.EmpresaId)
+        </div>
+    </div>
+</div>

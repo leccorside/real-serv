@@ -1,0 +1,1489 @@
+﻿@{
+    ViewBag.Title = "Home";
+    ViewBag.nobreadcrumb = "true";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    var user = new BLL.Usuarios();
+
+    var lista = new List<Models.Menu>();
+    var contador = 0;
+    var contadorMaster = 1;
+    var orientacao = "col-l";
+    var click = "";
+
+
+    var config_filiais_index = user.ControleAcesso("index", "Filiais");
+    var PRCPropostas_ViewAll = user.ControleAcesso("ViewAll", "PRCPropostas");
+    var PRCPropostas_ViewTriagem = user.ControleAcesso("ViewTriagem", "PRCPropostas");
+
+    var bllOcorrencias = new BLL.Ocorrencias();
+    var bllMedGuias = new BLL.MedGuias();
+    var bllRepasses = new BLL.Repasses();
+    var bllPropostas = new BLL.PRCPropostas();
+    var bllUsuarios = new BLL.Usuarios();
+    var bllStatus = new BLL.EntidadesStatus();
+
+    var userFilialId = BLL.Usuarios.GetFilialId();
+    var auxWhere = "";
+
+
+
+
+    //monta o menu de acordo com o perfil
+    //cores: Orange, Purple, lblue, Red, Green and Blue
+    //icones: http://fortawesome.github.io/Font-Awesome/icons/
+
+
+
+    if (user.ControleAcesso("index", "trj"))
+    {
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.TrjReqsPags WHERE EmpresaId=#EmpresaId AND RegStatus='A' ");
+        var _totalPago = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(TrjReqPagValorSolicitado),0) FROM dbo.TrjReqsPags WHERE EmpresaId=#EmpresaId AND RegStatus='A' ");
+        var _footer = string.Format("Total {0}", _totalPago.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+        lista.Add(new Models.Menu { Cor = "green", Icone = "pe-7s-cash", Link = "~/Trj/Index", Nome = "Requisições de Pagamentos", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+    }
+
+
+    if (user.ControleAcesso("prcpropostastaskdia", "dashboard"))
+    {
+
+        var queryViewAll = "";
+        if (PRCPropostas_ViewAll)
+        {
+            queryViewAll = " OR NegociadorId<>#UsuarioId ";
+        }
+
+
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND ( NegociadorId=#UsuarioId " + queryViewAll + ") AND CONVERT(DATE,GETDATE()) = CONVERT(DATE,EntidadeStatusHistoricoData) ");
+        var _totalProposta = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(PRCPropostaValorBruto),0) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A'  AND ( NegociadorId=#UsuarioId " + queryViewAll + ") AND CONVERT(DATE,GETDATE()) = CONVERT(DATE,EntidadeStatusHistoricoData) ");
+        var _footer = string.Format("Total Bruto {0}", _totalProposta.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+        lista.Add(new Models.Menu { Cor = "red", Icone = "pe-7s-gleam", Link = "~/PRCPropostas/Index", Nome = "Propostas do dia", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+
+    }
+
+    if (user.ControleAcesso("PRCPropostasAlertas", "dashboard"))
+    {
+
+        var queryViewAll = "";
+        if (PRCPropostas_ViewAll)
+        {
+            queryViewAll = " OR NegociadorId<>#UsuarioId ";
+        }
+
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM PRCPropostas INNER JOIN EntidadesStatus ON PRCPropostas.EntidadeStatusId = EntidadesStatus.EntidadeStatusId WHERE PRCPropostas.EmpresaId=#EmpresaId AND PRCPropostas.RegStatus='A' AND ( PRCPropostas.NegociadorId=#UsuarioId " + queryViewAll + ") AND  ( ( ISNULL(DATEDIFF(HOUR, PRCPropostas.EntidadeStatusDtAtualiza,GETDATE()), 0) -1 ) > ISNULL(EntidadesStatus.StatusTempoMaximo, 0) )  ");
+        var _totalProposta = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(PRCPropostaValorBruto),0) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A'  AND ( NegociadorId=#UsuarioId " + queryViewAll + ") AND  ( ( ISNULL(DATEDIFF(HOUR, PRCPropostas.EntidadeStatusDtAtualiza,GETDATE()), 0) -1 ) > ISNULL(EntidadesStatus.StatusTempoMaximo, 0) ) ");
+        var _footer = string.Format("Total Bruto {0}", _totalProposta.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "pe-7s-attention", Link = "~/PRCPropostas/Index", Nome = "Propostas em alerta", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+
+
+    }
+
+
+    if (user.ControleAcesso("index", "CSGPropostas"))
+    {
+
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM CSGPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A' ");
+        var _totalProposta = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(CSGCondFinanOperacaoValorBruto),0) FROM CSGPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A'  ");
+        var _footer = string.Format("Total Bruto {0}", _totalProposta.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+        lista.Add(new Models.Menu { Cor = "black", Icone = "pe-7s-wallet", Link = "~/CSGPropostas/Index", Nome = "Propostas CSG", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+
+
+
+
+
+
+
+
+    }
+
+    if (user.ControleAcesso("prcpropostas", "dashboard"))
+    {
+
+        var queryViewAll = "";
+        if (PRCPropostas_ViewAll)
+        {
+            queryViewAll = " OR NegociadorId<>#UsuarioId ";
+
+            var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND ( NegociadorId=#UsuarioId " + queryViewAll + ")");
+            var _totalProposta = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(PRCPropostaValorBruto),0) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A'  AND ( NegociadorId=#UsuarioId " + queryViewAll + ")");
+            var _footer = string.Format("Total Bruto {0}", _totalProposta.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+            lista.Add(new Models.Menu { Cor = "black", Icone = "pe-7s-wallet", Link = "~/PRCPropostas/Index", Nome = "Propostas", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+
+
+
+
+
+
+            _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND ( NegociadorId=#UsuarioId " + queryViewAll + ") AND TriagemRetorno = 1 ");
+            lista.Add(new Models.Menu { Cor = "blue", Icone = "pe-7s-check", Link = "~/PRCPropostas/Index/?pagina=1&ordenacao=TriagemRetorno&tipoordenacao=DESC", Nome = "Propostas Retorno triagem", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+
+        }
+
+    }
+
+    if (user.ControleAcesso("TriagemCaptura", "PRCPropostas"))
+    {
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND  Triagem = 1 ");
+        var _qtdAlertas = BLL.Configuracoes.GetQtdQuery("SELECT count(*) FROM prcpropostas WHERE triagem = 1 and isnull(TriagemRetorno,0)=0 AND RegSTatus = 'A' AND TriagemUsuarioId =#UsuarioId");
+        lista.Add(new Models.Menu { Cor = "black", Icone = "pe-7s-way", Link = "~/PRCPropostas/TriagemCaptura", Nome = "Triagem", OnClick = "", qtdAlertasTitulo = "Pendentes", qtdAlertas = _qtdAlertas.ToString(), qtdRegistros = _qtdRegistros.ToString() });
+    }
+
+    if (user.ControleAcesso("viewtriagem", "prcpropostas"))
+    {
+        var queryViewAll = "";
+        if (PRCPropostas_ViewAll)
+        {
+            queryViewAll = " OR NegociadorId<>#UsuarioId ";
+        }
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND  Triagem = 1 ");
+        var _totalProposta = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(PRCPropostaValorBruto),0) FROM dbo.PRCPropostas WHERE EmpresaId=#EmpresaId AND RegStatus='A'  AND  Triagem = 1 ");
+        var _footer = string.Format("Total Bruto {0}", _totalProposta.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "pe-7s-way", Link = "~/PRCPropostas/TriagemIndex", Nome = "Propostas em triagem", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+    }
+
+    if (user.ControleAcesso("index", "medguias"))
+    {
+        var _qtdAlertas = bllMedGuias.GetQtdAlertas();
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.MedGuias WHERE EmpresaId=#EmpresaId AND RegStatus='A' #andfilial# ");
+
+        lista.Add(new Models.Menu { Cor = "green", Icone = "pe-7s-id", Link = "~/MedGuias/Index", Nome = "Guias", OnClick = "", qtdAlertas = _qtdAlertas.ToString(), qtdRegistros = _qtdRegistros.ToString() });
+    }
+
+
+    if (user.ControleAcesso("index", "repasses"))
+    {
+
+        lista.Add(new Models.Menu { Cor = "green", Icone = "pe-7s-share", Link = "~/Repasses/Index", Nome = "Repasses", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("busca", "agendamento"))
+    {
+        lista.Add(new Models.Menu { Cor = "black", Icone = "pe-7s-gleam", Link = "~/Agendamento/Busca", Nome = "Busca Ninja", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("index", "fichacadastral"))
+    {
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-user-plus", Link = "~/FichaCadastral/Index", Nome = "Ficha Cadastral", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "agendamento"))
+    {
+        lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-tasks", Link = "~/Agendamento/ProgramacaoDia", Nome = "Programação do Dia", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("agenda", "agendamento"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "icon-calendar", Link = "~/Agendamento/Calendario", Nome = "Agenda Geral", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("calendario", "agendamento"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "icon-check", Link = "~/Agendamento/Calendario", Nome = "Minha Agenda", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("financeiro", "dashboard"))
+    {
+        var lancamentos = new BLL.Lancamentos();
+        var listarSaldoContas = lancamentos.ListarSaldoContas();
+
+        var totalGeral = String.Format("{0:c}", lancamentos.Saldo());
+
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-bar-chart", Link = "~/Principal/Financeiro", Nome = "Financeiro", OnClick = "", qtdRegistros = totalGeral });
+    }
+
+
+    if (user.ControleAcesso("index", "postosdeservicos"))
+    {
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM PostosDeServicos WHERE EmpresaId=#EmpresaId AND RegStatus='A' ");
+
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-building-o", Link = "~/postosdeservicos/Index/", Nome = "Postos de Serviços", OnClick = "", qtdRegistros = _qtdRegistros.ToString() });
+    }
+
+
+    if (user.ControleAcesso("index", "ocorrencias"))
+    {
+        //todo: FRT - Ocorrencias - consultar qtd de ocorrencias em alerta
+
+        var _qtdAlertas = bllOcorrencias.GetQtdAlertas(48);
+        var _qtdAvisos = bllOcorrencias.GetQtdAvistos();
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM Ocorrencias WHERE EmpresaId=#EmpresaId AND RegStatus='A' ");
+
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-comments-o", Link = "~/Ocorrencias/Index/", Nome = "Ocorrências", OnClick = "", qtdAlertas = _qtdAlertas.ToString(), qtdRegistros = _qtdRegistros.ToString() });
+    }
+
+
+    if (user.ControleAcesso("index", "supervisoes"))
+    {
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM Supervisoes WHERE EmpresaId=#EmpresaId AND RegStatus='A' ");
+
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-map-marker", Link = "~/Supervisoes/Index/", Nome = "Supervisões", OnClick = "", qtdRegistros = _qtdRegistros.ToString() });
+    }
+
+    if (user.ControleAcesso("ImpressaoIndex", "PRCPropostas"))
+    {
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("select count(*) from documentosarquivos WHERE documentosarquivos.DocumentoImprimir = 1 AND documentosarquivos.regstatus='A' ");
+
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-stack-overflow", Link = "~/PRCPropostas/ImpressaoIndex/", Nome = "Fila de Impressão", OnClick = "", qtdRegistros = _qtdRegistros.ToString() });
+    }
+
+
+    if (user.ControleAcesso("find", "PRCPropostas"))
+    {
+
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-first-order", Link = "~/PRCPropostas/Find/", Nome = "Localizar Propostas", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("associados", "Dashboard"))
+    {
+
+        //select count(*) from pessoas where Pessoas.inscricaosituacao=0 and regstatus='a' and pessoacategoria='C'
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH(NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND Pessoas.inscricaosituacao=1 AND PessoaCategoria='C' #andfilial# ");
+
+        var _qtdAtivos = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH(NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND Pessoas.inscricaosituacao=2 AND PessoaCategoria='C' #andfilial#  ");
+
+        var _qtdInativos = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH (NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND Pessoas.inscricaosituacao=0 AND PessoaCategoria='C' #andfilial#  ");
+
+        var _qtdTotal = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH (NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND PessoaCategoria='C' #andfilial#  ");
+
+        lista.Add(new Models.Menu { Cor = "blue", qtdRegistros = _qtdRegistros.ToString(), Icone = "pe-7s-users", Link = "~/Pessoas/Index/0/C", Nome = BLL.Usuarios.GetEntidadeCliente() + " ATIVOS", OnClick = "", qtdAlertas = _qtdAtivos.ToString(), qtdAlertasTitulo = "Inativos", qtdAvisos = _qtdInativos.ToString(), qtdAvisosTitulo = "Prospect", footer = _qtdTotal.ToString() + " Registros" });
+    }
+
+    if (user.ControleAcesso("index", "pessoas"))
+    {
+        if (user.ControleAcesso("PessoasC", "Dashboard"))
+        {
+
+            var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH(NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND PessoaCategoria='C' #andfilial# ");
+            var _qtdAtivos = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH (NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND PessoaCategoria='C' #andfilial# AND Ativo=1 ");
+            var _qtdInativos = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH (NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND PessoaCategoria='C' #andfilial# AND Ativo=0 ");
+            lista.Add(new Models.Menu { Cor = "blue", qtdRegistros = _qtdRegistros.ToString(), Icone = "pe-7s-users", Link = "~/Pessoas/Index/0/C", Nome = "Cadastros", OnClick = "", qtdAlertas = _qtdAtivos.ToString(), qtdAlertasTitulo = "Ativos", qtdAvisos = _qtdInativos.ToString(), qtdAvisosTitulo = "Inativos" });
+        }
+
+        if (user.ControleAcesso("PessoasF", "Dashboard"))
+        {
+            var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH (NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND PessoaCategoria='F' #andfilial# ");
+            lista.Add(new Models.Menu { Cor = "lblue", qtdRegistros = _qtdRegistros.ToString(), Icone = "pe-7s-box1", Link = "~/Pessoas/Index/0/F", Nome = BLL.Usuarios.GetEntidadeFornecedor(), OnClick = "" });
+        }
+
+        if (user.ControleAcesso("PessoasO", "Dashboard"))
+        {
+            var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH (NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND PessoaCategoria='O' #andfilial# ");
+            lista.Add(new Models.Menu { Cor = "red", qtdRegistros = _qtdRegistros.ToString(), Icone = "pe-7s-add-user", Link = "~/Pessoas/Index/0/O", Nome = BLL.Usuarios.GetEntidadeFuncionario(), OnClick = "" });
+        }
+
+        if (user.ControleAcesso("PessoasA", "Dashboard"))
+        {
+            var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WITH (NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND PessoaCategoria='A' #andfilial# ");
+            lista.Add(new Models.Menu { Cor = "green", qtdRegistros = _qtdRegistros.ToString(), Icone = "fa fa-futbol-o", Link = "~/Pessoas/Index/0/A", Nome = BLL.Usuarios.GetEntidade4(), OnClick = "" });
+        }
+
+    }
+
+    if (user.ControleAcesso("index", "produtos"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-cubes", Link = "~/Principal/Produtos", Nome = "Produtos", OnClick = "" });
+    }
+
+    //if (user.ControleAcesso("perfil", "principal"))
+    //{
+    //    lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-user-circle-o", Link = "~/Principal/Perfil", Nome = BLL.Usuarios.GetUsuarioNome(), OnClick = "" });
+    //}
+
+
+
+
+    if (user.ControleAcesso("registrarvalores", "fichacadastral"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-usd", Link = "~/fichacadastral/registrarvalores/", Nome = "Fichas Cadastrais", OnClick = "" });
+    }
+
+
+
+
+    //if (user.ControleAcesso("relatorios", "principal"))
+    //{
+    //    lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-file-text-o", Link = "~/Principal/Relatorios", Nome = "Relatórios", OnClick = "" });
+    //}
+
+    //if (user.ControleAcesso("index", "cupons"))
+    //{
+    //    lista.Add(new Models.Menu { Cor = "black", Icone = "fa fa-ticket", Link = "~/Cupons/Index/", Nome = "Cupons", OnClick = "" });
+    //}
+
+    //if (user.ControleAcesso("Multiplus", "principal"))
+    //{
+    //    lista.Add(new Models.Menu { Cor = "black", Icone = "fa fa-th", Link = "~/Principal/Multiplus/", Nome = "Multiplus", OnClick = "" });
+    //}
+
+    if (user.ControleAcesso("index", "Filiais") && userFilialId == 0)
+    {
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM Filiais WHERE EmpresaId=#EmpresaId AND RegStatus='A'");
+
+        lista.Add(new Models.Menu { Cor = "green", Icone = "pe-7s-global", Link = "~/Filiais/Index", Nome = BLL.Usuarios.GetEntidadeFilialPlural(), OnClick = "", qtdRegistros = _qtdRegistros.ToString() });
+    }
+
+    //Associações PessoaPlanoGrupoTipoId = 0
+    if (user.ControleAcesso("PessoasPlanosAssociacoes", "PessoasPlanosInscricoes"))
+    {
+        auxWhere = "";
+        //TRB: 20180905 - controle de filiais/regionais
+        if (userFilialId > 0)
+        {
+            auxWhere += " AND Pessoas.FilialId = " + userFilialId.ToString() + " ";
+        }
+        else
+        {
+            auxWhere += " AND Pessoas.FilialId IN (SELECT FilialId FROM UsuariosFiliais WHERE UsuarioId=" + BLL.Usuarios.GetUsuarioId().ToString() + ") ";
+        }
+
+        var _qtdPlanos = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM Pessoas WITH (NOLOCK) INNER JOIN PessoasPlanosInscricoes WITH(NOLOCK) ON PessoasPlanosInscricoes.PessoaId = Pessoas.PessoaId INNER JOIN PessoasPlanos WITH(NOLOCK) ON PessoasPlanosInscricoes.PessoaPlanoId = PessoasPlanos.PessoaPlanoId INNER JOIN PessoasPlanosGrupos WITH(NOLOCK) ON PessoasPlanos.PessoaPlanoGrupoId = PessoasPlanosGrupos.PessoaPlanoGrupoId WHERE PessoasPlanosGrupos.PessoaPlanoGrupoTipoId = 0 AND PessoasPlanosInscricoes.EmpresaId=#EmpresaId AND PessoasPlanosInscricoes.RegStatus='A' " + auxWhere);
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-id-card-o", Link = "~/PessoasPlanosInscricoes/Index/?PessoaPlanoGrupoTipoId=0", Nome = "INSCRIÇÕES " + Html.GetLegendaPlanoGrupoTipo(0) + "S", OnClick = "", qtdRegistros = _qtdPlanos.ToString() });
+
+    }
+
+    //Eventos PessoaPlanoGrupoTipoId = 1
+    if (user.ControleAcesso("Index", "PessoasPlanosInscricoes"))
+    {
+        auxWhere = "";
+        //TRB: 20180905 - controle de filiais/regionais
+        if (userFilialId > 0)
+        {
+            auxWhere += " AND PessoasPlanosGrupos.FilialId = " + userFilialId.ToString() + " ";
+        }
+        else
+        {
+            auxWhere += " AND PessoasPlanosGrupos.FilialId IN (SELECT FilialId FROM UsuariosFiliais WHERE UsuarioId=" + BLL.Usuarios.GetUsuarioId().ToString() + ") ";
+        }
+        var _qtdEventos = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM PessoasPlanosInscricoes WITH(NOLOCK) INNER JOIN PessoasPlanos WITH(NOLOCK) ON PessoasPlanosInscricoes.PessoaPlanoId = PessoasPlanos.PessoaPlanoId INNER JOIN PessoasPlanosGrupos ON PessoasPlanos.PessoaPlanoGrupoId = PessoasPlanosGrupos.PessoaPlanoGrupoId WHERE PessoasPlanosGrupos.PessoaPlanoGrupoTipoId = 1 AND PessoasPlanosInscricoes.EmpresaId=#EmpresaId AND PessoasPlanosInscricoes.RegStatus='A' " + auxWhere);
+
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-calendar-check-o", Link = "~/PessoasPlanosInscricoes/Index/?PessoaPlanoGrupoTipoId=1", Nome = "INSCRIÇÕES " + Html.GetLegendaPlanoGrupoTipo(1) + "S", OnClick = "", qtdRegistros = _qtdEventos.ToString() });
+
+    }
+
+
+    if (user.ControleAcesso("Index", "Contratos"))
+    {
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("select count(*) from contratos WITH(NOLOCK) where regstatus='A' and empresaid=#EmpresaId");
+        var _qtdOporunidades = BLL.Configuracoes.GetQtdQuery("select count(*) from contratos WITH(NOLOCK) where contratotipo=0 and regstatus='A' and empresaid=#EmpresaId");
+        var _qtdContratos = BLL.Configuracoes.GetQtdQuery("select count(*) from contratos WITH(NOLOCK) where contratotipo=1 and regstatus='A' and empresaid=#EmpresaId");
+        lista.Add(new Models.Menu { Cor = "blue", qtdRegistros = _qtdRegistros.ToString(), Icone = "pe-7s-wallet", Link = "~/Contratos/Index/0/C", Nome = "Contratos", OnClick = "", qtdAlertas = _qtdContratos.ToString(), qtdAlertasTitulo = "Contratos", qtdAvisos = _qtdOporunidades.ToString(), qtdAvisosTitulo = "Oportunidades" });
+    }
+
+
+    if (user.ControleAcesso("Index", "Compras"))
+    {
+
+        var queryViewAll = "";
+        if (PRCPropostas_ViewAll)
+        {
+            queryViewAll = " OR NegociadorId<>#UsuarioId ";
+        }
+
+
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Compras WITH(NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A' AND ( SolicitanteId=#UsuarioId " + queryViewAll + ") AND CONVERT(DATE,GETDATE()) = CONVERT(DATE,EntidadeStatusHistoricoData) ");
+        var _totalProposta = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(CompraValorTotal),0) FROM dbo.Compras WITH(NOLOCK) WHERE EmpresaId=#EmpresaId AND RegStatus='A'  AND ( SolicitanteId=#UsuarioId " + queryViewAll + ") AND CONVERT(DATE,GETDATE()) = CONVERT(DATE,EntidadeStatusHistoricoData) ");
+        var _footer = string.Format("Total Bruto {0}", _totalProposta.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+        lista.Add(new Models.Menu { Cor = "red", Icone = "pe-7s-gleam", Link = "~/Compras/Index", Nome = "Compras do dia", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+
+    }
+
+    if (user.ControleAcesso("Index", "Compras"))//if (user.ControleAcesso("PRCPropostasAlertas", "dashboard"))
+    {
+
+        var queryViewAll = "";
+        if (PRCPropostas_ViewAll)
+        {
+            queryViewAll = " OR SolicitanteId<>#UsuarioId ";
+        }
+
+
+        var _qtdRegistros = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM Compras WITH(NOLOCK) INNER JOIN EntidadesStatus WITH(NOLOCK) ON Compras.EntidadeStatusId = EntidadesStatus.EntidadeStatusId WHERE Compras.EmpresaId=#EmpresaId AND Compras.RegStatus='A' AND ( Compras.SolicitanteId=#UsuarioId " + queryViewAll + ") AND  ( ( ISNULL(DATEDIFF(HOUR, Compras.EntidadeStatusDtAtualiza,GETDATE()), 0) -1 ) > ISNULL(EntidadesStatus.StatusTempoMaximo, 0) )  ");
+        var _totalProposta = BLL.Configuracoes.GetMoneyQuery("SELECT isnull(SUM(Compras.CompraValorTotal),0) FROM dbo.Compras WITH(NOLOCK) INNER JOIN EntidadesStatus WITH(NOLOCK) ON Compras.EntidadeStatusId = EntidadesStatus.EntidadeStatusId WHERE Compras.EmpresaId=#EmpresaId AND Compras.RegStatus='A'  AND ( Compras.SolicitanteId=#UsuarioId " + queryViewAll + ") AND  ( ( ISNULL(DATEDIFF(HOUR, Compras.EntidadeStatusDtAtualiza,GETDATE()), 0) -1 ) > ISNULL(EntidadesStatus.StatusTempoMaximo, 0) ) ");
+        var _footer = string.Format("Total Bruto {0}", _totalProposta.ToString("C2", System.Globalization.CultureInfo.CurrentCulture));
+
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "pe-7s-attention", Link = "~/Compras/Index", Nome = "Compras em alerta", OnClick = "", qtdRegistros = _qtdRegistros.ToString(), footer = _footer });
+
+
+    }
+
+    //Teste
+    lista.Add(new Models.Menu { Cor = "blue", Icone = "pe-7s-search", Link = "~/html/CentralPostosPesquisa.html", Nome = "Pesquisa Cliente", OnClick = "", qtdRegistros = "" , footer = "" });
+
+}
+
+
+<div class="content xanimate-xpanel">
+
+
+    @if (user.ControleAcesso("Metas", "Dashboard"))
+    {
+        var bllEntidadesStatusDados = new BLL.EntidadesStatusDados();
+        var dados = bllEntidadesStatusDados.GetDadoInfoPorUsuario(BLL.Usuarios.GetUsuarioId());
+
+        var bllMetas = new BLL.Metas();
+        var listarMetas = bllMetas.ListarPorPerfilEUsuario(BLL.Usuarios.GetPerfilId(), BLL.Usuarios.GetUsuarioId(), "PRCPropostas");
+
+        <div class="row">
+            <ul style="list-style: none; margin: 0px !important; padding: 0px !important;">
+
+                <li class="col-lg-3" style="">
+                    <div class="hpanel stats">
+                        <div class="panel-body h-200">
+                            <a href="/PRCPropostas/Index">
+                                <div class="stats-title pull-left">
+                                    <h4>Atendimentos</h4>
+                                </div>
+                                <div class="stats-icon pull-right">
+                                    @*<i class="pe-7s-gleam fa-4x"></i>*@
+                                </div>
+                                <div class="m-t-xl">
+                                    <h3 class="m-b-xs">@dados.RealizadoTotal de @dados.MetaTotal</h3>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-xs-6" style="">
+                                        </div>
+                                        <div class="col-xs-6" style="">
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </li>
+
+                <li class="col-lg-3" style="">
+                    <div class="hpanel stats">
+                        <div class="panel-body h-200">
+                            <div class="stats-title pull-left">
+                                <h4>Atendimentos por tipos</h4>
+                            </div>
+
+                            <div class="clearfix"></div>
+                            <div class="m-t-xs">
+                                @foreach (var item in dados.ListEntidadeStatusDadoQtdPorUsuario)
+                                {
+                                    <div class="row">
+                                        <div class="col-xs-12" style="">
+                                            <small class="stat-label">@item.Tipo</small>
+                                            <h4>@item.Qtd </h4>
+                                        </div>
+                                    </div>
+                                }
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </li>
+
+                <li class="col-lg-6" style="">
+                    <div class="hpanel">
+                        <div class="panel-body list">
+                            <div class="table-responsive project-list">
+                                <div>
+                                    <h4 class="font-bold no-margins">Suas Metas </h4>
+                                    <br>
+
+                                    @foreach (var item in listarMetas)
+                                    {
+                                        var result = bllMetas.CalcularMeta(item, BLL.Usuarios.GetPerfilId(), BLL.Usuarios.GetUsuarioId(), item.PeriodicidadeValor, item.MetaVolume);
+
+                                        <div>
+                                            <br />
+                                            <h5 class="font-extra-bold m-b-xs"><i class="pe-7s-target"></i>@item.MetaNome</h5>
+
+
+                                            @if (item.PeriodicidadeValor > 0)
+                                            {
+                                                <small class="text-muted">
+                                                    Qtd. de Propostas / @result.Descricao
+                                                    <br />
+                                                    Esperado = @item.PeriodicidadeValor
+                                                    <br />
+                                                    Resultado = @result.Quantidade
+                                                </small>
+                                                <div class="progress m-t-xs full progress-striped">
+                                                    <div style="width: @(result.ResultPercentQuantidade > 100 ? "100%" : result.ResultPercentQuantidade + "%")" aria-valuemax="100" aria-valuemin="0" aria-valuenow="@(result.ResultPercentQuantidade)" role="progressbar" class=" progress-bar progress-bar-@result.ResultProgressBarQuantidade">
+                                                        @(result.ResultPercentQuantidade > 100 ? "100%" : result.ResultPercentQuantidade + "%") Completa
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            @if (item.MetaVolume > 0)
+                                            {
+                                                <small class="text-muted">
+                                                    Volume R$ / @result.Descricao
+                                                    <br />
+                                                    Esperado = @string.Format("{0:N2}", item.MetaVolume)
+                                                    <br />
+                                                    Resultado = @string.Format("{0:N2}", result.Volume)
+                                                </small>
+                                                <div class="progress m-t-xs full progress-striped">
+                                                    <div style="width: @(result.ResultPercentVolume > 100 ? "100%" : result.ResultPercentVolume + "%")" aria-valuemax="100" aria-valuemin="0" aria-valuenow="@(result.ResultPercentVolume)" role="progressbar" class=" progress-bar progress-bar-@result.ResultProgressBarVolume">
+                                                        @(result.ResultPercentVolume > 100 ? "100%" : result.ResultPercentVolume + "%") Completa
+                                                    </div>
+                                                </div>
+                                            }
+
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+
+    }
+
+    <div class="row">
+        @if (user.ControleAcesso("PessoasCInscricaoSituacao", "Dashboard"))
+        {
+
+
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="hpanel">
+                    <div class="panel-heading hbuilt">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        @BLL.Usuarios.GetEntidadeCliente() por Situação Inscrição
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="grafico-clientes-situacao-inscricao">
+                            <div class="grafico-clientes-situacao-inscricao-content" id="grafico-clientes-situacao-inscricao" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="hpanel">
+                    <div class="panel-heading hbuilt">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        @BLL.Usuarios.GetEntidadeCliente() por Área de Atuação
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="grafico-clientes-area-atuacao">
+                            <div class="grafico-clientes-area-atuacao-content" id="grafico-clientes-area-atuacao" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="hpanel">
+                    <div class="panel-heading hbuilt">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        @BLL.Usuarios.GetEntidadeCliente() por Categoria
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="grafico-clientes-categoria-sub">
+                            <div class="grafico-clientes-categoria-sub-content" id="grafico-clientes-categoria-sub" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="hpanel">
+                    <div class="panel-heading hbuilt">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        @BLL.Usuarios.GetEntidadeCliente() por Formação
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="grafico-clientes-formacao-tipo">
+                            <div class="grafico-clientes-formacao-tipo-content" id="grafico-clientes-formacao-tipo" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+
+
+    <div class="row">
+        <ul style="list-style: none; margin: 0px !important; padding: 0px !important;">
+
+            @foreach (var item in lista)
+            {
+                click = (item.OnClick != "onclick=\"return confirm('" + item.OnClick + "')\"") ? "" : "";
+
+
+                <li class="col-lg-3" style="">
+                    <div class="hpanel stats">
+                        <div class="panel-body h-200">
+                            <a href="@Url.Content(item.Link)" @click>
+                                <div class="stats-title pull-left">
+                                    <h4>@item.Nome</h4>
+                                </div>
+                                <div class="stats-icon pull-right">
+                                    <i class="@item.Icone fa-4x"></i>
+                                </div>
+                                <div class="m-t-xl">
+                                    <h3 class="m-b-xs">@item.qtdRegistros</h3>
+                                    <br />
+                                    @if (item.qtdAvisos != "" || item.qtdAlertas != "")
+                                    {
+                                        <div class="row">
+                                            <div class="col-xs-6" style="">
+                                                @if (item.qtdAlertas != null)
+                                                {
+                                                    <small class="stats-label">@(item.qtdAlertasTitulo != null ? item.qtdAlertasTitulo.ToString() : "Alertas")</small>
+                                                    <h4>@(item.qtdAlertas != null ? item.qtdAlertas.ToString() : "-")</h4>
+                                                }
+
+                                            </div>
+                                            <div class="col-xs-6" style="">
+                                                @if (item.qtdAvisos != null)
+                                                {
+                                                    <small class="stats-label">@(item.qtdAvisosTitulo != null ? item.qtdAvisosTitulo.ToString() : "Avisos")</small>
+                                                    <h4>@(item.qtdAvisos != null ? item.qtdAvisos.ToString() : "-")</h4>
+                                                }
+
+                                            </div>
+
+
+                                        </div>
+                                    }
+                                </div>
+                            </a>
+                        </div>
+
+                        @if (BLL.Utils.Validacoes.ToStringNullSafe(item.footer) != "")
+                        {
+                            <div class="panel-footer">
+                                @item.footer
+                            </div>
+                        }
+
+
+                    </div>
+                </li>
+
+
+
+
+            }
+
+            @if (user.ControleAcesso("DetailNegociadoProposta", "Dashboard"))
+            {
+                <div class="col-lg-3" style="">
+                    <div class="hpanel">
+                        <a href="@Url.Content("~/Principal/DetailNegociadoProposta")">
+                            <div class="panel-body text-center h-200">
+                                <i class="pe-7s-graph3 fa-4x"></i>
+                                <br />
+                                <br />
+                                <div class="stats-title text-center">
+                                    <h4>
+                                        Negociadores<br />
+                                        x<br />
+                                        Propostas
+                                    </h4>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+
+
+            @if (user.ControleAcesso("Administrador", "MedGuias"))
+            {
+
+                var qtdPacientesSemFilial = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.Pessoas WHERE PessoaCategoria='C' AND RegStatus='A' AND FilialID=0 AND EmpresaId=#EmpresaId ");
+                var qtdGuiasSemFilial = BLL.Configuracoes.GetQtdQuery("SELECT COUNT(*) FROM dbo.MedGuias WHERE  RegStatus='A' AND FilialID=0 and EmpresaId=#EmpresaId ");
+
+
+                <li class="col-lg-3" style="">
+                    <div class="hpanel stats">
+                        <div class="panel-body list">
+
+                            <div class="panel-title">Informações</div>
+                            <div class="list-item-container">
+                                <div class="list-item">
+                                    <h3 class="no-margins font-extra-bold">@qtdPacientesSemFilial</h3>
+                                    <small>Qtd. @BLL.Usuarios.GetEntidadeCliente() sem @BLL.Usuarios.GetEntidadeFilial()</small>
+                                </div>
+                            </div>
+                            <div class="list-item-container">
+                                <div class="list-item">
+                                    <h3 class="no-margins font-extra-bold">@qtdGuiasSemFilial</h3>
+                                    <small>Qtd. Guias sem @BLL.Usuarios.GetEntidadeFilial()</small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </li>
+
+            }
+
+
+            @if (user.ControleAcesso("PRCPropostasTaskDia", "Dashboard"))
+            {
+                var listarPropostasComTarefas = bllPropostas.ListarTODO();
+                <li class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="hpanel">
+                        <div class="panel-heading">
+                            <div class="panel-tools">
+                                <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+
+                            </div>
+                            <h3><small><i class="fa fa-list" aria-hidden="true"></i>TO-DO</small> Propostas com tarefas para hoje ou com data para próxima ação</h3>
+                        </div>
+                        <div class="panel-body">
+
+
+
+                            <table cellpadding="1" cellspacing="1" class="table dataTable">
+                                <caption class="text-center">
+                                    <strong>@listarPropostasComTarefas.Count() propostas com tarefas para hoje</strong>
+                                </caption>
+                                <thead>
+                                    <tr style="font-size: 12px;">
+                                        <th>Prioridade</th>
+                                        <th>Proposta</th>
+                                        <th>Fonte</th>
+                                        <th>Requerente</th>
+                                        <th>Valor</th>
+                                        <th>Status</th>
+                                        <th>Tempo Passado</th>
+                                        <td nowrap>ÚLTIMA AÇÃO</td>
+                                        <td nowrap><i class="fa fa-list"></i>PRÓXIMA AÇÃO</td>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in listarPropostasComTarefas)
+                                    {
+
+                                        var tr_status = "";
+
+
+
+                                        var icon = "";
+                                        var tempoPassado = "";
+                                        if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+                                        {
+                                            tr_status = "warning";
+                                            icon = "fa fa-bell-o";
+                                            tempoPassado = "<i class='fa fa-clock-o'></i>";
+                                        }
+                                        else
+                                        {
+                                            item.StatusTempoPassado = 0;
+                                        }
+
+                                        <tr>
+                                            <td>@Html.GetLegendaPrioridade(item.StatusPrioridade)</td>
+                                            <td>@item.PRCPropostaId </td>
+                                            <td><span class="badge @item.Fonte">@item.Fonte</span></td>
+                                            <td>@item.RequerenteNome</td>
+                                            <td nowrap>R$ @string.Format("{0:N2}", item.PRCPropostaValorBruto)</td>
+                                            <td>
+                                                @item.StatusNome
+
+
+                                                @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                                                {
+                                                    <br />
+                                                    List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                                                    foreach (var badge in badges)
+                                                    {
+                                                        <span class="label label-info">@badge</span>
+                                                    }
+                                                }
+
+                                            </td>
+                                            <td>@Html.Raw(tempoPassado) @item.StatusTempoPassado hrs</td>
+                                            <td>
+                                                @if (item.EntidadeStatusDtAtualiza != null)
+                                                {
+                                                    <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusDtAtualiza)</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (item.EntidadeStatusHistoricoData != null)
+                                                {
+                                                    <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusHistoricoData)</span>
+                                                }
+                                            </td>
+                                            <td><a href="@Url.Content("~/PRCPropostas/Editar/" + item.PRCPropostaId + "/" + item.PRCPropostaGUID)" class="btn btn-outline btn-primary btn-xs">Editar</a></td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    </div>
+                </li>
+            }
+
+
+            @if (user.ControleAcesso("PRCPropostasAlertas", "Dashboard"))
+            {
+                var listarPropostasComAlertas = bllPropostas.ListarAlertas();
+                <li class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="hpanel">
+                        <div class="panel-heading">
+                            <div class="panel-tools">
+                                <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                                <a class="closebox"><i class="fa fa-times"></i></a>
+                            </div>
+                            <h3><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>Propostas com alertas</h3>
+                        </div>
+                        <div class="panel-body">
+
+
+
+                            <table cellpadding="1" cellspacing="1" class="table dataTable">
+                                <caption class="text-center">
+                                    <strong>@listarPropostasComAlertas.Count() propostas com alertas</strong>
+                                </caption>
+                                <thead>
+                                    <tr style="font-size: 12px;">
+                                        <th>Prioridade</th>
+                                        <th>Proposta</th>
+                                        <th>Fonte</th>
+                                        <th>Requerente</th>
+                                        <th>Valor</th>
+                                        <th>Status</th>
+                                        <th>Tempo Passado</th>
+                                        <td nowrap>ÚLTIMA AÇÃO</td>
+                                        <td nowrap><i class="fa fa-list"></i>PRÓXIMA AÇÃO</td>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in listarPropostasComAlertas)
+                                    {
+
+                                        var tr_status = "";
+
+
+
+                                        var icon = "";
+                                        var tempoPassado = "";
+                                        if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+                                        {
+                                            tr_status = "warning";
+                                            icon = "fa fa-bell-o";
+                                            tempoPassado = "<i class='fa fa-clock-o'></i>";
+                                        }
+
+                                        <tr>
+                                            <td>@Html.GetLegendaPrioridade(item.StatusPrioridade)</td>
+                                            <td>@item.PRCPropostaId </td>
+                                            <td><span class="badge @item.Fonte">@item.Fonte</span></td>
+                                            <td>@item.RequerenteNome</td>
+                                            <td nowrap>R$ @string.Format("{0:N2}", item.PRCPropostaValorBruto)</td>
+                                            <td>
+                                                @item.StatusNome
+
+
+                                                @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                                                {
+                                                    <br />
+                                                    List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                                                    foreach (var badge in badges)
+                                                    {
+                                                        <span class="label label-info">@badge</span>
+                                                    }
+                                                }
+
+                                            </td>
+                                            <td>@Html.Raw(tempoPassado) @item.StatusTempoPassado hrs</td>
+                                            <td>
+                                                @if (item.EntidadeStatusDtAtualiza != null)
+                                                {
+                                                    <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusDtAtualiza)</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (item.EntidadeStatusHistoricoData != null)
+                                                {
+                                                    <span>@String.Format("{0:dd/MM/yyyy}", (DateTime)item.EntidadeStatusHistoricoData)</span>
+                                                }
+                                            </td>
+
+                                            <td><a href="@Url.Content("~/PRCPropostas/Editar/" + item.PRCPropostaId + "/" + item.PRCPropostaGUID)" class="btn btn-outline btn-primary btn-xs">Editar</a></td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    </div>
+                </li>
+            }
+
+            @if (user.ControleAcesso("PRCPropostasStatus", "Dashboard"))
+            {
+                <li class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="hpanel">
+                        <div class="panel-heading hbuilt">
+                            <div class="panel-tools">
+                                <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                            Propostas por Status
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="grafico-propostas-status">
+                                <div class="grafico-propostas-status-content" id="grafico-propostas-status" style="width: 100%; height: 300px;"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </li>
+            }
+
+
+            @if (user.ControleAcesso("PRCPropostasConversoes", "Dashboard"))
+            {
+                <li class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="hpanel">
+                        <div class="panel-heading hbuilt">
+                            <div class="panel-tools">
+                                <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                            Propostas por Tipo de Conversão
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="grafico-propostas-status">
+                                <div class="grafico-propostas-conversao-content" id="grafico-propostas-conversao" style="width: 100%; height: 300px;"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </li>
+            }
+
+
+
+
+
+
+
+
+
+        </ul>
+    </div>
+
+    <div class="row">
+        @if (user.ControleAcesso("PessoasCPorSituacao", "Dashboard"))
+        {
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="hpanel">
+                    <div class="panel-heading hbuilt">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        @BLL.Usuarios.GetEntidadeCliente() por situação
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="grafico-clientes-situacao">
+                            <div class="grafico-clientes-situacao-content" id="grafico-clientes-situacao" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (user.ControleAcesso("PessoasCPorPerfil", "Dashboard"))
+        {
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="hpanel">
+                    <div class="panel-heading hbuilt">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        @BLL.Usuarios.GetEntidadeCliente() por perfil
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="grafico-clientes-perfil">
+                            <div class="grafico-clientes-perfil-content" id="grafico-clientes-perfil" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (user.ControleAcesso("DashBoardStatus", "MedGuias"))
+    {
+        var _DashBoardStatusValor = user.ControleAcesso("DashBoardStatusValor", "MedGuias");
+        var sqlIndices = "SELECT ISNULL(entidadesstatus.StatusNome, 'SEM STATUS') Descricao,  COUNT(*) Quantidade, SUM(medguias.TotalProdutos) Valor FROM PerfisEntidadesStatus INNER JOIN EntidadesStatus ON PerfisEntidadesStatus.EntidadeStatusId = EntidadesStatus.EntidadeStatusId RIGHT OUTER JOIN MedGuias ON EntidadesStatus.EntidadeStatusId = MedGuias.EntidadeStatusId WHERE medguias.regstatus = 'A' AND entidadesstatus.regstatus = 'A' AND PerfisEntidadesStatus.perfilid = #PerfilId";
+        if (BLL.Usuarios.GetFilialId() > 0)
+        {
+            sqlIndices += " AND medguias.filialid = #FilialId ";
+        }
+
+        sqlIndices += "  GROUP BY entidadesstatus.statusnome ";
+
+        var listaIndices = BLL.Configuracoes.GetNomeQtdQuery(sqlIndices);
+        <div class="row">
+
+            @foreach (var item in listaIndices)
+            {
+                <div class="col-lg-3" style="">
+
+                    <div class="hpanel stats" style="height: 130px">
+                        <a href="@Url.Content("~/MedGuias/Index?realizaconsulta=true&pesquisar=&StatusNome=" + item.Descricao)">
+                            <div class="panel-body h-180">
+                                <div class="stats-title pull-left">
+                                    <h4>@item.Descricao</h4>
+                                </div>
+
+                                <div class="clearfix"></div>
+                                <div class="m-t-xs">
+
+                                    <div class="row">
+                                        <div class="col-xs-6" style="">
+                                            <small class="stat-label">Qtd.</small>
+                                            <h6>@item.Quantidade</h6>
+                                        </div>
+                                        @if (_DashBoardStatusValor)
+                                        {
+                                            <div class="col-xs-6" style="">
+                                                <small class="stat-label">Vlr. R$</small>
+                                                <h6>@string.Format("{0:F2}", item.Valor)  </h6>
+                                            </div>
+                                        }
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+
+                </div>
+            }
+        </div>
+    }
+
+    @if (user.ControleAcesso("index", "Repasses"))
+    {
+        var listaRepasses = bllRepasses.ListarPreview();
+        <div class="row">
+            <div class="col-lg-6" style="">
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+                        Total de Guias Quitadas por @BLL.Usuarios.GetEntidadeFilial() @BLL.Usuarios.GetVisualizaOutrasFiliais()
+                    </div>
+                    <div class="panel-body">
+                        <a class="btn btn-primary btn-xs" href="@Url.Content("~/Repasses/Index/")">Visualizar Repasses</a>
+                        <div class="table-responsive">
+                            <table cellpadding="1" cellspacing="1" class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th>@BLL.Usuarios.GetEntidadeFilial()</th>
+                                        <th class="text-right">Total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in listaRepasses)
+                                    {
+                                        var repasse_config = (item.FilialRepasse == 0 || item.FilialRepasseTeto == 0) ? false : true;
+
+                                        <tr class="@(repasse_config ? "  " : " active ")">
+                                            <td>
+                                                @item.FilialNome <i class="fa @(repasse_config ? "" : " fa-exclamation-triangle text-warning ")" aria-hidden="true"></i>
+                                                @if (!repasse_config)
+                                                {
+                                                    <small>
+                                                        <br />
+                                                        <strong>Atenção:</strong> Parâmetros de repasse não configurados.
+                                                    </small>
+                                                    if (config_filiais_index)
+                                                    {
+                                                        <small><a href="@Url.Content("~/Filiais/Index")">Clique aqui para acessar Filiais</a></small>
+                                                    }
+                                                }
+
+                                            </td>
+                                            <td class="text-right">R$ @string.Format("{0:F2}", item.Total)</td>
+                                            <td><a class="btn btn-outline btn-primary btn-xs" href="@Url.Content("~/Repasses/Preparar/" + item.FilialID)">Gerar Repasse</a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2" class="text-right">R$ @string.Format("{0:F2}", listaRepasses.Sum(m => m.Total))</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        Total de Filiais - @listaRepasses.Count()
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+</div>
+@section css{
+    @Styles.Render("~/bundles/datatables/css")
+    <style>
+        li.col-lg-3 {
+            min-height: 265px !important;
+        }
+    </style>
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/flot/js")
+    @Scripts.Render("~/bundles/chartjs/js")
+
+    <script>
+        var opt_quadrado_legenda = {
+            series: {
+                pie: {
+                    show: true,
+                    radius: 1,
+                    label: {
+                        show: true,
+                        radius: 3 / 4,
+                        formatter: function (label, series) {
+                            return '<div style="border:1px solid grey;font-size:8pt;text-align:center;padding:5px;color:white;">' +
+                                Math.round(series.percent) +
+                                '%</div>';
+                        },
+                        background: {
+                            opacity: 0.5,
+                            color: '#000'
+                        }
+                    }
+                }
+            },
+            legend: {
+                show: true,
+            }
+        };
+    </script>
+
+    @if (user.ControleAcesso("PRCPropostasStatus", "Dashboard"))
+    {
+
+        var listaPropostasPorStatus = bllPropostas.ListaQtdAgrupoPorStatus(BLL.Usuarios.GetEmpresaId(), PRCPropostas_ViewAll, PRCPropostas_ViewTriagem, BLL.Usuarios.GetUsuarioId());
+        <script>
+
+
+
+
+
+            var data_proposta_status = [
+                @foreach (var item in listaPropostasPorStatus)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+
+        @if (listaPropostasPorStatus.Count() > 0)
+        {
+            @: $.plot($("#grafico-propostas-status"), data_proposta_status, opt_quadrado_legenda);
+                                }
+
+
+
+
+
+
+
+        </script>
+    }
+
+
+    @if (user.ControleAcesso("PRCPropostasConversoes", "Dashboard"))
+    {
+
+        var listaPropostasPorConversao = bllPropostas.ListaQtdAgrupoPorTipoConversao(BLL.Usuarios.GetEmpresaId(), PRCPropostas_ViewAll, PRCPropostas_ViewTriagem, BLL.Usuarios.GetUsuarioId());
+        <script>
+
+            var data_proposta_conversao = [
+                @foreach (var item in listaPropostasPorConversao)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+        @if (listaPropostasPorConversao.Count() > 0)
+        {
+            @: $.plot($("#grafico-propostas-conversao"), data_proposta_conversao, opt_quadrado_legenda);
+                                            }
+
+        </script>
+    }
+
+
+    @if (user.ControleAcesso("Index", "Pessoas"))
+    {
+        var bllPessoas = new BLL.Pessoas();
+        var listaPessoasPorStatus = bllPessoas.ListaQtdAgrupoPorStatus(BLL.Usuarios.GetEmpresaId(), userFilialId);
+        var listaPessoasPorSituacaoInscricao = bllPessoas.ListaQtdAgrupoPorSituacaoInscricao(BLL.Usuarios.GetEmpresaId(), userFilialId);
+
+        var listaPessoasPorAreaAtuacao = bllPessoas.ListaQtdAgrupoPorAreaAtuacao(BLL.Usuarios.GetEmpresaId(), userFilialId);
+
+        var listaPessoasPorCategoriaSub = bllPessoas.ListaQtdAgrupoPorCategoriaSub(BLL.Usuarios.GetEmpresaId(), userFilialId);
+
+        var listaPessoasPorFormacaoTipo = bllPessoas.ListaQtdAgrupoPorFormacaoTipo(BLL.Usuarios.GetEmpresaId(), userFilialId);
+
+        var listaPessoasPorPerfil = bllPessoas.ListaQtdAgrupoPorPerfil(BLL.Usuarios.GetEmpresaId(), userFilialId);
+        <script>
+
+
+
+            var data_clientes_status = [
+                @foreach (var item in listaPessoasPorStatus)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+
+        @if (listaPessoasPorStatus.Count() > 0)
+        {
+            @: $.plot($("#grafico-clientes-situacao"), data_clientes_status, opt_quadrado_legenda);
+                                            }
+
+
+
+        </script>
+
+        <script>
+            //situacao inscricao
+            var data_clientes_situacao_inscricao = [
+                @foreach (var item in listaPessoasPorSituacaoInscricao)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+        @if (listaPessoasPorSituacaoInscricao.Count() > 0)
+        {
+            @: $.plot($("#grafico-clientes-situacao-inscricao"), data_clientes_situacao_inscricao, opt_quadrado_legenda);
+                                                        }
+        </script>
+
+
+        <script>
+            //situacao area atuacao
+            var data_clientes_area_atuacao = [
+                @foreach (var item in listaPessoasPorAreaAtuacao)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+        @if (listaPessoasPorSituacaoInscricao.Count() > 0)
+        {
+            @: $.plot($("#grafico-clientes-area-atuacao"), data_clientes_area_atuacao, opt_quadrado_legenda);
+                                                        }
+        </script>
+
+
+        <script>
+            //situacao categoria sub atuacao
+            var data_clientes_categoria_sub = [
+                @foreach (var item in listaPessoasPorCategoriaSub)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+        @if (listaPessoasPorCategoriaSub.Count() > 0)
+        {
+            @: $.plot($("#grafico-clientes-categoria-sub"), data_clientes_categoria_sub, opt_quadrado_legenda);
+                                                        }
+        </script>
+
+        <script>
+            //formacao tipo
+            var data_clientes_formacao_tipo = [
+                @foreach (var item in listaPessoasPorFormacaoTipo)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+        @if (listaPessoasPorFormacaoTipo.Count() > 0)
+        {
+            @: $.plot($("#grafico-clientes-formacao-tipo"), data_clientes_formacao_tipo, opt_quadrado_legenda);
+                                                        }
+        </script>
+
+        <script>
+
+
+
+            var data_clientes_perfil = [
+                @foreach (var item in listaPessoasPorPerfil)
+                {
+
+                                        @:{ label: "&nbsp;@item.Quantidade - @item.Descricao", data: "@item.Quantidade" },
+
+                }
+            ];
+
+
+        @if (listaPessoasPorPerfil.Count() > 0)
+        {
+            @: $.plot($("#grafico-clientes-perfil"), data_clientes_perfil, opt_quadrado_legenda);
+                                                         }
+
+
+
+
+        </script>
+    }
+
+    <script>
+
+        // Initialize Example 2
+        $('.dataTable').dataTable({
+            "pageLength": 50,
+            "paging": true,
+            "ordering": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "info": true,
+            'columnDefs': [
+                { 'orderData': [4], 'targets': [3] },
+                {
+                    'targets': [4],
+                    'visible': false,
+                    'searchable': false
+                },
+            ],
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar ",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+        });
+
+
+
+
+
+
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            GetListaQtdNegociadorStatus();
+        });
+
+        function GetListaQtdNegociadorStatus() {
+            $.getJSON('@Url.Content("~/ApiIntegracao/GetListaQtdNegociadorStatus/")', { id: "@BLL.Usuarios.GetUsuarioId()", visualizarTodas: "@PRCPropostas_ViewAll", visualizarTriagem: "@PRCPropostas_ViewTriagem", empresaid: "@BLL.Usuarios.GetEmpresaId()" }, function (result) {
+                $('#loading_table_negociadores_propostas').css('display', 'inline');
+                data = $.map(result, function (item, a) {
+
+                    $("#" + item.Descricao).html(item.Quantidade);
+
+                });
+                $('#loading_table_negociadores_propostas').css('display', 'none');
+
+            });
+        }
+
+    </script>
+
+
+
+
+}

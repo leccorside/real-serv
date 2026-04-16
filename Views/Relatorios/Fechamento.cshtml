@@ -1,0 +1,70 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório de Fechamento - " + BLL.Usuarios.GetEntidadeFuncionario();
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Relatórios", "Relatorios", "Principal")</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        <div class="row-fluid">
+            <div class="span4">
+                <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+
+
+                @Html.DropDownList("id", (SelectList)ViewBag.FuncionarioList, "--Selecione--", new { @class = "chosen-select " })
+
+            </div>
+
+            <div class="span4">
+                <label>De</label>
+                <input type="text" name="dataDe" title="Data para consulta da agenda" class="datepicker input-small input-small" value="@String.Format("{0:dd/MM/yyyy}", DataConsulta)" />
+            </div>
+
+
+            <div class="span4">
+                <label>Até</label>
+                <input type="text" name="dataAte" title="Data para consulta da agenda" class="datepicker input-small input-small" value="@String.Format("{0:dd/MM/yyyy}", DataConsulta)" />
+            </div>
+
+        </div>
+                   
+                
+         
+            
+            
+                       
+            
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="Gerar" class="btn btn-primary  btn-large" onclick="return confirm('Confirma a geração do fechamento com os parâmetros informados?')" />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Relatorios", "Principal")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

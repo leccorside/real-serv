@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewBag.Title = "Protocolo";
+    Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    var agora = DateTime.Now;
+
+    
+}
+
+@section Styles{
+  
+}
+
+<br />
+<br />
+<br />
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <div class="row-fluid">
+        <div class="span2"></div>
+        <div class="span8">
+
+  
+                
+            <h2 class="pull-right"><i class="fa fa-clock-o"></i> <span id="clock"></span> </h2>
+            <h2 class="pull-left">Registro de Ponto</h2>
+            <br /><br /><br /><br /><br /><br />
+            <a href="Index" class="btn ">Voltar</a>
+        </div>
+        <div class="span2"></div>
+    </div>
+}
+@section scripts{
+    <script src="~/Assets/js/jquery.js"></script>
+
+
+
+    <script>
+        $(function () {
+
+            function updateTime() {
+                $.getJSON("@Url.Content("~/Ponto/DataHora")", function (result) {
+                    $("#clock").text(result);
+                });
+            }
+
+
+            setInterval(function () {
+                updateTime();
+            }, 30000);
+
+            updateTime();
+
+        });
+    </script>
+}

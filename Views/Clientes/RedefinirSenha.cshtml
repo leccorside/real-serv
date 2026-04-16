@@ -1,0 +1,80 @@
+﻿@model Models.ClienteRedifinirSenha
+
+
+
+@{
+    
+
+    
+
+    var acao = "Alterar";
+
+
+    ViewBag.Title = acao + " Senha";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span> <a href="~/Clientes/Index/@Model.DadosCliente.UsuarioEmpresaId">@Model.DadosCliente.UsuarioEmpresaNomeFantasia</a></li>
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Usuários", "Index", new { id = Model.DadosCliente.UsuarioEmpresaId })</li>
+
+    
+}
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+        
+    @Html.HiddenFor(model => model.ChangePasswordModel.UsuarioId);
+
+    @Html.Hidden("ChangePasswordModel.oldPassword", Guid.NewGuid());
+     
+        
+    
+    <div class="control-group">
+        <label>@Html.LabelFor(model => model.ChangePasswordModel.newPassword)</label>
+        @Html.EditorFor(model => model.ChangePasswordModel.newPassword)
+        @*@Html.ValidationMessageFor(model => model.ChangePasswordModel.newPassword)*@
+    </div>
+        
+        
+    <div class="control-group">
+        <label>@Html.LabelFor(model => model.ChangePasswordModel.ConfirmPassword)</label>
+        @Html.EditorFor(model => model.ChangePasswordModel.ConfirmPassword)
+        @*@Html.ValidationMessageFor(model => model.ChangePasswordModel.ConfirmPassword)*@
+    </div>
+        
+        
+        
+      
+
+    <div class="form-actions">
+
+
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+    </div>
+            
+}
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

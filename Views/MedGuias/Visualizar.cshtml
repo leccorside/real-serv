@@ -1,0 +1,386 @@
+﻿@model Models.MedGuiaItemView
+
+@{
+    ViewBag.Title = "Criar Guia > Produtos e Exames";
+
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    //Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    List<List<Models.MedGuiaItem>> newList = BLL.Utils.Funcoes.SplitList<Models.MedGuiaItem>(Model.ListMedGuiaItem, 20);
+    var qtdLists = newList.Count();
+    var tamanhoSpan = 12 / qtdLists;
+
+    var bllMedGuias = new BLL.MedGuias();
+    var _PodeAlterar = bllMedGuias.PodeAlterar(Model.MedGuia);
+
+    var bllConveniosPlanos = new BLL.ConveniosPlanos();
+    var plano = bllConveniosPlanos.Carregar(Model.MedGuia.ConvenioPlanoId);
+
+
+
+    var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    var _FinanceiroLancamento = BLL.Usuarios.VerificaAcesso("Lancamento", "Financeiro");
+
+    var _MedGuiasCriar = BLL.Usuarios.VerificaAcesso("Criar", "MedGuias");
+
+    var _MedGuiasGuiaNF = BLL.Usuarios.VerificaAcesso("GuiaNF", "MedGuias");
+
+    var _MedGuiasDeletar = BLL.Usuarios.VerificaAcesso("Deletar", "MedGuias");
+
+    var _MedGuiasHistorico = BLL.Usuarios.VerificaAcesso("Historico", "MedGuias");
+
+    var _MedGuiasAnexos = BLL.Usuarios.VerificaAcesso("Anexos", "MedGuias");
+
+    var _MedGuiasStatus = BLL.Usuarios.VerificaAcesso("Status", "MedGuias");
+
+    var _PessoasDadosAluno = BLL.Usuarios.VerificaAcesso("DadosAluno", "Pessoas");
+
+    var _MedGuiasPrecoCusto = BLL.Usuarios.VerificaAcesso("PrecoCusto", "MedGuias");
+
+    var _MedGuiasVisualizar = BLL.Usuarios.VerificaAcesso("Visualizar", "MedGuias");
+
+    var _MedGuiasViewTotalProdutos = BLL.Usuarios.VerificaAcesso("ViewTotalProdutos", "MedGuias");
+    var _MedGuiasViewTotalProdutosCusto = BLL.Usuarios.VerificaAcesso("ViewTotalProdutosCusto", "MedGuias");
+    var _MedGuiasViewTotalReembolso = BLL.Usuarios.VerificaAcesso("ViewTotalReembolso", "MedGuias");
+    var _MedGuiasViewTotalLucro = BLL.Usuarios.VerificaAcesso("ViewTotalLucro", "MedGuias");
+
+    var _MedGuiasRelatorios = BLL.Usuarios.VerificaAcesso("Relatorios", "MedGuias");
+    
+}
+@{
+    
+    
+    
+}
+
+
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Resumo da Guia @Model.MedGuia.MedGuiaId
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    @if (Model.MedGuia.PacienteResponsavel)
+                    {
+                        <legend>Dados do Paciente</legend>
+                    <div class="row">
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Data do Exame</label><br />
+                            @string.Format("{0:dd/MM/yyyy}", Model.MedGuia.RegDtInicio)
+                        </div>
+
+                        
+                        <div class="col-lg-5 col-md-5 col-sm-5">
+                            <label>Paciente</label><br />
+                            @Model.MedGuia.PessoaDependenteNome
+                        </div>
+                        
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Grau Parentesco</label><br />
+                            @Model.MedGuia.GrauParentescoNome
+                        </div>
+
+                        
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Data Nascimento</label><br />
+                            @string.Format("{0:dd/MM/yyyy}", Model.MedGuia.DataNascimento)
+                        </div>
+
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <label>Sexo</label><br />
+                            @Model.MedGuia.Sexo
+                        </div>
+
+                    </div>
+                        <br />
+                        <legend>Dados do Responsável</legend>
+                    <div class="row">
+
+                        
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>CPF</label><br />
+                            @Model.MedGuia.PacienteCpf
+                        </div>
+
+                        <div class="col-lg-7 col-md-7 col-sm-7">
+                            <label>Nome Responsável</label><br />
+                            @Model.MedGuia.PacienteNome
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>Celular</label><br />
+                            @Model.MedGuia.PacienteCelular
+                        </div>
+
+
+                    </div>
+                    }
+                    else
+                    {
+                    <legend>Dados do Paciente</legend>
+                    <div class="row">
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Data do Exame</label><br />
+                            @string.Format("{0:dd/MM/yyyy}", Model.MedGuia.RegDtInicio)
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>CPF</label><br />
+                            @Model.MedGuia.PacienteCpf
+                        </div>
+
+                        <div class="col-lg-5 col-md-5 col-sm-5">
+                            <label>Paciente</label><br />
+                            @Model.MedGuia.PacienteNome
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Celular</label><br />
+                            @Model.MedGuia.PacienteCelular
+                        </div>
+
+
+                    </div>    
+                    }
+                    
+                    <br />
+                    <legend>Dados Bancários</legend>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>Código do Banco</label><br />
+                            @Model.MedGuia.BancoCod
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>Nome do Banco</label><br />
+                            @Model.MedGuia.BancoNome
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>Agência</label><br />
+                            @Model.MedGuia.BancoAgencia
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label>Conta</label><br />
+                            @Model.MedGuia.BancoConta
+                        </div>
+                    </div>
+                    <br />
+                    <legend>Dados Convênio</legend>
+                    <div class="row">
+                        <div class="col-lg-5 col-md-5 col-sm-5">
+                            <label>Carteira Convênio</label><br />
+                            @Model.MedGuia.MedCarteiraConvenio
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Validade</label><br />
+                            @String.Format("{0:dd/MM/yyyy}", Model.MedGuia.MedCarteiraValidade)
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-5">
+                            <label>Titular</label><br />
+                            @Model.MedGuia.MedCarteiraTitular
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <label>Médico</label><br />
+                            @Model.MedGuia.MedicoNome
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Convênio</label><br />
+                            @Model.MedGuia.ConvenioNome
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label>Plano</label><br />
+                            @Model.MedGuia.ConvenioPlanoNome
+                        </div>
+                        @if (_MedGuiasViewTotalReembolso)
+                        {
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <label>Reemboslo</label><br />
+                                @string.Format("{0:F2}", Model.MedGuia.ConvenioPlanoValor)
+                            </div>     
+                        }
+
+
+                    </div>
+
+
+                    <br />
+                    <legend>Produtos / Exames</legend>
+
+                    <div class="row">
+                        @foreach (var list in newList)
+                        {
+                            <div class="@("col-lg-" + tamanhoSpan)">
+                                <table class="data footable table-bordered table-striped table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto / Exame</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in list)
+                                        {
+                    
+                                            <tr>
+                                                <td>
+                                                    @item.MedProdutoCod - @item.MedProdutoNome
+                                                </td>
+                                            </tr>	 
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    
+
+                    
+
+@if (_MedGuiasGuiaNF || (_MedGuiasVisualizar && _MedGuiasViewTotalProdutos))
+{
+    <br /><legend>Dados da NF</legend>
+    <div class="row">
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <label>Data NF</label><br />
+            @String.Format("{0:dd/MM/yyyy}", Model.MedGuia.NotaFiscalData)
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <label>NF</label><br />
+            @Model.MedGuia.NotaFiscal
+        </div>
+    </div>
+}
+
+@if (_MedGuiasPrecoCusto || (_MedGuiasVisualizar && _MedGuiasViewTotalProdutosCusto))
+{
+    <br /><legend>Preço custo dos Exames</legend>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            @string.Format("{0:F2}", Model.MedGuia.TotalProdutosCusto)
+        </div>
+
+    </div>
+}
+
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Anexos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                
+                    @Html.CubeeAnexos("MedGuiasNF", Model.MedGuia.MedGuiaId, "NF", "col-lg-12 col-md-12 col-sm-12", false, false, false, false, true, "", Model.MedGuia.EmpresaId)
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Documentos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                @Html.CubeeAnexos("Pessoas", Model.MedGuia.PacienteId, " |RG|CPF|Carteirinha", "col-lg-12 col-md-12 col-sm-12", false, false, false, false, true, "", Model.MedGuia.EmpresaId)
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Histórico
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                @Html.CubeeBlog("MedGuias", Model.MedGuia.MedGuiaId, "", 0, false, false)
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+@section Styles{
+    <style>
+        .data
+        {
+            font-size: 11px !important;
+        }
+
+            .data td
+            {
+                padding-top: 0px;
+                padding-bottom: 2px;
+                margin: 0px !Important;
+            }
+
+        tr.highlight td
+        {
+            background-color: #ffd800 !important;
+        }
+    </style>
+}
+
+@section Scripts {
+
+}
+

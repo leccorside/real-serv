@@ -1,0 +1,141 @@
+﻿@{
+    ViewBag.Title = "Relatórios";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    var user = new BLL.Usuarios();
+
+
+    var lista = new List<Models.Menu>();
+    var contador = 0;
+    var contadorMaster = 1;
+    var orientacao = "col-l";
+    var click = "";
+
+    //monta o menu de acordo com o perfil 
+    //cores: Orange, Purple, lblue, Red, Green and Blue
+    //icones: http://fortawesome.github.io/Font-Awesome/icons/
+
+    lista.Add(new Models.Menu { Cor = "black", Icone = "icon-home", Link = "~/Principal/Index", Nome = "Home", OnClick = "" });
+
+    if (user.ControleAcesso("AgendaProfissional", "relatorios"))
+    {
+        @*<li><a href="@Url.Content("~/Relatorios/AgendaProfissional/")">Agenda @Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())</a></li>*@
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-file-text-o", Link = "~/Relatorios/Index/", Nome = "Agenda " + BLL.Usuarios.GetEntidadeFuncionario(), OnClick = "" });
+    }
+
+    if (user.ControleAcesso("ListaPresencaProfissional", "relatorios"))
+    {
+        @*<li><a href="@Url.Content("~/Relatorios/ListaPresencaProfissional/")">Lista de presença</a></li>*@
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-file-text-o", Link = "~/Relatorios/ListaPresencaProfissional/", Nome = "Lista de presença", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("Fechamento", "relatorios"))
+    {
+        @*<li><a href="@Url.Content("~/Relatorios/Fechamento/")">Fechamento</a></li>*@
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-file-text-o", Link = "~/Relatorios/Fechamento/", Nome = "Fechamento", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("FechamentoFinanceiro", "relatorios"))
+    {
+        @*<li><a href="@Url.Content("~/Relatorios/FechamentoFinanceiro/")">Fechamento Financeiro</a></li>*@
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-file-text-o", Link = "~/Relatorios/FechamentoFinanceiro/", Nome = "Fechamento Financeiro", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("RelatorioFichas", "relatorios"))
+    {
+        @*<li><a href="@Url.Content("~/Relatorios/RelatorioFichas/")">Relatório Fichas</a></li>*@
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-file-text-o", Link = "~/Relatorios/RelatorioFichas/", Nome = "Relatório Fichas", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("RelatorioClientes", "relatorios"))
+    {
+        @*<li><a href="@Url.Content("~/Relatorios/RelatorioClientes/")">@Html.Raw(BLL.Usuarios.GetEntidadeCliente())</a></li>*@
+        lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-file-text-o", Link = "~/Relatorios/RelatorioClientes/", Nome = BLL.Usuarios.GetEntidadeCliente(), OnClick = "" });
+    }
+
+    if (user.ControleAcesso("RelatorioAniversariantes", "relatorios"))
+    {
+        @*<li><a href="@Url.Content("~/Relatorios/RelatorioAniversariantes/")">Aniversariantes</a></li>*@
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-file-text-o", Link = "~/Relatorios/RelatorioAniversariantes/", Nome = "Aniversariantes", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("ListaPresencaAluno", "relatorios"))
+    {
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-file-text-o", Link = "~/Relatorios/ListaPresencaAluno/", Nome = BLL.Usuarios.GetEntidadeCliente(), OnClick = "" });
+    }
+
+    if (user.ControleAcesso("MedGuiasReembolsos", "relatorios"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-file-text-o", Link = "~/Relatorios/MedGuiasReembolsos/", Nome = "Guias - Reembolsos", OnClick = "" });
+    }
+
+      if (user.ControleAcesso("MedGuiasReembolsosStatus", "relatorios"))
+    {
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-file-text-o", Link = "~/Relatorios/MedGuiasReembolsosStatus/", Nome = "Guias - Status", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("MultiplusAcumulos", "relatorios"))
+    {
+        lista.Add(new Models.Menu { Cor = "black", Icone = "fa fa fa-th", Link = "~/Relatorios/MultiplusAcumulos/", Nome = "Multiplus - Acúmulos", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("MultiplusResgates", "relatorios"))
+    {
+        lista.Add(new Models.Menu { Cor = "black", Icone = "fa fa fa-th", Link = "~/Relatorios/MultiplusResgates/", Nome = "Multiplus - Resgates", OnClick = "" });
+    }
+   
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+<div class="content animate-panel">
+
+
+    <div class="row">
+
+        <div class="col-md-6 col-md-offset-3" style="">
+
+
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        <a class="closebox"><i class="fa fa-times"></i></a>
+                    </div>
+                    Todas os relatórios
+                </div>
+                <div class="panel-body no-padding">
+
+
+                    <ul class="list-group">
+
+                        @foreach (var item in lista)
+                        {
+                            click = (item.OnClick != "onclick=\"return confirm('" + item.OnClick + "')\"") ? "" : "";
+                            <li class="list-group-item">
+                                <a href="@Url.Content(item.Link)" @click><i class="@item.Icone"></i> @item.Nome</a>
+                            </li> 
+                        }
+
+
+                    </ul>
+                </div>
+                <div class="panel-footer">
+                    @(lista.Count()-1) relatorios
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+
+</div>
+
+
+
+

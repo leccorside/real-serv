@@ -1,0 +1,141 @@
+﻿@model Models.PessoaPlanoInscricao
+
+@{
+
+    var icon_status = "";
+    var class_status = "";
+    var panelColor = "hred";
+    bool statusPagto = false;
+    var _PermiteCriar = BLL.Usuarios.VerificaAcesso("Criar", "PessoasPlanosInscricoes");
+   
+
+    switch (Model.PessoaPlanoPagtoStatus)
+    {
+        case "Paga":
+        case "Gratuito":
+            class_status = " text-success ";
+            icon_status = "fa fa-check";
+            statusPagto = true;
+            break;
+        case "AguardandoPagamento":
+            class_status = " text-warning ";
+            icon_status = "fa fa-pause";
+            break;
+        default:
+            class_status = "  ";
+            break;
+    }
+
+    if (statusPagto && Model.CubeeAnexosStatusOk)
+    {
+        panelColor = "hgreen";
+    }
+    else if (statusPagto || Model.CubeeAnexosStatusOk)
+    {
+        panelColor = "hyellow";
+    }
+
+    var isPlano = (Model.PessoaPlanoGrupoTipoId == 0 ? true : false);
+
+}
+
+
+
+
+
+<div class="hpanel @panelColor">
+    <div class="panel-heading hbuilt">
+
+        @if (isPlano)
+        {
+            <i class="pe-7s-note fa fa-2x"></i> @Model.PessoaPlanoGrupoNome
+        }
+        else
+        {
+            <i class="pe-7s-star fa fa-2x"></i> @Model.PessoaPlanoGrupoNome
+        }
+
+
+        @if (!Model.PessoaPlanoGrupoDtIndeterminado)
+        {
+            <span class="pull-right">@Model.PessoaPlanoGrupoDtInicio ~ @Model.PessoaPlanoGrupoDtFim</span>    
+        }
+
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-1"><small>Cód.</small><br />@Model.PessoaCodigo</div>
+            <div class="col-sm-2"><small>CPF</small><br />@Model.Documento</div>
+            <div class="col-sm-4">
+                <h4><span id="detalhe_Pessoa_Nome">@Model.Nome</span></h4>
+            </div>
+            <div class="col-sm-3"><small>EMail</small><br />@Model.Email</div>
+            <div class="col-sm-2"><small>Celular</small><br />@Model.Celular</div>
+        </div>
+        <hr />
+
+        <div class="row">
+            <div class="col-sm-9">
+
+                <div class="row">
+                    <div class="col-sm-1">
+                        <small>
+                            <abbr title="Inscrição">#.</abbr></small><br />@Model.PessoaPlanoInscricaoId
+                    </div>
+
+                    <div class="col-sm-2">
+                        <small>Tipo</small><br />
+                        @if (isPlano)
+                        {
+                            <h4>@Model.PessoaPlanoTipoNome <small>@Model.PessoaCategoriaSubNome</small></h4>    
+                        }
+                        else
+                        {
+                            <h4>@Html.GetLegendaPlanoGrupoTipo(Model.PessoaPlanoGrupoTipoId) <small>@Model.PessoaPlanoGrupoNome</small></h4>
+                        }
+
+
+                    </div>
+                    <div class="col-sm-3"><small>Data Inscrição</small><br />@Model.RegDtInicio</div>
+                    <div class="col-sm-3"><small>Tipo Pagamento</small><br />@Model.GatewayTipoPagamento</div>
+                    <div class="col-sm-3">
+                        <h3 class="text-">
+                            @string.Format("{0:C}", Model.PessoaPlanoVlrTotal) <i class=" @icon_status"></i>
+                        </h3>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    @if (isPlano)
+                    {
+                        <div class="col-sm-3">
+                            <small>Status Documentação</small><br />
+                            <span class="@(Model.CubeeAnexosStatusOk ? "  text-success " : " text-warning ")">@(Model.CubeeAnexosStatusOk ? "Ok" : "Pendente") <i class="@(Model.CubeeAnexosStatusOk ? "fa fa-check" : " fa fa-pause ")"></i></span>
+                        </div>    
+                    }
+
+                    <div class="col-sm-3">
+                        <small>Status Pagamento</small><a href="@Url.Content("~/PessoasPlanosInscricoes/AlterarStatus/" + Model.PessoaPlanoInscricaoId + "/" + Model.PessoaPlanoGUID + "")" class="fancybox_recarrega fancybox.iframe permiteedicao @(!_PermiteCriar?"hide":"")"><i class="fa fa-edit"></i></a><br />
+                        <span class="@class_status">@Model.PessoaPlanoPagtoStatus <i class="@icon_status"></i></span>
+                    </div>
+                    <div class="col-sm-3"><small>Data Pagamento</small><br />@Model.PessoaPlanoInscricaoDtPagto</div>
+                    <div class="col-sm-3"><small>Data Validade</small><br />@Model.PessoaPlanoInscricaoDtValidade</div>
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+                <div class="row">
+                    <div class="col-sm-12 project-info" style="">
+                        <div class="list-group ">
+                            <div class="list-group-item ">
+                                <h5 class="list-group-item-heading">@Model.StatusNome</h5>
+                                <p class="list-group-item-text">@Model.StatusInstrucoes</p>
+                                <small>Tempo no status: @Model.StatusTempoPassado hrs</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,295 @@
+﻿@model IEnumerable<Models.TransferenciaAssincrona>
+
+@{
+    
+    ViewBag.Title = "Importador de Arquivos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    
+
+    
+    // ativar pesquisa
+    //ViewBag.SearchAction = "~/Contatos/Downloads/";
+    //ViewBag.SearchPlaceHolder = "Pesquisar Arquivos";
+    //ViewBag.SearchMethod = "get";
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Requisições de Pagamentos", "Index", new { id = 0 })</li>
+}
+
+
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Importador de Arquivos
+                </div>
+                <div class="panel-body">
+
+                    
+
+
+                    <div class="table-responsive">
+
+                        
+                        
+
+                     <div class="btn-group">
+                            
+                         @*<a class="btn btn-outline btn-primary  btn-download-new fancybox_recarrega fancybox.iframe " data-val="0" data-style="zoom-in" href="@Url.Content("~/Trj/DownloadGerar")">Novo <small>Dowload</small> <i class="fa fa-download"></i></a>*@
+                            <a class="btn btn-outline btn-primary  btn-upload fancybox_recarrega fancybox.iframe " data-val="0" data-style="zoom-in" href="@Url.Content("~/Trj/UploadGerar")">Importar Arquivo <i class="fa fa-upload"></i></a>
+                            <a class="btn btn-outline btn-primary " href="@Url.Content("~/Trj/Downloads")">Atualizar <i class="fa fa-refresh"></i></a>
+                        </div>
+                        
+                        
+                        <table class="table table-hover table-bordered table-striped dataTablex" id="data_table_1x">
+                            <thead>
+                                <tr>
+                                  <td>#</td>
+                                    <td>Ação</td>
+                                    <td>Tipo</td>
+                                    <td>Arquivo</td>
+                                    <td>Status</td>
+                                    <td>Data</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Count() == 0)
+                                {
+                                    <tr class="info">
+                                        <td colspan="22"><small class="muted">Nenhum registro localizado (<i>No records found.</i>)</small></td>
+                                    </tr>
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    var lbl_status = "";
+                                    var loading = "";
+                                    switch (item.SituacaoCode)
+                                    {
+                                        case 0:
+                                            lbl_status = "label-warning";
+                                            loading = " fa-spinner fa-spin ";
+                                            break;
+                                        case 1:
+                                            lbl_status = "label-success";
+                                            break;
+                                        case 2:
+                                            lbl_status = "label-danger";
+                                            loading = "fa-exclamation-triangle";
+                                            break;
+                                        case 9:
+                                            lbl_status = "label-danger";
+                                            loading = "fa-exclamation-triangle";
+                                            break;
+                                        default:
+                                            lbl_status = "label-info";
+                                            break;
+                                    }
+                                    <tr>
+                                        <td>@item.TransferId</td>
+                                        <td class="text-center">
+                                            @if (item.SituacaoCode==1 )
+                                            {
+                                                if (item.Operacao=="D")
+                                                {
+                                                    <a class="btn btn-outline btn-primary btn-xs" href="@Url.Content("~/Trj/DownloadsArquivo/" + item.TransferId)">Download</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-outline btn-primary btn-xs fancybox fancybox.iframe" href="@Url.Content("~/Trj/DetalhesUpload/" + item.TransferId)">Detalhes</a>
+                                                }
+                                                
+                                            }
+                                            else
+                                            {
+                                                <i class="fa @loading"></i>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            @switch (item.Operacao)
+                                            {
+                                                case"D":
+                                                    <span><i class="fa fa-download"></i> <small>Download</small></span>
+                                                    break;
+                                                case "U":
+                                                    <span><i class="fa fa-upload"></i> <small>Upload</small></span>
+                                                    break;
+                                                default:
+                                                <span>-</span>
+                                                    break;
+                                            }
+                                            </td>
+                                        <td>@item.FileName</td>
+                                        <td>
+                                            <span class="label  @lbl_status ">@item.SituacaoDesc <i class="fa @loading"></i> </span></td>                                        
+                                        <td>@item.RegDtInicio</td>
+                                        
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+                        @*@Html.CubeePaginacao((int)ViewBag.qtdPaginas)*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles {
+    @Styles.Render("~/bundles/bootstrapTour/css")
+    @Styles.Render("~/bundles/ladda/css")
+    @Styles.Render("~/bundles/fancybox/css") 
+
+}
+
+
+
+@section Scripts {
+    
+    @Scripts.Render("~/bundles/bootstrapTour/js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/ladda/js")
+@Scripts.Render("~/bundles/fancybox/js")
+    <script>
+
+    
+        $('.btn-download').click(function (e) {
+            e.preventDefault();
+
+            console.log(e);
+
+            var l = $(this).ladda();
+
+            
+
+
+            swal({ title: "Atenção", text: "Deseja realmente gerar um novo arquivo? Esse processo pode demorar alguns minutos.", type: "warning", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: true }, function () {
+                
+            
+                l.ladda('start');
+                l.ladda('setProgress', 0.5);
+
+
+                $.ajax({
+                    url: '/Trj/DownloadsGerar/',
+                    error: function (data) {
+                        
+                        sweetAlert("Oops...", 'Ocorreu um erro ao registrar solicitação', "error");
+                        l.ladda('stop');
+                    },
+                    success: function (data) {
+                        l.ladda('stop');
+                        console.log(data);
+                        if (data.NUMERO == 0) {
+                            //swal("Tudo certo!", "Solicitação Registrada", "success");
+
+
+                            toastr.options = {
+                                "debug": false,
+                                "newestOnTop": false,
+                                "positionClass": "toast-top-center",
+                                "closeButton": true,
+                                "toastClass": "animated fadeInDown",
+                            };
+
+
+
+                            toastr.success('Solicitação Registrada. A página será recarregada em alguns segundos')
+
+                            window.setTimeout('location.reload()', 4000);
+                        } else {
+                            sweetAlert("Oops...", 'Ocorreu um erro ao registrar solicitação', "error");
+                        }
+
+                    },
+                    type: 'GET'
+                });
+
+
+
+            });
+        });
+
+        $('.btn-excluir').click(function (e) {
+            e.preventDefault();
+            var id = $(this).attr("data-id");
+            swal({ title: "Atenção", text: "Deseja realmente excluir esse registro do sistema?", type: "warning", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { parent.location = "@Url.Content("~/Trj/DownloadsGerar/")/" + id; });
+        });
+
+
+
+
+
+       
+
+    </script>
+
+
+       <script type="text/javascript">
+           $(".fancybox_recarrega").fancybox({
+               fitToView: false,
+               width: '98%',
+               autoSize: false,
+               padding: 0,
+               helpers: {
+                   overlay: {
+                       locked: true
+                   }
+               },
+               beforeClose: function () {
+                   RecarregaPagina();
+               },
+           });
+           $(".fancybox").fancybox({
+               toolbar: false,
+               padding: 0,
+               fitToView: false,
+               width: '80%',
+               autoSize: true,
+               helpers: {
+                   overlay: {
+                       locked: true
+                   }
+               }
+           });
+           $(".fancybox_full").fancybox({
+               padding: 0,
+               fitToView: false,
+               width: '98%',
+               autoSize: false,
+               closeClick: false,
+               openEffect: 'none',
+               closeEffect: 'none',
+               helpers: {
+                   overlay: {
+                       locked: true
+                   }
+               }
+           });
+
+        
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+     
+        
+    </script>
+
+
+}
+

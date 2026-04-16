@@ -1,0 +1,212 @@
+﻿@model Models.PessoaProjetoCabecalho
+@{
+    ViewBag.Title = "Sua Foto";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    var bllFotos = new BLL.PessoasProjetosItens();
+    var fotos = new Models.PessoaProjetoItemView();
+    if (Model.PessoaProjetoCabecalhoGuid != null)
+    {
+        fotos = bllFotos.ListarPorCabecalhoGuid(Model.PessoaProjetoCabecalhoGuid);
+    }
+    
+}
+
+<div class="content animate-panel">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel @(@Model.PessoaProjetoCabecalhoId == 0 ? "" : " collapsed ")">
+                <div class="panel-heading hbuilt">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+
+                    <a class="showhide">
+                        <h5>@(@Model.PessoaProjetoCabecalhoId == 0 ? "Dados do Projeto" : Model.PessoaProjetoCabecalhoNome)</h5>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    @using (Html.BeginForm("ProjetosCabecalhos", "Associados", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+                        @Html.HiddenFor(m => m.PessoaProjetoCabecalhoId)
+                        @Html.HiddenFor(m => m.PessoaProjetoCabecalhoGuid)
+                        @Html.HiddenFor(m => m.PessoaID)
+    
+                        
+                        <div class="row">
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Nome do projeto</label>
+                                @Html.TextBoxFor(model => model.PessoaProjetoCabecalhoNome, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label>Descrição</label>
+                                @Html.TextBoxFor(model => model.PessoaProjetoCabecalhoDescricao, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                            </div>
+                        </div>
+                        
+                    }
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    @if (Model.PessoaProjetoCabecalhoId > 0)
+    {
+        <div class="row">
+            <div class="col-lg-12" style="">
+                <div class="hpanel">
+                    <div class="panel-heading">
+                        <div class="panel-tools">
+                            <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        </div>
+
+                        <h5>Fotos do seu projeto</h5>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-lg-12" style="">
+
+
+                                <div id="dropzone">
+
+
+                                    <form action="@Url.Content("~/Associados/ProjetosItens/" + Model.PessoaProjetoCabecalhoId)" class="dropzone" enctype="multipart/form-data" id="imgUpload" method="post">
+
+                                        <div class="fallback">
+                                            <input name="Arquivos" type="file" multiple="multiple" />
+                                        </div>
+                                        <div class="dz-message" data-dz-message>
+                                            <h4>Clique ou arraste as fotos aqui</h4>
+                                            <br />
+                                            <small>Selecione fotos no formato JPG ou PNG</small>
+                                        </div>
+                                    </form>
+
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <br />
+                        @if (fotos.ListPessoaProjetoItem.Count > 0)
+                        {
+                            <legend>Fotos cadastradas</legend>
+                        }
+                        else
+                        {
+                            <legend>Nenhuma foto cadastrada</legend>
+                        }
+
+                        <div class="row">
+                            <ul style="list-style: none; margin: 0px !important; padding: 0px !important;">
+                                @foreach (var item in fotos.ListPessoaProjetoItem)
+                                {
+
+                                    <li class="col-lg-3 col-md-3 col-sm-3" style="">
+                                        <div class="hpanel">
+                                            <div class="panel-body file-body foto-body">
+                                                @if (item.PessoaProjetoItemPath!=null)
+                                    {
+                                                <img class="foto" src="@Url.Content(item.PessoaProjetoItemPathThumb)" /><br />
+                                    }
+                                                else
+                                                {
+                                                    <span class="text-center"><i class="fa fa-frown-o fa-3" aria-hidden="true"></i><br />Essa foto ficou com erro </span>
+                                                }
+                                                <small>@item.PessoaProjetoItemFileName</small>
+                                            </div>
+                                            <div class="panel-footer">
+                                                <small>@(item.PessoaProjetoItemContentType!=null? item.PessoaProjetoItemContentType:"n/i")</small>
+                                                <a href="#" class="btn btn-outline btn-danger btn-xs pull-right" onclick="return cubeeConfirm('Atenção','Confirma a exclusão dessa foto?','@Url.Content("~/Associados/ProjetoItemDelete/" + item.PessoaProjetoItemId + "/" + Model.PessoaProjetoCabecalhoGuid + "/?PessoaProjetoCabecalhoId=" + item.PessoaProjetoCabecalhoId)')" ><i class="icon-trash"></i>Apagar</a>
+                                            </div>
+                                        </div>
+                                    </li>      
+                                    
+                                    
+                                }
+
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>    
+    }
+
+</div>
+
+
+@section Styles{
+    <link href="~/Assets/plugins/dropzone/dropzone.css" rel="stylesheet" />
+    <style>
+        .dropzone
+        {
+            border: 2px dashed #0087F7;
+            border-radius: 5px;
+            background: white;
+            padding: 0px !important;
+            min-height: 100px !important;
+        }
+
+        .bootstrap-filestyle.input-group
+        {
+            display: none !important;
+        }
+
+        .foto-body
+        {
+            height: 150px;
+        }
+
+        img.foto
+        {
+            max-width: 100%;
+            height: 60px;
+        }
+    </style>
+}
+
+
+
+
+@section Scripts {
+    <script src="~/Assets/plugins/dropzone/dropzone.js"></script>
+
+    <script>
+        $(".dropzone").dropzone(
+            {
+                url: "@Url.Content("~/Associados/ProjetosItens/" + Model.PessoaProjetoCabecalhoId)",
+                uploadMultiple: true,
+                paramName: "Arquivos",
+                acceptedFiles: "image/*",
+                init: function () {
+
+                    this.on("queuecomplete", function (file) {
+
+
+                        swal({ title: "Tudo certo!", text: "Fotos registradas", type: "success", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: false }, function () { window.location.reload(true);; });
+                    });
+                },
+
+
+            }
+            );
+    </script>
+}
+
+

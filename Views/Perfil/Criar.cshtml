@@ -1,0 +1,92 @@
+﻿@model Models.Perfil
+
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.PerfilId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@section Breadcrumb{
+      
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Perfis", "Index")</li>
+}
+
+
+
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+
+           
+        
+            
+            if (Model.PerfilId > 0)
+            {
+            @Html.Hidden("PerfilId", Model.PerfilId);
+                                                          acao = "Alterar";
+            }
+       
+            
+     
+            <div class="control-group">
+                <label class = "control-label" for="PerfilNome">Nome do perfil</label>
+                <div class="controls">
+                    @Html.EditorFor(model => model.PerfilNome)
+                    @*@Html.ValidationMessageFor(model => model.PerfilNome)*@
+                </div>
+            </div>
+        
+            <div class="control-group">
+                <label class = "control-label" for="EntidadeId">Entidade</label>
+                <div class="controls">
+                    @Html.DropDownListFor(m => m.EntidadeId, (SelectList)ViewData["Entidades"])
+                </div>
+            </div>
+            
+            
+            <div class="control-group">
+                <label class = "control-label" for="HomeAction">Home Action</label>
+                <div class="controls">
+                    <select name="HomeAction" id="HomeAction">
+                        <option value="Backoffice" @(Model.HomeAction == "Backoffice" ? " selected " : "")>Principal/Backoffice</option>
+                        <option value="Clientes" @(Model.HomeAction == "Clientes" ? " selected " : "")>Principal/Clientes</option>
+                    </select>
+                </div>
+            </div>
+            
+      
+
+            <div class="form-actions">
+
+
+                <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+            </div>
+            
+        }
+  
+    @Html.ActionLink("Voltar", "Index")
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

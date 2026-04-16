@@ -1,0 +1,65 @@
+﻿@model Models.EnviadoView
+
+@{
+    ViewBag.Title = "Alterar Obras";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@section Styles {
+
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Obras", "Index")</li>
+}
+
+@Html.Partial("~/Views/Projetos/_Navtabs.cshtml", Model.DadosProjeto)
+
+
+
+<a href="~/Projetos/EnviadosCriar/0?ProjetoId=@Model.DadosProjeto.ProjetoId" class="btn btn-primary" onclick="return confirm('Deseja realmente registrar um novo envio?')">+ Criar</a>
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>NF</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaEnviados)
+        {
+            <tr>
+                <td>@item.EnviadoId</td>
+                <td nowrap>@item.EnviadoNF</td>
+                <td nowrap>@item.EnviadoData</td>
+                <td nowrap>@item.EnviadoTipoNome</td>
+                <td nowrap>@item.EnviadoTotal</td>
+                <td nowrap>
+                    <a data-toggle="tooltip" data-placement="top" title="Alterar" href="~/Projetos/EnviadosCriar/@item.EnviadoId?ProjetoId=@item.ProjetoId" class="btn btn-mini"><i class="fa fa-pencil"></i></a>  
+                    <a data-toggle="tooltip" data-placement="top" title="Excluir" href="~/Projetos/EnviadosDeletar/@item.EnviadoId?ProjetoId=@item.ProjetoId" class="btn btn-mini"><i class="fa fa-times"></i></a> 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+    <script>
+        $("#ProjetoProduto\\.ProdutoId").focus();
+    </script>
+    
+}

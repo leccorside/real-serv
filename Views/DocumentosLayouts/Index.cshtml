@@ -1,0 +1,55 @@
+@model PetaPoco.Page<Models.DocumentoLayout>
+
+@{
+    ViewBag.Title = "Layouts de Documentos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configura&ccedil;&otilde;es", "Configuracoes", "Principal")</li>
+}
+
+@section Styles {
+@Html.Partial("_TableStyles")
+}
+
+<div class="ponto-container">
+    <div class="ponto-header">
+        <div class="ponto-title"><h2><i class="pe-7s-note2"></i> Layouts de Documentos</h2></div>
+        <div style="display:flex; gap:12px; align-items:center;">
+            @Html.FormPesquisaIndex()
+            @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn-create" })
+        </div>
+    </div>
+    <div class="ponto-table-container">
+        <table class="ponto-table" data-pagination="server">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Data de Cadastro</th>
+                    <th style="width:140px">A&ccedil;&otilde;es</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(m => item.DocumentoLayoutId)</td>
+                        <td width="100%">@Html.DisplayFor(m => item.DocumentoLayoutNome)</td>
+                        <td nowrap>@Html.DisplayFor(m => item.RegDtInicio)</td>
+                        <td nowrap>
+                            <div class="actions-cell">
+                                @Html.ActionLink("Alterar", "Criar", new { id = item.DocumentoLayoutId }, new { @class = "btn-alterar" })
+                                @Html.ActionLink("Excluir", "Deletar", new { id = item.DocumentoLayoutId }, new { @class = "btn-excluir" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination">
+        @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+    </div>
+</div>

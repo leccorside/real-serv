@@ -1,0 +1,199 @@
+﻿@{ 
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    var currentTipo = ViewContext.RouteData.Values["tipo"] as string ?? "";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    currentTipo = currentTipo.ToLower();
+    var currentPage = (currentController + "-" + currentAction + currentTipo).ToLower();
+
+    var user = new BLL.Usuarios();
+
+
+
+    var controleAcesso = BLL.Usuarios.GetManager();
+
+    var dadosUser = user.Carregar(BLL.Usuarios.GetUsuarioId());
+    
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<link href="~/Assets/css/bootstrap.css" rel="stylesheet" />
+<style type="text/css">
+    body
+    {
+        padding-top: 60px;
+        padding-bottom: 40px;
+    }
+</style>
+<link href="~/Assets/css/bootstrap-responsive.css" rel="stylesheet" />
+<link href="~/Assets/css/chosen.css" rel="stylesheet" />
+<link href="~/Assets/themes/metro/css/font-awesome.css" rel="stylesheet" />
+    <link href="~/Assets/themes/metro/style/footable.core.css" rel="stylesheet" />
+<body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="@Url.Content("~/Principal/Index")">Fortuna</a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li><a href="~/Manager/Empresas">Empresas</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Regras <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="~/Manager/Acessos">Acessos</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="~/Manager/Logs">Logs</a></li>
+                        <li><a href="~/Manager/Acessos/SimularEmpresa">Simular Acesso</a></li>
+                    </ul>
+                    <ul class="nav pull-right">
+                        <li><a href="@Url.Content("~/Principal/Perfil")"><i class="icon-user"></i><span>@BLL.Usuarios.GetUsuarioNome()</span></a></li>
+                        <li><a href="@Url.Content("~/Home/Logoff")"><i class="icon-off"></i><span>Sair</span></a></li>
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+        <h3>@ViewBag.Title</h3>
+        <!-- breadcrumb -->
+        <ul class="breadcrumb">
+            <li><a href="@Url.Content("~/Manager/Principal")" title="Ir para Home" class="tip-bottom"><i class="icon-home"></i>Home</a></li>
+
+            @RenderSection("breadcrumb", required: false)
+
+            @if (currentPage != "principal-index")
+            {
+                <li class="active"><span class="divider">/</span> @ViewBag.Title</li>
+            }
+
+        </ul>
+        <!-- ./breadcrumb -->
+
+        @if (!@Html.ViewData.ModelState.IsValid)
+        {
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-error" id="alert-error">
+                        <h4>Ooops... alguns erros ocorreram</h4>
+                        <br />
+                        @Html.ValidationSummary("", new { @class = "unstyled" })
+                    </div>
+                </div>
+            </div>
+        }
+        @if (TempData["message"] != null)
+        { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-success" id="alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Sucesso!</h4>
+                        @Html.Raw(TempData["message"])
+                    </div>
+                </div>
+            </div>
+        }
+        @if (TempData["error"] != null)
+        { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-danger" id="alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @Html.Raw(TempData["error"])
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (TempData["alert"] != null)
+        { <div class="row-fluid">
+                <div class="span12">
+                    <div class="alert alert-block" id="alert-block">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h4>Atenção!</h4>
+                        @Html.Raw(TempData["alert"])
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (controleAcesso)
+                {
+                @RenderBody()
+                }
+                else
+                {
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="alert alert-error" id="alert-error">
+                            <h4>Ooops... Você não possui acesso à este módulo</h4>
+                            <br />
+                            @currentController / @currentAction
+                        </div>
+                    </div>
+                </div>
+                }
+
+        <hr>
+
+        <footer>
+            <p>&copy; EBEE 2013</p>
+        </footer>
+    </div>
+
+
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="~/assets/js/jquery.js"></script>
+    <script src="~/assets/js/bootstrap-transition.js"></script>
+    <script src="~/assets/js/bootstrap-alert.js"></script>
+    <script src="~/assets/js/bootstrap-modal.js"></script>
+    <script src="~/assets/js/bootstrap-dropdown.js"></script>
+    <script src="~/assets/js/bootstrap-scrollspy.js"></script>
+    <script src="~/assets/js/bootstrap-tab.js"></script>
+    <script src="~/assets/js/bootstrap-tooltip.js"></script>
+    <script src="~/assets/js/bootstrap-popover.js"></script>
+    <script src="~/assets/js/bootstrap-button.js"></script>
+    <script src="~/assets/js/bootstrap-collapse.js"></script>
+    <script src="~/assets/js/bootstrap-carousel.js"></script>
+    <script src="~/assets/js/bootstrap-typeahead.js"></script>
+    
+    <!-- necessários -->
+    @Scripts.Render("~/Assets/js/bootstrap-datepicker.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    
+    @Scripts.Render("~/Assets/js/jquery.maskedinput.js")
+    @Scripts.Render("~/Assets/js/jquery.maskMoney.js")
+    
+    <!-- ./necessários -->
+    <script>
+        //chosen
+        $(function () {
+            $('.chosen-select').chosen();
+            $('.chosen-select-deselect').chosen({ allow_single_deselect: true });
+        });
+
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

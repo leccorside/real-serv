@@ -1,0 +1,219 @@
+﻿@model Models.Ocorrencia
+
+@{
+    ViewBag.Title = "Criar Ocorrência";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";  
+    }
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+
+    var bllAnexos = new BLL.OcorrenciasAnexos();
+    var listaAnexos = bllAnexos.Listar(Model.OcorrenciaId);
+
+    var _OcorrenciasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "Ocorrencias");
+    
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Ocorrências", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">        
+        <div class="row-fluid">
+            <div class="span2">
+                <label>Ocorrência n.</label>
+                <h4 class="black">@Model.OcorrenciaId</h4>
+            </div>
+        
+            <div class="span2">
+                <label>Data</label>
+                <h4 class="black">@string.Format("{0:dd/MM/yyyy}",Model.RegDtInicio)</h4>
+            </div>
+
+            <div class="span2">
+                <label>Data</label>
+                <h4 class="black">@string.Format("{0:HH:mm}",Model.RegDtInicio)</h4>
+            </div>
+
+            <div class="span3">
+                  <label>Situação</label>
+
+                @if (Model.Resolvido)
+                {
+                    <h4 class="black"><i class="fa fa-check" aria-hidden="true"></i> Resolvido</h4>
+                }
+                else
+                {
+                    <h4 class="black">Não resolvido</h4>
+                }
+
+               
+            </div>
+
+            <div class="span3">
+                  <label>Privado</label>
+                @if (Model.Privado)
+                {
+                 <h4 class="black"><i class="fa fa-lock" aria-hidden="true"></i> Privado</h4>   
+                }
+                else
+                {
+                    <h4 class="black">Publico</h4>
+                }
+
+              
+            </div>
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Cliente</label>
+                <h4 class="black">@Model.ClienteNome</h4>
+                
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Atendente</label>
+                <h4 class="black">@Model.Atendente</h4>
+                
+            </div>
+            <div class="span4">
+                <label>Solicitante</label>
+                <h4 class="black">@Model.Solicitante</h4>
+            </div>
+            <div class="span4">
+                <label>Executor</label>
+                <h4 class="black">@Model.ExecutorNome</h4>
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span6">
+                <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+                <h4 class="black">@Model.FuncionarioNome</h4>
+            </div>
+            <div class="span6">
+                <label>Tipo de Ocorrência</label>
+                <h4 class="black">@Model.OcorrenciaTipoNome</h4>
+            </div>
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span6">
+                <label>Ocorrência</label>
+                <p>@Model.OcorrenciaDescricao</p>
+                @if (Model.RefExtEntidade == "Supervisoes")
+                {
+                    <a href="@Url.Content("~/Supervisoes/View/" + Model.RefExtEntidadeId + "?lightbox[iframe]=true&lightbox[width]=650&lightbox[height]=440&Modal=True")" class="ui-lightbox tip-top" data-toggle="tooltip" data-original-title="Visualizar"  title="Visualizar" data-placement="top"><i class="fa fa-search-plus"></i> Clique aqui para visualizar a supervisão @Model.RefExtEntidadeId</a>
+                }
+            </div>
+            <div class="span6">
+                <label>Solução Tomada</label>
+                <p>@Model.Solucao</p>
+            </div>
+        </div>
+        <br />
+    <div class="row-fluid">
+                <div class="span12">
+                    <legend><i class="fa fa-paperclip"></i>Anexos</legend>
+
+                    <ul class="gallery-container">
+
+                        @foreach (var itemAnexo in listaAnexos)
+                        {
+                            var total_dias = (itemAnexo.Validade - DateTime.Now.Date).TotalDays;
+                            var classe = (total_dias < 1) ? "text-error" : "text-success";      
+                            <li>
+
+
+                                @if (itemAnexo.PathThumb != null)
+                                {
+                                    <a href="@Url.Content(itemAnexo.Path)" class="ui-lightbox">
+                                        <img style="height: 146px; max-height:146px;" src="@Url.Content(itemAnexo.PathThumb)" alt="@itemAnexo.FileName" />
+                                    </a><a href="@Url.Content(itemAnexo.Path)" class="preview"></a>
+                                    <br />
+                                }
+                                else
+                                {
+                                    <div style="height: 146px; max-height: 146px;">@itemAnexo.ContentType.ToString()<br />
+                                        <br />
+                                        <br />
+                                        <small>Sem visualização</small>
+                                    </div>
+                                }
+
+                                <small>Formato: @itemAnexo.ContentType.ToString()</small><br />
+                                <small>Nome: @itemAnexo.FileName.ToString()</small><br />
+                                <small>Peso: @(itemAnexo.ContentLength / 1000) kb</small><br />
+                                <a href="@Url.Content("~/Ocorrencias/DownloadAnexo/0/0/?Guid=" + itemAnexo.Guid)" class="btn btn-mini pull-left">Download</a>&nbsp;
+
+                            </li>                            
+                        }
+
+
+
+
+                    </ul>
+                </div>
+            </div>
+
+    <legend><i class="fa fa-comments"></i>Histórico</legend>
+    @Html.CubeeBlog("Ocorrencias", Model.OcorrenciaId, "", BLL.Usuarios.GetUsuarioId(), _OcorrenciasAdministrador)
+
+    <div class="row-fluid">
+               @switch (Model.OcorrenciaTipoRegra)
+                    {
+                        case "rep_advertencia":
+                            <a href="@Url.Content("~/Ocorrencias/ImprimirAdvertencia/" + Model.OcorrenciaId)" class="btn "><i class="fa fa-print"></i> Imprimir Advertência</a>
+                            break;
+                        case "rep_suspencao":
+                            <a href="@Url.Content("~/Ocorrencias/ImprimirSuspensao/" + Model.OcorrenciaId)" class="btn "><i class="fa fa-print"></i> Imprimir Suspensão</a>
+                            break;
+                        default:
+                            break;
+                    }
+            
+            
+        </div>
+    <br />
+
+    @if (Model.Modal == false)
+    {
+        <div>
+            <a href="~/Ocorrencias/Index" class="btn">Voltar</a>
+        </div>
+    }
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    
+}
+
+

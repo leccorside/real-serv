@@ -1,0 +1,131 @@
+<style>
+    :root { --primary-color: #2563eb; --bg-gray: #f8fafc; --border-color: #e2e8f0; --text-main: #1e293b; --text-muted: #64748b; }
+    .ponto-container { background:white; padding:24px; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.1); margin-bottom:24px; padding-bottom: 100px; }
+    .ponto-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+    .ponto-title h2 { margin:0; font-size:20px; color:var(--text-main); font-weight:700; display:flex; align-items:center; gap:10px; }
+    .btn-create { display:inline-flex; align-items:center; gap:8px; padding:9px 18px; background:var(--primary-color); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; transition:background .2s; }
+    .btn-create:hover { background:#1d4ed8; color:#fff; text-decoration:none; }
+    .ponto-table-container { border:1px solid var(--border-color); border-radius:12px; overflow:hidden; }
+    .ponto-table { width:100%; border-collapse:collapse; font-size:13px; background:white; }
+    .ponto-table th { background:var(--bg-gray); padding:12px 16px; text-align:left; color:var(--text-muted); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+    .ponto-table td { padding:12px 16px; border-top:1px solid var(--border-color); color:var(--text-main); vertical-align:middle; }
+    .ponto-table tr:hover td { background:#fbfcfd; }
+    .ponto-table td small { color:var(--text-muted); font-size:11px; display:block; }
+    .btn-alterar { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; border-radius:6px; font-size:12px; text-decoration:none; transition:background .15s; }
+    .btn-alterar:hover { background:#dbeafe; color:#1d4ed8; text-decoration:none; }
+    .btn-excluir { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; background:#fef2f2; color:#ef4444; border:1px solid #fecaca; border-radius:6px; font-size:12px; text-decoration:none; transition:background .15s; }
+    .btn-excluir:hover { background:#fee2e2; color:#dc2626; text-decoration:none; }
+    .btn-acessos { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; border-radius:6px; font-size:12px; text-decoration:none; transition:background .15s; }
+    .btn-acessos:hover { background:#dcfce7; color:#15803d; text-decoration:none; }
+    .actions-cell { display:flex; gap:8px; flex-wrap:nowrap; }
+
+    /* Paginação */
+    .table-pagination { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-top:1px solid var(--border-color); background:var(--bg-gray); flex-wrap:wrap; gap:8px; }
+    .pagination-info { font-size:12px; color:var(--text-muted); }
+    .pagination-controls { display:flex; gap:4px; }
+    .page-btn { padding:5px 11px; border:1px solid var(--border-color); border-radius:6px; background:white; color:var(--text-main); font-size:13px; cursor:pointer; transition:all .15s; line-height:1.4; }
+    .page-btn:hover { background:#eff6ff; border-color:#bfdbfe; color:#2563eb; }
+    .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); font-weight:600; }
+    .page-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+    /* Estilização para Paginadores do Servidor (ul/li) */
+    .pagination, .pagination-container { display: flex; justify-content: flex-end; margin-top: 15px; padding: 0; }
+    .pagination ul, .pagination-container ul { display: flex; list-style: none; padding: 0; margin: 0; gap: 4px; }
+    .pagination li a, .pagination li span, .pagination-container li a { 
+        display: flex; align-items: center; justify-content: center; padding: 5px 12px; 
+        border: 1px solid var(--border-color); border-radius: 6px; background: white; 
+        color: var(--text-main); font-size: 13px; text-decoration: none; transition: all .15s; min-width: 32px; 
+    }
+    .pagination li a:hover, .pagination-container li a:hover { background: #eff6ff; border-color: #bfdbfe; color: var(--primary-color); text-decoration:none; }
+    .pagination li.active a, .pagination li.active span { background: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: 600; }
+    .pagination li.disabled a, .pagination li.disabled span { opacity: .4; cursor: not-allowed; background: var(--bg-gray); }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const DEFAULT_PAGE_SIZE = 12;
+
+    function paginateElement(container, items, pageSize) {
+        if (items.length <= pageSize) return;
+
+        var totalPages = Math.ceil(items.length / pageSize);
+        var currentPage = 1;
+
+        function showPage(page) {
+            currentPage = page;
+            var start = (page - 1) * pageSize;
+            var end   = start + pageSize;
+            items.forEach(function (item, i) {
+                item.style.display = (i >= start && i < end) ? '' : 'none';
+            });
+            renderPagination();
+        }
+
+        function renderPagination() {
+            var existing = container.parentElement.querySelector('.table-pagination');
+            if (existing) existing.remove();
+
+            var div = document.createElement('div');
+            div.className = 'table-pagination';
+            div.style.marginTop = '15px';
+
+            var shown = Math.min(currentPage * pageSize, items.length);
+            var start = (currentPage - 1) * pageSize + 1;
+
+            var info = document.createElement('span');
+            info.className = 'pagination-info';
+            info.textContent = 'Mostrando ' + start + ' - ' + shown + ' de ' + items.length + ' registros';
+            div.appendChild(info);
+
+            var ctrl = document.createElement('div');
+            ctrl.className = 'pagination-controls';
+
+            function makeBtn(label, page, disabled, active) {
+                var btn = document.createElement('button');
+                btn.className = 'page-btn' + (active ? ' active' : '');
+                btn.textContent = label;
+                btn.disabled = disabled;
+                if (!disabled) btn.addEventListener('click', function () { 
+                    showPage(page);
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+                return btn;
+            }
+
+            ctrl.appendChild(makeBtn('\u00AB', 1, currentPage === 1, false));
+            ctrl.appendChild(makeBtn('\u2039', currentPage - 1, currentPage === 1, false));
+
+            var winStart = Math.max(1, currentPage - 2);
+            var winEnd   = Math.min(totalPages, winStart + 4);
+            winStart     = Math.max(1, winEnd - 4);
+            for (var p = winStart; p <= winEnd; p++) {
+                ctrl.appendChild(makeBtn(p, p, false, p === currentPage));
+            }
+
+            ctrl.appendChild(makeBtn('\u203A', currentPage + 1, currentPage === totalPages, false));
+            ctrl.appendChild(makeBtn('\u00BB', totalPages, currentPage === totalPages, false));
+
+            div.appendChild(ctrl);
+            container.parentElement.insertBefore(div, container.nextSibling);
+        }
+
+        showPage(1);
+    }
+
+    // Paginar tabelas .ponto-table
+    document.querySelectorAll('.ponto-table').forEach(function (table) {
+        if (table.dataset.pagination === 'server' || table.classList.contains('dataTable')) return;
+        var tbody = table.querySelector('tbody');
+        if (!tbody) return;
+        paginateElement(table.closest('.ponto-table-container') || table, Array.from(tbody.querySelectorAll('tr')), DEFAULT_PAGE_SIZE);
+    });
+
+    // Paginar qualquer outro container marcado com data-pagination-limit
+    document.querySelectorAll('[data-pagination-limit]').forEach(function (container) {
+        const limit = parseInt(container.dataset.paginationLimit) || DEFAULT_PAGE_SIZE;
+        const selector = container.dataset.paginationSelector || '> *';
+        const items = Array.from(container.querySelectorAll(selector)).filter(el => el.parentElement === container);
+        paginateElement(container, items, limit);
+    });
+});
+</script>

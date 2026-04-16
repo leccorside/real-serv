@@ -1,0 +1,207 @@
+﻿@model Models.Servico
+
+
+
+@{
+    var user = new BLL.Usuarios();
+
+
+    var acao = "Cadastrar";
+    if (Model.ServicoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Serviço";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    var configuracao_servico_valor = user.ControleAcesso("configuracao_servico_valor", "Regras");
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Serviços", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "Servicos", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.ServicoId > 0)
+        {
+        @Html.Hidden("ServicoId", Model.ServicoId);
+                                                  acao = "Alterar";
+        }
+
+        @*if (BLL.Usuarios.GetUtilizaFilial() == true && BLL.Usuarios.GetFilialIDMaster() == 0)
+        { 
+        <div class="control-group">
+            <label class="control-label" for="ContaTipoId">@BLL.Usuarios.GetEntidadeFilial():</label>
+            <div class="controls">
+                @Html.DropDownListFor(model => model.FilialID, (SelectList)ViewBag.DdlFiliais, "--Nenhuma--", new { @class = "chosen-select" })
+            </div>
+        </div>
+        }
+        else
+        {
+        <input type="hidden" name="FilialID" value="@BLL.Usuarios.GetFilialIDMaster()"/>
+        }*@
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.ServicoNome, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.ServicoNome)
+                @Html.ValidationMessageFor(model => model.ServicoNome)
+            </div>
+        </div>
+        
+        <div class="control-group">
+            @Html.LabelFor(model => model.ServicoNomeEN_US, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.ServicoNomeEN_US)
+                @Html.ValidationMessageFor(model => model.ServicoNomeEN_US)
+            </div>
+        </div>
+        
+        <div class="control-group">
+            @Html.LabelFor(model => model.ServicoDescricao, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.ServicoDescricao)
+                @Html.ValidationMessageFor(model => model.ServicoDescricao)
+            </div>
+        </div>
+        
+        <div class="control-group">
+            
+            <div class="controls">
+                @Html.LabelFor(model => model.ServicoTermos)
+                @Html.TextAreaFor(model => model.ServicoTermos, new { @class = "span12", @rows="10" })
+                @Html.ValidationMessageFor(model => model.ServicoTermos)
+            </div>
+        </div>
+        
+        <div class="control-group">
+            
+            <div class="controls">
+                @Html.LabelFor(model => model.ServicoTermosEN_US)
+                @Html.TextAreaFor(model => model.ServicoTermosEN_US, new { @class = "span12", @rows="10" })
+                @Html.ValidationMessageFor(model => model.ServicoTermosEN_US)
+            </div>
+        </div>
+        
+        
+        <div class="control-group">
+            @Html.LabelFor(model => model.ServicoPrazoDias, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextBoxFor(model => model.ServicoPrazoDias, new { @class="number" });
+                @Html.ValidationMessageFor(model => model.ServicoPrazoDias)
+
+            </div>
+        </div>
+        
+        
+        if (configuracao_servico_valor)
+        {
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.Valor, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextBox("Valor", string.Format("{0:n2}", Model.Valor), new { @class = "money", TabIndex = 2 })
+                @Html.ValidationMessageFor(model => model.Valor)
+
+            </div>
+        </div>
+                
+         
+        <div class="control-group">
+            <label>Serviço individual?</label>
+            <div class="controls">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.ServicoIndividual) Marque esse campo caso esse tipo de serviço seja para uma única pessoa (particular)
+                </label>
+            </div>
+        </div>
+        }
+             
+                       
+            
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+<br />
+@if (configuracao_servico_valor)
+{
+        
+
+    <div class="cwell">
+        <h5>Histórico de valores</h5>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+
+                    <th>Data
+                    </th>
+                    <th>Valor
+                    </th>
+                    <th>Usuário
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+    var bllServicos = new BLL.Servicos();
+    var listaValores = bllServicos.ListarTop10Valores(Model.ServicoId);
+                }
+
+                @foreach (var item in listaValores)
+                {
+                    <tr>
+
+                        <td nowrap>
+                            @item.RegDtInicio
+                        </td>
+                        <td width="100%">
+                            @String.Format("{0:c}", item.Valor)
+                        </td>
+                        <td nowrap>
+                            @item.UsuarioNome
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+
+
+        </table>
+    </div>
+}
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

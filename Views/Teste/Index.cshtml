@@ -1,0 +1,33 @@
+﻿@model Models.PostTeste
+
+@{
+    ViewBag.Title = "Teste";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";    
+}
+
+<div class="container">
+<div class="row-fluid">
+    <div class="col-lg-12">
+@using (Html.BeginForm())
+{            
+    <br /><label>Endpoint</label>
+    @Html.TextBoxFor(m => m.Url, new { @class="form-control col-lg-12" });
+    
+    <br />
+    <label>Envelope</label>
+    @Html.TextAreaFor(m => m.Request, new { @class = "form-control col-lg-12" });
+    <br />
+    <input type="submit" value="processar" class="btn btn-primary  btn-large" />
+    <br />
+    <h2>Result</h2>
+    <pre>@Model.Response</pre>
+    <br />
+    
+       
+    
+    
+    
+}
+
+    </div>
+</div></div>

@@ -1,0 +1,475 @@
+﻿@model Models.Filial
+
+
+@{
+
+
+
+    var acao = "Cadastrar";
+    if (Model.FilialID > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + BLL.Usuarios.GetEntidadeFilial();
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var bgInterna = "~/Assets/img/bg/" + Model.EmpresaId + "_" + Model.FilialID + "Interna.jpg?" + DateTime.Now.Second;
+    var bgLogotipo = "~/Assets/img/logointerno/" + Model.EmpresaId + "_" + Model.FilialID + "Interna.jpg?" + DateTime.Now.Second;
+
+    var user = new BLL.Usuarios();
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Filiais", "Index", new { id = 0 })</li>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "Filiais", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        if (Model.FilialID > 0)
+                        {
+                        @Html.Hidden("FilialID", Model.FilialID);
+                                                                acao = "Alterar";
+                        }
+       
+                        <legend>Dados Gerais</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>CNPJ</label>@Html.TextBoxFor(model => model.FilialDocumento, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-9 col-md-9 col-sm-9">
+                                <label>Razão Social</label>@Html.TextBoxFor(model => model.FilialRazaoSocial, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Nome Fantasia</label>@Html.TextBoxFor(model => model.FilialNome, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Inscrição Estadual</label>@Html.TextBoxFor(model => model.FilialInscricaoEstadual, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Inscrição Municipal</label>@Html.TextBoxFor(model => model.FilialInscricaoMunicipal, new { @class = " form-control" })
+                            </div>
+
+                            @if (user.ControleAcesso("Form_Dados_Saude", "Filiais"))
+                            {
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Nome Suframa</label>@Html.TextBoxFor(model => model.FilialInscricaoSuframa, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>CNES</label>@Html.TextBoxFor(model => model.FilialCNES, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>CNAE</label>@Html.TextBoxFor(model => model.FilialCNAE, new { @class = " form-control" })
+                            </div>
+                            }else
+	{
+                                @Html.HiddenFor(x=>x.FilialInscricaoSuframa)
+                                @Html.HiddenFor(x=>x.FilialCNES)
+                                @Html.HiddenFor(x=>x.FilialCNAE)
+	}
+                        </div>
+        
+                        if (user.ControleAcesso("Form_Imposto_Repasse", "Filiais"))
+                        {
+                        <legend>Imposto e Repasse</legend>    
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Imposto %</label>@Html.TextBox("FilialImposto", string.Format("{0:F2}", Model.FilialImposto), new { @class = "moeda form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Repasse %</label>@Html.TextBox("FilialRepasse", string.Format("{0:F2}", Model.FilialRepasse), new { @class = "moeda form-control" })
+                            </div>
+
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Teto Repasse R$</label>@Html.TextBox("FilialRepasseTeto", string.Format("{0:F2}", Model.FilialRepasseTeto), new { @class = "moeda form-control" })
+                            </div>
+                        </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x=>x.FilialImposto)
+                            @Html.HiddenFor(x=>x.FilialRepasse)
+                            @Html.HiddenFor(x=>x.FilialRepasseTeto)   
+                        }
+                        <legend>Dados Contato</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Nome Contato</label>@Html.TextBoxFor(model => model.FilialContato, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Telefone</label>@Html.TextBoxFor(model => model.FilialTelefone, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Celular</label>@Html.TextBoxFor(model => model.FilialCelular, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>E-Mail</label>@Html.TextBoxFor(model => model.FilialEmail, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Site</label>@Html.TextBoxFor(model => model.FilialSite, new { @class = " form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Observações</label>@Html.TextAreaFor(model => model.FilialObservacao, new { @class = "form-control", maxlength = "400" })
+                            </div>
+                        </div>
+       
+                        <legend>Endereço</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+                                <div class="input-group">
+                                    @Html.TextBoxFor(model => model.FilialCep, new { @class = "form-control" })
+                                    <span class="input-group-btn">
+                                        <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.FilialEndereco)
+                                @Html.TextBoxFor(model => model.FilialEndereco, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.FilialNumero)
+                                @Html.TextBoxFor(model => model.FilialNumero, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.FilialComplemento)
+                                @Html.TextBoxFor(model => model.FilialComplemento, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.FilialBairro)
+                                @Html.TextBoxFor(model => model.FilialBairro, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.FilialCidade)
+                                @Html.TextBoxFor(model => model.FilialCidade, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.FilialEstado)
+                                @Html.TextBoxFor(model => model.FilialEstado, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.FilialPais)
+                                @Html.TextBoxFor(model => model.FilialPais, new { @class = "form-control" })
+                            </div>
+                        </div>
+        
+                        if (user.ControleAcesso("Form_Dados_Bancarios", "Filiais"))
+                        {
+                        <legend>Dados bancários</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>
+                                    Código do Banco
+                                </label>
+                                @Html.TextBoxFor(model => model.FilialBancoCod, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>
+                                    Nome do banco
+                                </label>
+                                @Html.TextBoxFor(model => model.FilialBancoNome, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>
+                                    Agência
+                                </label>
+                                @Html.TextBoxFor(model => model.FilialBancoAgencia, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>
+                                    Conta
+                                </label>
+                                @Html.TextBoxFor(model => model.FilialBancoConta, new { @class = "form-control" })
+                            </div>
+                            <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                <label>
+                                    Observações bancárias
+                                </label>
+                                @Html.TextAreaFor(model => model.FilialBancoObservacoes, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        }
+                        else
+                        {
+                         @Html.HiddenFor(x => x.FilialBancoCod)
+                            @Html.HiddenFor(x => x.FilialBancoNome)
+                            @Html.HiddenFor(x => x.FilialBancoAgencia)
+                            @Html.HiddenFor(x => x.FilialBancoConta)
+                            @Html.HiddenFor(x => x.FilialBancoObservacoes)
+                        }
+                        
+                        
+                        <legend>Conta Padrão de Previsão</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Conta</label>
+                                @Html.DropDownListFor(model => model.ContaIdPrevisao, (SelectList)ViewBag.ddlContas, "--Selecione--", new { @class = "form-control chosen-select" })
+                            </div>
+                            
+
+                        </div>
+                        
+                        if (user.ControleAcesso("Form_Termos_Aceite", "Filiais"))
+                        {
+                        <legend>SMS - Pós-Cadastro de @BLL.Usuarios.GetEntidadeClienteSingular()</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-4 col-md-4 col-sm-4">
+                                <label>Enviar SMS após cadastro?</label>
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(model => model.FilialSmsSend) Sim</label>
+                                </div>
+                            </div>
+                            <div class="col-form col-lg-8 col-md-8 col-sm-8">
+                                <label>Remetente SMS</label>
+                                @Html.TextBoxFor(model => model.FilialSmsRemetente, new { @class = "form-control", maxlength = "120" })
+                            </div>
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                <label>Texto SMS</label>
+                                <select id="variaveis" class="form-control" name="variaveis">
+                                    <option value="">--Variáveis--</option>
+                                    <option value="#nome#">Nome do @BLL.Usuarios.GetEntidadeClienteSingular()</option>
+                                    <option value="#filialnome#">Nome @BLL.Usuarios.GetEntidadeFilial()</option>
+                                    <option value="#link_termos#">Link para página dos termos</option>
+                                    <option value="#link_termos_code#">Código para visualização dos termos</option>
+                                </select>
+                                @Html.TextAreaFor(model => model.FilialSmsText, new { @class = "form-control", maxlength = "120" })
+                            </div>
+                        </div>
+                        
+                        
+        
+                        <legend>Termos de Aceite</legend>
+                        <div class="row">
+                            <div class="col-form col-lg-12 col-md-12 col-sm-12">
+                                @Html.TextAreaFor(model => model.FilialTermosCadastro, new { @class = "form-control" })
+                                <small>Variáveis: (#nome#, #hoje_data#)</small>
+                            </div>
+                        </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.FilialSmsSend)
+                            @Html.HiddenFor(x => x.FilialSmsRemetente)
+                            @Html.HiddenFor(x => x.FilialSmsText)
+                            @Html.HiddenFor(x => x.FilialTermosCadastro)
+                        }
+
+                        if (user.ControleAcesso("Form_Imagens", "Filiais"))
+                        {
+                        <legend>Imagens</legend>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Background Interno</label>
+                                @if (Model.EmpresaId > 0)
+                                {
+                                    <div style="width:300px;height:200px;background-image:url(@VirtualPathUtility.ToAbsolute(bgInterna)) ;background-size: 100% 100%;"></div>
+                                }
+                                <label>JPG - 1500x1000 (Mínimo)</label>
+                                <input id="arquivoBgInterno" type="file" name="arquivoBgInterno" />
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <label>Logotipo Interno</label>
+                                @if (Model.EmpresaId > 0)
+                                {
+                                    <div style="width:300px;height:200px;background-image:url(@VirtualPathUtility.ToAbsolute(bgLogotipo)) ;background-size: 100% 100%;"></div>
+                                }
+                                <label>JPG - 300x300 (Mínimo)</label>
+                                <input id="arquivoLogoInterno" type="file" name="arquivoLogoInterno" />
+                            </div>
+                        </div>
+                    }
+                        
+                        
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })
+                            </div>
+
+                        </div>
+                    }
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    @if (Model.FilialID > 0)
+    {
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Anexos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    @Html.CubeeAnexos("Filiais", Model.FilialID, BLL.Configuracoes.CarregarPorEmpresaId("documentos_filiais_criar",Model.EmpresaId), "col-lg-12 col-md-12 col-sm-12", true, true, true, true,false, "", Model.EmpresaId)
+                    
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/fancybox/css")
+    <style>
+        .listAnexos
+        {
+            list-style: none;
+            font-size: 10px;
+            margin-left: 0px;
+        }
+    </style>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+@Scripts.Render("~/bundles/fancybox/js")
+
+    <script>
+        $("#FilialDocumento").mask("99.999.999/9999-99");
+        $("#FilialTelefone").mask(maskBehavior, options);
+        $("#FilialCelular").mask(maskBehavior, options);
+        $("#FilialCep").mask("99999-999");
+
+
+        //cep
+        $('#buscar-cep').click(function () {
+            $('#FilialCep').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading_cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading_cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                    $('#FilialCep').focus();
+                },
+                success: function (data) {
+                    $('#FilialEndereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                    $('#FilialBairro').val(data.bairro);
+                    $('#FilialEstado').val(data.estado);
+                    $('#FilialCidade').val(data.cidade);
+                    $('#FilialPais').val('Brasil');
+                    $('#FilialNumero').focus();
+                }
+            });
+        });
+
+
+    </script>
+
+    <script>
+        $('#variaveis').on('change', function () {
+            var cursorPos = $('#FilialSmsText').prop('selectionStart');
+            var v = $('#FilialSmsText').val();
+            var textBefore = v.substring(0, cursorPos);
+            var textAfter = v.substring(cursorPos, v.length);
+            $('#FilialSmsText').val(textBefore + $(this).val() + textAfter);
+            $("#variaveis").val("");
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+
+    <script>
+        $(".fancybox").fancybox({ fitToView: false, width: '80%', autoSize: true });
+        $(".fancybox_full").fancybox({
+            fitToView: false,
+            width: '100%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none'
+        });
+
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+    </script>
+}

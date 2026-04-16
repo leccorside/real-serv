@@ -1,0 +1,148 @@
+﻿@model Models.TrjReqPag
+
+@{
+    ViewBag.Title = "Criar Guia > Produtos e Exames";
+
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+                        //Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    
+}
+@{
+    
+    
+    
+}
+
+
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    
+                        <legend>Dados da Requisição - <span class="badge @Model.Fonte">@Model.Fonte</span> @Model.TrjReqPagNumero</legend>
+                        <div class="row">
+
+                            @*<div class="col-lg-3 col-md-3 col-sm-3">
+                                <label>Data do Exame</label><br />
+                                @string.Format("{0:dd/MM/yyyy}", Model.MedGuia.RegDtInicio)
+                            </div>*@
+
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Procedimento</label><br />
+                                @Model.TrjReqPagProcedimento
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Número</label><br />
+                                <span class="badge @Model.Fonte">@Model.Fonte</span> @Model.TrjReqPagNumero
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Data protocolo TRF</label><br />
+                                @Model.TrjReqPagDtProtocolo
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Situação do protocolo</label><br />
+                                @Model.TrjReqPagSituacao
+                            </div>
+                            
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Ofício Requisitório</label><br />
+                                @Model.TrjReqPagOficio
+                            </div>
+
+                            <div class="col-lg-9 col-md-9 col-sm-9 col-form">
+                                <label>Juízo de origem</label><br />
+                                @Model.TrjReqPagJuizoOrigem
+                            </div>
+                            
+                            <div class="col-lg-6 col-md-6 col-sm-6  col-form">
+                                <label>Processos originários</label><br />
+                                @Model.TrjReqPagProcessosOriginarios
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6  col-form">
+                                <label>Requerido</label><br />
+                                @Model.TrjReqPagRequerido
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6  col-form">
+                                <label>Requerentes</label><br />
+                                @Model.TrjReqPagRequerentes
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-6  col-form">
+                                <label>Advogado</label><br />
+                                @Model.TrjReqPagAdvogado
+                            </div>
+
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Mês / Ano da Proposta</label><br />
+                                @Model.TrjReqPagMesAno
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Data conta de liquidação	</label><br />
+                                @Model.TrjReqPagDataContaLiquidacao
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Valor solicitado</label><br />
+                                R$ @string.Format("{0:N2}", Model.TrjReqPagValorSolicitado)
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Situação da requisição</label><br />
+                                @Model.TrjReqPagSituacaoRequisicao
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-form">
+                                <label>Natureza</label><br />
+                                @Model.TrjReqPagNatureza
+                            </div>
+
+                        </div>
+                        <br />
+                       
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+   
+
+
+
+
+@section Styles{
+ 
+}
+
+@section Scripts {
+
+}
+

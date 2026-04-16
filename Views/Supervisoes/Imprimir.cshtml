@@ -1,0 +1,143 @@
+﻿@model Models.Supervisao
+
+
+@{
+    ViewBag.Title = "ImprimirPedido";
+    Layout = "~/Views/Shared/_WindowPrint.cshtml";
+
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+    var logotipo = baseUrl + "/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png";
+
+    
+}
+
+@section Styles{
+
+    <style>
+        body
+        {
+            font-size: 12px;
+        }
+
+        table, th, td
+        {
+            line-height:12px;
+        }
+
+        pre
+        {
+            background-color: transparent !important;
+            border: none !important;
+            font-size: 12px;
+            margin: 0px;
+            padding: 0px;
+        }
+
+         @@media screen
+        {
+            div.divFooter
+            {
+                display: none;
+            }
+        }
+
+        @@media print
+        {
+            div.divFooter
+        {
+            position: fixed;
+            bottom: 0;
+            text-align: center;
+            width: 100%;
+            border-top: 1px solid #808080;
+        }
+        }
+    </style>
+
+
+
+}
+
+<table border="0" width="100%">
+    <tr>
+        <td><h3>Relatório de Supervisão</h3></td>
+        <td align="right"><h3>@Model.SupervisaoId</h3></td>
+    </tr>
+</table>
+
+<div class="page-header">
+
+    <table border="0" width="100%">
+        <tr>
+            <td width="30%"><b>Data</b><br />@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</td>
+            <td width="30%"><b>Horário</b><br />@string.Format("{0:HH:mm}", Model.RegDtInicio)</td>
+            <td width="40%"><b>Posto de Serviço</b><br />@Model.PostoDeServicoNome</td>
+        </tr>
+        <tr><td colspan="3"><br /></td></tr>
+        <tr>
+            <td><b>Check-in / Check-out</b><br />@Model.PontoInicio até @Model.PontoFim</td>
+            <td><b>Total de Horas</b><br />@BLL.Utils.Funcoes.ConvertDecimalToHour(Model.PontoHoras)</td>
+            <td><b>Supervisor</b><br />@Model.UsuarioNome</td>
+        </tr>
+    </table>
+    <br />
+    <h6>Checklist</h6>
+    @if (Model.ListSupervisaoChecklist.Count() > 0)
+    {
+        <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Checado</th>
+                        <th>Item</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ListSupervisaoChecklist)
+                    {
+                        <tr class="@item.SupervisaoChecklistEntidade">
+                            <td class="text-center">
+                                @if (item.SupervisaoChecklistChecado)
+                                {
+                                    <span>X</span>
+                                }
+                            </td>
+                            <td>@item.SupervisaoChecklistDescricao</td>
+                            <td>@item.SupervisaoChecklistObservacoes</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+    }
+    else
+    {
+        <table border="0" width="100%">
+            <tr><td>Nenhum item</td></tr>
+            </table>
+    }
+    
+    <br />
+    <table border="0" width="100%">
+        <tr>
+            <td><b>Descrição</b><br />@Model.SupervisaoDescricao</td>
+        </tr>
+    </table>
+    <br />
+    <table border="0" width="100%">
+        <tr>
+            <td>
+                @Html.CubeeBlog("Supervisoes", Model.SupervisaoId, "", 0, false, false)
+            </td>
+        </tr>
+    </table>
+    
+
+
+
+</div>
+
+@*<div class="divFooter">
+    <span class="text-center">Ref. @Model.MedGuia.MedGuiaId<center>@medico.Endereco, @medico.Numero @medico.Complemento - @medico.Cep - @medico.Bairro - @medico.Cidade / @medico.Estado</center></span>
+</div>*@

@@ -1,0 +1,85 @@
+﻿@model Models.PessoaPlanoGrupoView
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+   
+}
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+
+               
+
+                <h3>Identifique-se</h3>
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+                     @if (Model.EmpresaId != null)
+                {
+                    <h1 class="text-center">
+                        <img src="@VirtualPathUtility.ToAbsolute("~/Assets/img/logotipos/" + Model.EmpresaId + ".png")" /></h1>
+                
+                }
+
+                    @using (Html.BeginForm("Identifique_se", "Eventos", FormMethod.Post, new { @id = "loginForm" }))
+                    {
+                    @Html.HiddenFor(x=>x.PessoaPlanoGrupoId)
+                        @Html.HiddenFor(x=>x.PessoaPlanoGrupoGUID)
+                        @Html.HiddenFor(x=>x.EmpresaId)
+                        
+                        <div class="form-group">
+                            <label class="control-label" for="username">CPF</label>
+                            @Html.TextBoxFor(model => model.PessoaDocumento, null, new { @class = "form-control", placeholder = "Informe seu CPF", required = "preencha o campo", autofocus = "" })
+                        </div>
+                            
+                        <button type="submit" class="btn btn-success btn-block">Próximo</button>
+                        
+                    }
+                    <br />
+                      <a href="@Url.Content("~/Eventos/Index/"+Model.EmpresaId)" class="pull-left">Voltar</a>
+
+                    <br />
+                </div>
+            </div>
+
+
+        </div>
+
+  
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            @if (_copyright == "" || _copyright == "true")
+            {
+                <span><strong>Fortuna</strong> - Gestor do seu negócio<br />
+                    2017 Copyright |  E-Bee</span>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+
+@section Styles{
+    
+
+}
+
+
+@section Scripts {
+    
+    @Scripts.Render("~/bundles/mask/js")
+
+
+    <script>
+        $("#PessoaDocumento").mask("999.999.999-99");
+        </script>
+}

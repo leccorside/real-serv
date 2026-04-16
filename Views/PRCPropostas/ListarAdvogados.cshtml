@@ -1,0 +1,452 @@
+﻿@model List<Models.Pessoa>
+
+@{
+    ViewBag.Title = "Advogados / Propostas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "PRCPropostas/ListarAdvogados";
+
+    // ativar pesquisa
+    var urlPesquisa = "~/PRCPropostas/ListarAdvogados/";
+    ViewBag.SearchAction = urlPesquisa;
+    ViewBag.SearchPlaceHolder = "Pesquisar ";
+    ViewBag.SearchMethod = "get";
+
+    var bllPRCPropostas = new BLL.PRCPropostas();
+    var listaIndices = bllPRCPropostas.ListaQtdGeral();
+
+    var _regraVisualizaOutras = true;
+
+    var outrosFiltros = false;
+
+    if (Request["pesquisartudo"] == "true")
+    {
+        outrosFiltros = true;
+    }
+
+    var bllEntidadesStatus = new BLL.EntidadesStatus();
+    var listarStatus = bllEntidadesStatus.Listar("PRCPropostas", 0, false, -1);
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        @if (Request["pesquisartudo"] != "true")
+                        {
+                            <div class="row">
+                                <div class="col-lg-4" style="">
+                                    <div class="hpanel">
+                                        <div class="panel-body text-center h-180">
+                                            <h4 class="font-extra-bold no-margins">Advogados</h4>
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-xs-12" style="">
+                                                    <small class="stats-label">Quantidade</small>
+                                                    <h5>@Model.Count()</h5>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer">
+                                            Quantidade de advogados com propostas
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @foreach (var item in listaIndices)
+                                {
+                                    var classe = "";
+                                    var resumo = "";
+                                    var status = "";
+                                    switch (item.result_B)
+                                    {
+                                        case "Total Realizado":
+                                            classe = "text-success";
+                                             status = string.Join(",", listarStatus.Where(x => x.StatusTipo == 2).Select(x => x.StatusNome).ToArray());
+                                            resumo = status;
+                                            break;
+                                        case "Total Não Realizado":
+                                            classe = "text-danger";
+                                            status = string.Join(",", listarStatus.Where(x => x.StatusTipo == 3).Select(x => x.StatusNome).ToArray());
+                                            resumo = status;
+                                            break;
+                                        case "Total Andamento":
+                                            classe = "text-warning";
+                                            status = string.Join(",", listarStatus.Where(x => x.StatusTipo == 0).Select(x => x.StatusNome).ToArray());
+                                            resumo = "<abbr title=\"" + status + "\">Status de fluxo</abbr>";
+                                            break;
+                                        case "Total Bruto":
+                                            classe = "text-primary";
+                                            resumo = "Todos os status";
+                                            break;
+                                        case "Prospect":
+                                            classe = "text-primary";
+                                            resumo = "Oportunidades que devem ser trabalhadas";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                              
+                              
+                                    <div class="col-lg-4" style="">
+                                        <div class="hpanel">
+                                            <div class="panel-body text-center h-180">
+
+
+
+                                                <h4 class="font-extra-bold no-margins @classe">@item.result_B</h4>
+                                                <br />
+                                                <div class="row">
+                                                    <div class="col-xs-3" style="">
+                                                        <small class="stats-label">Propostas</small>
+                                                        <h5>@item.result_D</h5>
+                                                    </div>
+
+                                                    <div class="col-xs-9" style="">
+                                                        <small class="stats-label">Total Bruto</small>
+                                                        <h5>@decimal.Parse(item.result_C).ToString("C")</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel-footer">
+                                                @Html.Raw(resumo)
+                                            </div>
+                                        </div>
+                                    </div>    
+                                }
+
+                            </div> 
+                        }
+
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+
+                    <!-- filtros de pesquisa -->
+                    <div class="hpanel @(outrosFiltros ? "" : " collapsed ") ">
+                        <div class="panel-heading hbuilt">
+                            <div class="panel-tools">
+                                <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                            </div>
+                            <a class="showhide"><i class="fa fa-filter"></i>Filtros Avançados</a>
+                        </div>
+                        <div class="panel-body  ">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+
+                                    @using (Html.BeginForm("ListarAdvogados", "PRCPropostas", FormMethod.Get, new { @class = "  " }))
+                                    {
+                                        if (_regraVisualizaOutras)
+                                        {
+                                        <input type="hidden" name="pesquisartudo" value="true" />
+                                        }
+                            
+                                        <div class="row">
+                                            <div class="form-group col-lg-2">
+                                                <label>Proposta</label>
+                                                <input type="text" name="PRCPropostaId" id="PRCPropostaId" title="Pesquisar" class="form-control select-all" placeholder="Proposta..." value="@Request["PRCPropostaId"]">
+                                            </div>
+
+                                            <div class="form-group col-lg-3">
+                                                <label>Precatório</label>
+                                                <input type="text" name="pesquisar" id="pesquisar" title="Pesquisar" class="form-control select-all" placeholder="Precatório..." value="@Request["pesquisar"]">
+                                            </div>
+
+                                            <div class="form-group col-lg-4">
+                                                <label>Requerente</label>
+                                                <input type="text" name="Requerentes_Nome" id="Requerentes_Nome" title="Pesquisar select-all" class="form-control" placeholder="Requerente..." value="@Request["Requerentes_Nome"]">
+                                            </div>
+
+                                            <div class="form-group col-lg-3">
+                                                <label>Advogado</label>
+                                                <input type="text" name="Advogados_Nome" id="Advogados_Nome" title="Pesquisar" class="form-control select-all" placeholder="Advogado..." value="@Request["Advogados_Nome"]">
+                                            </div>
+
+
+
+                                            <div class="form-group col-lg-2">
+                                                <label>Telefone</label>
+                                                <input type="text" name="telefone" id="telefone" title="Pesquisar" class="form-control select-all" placeholder="Telefone..." value="@Request["telefone"]">
+                                            </div>
+
+
+
+
+                                            <div class="form-group col-lg-4">
+                                                <label>Status</label>@Html.DropDownList("StatusNome", (SelectList)ViewBag.ddlStatusAgrupado, new { @class = "chosen-select form-control " })
+                                            </div>
+
+
+
+                                            <div class="form-group col-lg-6">
+                                                <label>
+                                                    <input type="checkbox" name="chk_pesquisar_data" id="chk_pesquisar_data" @(Request["chk_pesquisar_data"] == "on" ? "checked" : "") />
+                                                    Pesquisar por Data Próx. Ação</label>
+                                                <div class="row">
+
+                                                    <div class="col-md-4" style="">
+                                                        <input type="text" name="de" id="de" title="Data de" class="datepicker form-control tip-bottom select-all" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+                                                    </div>
+                                                    <div class="col-md-4" style="">
+                                                        <input type="text" name="ate" id="ate" title="Data até" class="datepicker form-control tip-bottom select-all" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+                                                    </div>
+                                                    <div class="col-md-4" style="">
+                                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                                            <button class="btn btn-outline btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                                                            <button class="btn btn-outline btn-danger" type="button" onclick="parent.location='@strUrl'"><i class="fa fa-eraser"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- ./ filtros de pesquisa -->
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table dataTable" id="table_produtos">
+                            <caption>Advogados</caption>
+                            <thead>
+                                <tr style="font-size: 12px;">
+                                    <th>Nome</th>
+                                    <th>Status</th>
+                                    <th>Telefone</th>
+
+                                    <th>Quantidade</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                    <th>ordenacao</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model)
+                                {
+
+                                  
+                                    
+                                    <tr>
+                                        <td width="100%">
+                                            @item.Nome<br />
+                                            <a href="mailto:@item.Email">@item.Email</a>
+                                        </td>
+                                        <td>@item.StatusNome</td>
+                                        <td nowrap>@item.Telefone
+                                            @if (BLL.Utils.Validacoes.ToStringNullSafe(item.Celular) != "")
+                                            {
+                                                <br />
+                                                <a href="@Url.Content("~/TemplatesMensagens/Enviar/?PessoaId=" + item.PessoaID)" class="fancybox_full fancybox.iframe btn btn-outline btn-success btn-xs"><i class="fa fa-whatsapp"></i>@item.Celular</a>
+                                            }
+
+
+                                        </td>
+                                        <td>@item.PRCPropostasQtd</td>
+                                        <td>@string.Format("{0:N2}", item.PRCPropostasValor)</td>
+                                        <td>
+                                            <a href="@Url.Content("~/Pessoas/Criar/" + item.PessoaID + "/" + item.PessoaCategoria)" target="_top" class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="Alterar"  title="Alterar" data-placement="top"><i class="fa fa-edit" aria-hidden="true"></i>Editar</a>
+                                        </td>
+                                        <td>@item.PRCPropostasValor</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section css{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/datatables/css")
+
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+
+
+
+    <script>
+
+        // Initialize Example 2
+        $('.dataTable').dataTable({
+            "initComplete": function () {
+                this.api().columns([1]).every(function () {
+                    var column = this;
+                    var select = $('<select><option value="">--Todos--</option></select>')
+                        .appendTo($(column.header()).empty())
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                            column
+                                .search(val ? '^' + val + '$' : '', true, false)
+                                .draw();
+                        });
+
+                    column.data().unique().sort().each(function (d, j) {
+                        select.append('<option value="' + d + '">' + d + '</option>')
+                    });
+                });
+            },
+            "pageLength": 100,
+            "columnDefs": [
+                            { "orderData": [6], "targets": [4] },
+                            {
+                                "targets": [6],
+                                "visible": false,
+                                "searchable": false
+                            },
+            ],
+            "paging": true,
+            "ordering": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "info": true,
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar ",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+        });
+
+
+
+
+
+
+    </script>
+    <script>
+        $(".fancyboxcubee_recarrega").fancybox({
+            fitToView: false,
+            width: '50%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox_submit").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPaginaSubmit();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+        function RecarregaPaginaSubmit() {
+            console.log("submit");
+            $("#form_principal").submit();
+        }
+
+    </script>
+
+
+
+
+}

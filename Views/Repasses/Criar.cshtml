@@ -1,0 +1,158 @@
+﻿@model Models.RepasseView
+
+
+@{
+    
+
+
+    ViewBag.Title = "Edição de Repasse";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    decimal tot_TotalLucroLiquido = 0;
+    decimal tot_TotalRepasse = 0;
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Repasses", "Index", "Repasses")</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+                    @using (Html.BeginForm("Criar", "Repasses", FormMethod.Post, new { @class = "" }))
+                    {
+                        @Html.ValidationSummary(true)
+        
+                        @Html.HiddenFor(m => m.Repasse.RepasseId);
+                        
+                        
+                        
+                        <legend>Itens do Repasse</legend>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                            <table cellpadding="1" cellspacing="1" class="table dataTable" id="table_produtos">
+                                <thead>
+                                    <tr style="font-size: 12px;">
+                                        <th>
+                                            </th>
+                                        <th>Guia n<sup>o</sup></th>
+                                        <th>Data</th>
+                                        <th>Paciente</th>
+                                        <th>Convênio/Plano</th>
+                                        <th>Lucro</th>
+                                        <th>Repasse</th>
+                                        <th>Reembolso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.ListMedGuias.Count(); i++)
+                                    {
+                                        tot_TotalLucroLiquido += (decimal)Model.ListMedGuias[i].TotalLucroLiquido;
+                                        tot_TotalRepasse += (decimal)Model.ListMedGuias[i].TotalRepasse;
+                                        
+                                        <tr>
+                                            <td><a href="#" class="btn btn-outline btn-danger btn-xs" onclick="return cubeeConfirm('Atenção','Confirma a exclusão da guia @Model.ListMedGuias[i].MedGuiaId no repasse @Model.Repasse.RepasseId?','@Url.Content("~/Repasses/ExcluirGuia/" + Model.Repasse.RepasseId + "/" + Model.ListMedGuias[i].MedGuiaId + "")')" ><i class="fa fa-trash"></i></a></td>
+                                            <td>@Model.ListMedGuias[i].MedGuiaId</td>
+                                            <td>@Model.ListMedGuias[i].MedGuiaData.ToShortDateString()</td>
+                                            <td>@Model.ListMedGuias[i].PacienteNome</td>
+                                            <td>@Model.ListMedGuias[i].ConvenioNome / @Model.ListMedGuias[i].ConvenioPlanoNome</td>
+                                            <td nowrap class="text-right">R$  @string.Format("{0:F2}", Model.ListMedGuias[i].TotalLucroLiquido)</td>
+                                            <td nowrap class="text-right">R$  @string.Format("{0:F2}", Model.ListMedGuias[i].TotalRepasse)</td>
+                                            <td nowrap class="text-right">R$  @string.Format("{0:F2}", Model.ListMedGuias[i].TotalReembolso)</td>
+                                        </tr>
+                                    }
+                                    
+                                </tbody>
+                                
+                            </table>
+                            
+
+                        </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                                <div class="col-lg-6"><h4 id="QtdRegistros">@Model.ListMedGuias.Count() registros </h4></div>
+                                <div class="col-lg-6"><h4 class="pull-right" id="VlrTotal">R$ @string.Format("{0:F2}", tot_TotalRepasse)</h4></div>
+                            </div>
+                        <br />
+                        
+                        <legend>Dados do Repasse</legend>
+                        <div class="row">
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Data do Repasse</label>
+                                @Html.TextBox("Repasse.RepasseData", String.Format("{0:dd/MM/yyyy}", Model.Repasse.RepasseData), new { @class = "datepicker form-control", value = DateTime.Now })
+                                @Html.ValidationMessageFor(model => model.Repasse.RepasseData)
+                            </div>
+
+                            <div class="col-form col-lg-3 col-md-3 col-sm-3">
+                                <label>Total Real</label>
+                                @Html.TextBox("Repasse.RepasseTotalReal", string.Format("{0:F2}", Model.Repasse.RepasseTotalReal), new { @class = "moeda form-control" })
+                            </div>
+
+
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", new { id = 0 }, new { @class = "btn btn-outline btn-primary" })
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles{
+    
+}
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/maxlenght/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+
+
+    <script>
+
+        $('.maxlen').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+
+        $("#Repasse_RepasseData").mask("99/99/9999");
+
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+
+    </script>
+}

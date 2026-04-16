@@ -1,0 +1,121 @@
+﻿@model List<Models.ConvenioPlanoFaixaFatorFilial>
+
+@{
+    ViewBag.Title = "Convênios, Planos e Faixa de Fatores por " + BLL.Usuarios.GetEntidadeFilial();
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Convênios", "Index", "Convenios")</li>
+}
+
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+                    @using (Html.BeginForm())
+                    { 
+
+                    
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                    <tr>
+                        <td>Convênio</td>
+                        <td>Plano</td>
+                        <td>Fator</td>
+                        <td class="text-center">Habilitado <small style="display:block;"><label><input type="checkbox" id="selectAll" name="selectAll" /> Marcar tudo</label></small></td>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @for (int i = 0; i < Model.Count(); i++)
+                    {
+                        var possui = Model.Where(x => x.ValorDe == Model[i].ValorDe && x.ConvenioPlanoId == Model[i].ConvenioPlanoId &&  x.ValorAte == Model[i].ValorAte && x.Checado==true );
+                        <tr class="@(possui.Count()>1? " active ":"")">
+                            <td>
+                                <i class="fa @(possui.Count()>1? " fa-exclamation-circle ":"")" aria-hidden="true"></i>  @Model[i].ConvenioNome
+                                @if (possui.Count() > 0)
+                                {
+                                    <br /><small class="text-danger">possui duplicado</small>
+                                }
+                            </td>
+                            <td>
+                                @Model[i].ConvenioPlanoNome
+                            </td>
+                            <td>@string.Format("{0:F2}", Model[i].ValorDe) até @string.Format("{0:F2}", Model[i].ValorAte) = @string.Format("{0:F2}", Model[i].Fator)</td>
+                            <td class="text-center">
+                                <div class="checkbox">
+                                    <label>@Html.CheckBoxFor(m => Model[i].Checado, new { @id = i + "_Checado", @class = "chk_item  " }) - <i class="fa @(Model[i].Checado ? "fa-check-square-o" : "fa-square-o")"></i> </label>
+                                </div>
+                                 
+                                
+
+                                
+                                
+                                @Html.HiddenFor(m => Model[i].ConvenioId)
+                                @Html.HiddenFor(m => Model[i].ConvenioPlanoId)
+                                @Html.HiddenFor(m => Model[i].ConvenioFaixaFatorId)
+                                @Html.HiddenFor(m => Model[i].ConvenioNome)
+                                @Html.HiddenFor(m => Model[i].ConvenioPlanoNome)
+                                @Html.HiddenFor(m => Model[i].Checado)
+                            </td>
+
+                        </tr>
+                    
+                    }
+
+
+
+                </tbody>
+
+
+                        </table>
+
+                    </div>
+
+                    
+                        if (Model.Count() > 0)
+                        {
+            <button name="salvar" value="true" type="submit" class="btn btn-primary ">Atualizar</button>    
+                        }
+                    }
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+        $(function () {
+
+            $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+            $(':checkbox[name=selectAll]').click(function () {
+                $('.chk_item').prop('checked', this.checked);
+            });
+
+
+        });
+    </script>
+
+
+
+
+}

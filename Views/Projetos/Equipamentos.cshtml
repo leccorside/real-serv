@@ -1,0 +1,84 @@
+﻿@model Models.ProjetoEquipamentoView
+
+@{
+    
+    
+    ViewBag.Title = "Alterar Obras";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@section Styles {
+
+}
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Obras", "Index")</li>
+
+}
+
+
+@Html.Partial("~/Views/Projetos/_Navtabs.cshtml", Model.DadosProjeto)
+
+
+@using (Html.BeginForm("Equipamentos","Projetos", FormMethod.Post))
+{
+    @Html.ValidationSummary(true)
+    
+    
+    @Html.Hidden("ProjetoEquipamento.ProjetoId", Model.DadosProjeto.ProjetoId);
+  
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="control-group">
+                <label><strong>Equipamento</strong></label>
+                <div class="input-append">
+                    @Html.DropDownListFor(model => model.ProjetoEquipamento.EquipamentoId, (SelectList)ViewBag.ddlEquipamentos, "--Selecione--", new { @class="chosen-select" })
+                    <button type="submit" class="btn" ><i class="icon-plus"></i>Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+}
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th ></th>
+            <th >Nome</th>
+            <th >Descrição</th>
+            <th >Status</th>
+            <th ></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ListaEquipamentos)
+        {
+            <tr class="@(item.Ativo ? "" : "  muted ")">
+                <td nowrap><a href="~/Projetos/EquipamentosStatus/@Model.DadosProjeto.ProjetoId?pid=@item.ProjetoEquipamentoId&st=@(item.Ativo ? "0" : "1")" onclick="return confirm('Deseja realmente @(item.Ativo ? "inativar" : "ativar") esse equipamento?')"><i class="fa fa-lg fa-toggle-@(item.Ativo ? "on" : "off")"></i></a></td>
+                <td nowrap>@item.EquipamentoNome</td>
+                <td width="100%">@item.EquipamentoDescricao</td>
+                <td nowrap>@(item.Ativo ? "Ativo" : "Inativo") </td>
+                <td nowrap><a href="~/Projetos/EquipamentosDeletar/@Model.DadosProjeto.ProjetoId?pid=@item.ProjetoEquipamentoId" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir esse equipamento?')"><i class="fa fa-times"></i>Excluir</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+}

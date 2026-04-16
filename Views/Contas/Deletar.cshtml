@@ -1,0 +1,100 @@
+﻿@model Models.Conta
+
+
+@{
+    ViewBag.Title = "Excluindo conta";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Financeiro", "Index", "Financeiro")</li>
+    <li class="active">@Html.ActionLink("Contas", "Index", "Contas")</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja apagar esse registro?
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    <div class="row">
+
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.ContaTipoId)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.ContaTipoId)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.ContaNome)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.ContaNome)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.ContaInicioData)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.ContaInicioData)
+                            </div>
+
+                        </div>
+                        <div class="col-lg-3">
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.ContaInicioSaldo)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.ContaInicioSaldo)
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- ./conteudo aqui -->
+                </div>
+                <div class="panel-footer">
+
+                    @using (Html.BeginForm())
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.HiddenFor(model => model.ContaId)
+                                    <input type="submit" value="Apagar" class="btn btn-danger" />
+                                
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary" })
+                                
+                            </div>
+                        </div>    
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+

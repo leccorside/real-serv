@@ -1,0 +1,67 @@
+﻿@model Models.Turma
+
+@{
+    ViewBag.Title = "Inserir Aluno";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    Models.Agendamento obj = new Models.Agendamento();
+    BLL.Pessoas p = new BLL.Pessoas();
+    obj.ClienteList = p.ListarPessoas(BLL.Pessoas.ECategoriaPessoa.ClienteFuncionario, BLL.Pessoas.EExibirAgenda.Sim);
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Turmas", "Index", new { id = 0 })</li>
+}
+
+
+
+
+
+@using (Html.BeginForm())
+        {
+<div class="cwell">
+    <fieldset>
+
+        <legend>Turma @Model.TurmaNome</legend>
+  
+        <div class="row-fluid">
+            <div class="span12">
+                Escolha o Aluno :
+                <br />
+              
+
+
+               @Html.DropDownListFor(model => model.PessoaID, (SelectList)ViewBag.DdlClientes, new { @class = "chosen-select" })
+
+            </div>
+            
+            <div class="pull-left">
+                <br />
+                <br />
+                <input type="submit" value="Inserir" class="btn btn-primary" />
+            </div>
+        </div>
+
+
+    </fieldset>
+    <br />
+
+
+        <div class="row-fluid">
+            <div class="span12">
+                @Html.HiddenFor(model => model.TurmaId)
+              
+
+                <p class="pull-left">
+                   @Html.ActionLink("Voltar", "Index", new { id=0})
+                </p>
+            </div>
+        </div>
+ 
+
+
+
+</div>
+        }

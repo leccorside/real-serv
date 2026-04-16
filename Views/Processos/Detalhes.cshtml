@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Detalhes do processo";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span> Processos</li>
+
+}
+
+
+
+<div class="cwell">
+ <legend>Processo xxx-yyyyyyyy-dv</legend>
+    <div class="row-fluid">
+        <div class="span4">
+            <label>Ano - Número -dv </label>
+            xxx-yyyyyyyy-dv
+        </div>
+
+        
+        <div class="span4">
+            <label>Projeto </label>
+           Projeto XYZ
+
+
+        </div>
+
+        <div class="span4">
+            <label>Data </label>
+           @DateTime.Now
+
+
+        </div>
+    </div>
+    <br />
+    </div>
+<div class="row-fluid">
+
+    <div class="span12">
+
+
+        
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th nowrap><a href="@Url.Content("~/Processos/Index/0/")?pagina=0&ordenacao=x&tipoordenacao=x">Id</a></th>
+                    <th nowrap><a href="@Url.Content("~/Processos/Index/0/")?pagina=0&ordenacao=x&tipoordenacao=x">Última Atualização</a></th>
+                    <th nowrap></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 20; i++)
+                {
+                    <tr>
+                        <td nowrap>@i</td>
+                        <td nowrap>@DateTime.Now</td>
+                        <td nowrap>@Html.ActionLink("Visualizar", "Criar", new { id = 0 }, new { @class = "btn btn-mini" })</td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
+    </div>
+</div>

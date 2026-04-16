@@ -1,0 +1,289 @@
+﻿@model Models.PostoDeServicoEscalaGerarView
+
+@{
+    ViewBag.Title = "Gerar Escala";
+    Layout = "~/Views/Shared/_Layout.cshtml";  
+
+   
+}
+
+
+@section Styles{
+    <style>
+        .horario
+        {
+                  font-size: 10px !important;
+    padding: 0px !important;
+    text-align: center;
+        }
+
+        .opcional
+        {
+            background-color: lightyellow !important;
+        }
+    </style>
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Posto de Serviço", "Index", new { id = 0 })</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Alterar Posto de Serviço", "Criar", new { id = Model.PostoDeServico.PostoDeServicoId })</li>
+}
+
+
+
+<div class="cwell">
+
+    @Html.Partial("~/Views/PostosDeServicos/_Navtabs.cshtml", Model.PostoDeServico)
+
+    
+<form method="post" action="" id="ajax_form" name="ajax_form">
+
+
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.PostoDeServico.PostoDeServicoId)
+
+        <legend>Informa as datas e clique em processar<br />
+            <small>O processamento pode demorar alguns segundos</small></legend>
+        <div class="row-fluid">
+
+
+            <div class="span1">
+                <label>Date de início</label>
+                @Html.TextBoxFor(m => m.DataDe, "{0:dd/MM/yyyy}", new { @class = "datepickerDe input-small" })
+
+
+            </div>
+            <div class="span1">
+                <label>Data de fim</label>
+                @Html.TextBoxFor(m => m.DataAte, "{0:dd/MM/yyyy}", new { @class = "datepickerDe input-small" })
+
+            </div>
+
+        </div>
+
+
+        <div class="row-fluid">
+
+            <div class="span12">
+                <table class="table table-bordered table-striped table-highlight">
+                    <thead>
+                        <tr>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.Pessoas.ListaPostoDeServicoPessoa)
+                        {
+
+
+
+                            var indice = "ListEscalaRegistroInsert[" + item.PessoaId + "].";
+                           
+
+                                                                                                   
+                            
+                            <tr id="linha_@item.PessoaId">
+                                 @Html.Hidden("ListEscalaRegistroInsert.Index", item.PessoaId)
+                            
+                            @Html.Hidden(indice + "EscalaRegistro.PessoaId", item.PessoaId)
+                            @Html.Hidden(indice + "EscalaRegistro.ServicoId", item.ServicoId)
+                            @Html.Hidden(indice + "EscalaRegistro.PostoDeServicoId", item.PostoDeServicoId)
+                            @Html.Hidden(indice + "EscalaRegistro.TipoEscalaId", item.TipoEscalaId)
+                                <td>
+                                    <div class="row-fluid">
+                                        <div class="span4">@item.RE - @item.PessoaNome </div>
+                                        <div class="span4">@item.ServicoNome (@item.TipoEscalaNome)</div>
+                                        <div class="span4"><a href="javascript:ExcluirLinha(@item.PessoaId)" class="btn btn-mini btn-danger pull-right" onclick="return confirm('Deseja realmente excluir @item.PessoaNome da escala?')">Excluir</a></div>
+                                    </div>
+                                    <div class="row-fluid">
+                                        
+                                        <div class="span12">
+
+                                            <table>
+                                                <tr>
+                                               
+                                                    <td width="14%">
+                                                       <label class="d0"></label> 
+                                                        
+                                                            @Html.TextBox(indice + "h1inicio", item.ListEscalaRegistro.ElementAt(0).Inicio, new { @class = "span3 horario" }) @Html.TextBox(indice + "h1IntervalInicio", item.ListEscalaRegistro.ElementAt(0).IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBox(indice + "h1IntervalFim", item.ListEscalaRegistro.ElementAt(0).IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBox(indice + "h1Fim", item.ListEscalaRegistro.ElementAt(0).Fim, new { @class = "span3 horario" })    
+                                                        
+                                                        
+                                                    </td>
+
+                                                    <td width="14%">
+                                                        <label class="d1"></label>
+                                                         
+                                                        @Html.TextBox(indice + "h2inicio", item.ListEscalaRegistro.ElementAt(1).Inicio, new { @class = "span3 horario" }) @Html.TextBox(indice + "h2IntervalInicio", item.ListEscalaRegistro.ElementAt(1).IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBox(indice + "h2IntervalFim", item.ListEscalaRegistro.ElementAt(1).IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBox(indice + "h2Fim", item.ListEscalaRegistro.ElementAt(1).Fim, new { @class = "span3 horario" })
+                                                           
+                                                    </td>
+
+                                                    <td width="14%">
+                                                        <label class="d2"></label>
+                                                         
+                                                        @Html.TextBox(indice + "h3inicio", item.ListEscalaRegistro.ElementAt(2).Inicio, new { @class = "span3 horario" }) @Html.TextBox(indice + "h3IntervalInicio", item.ListEscalaRegistro.ElementAt(2).IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBox(indice + "h3IntervalFim", item.ListEscalaRegistro.ElementAt(2).IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBox(indice + "h3Fim", item.ListEscalaRegistro.ElementAt(2).Fim, new { @class = "span3 horario" })              
+                                                         
+                                                    </td>
+                                                    
+                                                    <td width="14%">
+                                                        <label class="d3"></label>
+                                                        
+                                                        @Html.TextBox(indice + "h4inicio", item.ListEscalaRegistro.ElementAt(3).Inicio, new { @class = "span3 horario" }) @Html.TextBox(indice + "h4IntervalInicio", item.ListEscalaRegistro.ElementAt(3).IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBox(indice + "h4IntervalFim", item.ListEscalaRegistro.ElementAt(3).IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBox(indice + "h4Fim", item.ListEscalaRegistro.ElementAt(3).Fim, new { @class = "span3 horario" })            
+                                                        
+                                                    </td>
+                                                    
+                                                    <td width="14%">
+                                                        <label class="d4"></label>
+                                                        
+                                                        @Html.TextBox(indice + "h5inicio", item.ListEscalaRegistro.ElementAt(4).Inicio, new { @class = "span3 horario" }) @Html.TextBox(indice + "h5IntervalInicio", item.ListEscalaRegistro.ElementAt(4).IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBox(indice + "h5IntervalFim", item.ListEscalaRegistro.ElementAt(4).IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBox(indice + "h5Fim", item.ListEscalaRegistro.ElementAt(4).Fim, new { @class = "span3 horario" })            
+                                                        
+                                                        
+                                                    </td>
+                                                    
+                                                    <td width="14%">
+                                                        <label class="d5"></label>
+                                                         
+                                                            @Html.TextBox(indice + "h6inicio", item.ListEscalaRegistro.ElementAt(5).Inicio, new { @class = "span3 horario" }) @Html.TextBox(indice + "h6IntervalInicio", item.ListEscalaRegistro.ElementAt(5).IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBox(indice + "h6IntervalFim", item.ListEscalaRegistro.ElementAt(5).IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBox(indice + "h6Fim", item.ListEscalaRegistro.ElementAt(5).Fim, new { @class = "span3 horario" })               
+                                                            
+                                                    </td>
+                                                    
+                                                    <td width="14%">
+                                                        <label class="d6"></label>
+                                                         
+                                                          @Html.TextBox(indice + "h7inicio", item.ListEscalaRegistro.ElementAt(6).Inicio, new { @class = "span3 horario" }) @Html.TextBox(indice + "h7IntervalInicio", item.ListEscalaRegistro.ElementAt(6).IntervalInicio, new { @class = "span3 horario opcional" })@Html.TextBox(indice + "h7IntervalFim", item.ListEscalaRegistro.ElementAt(6).IntervalFim, new { @class = "span3 horario opcional" }) @Html.TextBox(indice + "h7Fim", item.ListEscalaRegistro.ElementAt(6).Fim, new { @class = "span3 horario" })            
+                                                          
+                                                    </td>
+
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        
+                                    </div>
+                                    <div class="row-fluid">
+                                        <div class="span2">
+                                            <label class="checkbox">
+                                                @Html.CheckBox(indice + "ExcetoSabado") Exceto Sábado
+                                            </label>
+                                        </div>
+                                        <div class="span2">
+                                            <label class="checkbox">
+                                                @Html.CheckBox(indice + "ExcetoDomingo") Exceto Domingo
+                                            </label>
+                                        </div>
+                                        <div class="span2">
+                                            <label class="checkbox">
+                                                @Html.CheckBox(indice + "ExcetoFeriado") Exceto Feriado
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn" onclick="return confirm('Confirma a geração da Escala?')">Processar</button>
+    
+    </form>
+
+
+    <div>
+        <a href="~/PostosDeServicos/Escalas/@Model.PostoDeServico.PostoDeServicoId">Voltar</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(function () {
+            $("#DataDe").mask("99/99/9999");
+            $("#DataAte").mask("99/99/9999");
+
+            $(".horario").mask("99:99");
+
+            DiaSemana($("#DataDe").val());
+            
+
+            $('#DataDe').on('change', function () {
+
+                var from = $(this).val();
+                DiaSemana(from);
+   
+                
+            });
+
+
+
+        });
+
+
+        function DiaSemana(from) {
+            var numbers = from.match(/\d+/g);
+
+            var date = new Date(numbers[2], numbers[1] - 1, numbers[0]);
+            
+            var weekdays = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
+            var dia = date.getDay();
+
+            
+            for (var i = 0; i < 7; i++) {
+
+                var weekday = weekdays[dia];
+                $(".d" + i).html(weekday);
+                
+                dia++;
+                if (dia > 6) {
+                    dia = 0;
+                }
+            }
+
+        }
+
+
+        function ExcluirLinha(pessoaid) {
+            $('#linha_' + pessoaid).remove();
+        }
+    </script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('#ajax_form').submit(function () {
+
+                var dados = jQuery(this).serialize();
+
+
+                jQuery.ajax({
+                    type: "POST",
+                    url: "@Url.Content("~/PostosDeServicos/GerarEscalaResultCustom")",
+                    data: dados,
+                    success: function (data) {
+
+                        if (data.Resultado == true) {
+                            parent.location = "@Url.Content("~/PostosDeServicos/VisualizarEscala/")" + data.ResultadoId;
+                        } else {
+                            alert(data.Mensagem);
+                        }
+
+                    },
+                    error: function (data) {
+                        alert(data.Mensagem);
+                    }
+                });
+
+                return false;
+            });
+        });
+    </script>
+
+
+}

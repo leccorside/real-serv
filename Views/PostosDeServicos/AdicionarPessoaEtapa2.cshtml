@@ -1,0 +1,334 @@
+﻿@model Models.PostoDeServicoEscalaGerarView
+
+@{
+    ViewBag.Title = "Gerar Escala";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+   
+}
+
+
+@section Styles{
+    <style>
+        .horario
+        {
+            font-size: 10px !important;
+            padding: 0px !important;
+            text-align: center;
+        }
+
+        .opcional
+        {
+            background-color: lightyellow !important;
+        }
+    </style>
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Adicionar Pessoa - Etapa 2 de 2 (de @Model.DataDe.ToShortDateString() até @Model.DataAte.ToShortDateString())
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                
+                    <form method="post" action="" id="ajax_form" name="ajax_form">
+
+
+    @Html.ValidationSummary(true)
+
+    @Html.HiddenFor(model => model.PostoDeServico.PostoDeServicoId)
+    @Html.HiddenFor(model => model.DataDe)
+    @Html.HiddenFor(model => model.DataAte)
+    @Html.HiddenFor(model => model.EscalaId)
+
+
+    
+      <div class="row">
+
+
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <label>Date de início</label>
+                @Html.TextBoxFor(m => m.DataAtual, "{0:dd/MM/yyyy}", new { @class = "datepickerDe form-control" })
+
+
+            </div>
+          
+        </div>
+
+    <div class="row">
+
+        
+            
+
+                    @foreach (var item in Model.Pessoas.ListaPostoDeServicoPessoa)
+                    {
+
+
+
+                        var indice = "ListEscalaRegistroInsert[" + item.PessoaId + "].";
+                           
+                        <div class="col-lg-12" id="linha_@item.PessoaId">
+                             
+                            @Html.Hidden("ListEscalaRegistroInsert.Index", item.PessoaId)
+
+                            @Html.Hidden(indice + "EscalaRegistro.PessoaId", item.PessoaId)
+                            @Html.Hidden(indice + "EscalaRegistro.ServicoId", item.ServicoId)
+                            @Html.Hidden(indice + "EscalaRegistro.PostoDeServicoId", item.PostoDeServicoId)
+                            @Html.Hidden(indice + "EscalaRegistro.TipoEscalaId", item.TipoEscalaId)
+                            
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12"><h3>@item.PessoaId - @item.PessoaNome.ToUpper()</h3><h6>@item.ServicoNome (@item.TipoEscalaNome)</h6></div>
+                                </div>
+
+
+                                @if (item.ListEstruturaEscala[0].trabalho == true)
+                                {
+                                    <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label class="d0"></label>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h1inicio", item.ListEscalaRegistro.ElementAt(6).Inicio, new { @class = "form-control col-lg-12 horario" })</div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h1IntervalInicio", item.ListEscalaRegistro.ElementAt(6).IntervalInicio, new { @class = "form-control horario opcional" })</div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h1IntervalFim", item.ListEscalaRegistro.ElementAt(6).IntervalFim, new { @class = "form-control horario opcional" })</div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h1Fim", item.ListEscalaRegistro.ElementAt(6).Fim, new { @class = "form-control horario" })</div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2"></div>
+                                </div>
+                                }
+
+                                @if (item.ListEstruturaEscala[1].trabalho == true)
+                                {
+                                    <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label class="d1"></label>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h2inicio", item.ListEscalaRegistro.ElementAt(5).Inicio, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h2IntervalInicio", item.ListEscalaRegistro.ElementAt(5).IntervalInicio, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h2IntervalFim", item.ListEscalaRegistro.ElementAt(5).IntervalFim, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h2Fim", item.ListEscalaRegistro.ElementAt(5).Fim, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2"></div>
+                                    </div>
+                                                    }
+
+
+                                @if (item.ListEstruturaEscala[2].trabalho == true)
+                                {
+                                    <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label class="d2"></label>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h3inicio", item.ListEscalaRegistro.ElementAt(4).Inicio, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h3IntervalInicio", item.ListEscalaRegistro.ElementAt(4).IntervalInicio, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h3IntervalFim", item.ListEscalaRegistro.ElementAt(4).IntervalFim, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h3Fim", item.ListEscalaRegistro.ElementAt(4).Fim, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2"></div>
+                                    </div>
+                                                    }
+
+
+                                @if (item.ListEstruturaEscala[3].trabalho == true)
+                                {
+                                    <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label class="d3"></label>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h4inicio", item.ListEscalaRegistro.ElementAt(3).Inicio, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h4IntervalInicio", item.ListEscalaRegistro.ElementAt(3).IntervalInicio, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h4IntervalFim", item.ListEscalaRegistro.ElementAt(3).IntervalFim, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h4Fim", item.ListEscalaRegistro.ElementAt(3).Fim, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2"></div>
+                                    </div>
+                                                    }
+
+                                
+                                @if (item.ListEstruturaEscala[4].trabalho == true)
+                                {
+                                    <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label class="d4"></label>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h5inicio", item.ListEscalaRegistro.ElementAt(2).Inicio, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h5IntervalInicio", item.ListEscalaRegistro.ElementAt(2).IntervalInicio, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h5IntervalFim", item.ListEscalaRegistro.ElementAt(2).IntervalFim, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h5Fim", item.ListEscalaRegistro.ElementAt(2).Fim, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2"></div>
+                                    </div>
+                                                    }
+
+
+                                @if (item.ListEstruturaEscala[5].trabalho == true)
+                                {
+                                    <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label class="d5"></label>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h6inicio", item.ListEscalaRegistro.ElementAt(1).Inicio, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h6IntervalInicio", item.ListEscalaRegistro.ElementAt(1).IntervalInicio, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h6IntervalFim", item.ListEscalaRegistro.ElementAt(1).IntervalFim, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h6Fim", item.ListEscalaRegistro.ElementAt(1).Fim, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2"></div>
+                                    </div>
+                                                    }
+
+                                @if (item.ListEstruturaEscala[6].trabalho == true)
+                                {
+                                    <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <label class="d6"></label>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h7inicio", item.ListEscalaRegistro.ElementAt(0).Inicio, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h7IntervalInicio", item.ListEscalaRegistro.ElementAt(0).IntervalInicio, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h7IntervalFim", item.ListEscalaRegistro.ElementAt(0).IntervalFim, new { @class = "form-control col-lg-12 horario opcional" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">@Html.TextBox(indice + "h7Fim", item.ListEscalaRegistro.ElementAt(0).Fim, new { @class = "form-control col-lg-12 horario" })</div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2"></div>
+                                    </div>
+                                                    }
+
+
+                                
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="checkbox">
+                                            <label>
+                                                @Html.CheckBox(indice + "ExcetoSabado") Exceto Sábado </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="checkbox">
+                                            <label>
+                                                @Html.CheckBox(indice + "ExcetoDomingo") Exceto Domingo </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="checkbox">
+                                            <label>
+                                                @Html.CheckBox(indice + "ExcetoFeriado") Exceto Feriado </label>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+
+                            
+
+
+                        </div>
+                    }
+
+        
+
+    </div>
+
+    <button type="submit" class="btn btn-primary" onclick="return confirm('Confirma a inclusão de funcionário na Escala?')">Adicionar</button>
+    
+    <a href="javascript:history.go(-1)" class="btn btn-outline btn-primary pull-right" >Voltar</a>
+</form>
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        jQuery(function () {
+            $("#DataAtual").mask("99/99/9999");
+            //$("#DataAte").mask("99/99/9999");
+
+            $(".horario").mask("99:99");
+
+            DiaSemana($("#DataAtual").val());
+
+
+            $('#DataAtual').on('change', function () {
+
+                var from = $(this).val();
+                DiaSemana(from);
+
+
+            });
+
+
+
+        });
+
+
+        function DiaSemana(from) {
+            var numbers = from.match(/\d+/g);
+
+            var date = new Date(numbers[2], numbers[1] - 1, numbers[0]);
+
+            var weekdays = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+
+            var dia = date.getDay();
+
+
+            for (var i = 0; i < 7; i++) {
+
+                var weekday = weekdays[dia];
+                $(".d" + i).html(weekday);
+
+                dia++;
+                if (dia > 6) {
+                    dia = 0;
+                }
+            }
+
+        }
+
+
+        function ExcluirLinha(pessoaid) {
+            $('#linha_' + pessoaid).remove();
+        }
+    </script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('#ajax_form').submit(function () {
+
+                var dados = jQuery(this).serialize();
+
+
+                jQuery.ajax({
+                    type: "POST",
+                    url: "@Url.Content("~/PostosDeServicos/AdicionarPessoaFim")",
+                    data: dados,
+                    success: function (data) {
+
+                        if (data.Resultado == true) {
+                            alert(data.Mensagem);
+                            parent.$.fancybox.close();
+                        } else {
+                            alert(data.Mensagem);
+                        }
+
+                    },
+                    error: function (data) {
+                        alert(data.Mensagem);
+                    }
+                });
+
+                return false;
+            });
+        });
+    </script>
+
+
+}

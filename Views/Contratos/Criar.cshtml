@@ -1,0 +1,383 @@
+﻿@model Models.ContratoView
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.Contrato.ContratoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Contrato";
+
+    if (Model.Contrato.Modal)
+    {
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+
+    var cubee_empresa_token = BLL.Configuracoes.CarregarPorEmpresaId("cubee.empresa.token", BLL.Usuarios.GetEmpresaId());
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Contratos", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            <div class="hpanel">
+                @Html.Partial("~/Views/Contratos/_tabs.cshtml", Model)
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "Contratos", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(x => x.Contrato.Modal)
+                        @Html.HiddenFor(x => x.Contrato.ClienteId)
+                        @Html.HiddenFor(x => x.Contrato.ContratoGUID)
+
+                        @Html.HiddenFor(x => x.Contrato.PessoaPlanoId)
+                        @Html.HiddenFor(x => x.Contrato.PessoaPlanoGrupoId)
+                        
+                        
+                        if (Model.Contrato.ContratoId > 0)
+                        {
+                        @Html.Hidden("Contrato.ContratoId", Model.Contrato.ContratoId);
+                                                                                      acao = "Alterar";
+                        }
+    
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <legend>Dados da @Html.GetLegendaContratoTipo(Model.Contrato.ContratoTipo)</legend>
+                            </div>
+                        </div>
+       
+                        <div class="row">
+
+                            <div class="col-lg-9">
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    <label>#</label>
+                                    <p class="form-control-static">@Model.Contrato.ContratoId</p>
+                                </div>
+
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    <label>Data</label>
+                                    <p class="form-control-static">@Convert.ToDateTime(Model.Contrato.RegDtInicio).ToShortDateString()</p>
+                                </div>
+                                <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                                    <label>Campanha</label>
+                                    @Html.DropDownListFor(model => model.Contrato.CampanhaId, (SelectList)ViewBag.ddlCampanhas, null, new { @class = "chosen-select form-control" })
+
+                                </div>
+
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <label>Tipo</label>
+                                    @Html.DropDownListContratoTipo("Contrato.ContratoTipo", Model.Contrato.ContratoTipo.ToString(), true, "chosen-select form-control  ", "")
+                                </div>
+
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    <label>Início</label>
+                                    @Html.TextBoxFor(m => m.Contrato.ContratoInicio, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    <label>Fim</label>
+                                    @Html.TextBoxFor(m => m.Contrato.ContratoFim, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    <label>Negociador</label>
+
+                                    @Html.DropDownListFor(model => model.Contrato.NegociadorId, (SelectList)ViewBag.ddlUsuarios, null, new { @class = "chosen-select form-control" })
+                                </div>
+
+                            </div>
+                            <div class="col-lg-3">
+                                <label>Status</label>
+                                <h4 class="">@Model.Contrato.StatusNome</h4>
+                                <small>@Model.Contrato.StatusInstrucoes</small>
+
+                                @foreach (var badge in Model.Contrato.ListEntidadeStatusSubStatus)
+                                {
+                 
+                                    <span class="label label-info">@badge</span> 
+                
+                                }
+
+                                @if (Model.Contrato.EntidadeStatusHistoricoData != null)
+                                {
+                                    <h3><small><i class="fa fa-list" aria-hidden="true"></i>TO-DO</small> @String.Format("{0:dd/MM/yyyy}", (DateTime)Model.Contrato.EntidadeStatusHistoricoData)</h3>
+                                }
+                            </div>
+
+
+
+                        </div>
+         
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <legend>Dados @BLL.Usuarios.GetEntidadeClienteSingular()</legend>
+                            </div>
+
+                            <div class="form-group col-lg-1 col-md-1 col-sm-1">
+                                <label>#</label>
+                                <p class="form-control-static">@Model.Pessoa.PessoaID</p>
+                            </div>
+
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5">
+                                <label>Nome</label>
+                                <p class="form-control-static">@Model.Pessoa.Nome</p>
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                <label>E_Mail</label>
+                                <p class="form-control-static">@Model.Pessoa.Email</p>
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                <label>Telefone</label>
+                                <p class="form-control-static">@Model.Pessoa.Celular</p>
+                            </div>
+
+                            @if (cubee_empresa_token != "")
+                            {
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                @if (Model.Pessoa.PessoaIntegrado)
+                                {
+                                    <span><i class="fa fa-plug"></i>Integrado CUBEE <i class="fa fa-cube" aria-hidden="true"></i></span>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Content("~/Pessoas/CubeeIntegra/" + Model.Pessoa.PessoaID)" class="btn btn-outline btn-primary2 btn-xs fancybox_recarrega fancybox.iframe">Integrar CUBEE <i class="fa fa-cube" aria-hidden="true"></i></a>
+                                }
+                            </div>
+                            }
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <legend>Condições</legend>
+                            </div>
+
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Valor</label>
+                                <div class="input-group m-b">
+                                    <span class="input-group-addon">R$</span>
+                                    @Html.TextBox("Contrato.ContratoValor", string.Format("{0:F2}", Model.Contrato.ContratoValor), new { @class = "moeda form-control select-all" })
+                                </div>
+
+
+                            </div>
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Desconto</label>
+                                <div class="input-group m-b">
+                                    <span class="input-group-addon">%</span>
+                                    @Html.TextBox("Contrato.ContratoDesconto", string.Format("{0:F2}", Model.Contrato.ContratoDesconto), new { @class = "moeda form-control select-all" })
+                                </div>
+                            </div>
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                <label>Valor Total</label>
+                                <h3 id="lblValorTotal">@Model.Contrato.ContratoValorTotal</h3>
+                                @Html.HiddenFor(m => m.Contrato.ContratoValorTotal)
+                            </div>
+
+
+                        </div>
+                        
+                        <div class="row-fluid">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+
+                                @if (!Model.Contrato.Modal)
+                                {
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary " })    
+                                }
+
+
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>Status</h4>
+            <div class="hpanel">
+                <div class="panel-body">
+                    @Html.CubeeStatus("Contratos", Model.Contrato.ContratoId, "chosen-select form-control", BLL.Usuarios.GetUsuarioId(), true)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.extend.js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+    @Scripts.Render("~/bundles/ladda/js")
+
+    <script>
+
+        function atualiza() {
+            var url = "@Url.Content("~/Contratos/EditarJSON")"; // the script where you handle the form input.
+
+            console.log($("#form-criar").serialize());
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#form-criar").serialize(),
+                success: function (result) {
+                    if (result.NUMERO != 0) {
+                        swal({ title: "Atencão!", text: result.MENSAGEM, type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                    }
+
+                },
+                error: function (result) {
+                    swal({ title: "Atencão!", text: "Ocorreu um erro ao tentar salvar os dados da proposta", type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                }
+            });
+
+
+        }
+
+
+        $("input[type=text], textarea, select, :checkbox, .atualiza, .select2-results").change(function () {
+            calculaVlLiq();
+            atualiza();
+
+        });
+
+
+
+
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+
+
+        $("#Contrato_ContratoInicio").mask("99/99/9999");
+        $("#Contrato_ContratoFim").mask("99/99/9999");
+
+
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.chosen-select-add').chosen().trigger("chosen:updated");
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+            $('.max').maxlength({
+                alwaysShow: true,
+                threshold: 10,
+                warningClass: "label label-success",
+                limitReachedClass: "label label-danger"
+            });
+        });
+    </script>
+
+    <script>
+        function moedaParaNumero(valor) {
+            return isNaN(valor) == false ? parseFloat(valor) : parseFloat(valor.replace("R$", "").replace(".", "").replace(",", "."));
+        }
+        function numeroParaMoeda(n, c, d, t) {
+            c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+            return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+        }
+
+
+
+        function calculaVlLiq() {
+
+            var contratoValor = moedaParaNumero($("#Contrato_ContratoValor").val());
+            var contratoDesconto = moedaParaNumero($("#Contrato_ContratoDesconto").val());
+            var contratoValorTotal = moedaParaNumero($("#Contrato_ContratoValorTotal").val());
+
+
+            var vlrTotal = (contratoValor - (contratoValor * (contratoDesconto / 100)));
+
+
+            //$("#lblVlLiquido").text('R$ ' + numeroParaMoeda(vlrLiq));
+
+            //proposta final percentual
+            $("#Contrato_ContratoValorTotal").val(numeroParaMoeda(vlrTotal));
+            $("#lblValorTotal").text('R$ ' + numeroParaMoeda(vlrTotal));
+
+
+        }
+
+        calculaVlLiq();
+    </script>
+
+    <script>
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '50%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+      
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+    </script>
+
+}

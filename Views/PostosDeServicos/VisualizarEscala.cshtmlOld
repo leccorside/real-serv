@@ -1,0 +1,283 @@
+﻿@model Models.EscalaRegistroView
+
+@{
+    var user = new BLL.Usuarios();
+    ViewBag.Title = "Postos de Serviços";
+    ViewBag.body_class = "hide-sidebar";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+
+    var PostosDeServicos_DeletarEscala = user.ControleAcesso("DeletarEscala", "PostosDeServicos");
+    
+    
+}
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Posto de Serviço", "Index", new { id = 0 })</li>
+    <li>@Html.ActionLink("Alterar Posto de Serviço", "Criar", new { id = Model.PostoDeServico.PostoDeServicoId })</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+                @Html.Partial("~/Views/PostosDeServicos/_Navtabs.cshtml", Model.PostoDeServico)
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <!-- conteuod aqui -->
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+
+                                    <a href="@Url.Content("~/PostosDeServicos/ViewEscala/" + Model.Escala.EscalaId)" class="fancybox btn btn-outline btn-primary btn-xs" data-fancybox-type="iframe" ><i class="fa fa-search"></i> Escala</a>
+                                    <a href="@Url.Content("~/PostosDeServicos/VisualizarEscalaPapeletasPlan/" + Model.Escala.EscalaId)" class="fancybox btn btn-outline btn-primary btn-xs" data-fancybox-type="iframe" ><i class="fa fa-search"></i> Planejamento</a>
+                                    <a href="@Url.Content("~/PostosDeServicos/VisualizarEscalaPapeletas/" + Model.Escala.EscalaId)" class="fancybox btn btn-outline btn-primary btn-xs" data-fancybox-type="iframe" ><i class="fa fa-search"></i> Papeletas</a>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+
+                                    <a href="@Url.Content("~/PostosDeServicos/ImprimirEscalaPapeletas/" + Model.Escala.EscalaId)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Papeletas</a>
+                                    <a href="@Url.Content("~/PostosDeServicos/ImprimirEscalaPapeletasPlan/" + Model.Escala.EscalaId)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Planejamento</a>
+                                    <a href="@Url.Content("~/PostosDeServicos/ImprimirEscala/" + Model.Escala.EscalaId)" data-fancybox-type="iframe"  class="fancybox btn btn-outline btn-primary btn-xs"><i class="fa fa-print" aria-hidden="true"></i>Imprimir Escala</a>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                @Html.Partial("~/Views/PostosDeServicos/_Escala.cshtml", Model)
+                            </div>
+                            <div class="pull-left">
+                                <span class="label " style="background-color: #ffaaaa;">Folga</span>
+                                <span class="label " style="background-color: #d4ee9f;">Jornada</span>
+                                <span class="label " style="background-color: #6e91a1;">Férias</span>
+                                <span class="label " style="background-color: #9974aa;">Feriado</span>
+                                <span class="label " style="background-color: #007fff;">Atestado</span>
+                                <span class="label " style="background-color: #F50F43;">Falta</span>
+
+                                <span class="label " style="background-color: #000;">Suspensão</span>
+                                
+                                <span class="label " style="background-color: #FFFFFF; color:black">Demissão</span>
+
+                                <span class="label " style="background-color: #631414;">INSS</span>
+                                <span class="label " style="background-color: #cfe0ff;">Licença Maternidade</span>
+                                <span class="label " style="background-color: #7f7f7f;">Indefinido</span>
+
+                                <span class="label " style="background-color: #62c372;">Licença Paternidade</span>
+                                <span class="label " style="background-color: #c56d22;">Liceça Matrimonial</span>
+
+                            </div>
+                            @if (Model.Escala.Situacao != "A" && PostosDeServicos_DeletarEscala)
+                            {
+                                <a href="@Url.Content("~/PostosDeServicos/DeletarEscala/" + Model.Escala.EscalaId)" class="btn btn-outline btn-warning2 btn-xs pull-right">Apagar</a>
+                            }
+                            <!-- ./conteudo aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+
+    <style>
+        .td_planejado {
+    opacity: 0.6!important;
+}
+        .table-escala
+        {
+            font-size: 10px !important;
+        }
+
+        .table-escala td
+        {
+            font-size: 10px !important;
+        }
+
+            .table-escala td.X /*feriado*/
+            {
+                background-color: #9974aa;
+              
+            }
+
+            .table-escala td.F /*folga*/
+            {
+                background-color: #ffaaaa;
+               
+            }
+
+            .table-escala td.A /*folga*/
+            {
+                background-color: #007fff;
+               
+            }
+
+            .table-escala td.O /*falta*/
+            {
+                background-color: #F50F43;
+               
+            }
+
+            .table-escala td.S /*suspensao*/
+            {
+                background-color: #000;
+               
+            }
+
+            .table-escala td.N /*INSS*/
+            {
+                background-color: #631414;
+                width:30px;
+            }
+
+            .table-escala td.L /*Licenca Maternidade*/
+            {
+                background-color: #cfe0ff;
+            
+            }
+
+            .table-escala td.H /*Licenca Paternidade*/
+            {
+                background-color: #62c372;
+               
+            }
+
+            .table-escala td.G /*Licenca Matrimonial*/
+            {
+                background-color: #c56d22; 
+               
+            }
+
+            .table-escala td.FF /*férias*/
+            {
+                background-color: #6e91a1;
+              
+            }
+
+            .table-escala td.I
+            { /*Indefinido*/
+                background-color: #7f7f7f;
+               
+            }
+
+            .table-escala td.h1, td.h2, td.h3, td.h4, td.h5, td.h6, td.h7, td.J
+            {
+                background-color: #d4ee9f;
+              
+            }
+
+
+        .btn
+        {
+            margin: 2px;
+        }
+    </style>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    <script>
+        $("[data-toggle='tooltip']").tooltip();
+    </script>
+
+   
+
+
+    <script type="text/javascript">
+        //$("body").toggleClass("hide-sidebar");
+        $(document).ready(function () {
+            $('td.item').bind('click', function () {
+
+                var record_id = $(this).attr("id");
+                var link = '@Url.Content("~/EscalasRegistros/Alterar/")' + record_id;
+
+                $.fancybox({
+                    //'width': '75%',
+                    //'height': '75%',
+                    'type': 'iframe',
+                    'href': link,
+                    fitToView: true,
+                    autoSize: true,
+                    closeClick: false,
+                    openEffect: 'elastic',
+                    closeEffect: 'elastic',
+
+                    beforeClose: function () {
+                        RecarregaPagina();
+                    },
+
+                });
+
+            });
+        });
+
+        $(document).ready(function () {
+            $('td.itemexecutado').bind('click', function () {
+
+                var record_id = $(this).attr("id");
+                var link = '@Url.Content("~/EscalasRegistros/AlterarExecutado/")' + record_id;
+
+                $.fancybox({
+                    //'width': '75%',
+                    //'height': '75%',
+                    'type': 'iframe',
+                    'href': link,
+                    fitToView: true,
+                    autoSize: true,
+                    closeClick: false,
+                    openEffect: 'elastic',
+                    closeEffect: 'elastic',
+
+                    beforeClose: function () {
+                        RecarregaPagina();
+                    },
+
+                });
+
+            });
+        });
+
+        $(document).ready(function () {
+
+            $(".fancybox").fancybox({
+                fitToView: true,
+                autoSize: true,
+                closeClick: false,
+                width: '90%',
+                height: '80%',
+                openEffect: 'elastic',
+                closeEffect: 'elastic',
+                beforeClose: function () {
+                    //RecarregaPagina();
+                },
+
+            });
+
+            $(".fancybox_recarrega").fancybox({
+                fitToView: true,
+                autoSize: true,
+                closeClick: false,
+                width: '90%',
+                height: '80%',
+                openEffect: 'elastic',
+                closeEffect: 'elastic',
+                beforeClose: function () {
+                    RecarregaPagina();
+                },
+
+            });
+
+        });
+
+
+        function RecarregaPagina() {
+            parent.location = "@Url.Content("~/PostosDeServicos/VisualizarEscala/" + Model.Escala.EscalaId)";
+        }
+    </script>
+
+
+
+
+}

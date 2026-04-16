@@ -1,0 +1,54 @@
+﻿@model Models.Usuario
+
+
+
+@{
+    
+
+    
+
+    ViewBag.Title = Bll.Usuarios.GetUsuarioNome();
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@section Breadcrumb{
+
+}
+<div class="row-fluid">
+    <!--Tabs2-->
+    <div class="span6">
+        <div id="accordion2" class="accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" href="#statements" data-original-title="">Seu perfil <i class="icon-chevron-down icon-white pull-right"></i>
+                    </a>
+                </div>
+                <div id="statements" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        <ul>
+                            @if (Bll.Usuarios.AccessControl("acessos_backoffice","Regras")){
+                            <li><a href="~/Perfil/SeusDados">Seus dados</a></li>}
+                            <li><a href="~/Perfil/SuaSenha">Sua senha</a></li>
+
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+@section Scripts {
+
+}

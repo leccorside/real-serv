@@ -1,0 +1,134 @@
+﻿@model Models.PRCProposta
+
+@{
+    ViewBag.Title = "Criando Proposta";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+}
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading ">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <i class="fa fa-user-circle-o" aria-hidden="true"></i>Criando Proposta @Model.Fonte
+                </div>
+                <div class="panel-body">
+
+                    <h1><i id="icon" class="fa fa-spinner fa-pulse fa-fw"></i><span id="h1">Aguarde, criando proposta @Model.Fonte</span></h1>
+                    <h6 id="info">Iniciando</h6>
+                    <div class="m">
+                        <div class="progress m-t-xs full progress-striped active">
+                            <div id="barra_progresso" style="width: 5%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="90" role="progressbar" class=" progress-bar progress-bar-success">
+                                <span id="info_progresso">5%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+@section Scripts {
+    <script>
+        function CriarProposta() {
+
+
+
+            CarregaProgesso(30, "Carregando PRC");
+
+
+
+            $.getJSON("@Url.Content("~/ApiIntegracao/PRCPropostaCriar/")", { EmpresaId: '@BLL.Usuarios.GetEmpresaId()', UserId: '@BLL.Usuarios.GetUsuarioId()', Fonte: '@Model.Fonte', Origem: '@Model.TrjReqPagOrigem' }, function (result) {
+
+
+
+                CarregaProgesso(50, "Consultando dados do Requerente");
+
+
+
+
+
+            })
+                .success(function (result) {
+
+                    console.log(result);
+
+                    if (result.ErroCode == "999") {
+                        //erro
+
+                        swal({ title: "Atencão!", text: result.ErroMsg, type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: false }, function () { parent.location = "@Url.Content("~/PRCPropostas/Index")"; });
+                    } else if (result.ErroCode == "10") {
+                        // alerta
+                        swal({
+                            title: "Atencão!",
+                            text: "Não foi possível capturar todos os dados da proposta e ela foi enviada para triagem. Deseja gerar outra proposta?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Sim, gerar proposta!",
+                            cancelButtonText: "Não, cancelar!",
+                            closeOnConfirm: true,
+                            closeOnCancel: true
+                        },
+                                              function (isConfirm) {
+                                                  if (isConfirm) {
+                                                      parent.location = "@Url.Content("~/PRCPropostas/Criar/0/" + Model.Fonte)";
+                                                  } else {
+                                                      parent.location = "@Url.Content("~/PRCPropostas/Index")";
+                                                  }
+                                              });
+
+                                          } else {
+                        // Sucesso
+                                              CarregaProgesso(100, "Pronto! Aguarde! Direcionando para a proposta");
+                                              $("#h1").html("Pronto!");
+
+                                              var url = "/PRCPropostas/Editar/" + result.PRCPropostaId + "/" + result.PRCPropostaGUID + "/";
+
+
+
+                                              console.log(url);
+
+                                              swal({ title: "Tudo certo!", text: "Proposta Criada", type: "success", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: false }, function () { parent.location = url; });
+                                          }
+
+
+
+
+                })
+                .error(function () {
+                    CarregaProgesso(0, "Ocorreu um erro... Tente novamente mais tarde");
+                    $("#icon").removeClass("fa fa-spinner fa-pulse fa-fw");
+                    $("#icon").addClass("fa fa-exclamation-circle");
+                    $("#h1").html("Oooops!");
+
+                });
+
+                              }
+
+
+                              setTimeout(function () { CriarProposta(); }, 3000);
+
+
+
+                              function CarregaProgesso(valor, info) {
+                                  $("#barra_progresso").css({ 'width': valor + "%" })
+                                  $("#info_progresso").html(valor + "%");
+                                  $("#info").html(info);
+
+
+                              }
+
+    </script>
+}

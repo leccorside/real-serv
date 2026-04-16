@@ -1,0 +1,142 @@
+﻿@model Models.EscalaRegistroView
+@{
+    var user = new BLL.Usuarios();
+    var PostosDeServicos_adicionarpessoa = user.ControleAcesso("adicionarpessoa", "PostosDeServicos");
+
+
+    var listaServicos = Model.ListaEscalaRegistro.Select(x => x.ServicoId).Distinct();
+
+    var dias = (Model.Escala.DataAte - Model.Escala.DataDe).TotalDays; dias++;
+    
+    
+}
+
+<h4 class="text-center">Escala de @String.Format("{0:dd/MM/yyyy}", Model.Escala.DataDe) até @String.Format("{0:dd/MM/yyyy}", Model.Escala.DataAte)</h4>
+
+@if (PostosDeServicos_adicionarpessoa)
+{
+    <a  class="fancybox_recarrega btn btn-primary btn-xs naoimprimir" href="@Url.Content("~/PostosDeServicos/AdicionarPessoa/" + Model.Escala.PostoDeServicoId + "?EscalaId=" + Model.Escala.EscalaId)" data-fancybox-type="iframe" ><i class="fa fa-plus" aria-hidden="true"></i> Adicionar Funcionário</a>    
+}
+
+<table class="table table-condensed table-bordered table-escala" @(Model.Impressao ? " width='100%' " : "")>
+    
+    @foreach (var servicoId in listaServicos)
+    {
+
+        var listaPessoasPorServico = from items in Model.ListaEscalaRegistro
+                                     where items.ServicoId == servicoId
+                                     select items;
+
+        var listaIdsPessoa = listaPessoasPorServico.Select(x => x.PessoaId).Distinct();
+
+  
+        
+        <thead>
+            <tr>
+                <th colspan="@(dias + 10)"><h5>@listaPessoasPorServico.ElementAt(0).ServicoNome</h5></th>
+            </tr>
+            <tr>
+                <th>Nome</th>
+                <th></th>
+                @{var dt = Model.Escala.DataDe;}
+                @for (int i = 0; i < dias; i++)
+                {
+                    <th align="center"><small>@String.Format("{0:ddd}", dt.AddDays(i))</small><br />@String.Format("{0:dd/MM}", dt.AddDays(i))</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var PessoaId in listaIdsPessoa)
+            {
+                var listaPessoa = from items in Model.ListaEscalaRegistro
+                                  where items.PessoaId == PessoaId
+                                  select items;
+
+                        
+                <tr>
+                    <td rowspan="2" @(Model.Impressao ? "" : "nowrap")><strong>@listaPessoa.ElementAt(0).Nome</strong><br />RE: @listaPessoa.ElementAt(0).RE<br />
+                        <a href="@Url.Content("~/PostosDeServicos/ExcluirPessoa/" + Model.Escala.EscalaId + "?pid=" + listaPessoa.ElementAt(0).PessoaId)" class="btn btn-outline btn-danger btn-xs naoimprimir" data-original-title="Excluir Pessoa" data-container="body" data-toggle="tooltip" data-placement="top"  onclick="return confirm('Deseja realmente excluir @listaPessoa.ElementAt(0).Nome?')"><i class="fa fa-trash"></i></a></td>
+                    <td>Planejado<a href="@Url.Content("~/PostosDeServicos/AlterarPlanejado/" + Model.Escala.EscalaId + "?pid=" + listaPessoa.ElementAt(0).PessoaId)" class="btn btn-outline btn-primary btn-xs fancybox_recarrega naoimprimir" data-fancybox-type="iframe" data-original-title="Alterar Planejado" data-container="body" data-toggle="tooltip" data-placement="top" ><i class="fa fa-edit"></i></a></td>
+                    @foreach (var item in listaPessoa)
+                    {
+                        <td style="cursor:pointer" @(Model.Impressao ? "" : "nowrap") class="@item.EscalaRegistroTipo item td_planejado" id="@item.EscalaRegistroId" data-original-title="Dia @item.EscalaRegistroData.ToString("dd/MM/yyyy") - @item.Jornada" data-container="body" data-toggle="tooltip" data-placement="top" title="">
+                            @if (!Model.Impressao)
+                            {
+                                if (item.Situacao == "J")
+                                {
+                                @item.Inicio<br />
+                                    if ((item.IntervalInicio != null && item.IntervalInicio != "") && (item.IntervalFim != null && item.IntervalFim != ""))
+                                    {
+                                <div style="width: 100%; background-color: lightyellow">@item.IntervalInicio<br />@item.IntervalFim</div>
+                                    }
+                                @item.Fim<br>
+                                }
+                                else
+                                {
+                                <p>@item.Jornada</p>
+                                }
+
+
+
+                            }
+                            else
+                            {
+                                <small style="font-size: 8px;">&nbsp;</small>    
+                            }
+
+
+                        </td>
+                    }
+                </tr>
+                    
+                <!-- os itens abaixo são do executado-->
+                <tr>
+                    <td>Executado<a href="@Url.Content("~/PostosDeServicos/AlterarEscala/" + Model.Escala.EscalaId + "?pid=" + listaPessoa.ElementAt(0).PessoaId)" class="btn btn-outline btn-primary btn-xs fancybox_recarrega naoimprimir" data-fancybox-type="iframe" data-original-title="Alterar Executado" data-container="body" data-toggle="tooltip" data-placement="top" ><i class="fa fa-edit"></i></a></td>
+                    @foreach (var item in listaPessoa)
+                    {
+                            
+                        <td style="cursor:pointer" @(Model.Impressao ? "" : "nowrap") class="@item.EscalaRegistroTipo itemexecutado" id="@item.EscalaRegistroId" data-original-title="Dia @item.EscalaRegistroData.ToString("dd/MM/yyyy") - @item.PontoJornada" data-container="body" data-toggle="tooltip" data-placement="top" title="">
+                            @if (Model.Impressao)
+                            {
+                                    
+                                @item.PontoInicio<br />
+                                if ((item.PontoIntervalInicio != null && item.PontoIntervalInicio != "") && (item.PontoIntervalFim != null && item.PontoIntervalFim != ""))
+                                {
+                                <div style="width: 100%; background-color: lightyellow">@item.PontoIntervalInicio<br />@item.PontoIntervalFim</div>
+                                }
+                                @item.PontoFim<br>
+                                    
+                                    
+                                    
+                                    
+                                    
+                            }
+                            else
+                            {
+                                
+                                if ((item.PontoInicio != "" && item.PontoInicio != null) && (item.PontoFim != null && item.PontoFim != ""))
+                                {
+                                <i class="fa fa-check"></i>
+                                }
+                                else if (item.PontoInicio != "" && item.PontoInicio != null && (item.PontoFim == null || item.PontoFim == ""))
+                                {
+                                <i class="fa fa-cog fa-spin"></i>
+                                }
+                                else
+                                {
+                                    <span></span>
+                                }
+                                <span><br />@item.PontoInicio<br />@item.PontoIntervalInicio<br />@item.PontoIntervalFim<br />@item.PontoFim<br /></span>
+                                
+                            }</td>
+                    }
+                </tr>
+            }
+        </tbody>
+        
+                   
+    }
+</table>
+
+
+

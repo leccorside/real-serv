@@ -1,0 +1,101 @@
+﻿@model PetaPoco.Page<Models.Contrato>
+
+@{
+    ViewBag.Title = "Contratos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+    
+    
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+    
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @*@Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })*@
+                            </div>
+                            <div class="col-lg-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-striped" width="100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Campanha</th>
+                                <th>@BLL.Usuarios.GetEntidadeClienteSingular()</th>
+                                <th>Tipo</th>
+                                <th>Plano</th>
+                                <th>Status</th>
+                                <th>Valor</th>
+                                <th>Editar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                var tempoPassado = "";
+                                if (item.StatusTempoMaximo > 0 && item.StatusTempoPassado >= item.StatusTempoMaximo)
+                                {
+                                    tempoPassado = "<i class='fa fa-clock-o'></i> " + item.StatusTempoPassado + " hrs";
+                                }
+            
+                                <tr>
+                                    <td>@item.ContratoId</td>
+                                    <td>@item.CampanhaNome</td>
+                                    <td>@item.ClienteNome</td>
+                                    <td><span class="badge @(item.ContratoTipo==0?"badge-info":"badge-success") @Html.GetLegendaContratoTipo(item.ContratoTipo)">@Html.GetLegendaContratoTipo(item.ContratoTipo)</span></td>
+                                    <td>@item.PessoaPlanoTitulo</td>
+                                    <td>@item.StatusNome @Html.Raw(tempoPassado) 
+
+                                            @if (item.EntidadeStatusSubStatus != null && item.EntidadeStatusSubStatus != "")
+                {
+                    List<string> badges = item.EntidadeStatusSubStatus.Split(',').ToList();
+                    foreach (var badge in badges)
+                    {
+                        <span class="label label-info">@badge</span>
+                    }
+                }
+                
+                                           
+                                        </td>
+                                        
+                                        <td>R$ @string.Format("{0:N2}", item.ContratoValorTotal)</td>
+                                    <td><a href="@Url.Content("~/Contratos/Criar/" + item.ContratoId+"/?Modal=false")" class="btn btn-outline btn-primary btn-xs tooltip-legenda fancybox_submit fancybox.iframe">Editar</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

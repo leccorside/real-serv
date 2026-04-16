@@ -1,0 +1,179 @@
+﻿@model Models.GaleriaArquivoView
+
+
+@{
+    
+    var pathFileman = "/Assets/plugins/fileman/index.html";
+
+    var acao = "Cadastrar";
+    if (Model.Galeria.GaleriaId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " " + Model.Galeria.GaleriaNome;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var urlDownload = Url.Content("~/ApiIntegracao/GaleriaArquivosDownload/?guid=" + Model.GaleriaArquivo.GaleriaArquivoGuid + "");
+                                    
+    
+}
+
+
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li>@Html.ActionLink(Model.Galeria.GaleriaNome, "Index", "GaleriasArquivos", new {@GaleriaId = Model.Galeria.GaleriaId }, null )</li>
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+                    <div class="col-lg-12" style="">
+
+                        @using (Html.BeginForm("Criar", "GaleriasArquivos", FormMethod.Post,  new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+                        {
+                            @Html.ValidationSummary(true)
+
+                            @Html.HiddenFor(m=>m.Galeria.GaleriaId)
+                            
+                            if (Model.GaleriaArquivo.GaleriaArquivoId > 0)
+                            {
+                            @Html.HiddenFor(m => m.GaleriaArquivo.GaleriaArquivoId);
+                                                             acao = "Alterar";
+                            }
+    
+                            @Html.Hidden("GaleriaArquivo.GaleriaId", Model.Galeria.GaleriaId)
+                            
+    @Html.HiddenFor(m => m.GaleriaArquivo.GaleriaArquivoGuid)
+       
+                            <div class="row">
+
+                                <div class="col-form col-lg-10">
+                                    <label>Nome Arquivo</label>
+                                    @Html.TextBoxFor(model => model.GaleriaArquivo.GaleriaArquivoNome, new { @class = " form-control " })
+                                </div>
+
+                                <div class="col-form col-lg-2">
+                                    <label>Ordem</label>
+                                    @Html.TextBoxFor(model => model.GaleriaArquivo.GaleriaArquivoOrdem, new { @class = " form-control " })
+                                </div>
+
+                                <div class="col-form col-lg-12">
+                                    <label>Descrição</label>
+                                    @Html.TextAreaFor(model => model.GaleriaArquivo.GaleriaArquivoDescricao, new { @class = " form-control " })
+                                </div>
+
+                                
+                                <div class="col-form col-lg-12">
+                                <label>Tags <small>(utilize , para inserir múltiplas tags)</small></label><br />
+                                @Html.TextBoxFor(model => model.GaleriaArquivo.GaleriaArquivoBadges, new { @class = "tags ", })
+                            </div>
+
+
+                                <div class="col-form col-lg-12">
+                                    <label>@BLL.Usuarios.GetEntidadeFilial()</label>
+                                    @Html.ListBoxFor(model => model.GaleriaArquivo.aGaleriaArquivoFiliaisIds, (SelectList)ViewBag.ddlFiliais, new { @class = "chosen-select form-control ", @data_placeholder = BLL.Usuarios.GetEntidadeFilial() + " com acesso", multiple = "multiple" })
+                                </div>
+
+                                <div class="col-form col-lg-12">
+                                <label>Arquivo</label>
+                                @if (Model.GaleriaArquivo.GaleriaArquivoPath != "" && Model.GaleriaArquivo.GaleriaArquivoPath != null)
+                                {
+                                    <br /><span>@Model.GaleriaArquivo.GaleriaArquivoNome -</span> <span>@Model.GaleriaArquivo.GaleriaArquivoContentType -</span>  <a class="btn btn-xs btn-outline btn-primary" href="@urlDownload" data-toggle="tooltip" data-original-title="Download @Model.GaleriaArquivo.GaleriaArquivoNome" title="" data-placement="top"><i class="fa fa-download"></i> Download</a><br /><br />
+                                }
+                                
+                                <input id="GaleriaArquivo_Arquivo" type="file" name="GaleriaArquivo.Arquivo" />
+                            </div>
+
+                                @if (Model.Galeria.GaleriaAcessoTipoId != 2)
+                                {
+                                    <div class="col-form col-lg-12" style="margin-top:14px">
+                                        <label>Que usuários do Backoffice pode acessar?</label>
+                                        @Html.ListBoxFor(model => model.GaleriaArquivo.aGaleriaArquivoPerfisIds, (SelectList)ViewBag.ddlPerfis, new { @class = "chosen-select form-control ", @data_placeholder = "Selecione os perfis com acesso", multiple = "multiple" })
+                                    </div>
+                                }
+                                
+                            </div>                  
+            
+                            
+                                
+                            
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                    @Html.ActionLink("Voltar", "Index", new { @GaleriaId = Model.Galeria.GaleriaId }, new { @class = "btn btn-outline btn-primary " })
+                                </div>
+
+                            </div>
+            
+                        }
+                    </div>
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+@Styles.Render("~/bundles/bootstrap-tagsinput/css")
+<style>
+        option:disabled
+        {
+            background-color: #afafaf !important;
+            color: #ffffff !important;
+        }
+        .bootstrap-tagsinput
+        {
+            width: 100%;
+        }
+    </style>
+
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/select2/js")
+@Scripts.Render("~/bundles/bootstrap-tagsinput/js")
+
+    <script>
+        $(document).ready(function () {
+            select = $("#GaleriaArquivoPerfisIds");
+            select.trigger('chosen:updated');
+
+            selectb = $("#GaleriaArquivoFiliaisIds");
+            selectb.trigger('chosen:updated');
+
+
+            $('.chosen-select').select2();
+        });
+
+
+        $('.tags').tagsinput({
+            splitOn: ',',
+            trimValue: true,
+        });
+    </script>
+    
+}

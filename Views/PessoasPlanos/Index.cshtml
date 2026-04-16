@@ -1,0 +1,140 @@
+﻿@model Models.PessoaPlanoView
+
+@{
+    ViewBag.Title = Html.GetLegendaPlanoGrupoTipo(Model.PessoaPlanoGrupo.PessoaPlanoGrupoTipoId) +" / "+ Model.PessoaPlanoGrupo.PessoaPlanoGrupoNome;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+  
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Grupo de Planos e Eventos", "Index", "PessoasPlanosGrupos")</li>
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0, PessoaPlanoGrupoId=Model.PessoaPlanoGrupo.PessoaPlanoGrupoId }, new { @class = "btn btn-primary" })
+                            </div>
+                            <div class="col-lg-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <h3>@Model.PessoaPlanoGrupo.PessoaPlanoGrupoNome</h3>
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+                                    <th>#</th>
+                                    <th></th>
+                                    <th>@Html.GetLegendaPlanoGrupoTipo(Model.PessoaPlanoGrupo.PessoaPlanoGrupoTipoId)</th>
+                                    <th>
+                                        <abbr title="Taxa de contratação do plano">Taxa Inscrição</abbr></th>
+                                    
+                                    @if (Model.PessoaPlanoGrupo.PessoaPlanoGrupoTipoId == 0)
+                                    {
+                                    <th>
+                                        <abbr title="Valor do plano a ser cobrado">Valor Plano</abbr></th>
+                                    <th>Total</th>
+                                    <th>
+                                        <abbr title="Duração do intervalo de cobrança">Duração (meses)</abbr></th>
+                                    }
+
+                                    <th data-hide="phone,tablet">Alterar / Excluir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.PagePessoaPlano.Items.OrderBy(x => x.PessoaPlanoOrdem))
+                                {
+                                    string[] array;
+                                    if (item.PessoaPlanoFormasPagto == null)
+                                    {
+                                        item.PessoaPlanoFormasPagto = "";
+                                    }
+                                    array = item.PessoaPlanoFormasPagto.Split(',');
+                                    
+                                    <tr>
+                                        <td nowrap>@item.PessoaPlanoId</td>
+
+                                        <td>@item.PessoaPlanoTipoNome</td>
+                                        <td>
+                                            <h4>@item.PessoaPlanoTitulo <small>/ @item.PessoaCategoriaSubNome</small></h4>
+
+
+                                            Configurações
+                                                    <ul>
+                                                        @if (item.PessoaPlanoEmailEnviar)
+                                                        {
+                                                            <li><i class="fa fa-check"></i>Envio de email pós adesão</li>
+                                                        }
+
+                                                        @if (item.RegraDescAtivo)
+                                                        {
+                                                            <li><i class="fa fa-percent"></i>Regra de Desconto</li>
+                                                        }
+                                                        @if (item.EntidadeStatusId > 0)
+                                                        {
+                                                            <li><i class="fa fa-flag"></i>Status Inicial: @item.StatusNome</li>
+                                                        }
+                                                    </ul>
+
+                                        </td>
+                                        <td nowrap class="text-right">
+                                            @string.Format("{0:N2}", item.PessoaPlanoVlrInscricao) <i class="fa fa-credit-card"></i><br />
+                                            @string.Format("{0:N2}", item.PessoaPlanoVlrInscricaoBoleto) <i class="fa fa-barcode"></i><br />
+                                        </td>
+                                        @if (Model.PessoaPlanoGrupo.PessoaPlanoGrupoTipoId == 0)
+                                    {
+                                        <td nowrap class="text-right">
+                                            @string.Format("{0:N2}", item.PessoaPlanoVlr) <i class="fa fa-credit-card"></i><br />
+                                            @string.Format("{0:N2}", item.PessoaPlanoVlrBoleto) <i class="fa fa-barcode"></i><br />
+                                        </td>
+                                        <td nowrap class="text-right">
+                                            @string.Format("{0:N2}", (item.PessoaPlanoVlrInscricao + item.PessoaPlanoVlr)) <i class="fa fa-credit-card"></i><br />
+                                            @string.Format("{0:N2}", (item.PessoaPlanoVlrInscricaoBoleto + item.PessoaPlanoVlrBoleto)) <i class="fa fa-barcode"></i><br />
+                                        </td>
+                                        <td class="text-right">@item.PessoaPlanoValidadeMeses</td>
+                                        }
+                                               <td nowrap>
+
+                                            @Html.ActionLink("Alterar", "Criar", new { id = item.PessoaPlanoId }, new { @class = "btn btn-outline btn-primary btn-xs" })&nbsp;
+                                    @Html.ActionLink("Excluir", "Deletar", new { id = item.PessoaPlanoId }, new { @class = "btn btn-outline btn-danger btn-xs" })
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.PagePessoaPlano.TotalPages))
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

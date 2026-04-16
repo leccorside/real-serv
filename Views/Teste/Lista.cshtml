@@ -1,0 +1,150 @@
+﻿@model IEnumerable<Models.Usuario>
+
+@{
+    ViewBag.Title = "Lista";
+    
+    
+   
+}
+
+<h2>Lista</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.EmpresaId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PerfilId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmpresaRoute)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UsuarioNome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UsuarioLogin)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AcessoRestrito)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AcessoIP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LoginOrEmail)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UsuarioEmail)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmpresaNome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EntidadeCliente)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EntidadeFornecedor)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EntidadeFuncionario)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DocumentoProfissionalNome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PerfilNome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UsuarioSenha)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RegStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RegIdInicio)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RegDtInicio)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AgendaData)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmpresaId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PerfilId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmpresaRoute)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UsuarioNome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UsuarioLogin)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AcessoRestrito)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AcessoIP)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LoginOrEmail)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UsuarioEmail)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmpresaNome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EntidadeCliente)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EntidadeFornecedor)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EntidadeFuncionario)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DocumentoProfissionalNome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PerfilNome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UsuarioSenha)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RegStatus)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RegIdInicio)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RegDtInicio)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AgendaData)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.UsuarioId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.UsuarioId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.UsuarioId })
+        </td>
+    </tr>
+}
+
+</table>

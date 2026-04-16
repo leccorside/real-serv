@@ -1,0 +1,18 @@
+﻿
+
+@{
+
+    ViewBag.Title = " Dados do Aluno";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    
+}
+
+
+<h2>Browser</h2>
+@if (Request.Browser.IsMobileDevice) {
+  <h4>Hello Mobile</h4>
+} else {
+  <h4>Hello desktop</h4>
+}

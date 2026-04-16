@@ -1,0 +1,72 @@
+﻿
+@{
+   
+    ViewBag.Title = "Premiação por Chapa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@section Styles {
+    <style>
+        .ui-datepicker-calendar {
+    display: none;
+    }
+
+        button.ui-datepicker-current { display: none; }
+    </style>
+}
+
+
+@section Breadcrumb{
+
+    
+
+}
+
+
+
+@using (Html.BeginForm())
+{
+    <div class="row-fluid">
+        <div class="span2">@Html.TextBox("periodo", DateTime.Now.ToString("MM")+"/"+DateTime.Now.Year, new { @class = "input-small" })</div>
+        <div class="span10">@Html.DropDownList("UsuarioId", (SelectList)ViewBag.ddlUsuarios,"--Selecione--" ,new { @class="chosen-select" })</div>
+    </div>
+    
+    <p>
+        <input type="submit" value="Processar" class="btn btn-large btn-primary" />
+    </p>
+}
+
+
+
+@section Scripts {
+  
+
+    <script>
+
+
+        
+        jQuery(function () {
+
+            $("#periodo").mask("99/9999");
+            $('#periodo').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                closeText : "Ok",
+                dateFormat: 'mm/yy',
+                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                onClose: function (dateText, inst) {
+                    var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                    var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                    $(this).datepicker('setDate', new Date(year, month, 1));
+                }
+            });
+
+
+        });
+
+    </script>
+}

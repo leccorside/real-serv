@@ -1,0 +1,96 @@
+﻿@model Models.ProjetoStatus
+
+@{
+    
+    
+    var acao = "Cadastrar";
+    if (Model.ProjetoStatusId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+
+    ViewBag.Title = acao + " " + "Status de Projeto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Status de Projeto", "Index")</li>
+
+}
+
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    
+    if (Model.ProjetoStatusId > 0)
+    {
+    @Html.Hidden("ProjetoStatusId", Model.ProjetoStatusId);
+    }
+    <legend>Dados do ProjetoStatus</legend>
+    
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ProjetoStatusNome)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.ProjetoStatusNome, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.ProjetoStatusNome)*@
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="row-fluid">
+        <div class="span3">
+            <label>
+                <br />
+            </label>
+            <label class="checkbox">
+                @Html.CheckBoxFor(model => model.ProjetoStatusIni) Status de início?
+            </label>
+        </div>
+        <div class="span3">
+            <label>
+                <br />
+            </label>
+            <label class="checkbox">
+                @Html.CheckBoxFor(model => model.ProjetoStatusExec) Status de execução?
+            </label>
+        </div>
+        <div class="span3">
+            <label>
+                <br />
+            </label>
+            <label class="checkbox">
+                @Html.CheckBoxFor(model => model.ProjetoStatusFim) Status de Fim?
+            </label>
+        </div>
+    </div>
+    
+    
+    
+    
+    <div class="form-actions">
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+    </div>
+}
+
+
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+
+
+}

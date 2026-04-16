@@ -1,0 +1,90 @@
+﻿@model Models.MedicaoRelatorioView
+
+@{    
+    
+    var acao = "Cadastrar";
+    if (Model.MedicaoRelatorio.MedicaoRelatorioId > 0)
+    {
+        acao = "Alterar";
+    }
+
+    ViewBag.Title = acao + " " + "Medição";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    
+}
+
+@section Breadcrumb{
+    <li><span class="divider">/</span><a href="~/Projetos/Index">Obras</a></li>
+    <li><span class="divider">/</span><a href="~/Projetos/Criar/@Model.DadosProjeto.ProjetoId">@Model.DadosProjeto.ProjetoNome</a></li>
+    <li><span class="divider">/</span><a href="~/MedicoesRelatorios/Index/@Model.DadosProjeto.ProjetoId">Relatórios Medição</a></li>
+}
+
+
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tab1" data-toggle="tab">Dados</a></li>
+    @if (Model.MedicaoRelatorio.MedicaoRelatorioId > 0)
+    {
+        <li><a href="~/MedicoesRelatorios/Assinar/@Model.MedicaoRelatorio.MedicaoRelatorioId?ProjetoId=@Model.DadosProjeto.ProjetoId">Assinar</a></li>
+        <li class="pull-right"><a href="~/MedicoesRelatorios/Imprimir/@Model.MedicaoRelatorio.MedicaoRelatorioId?ProjetoId=@Model.DadosProjeto.ProjetoId" class="btn btn-mini"><i class="icon-print"></i>Imprimir</a></li>
+    }
+    else
+    {
+        <li><a href="#" class="muted">Assinar</a></li>
+        <li class="pull-right"><a href="#" class="btn btn-mini disabled"><i class="icon-print"></i>Imprimir</a></li>
+    }
+
+</ul>
+
+@if (Model.MedicaoRelatorio.MedicaoRelatorioId == 0)
+{
+    using (Html.BeginForm())
+    {
+    @Html.ValidationSummary(true)
+
+    @Html.Hidden("MedicaoRelatorio.ProjetoId", Model.DadosProjeto.ProjetoId);
+    @Html.HiddenFor(m => m.MedicaoRelatorio.FiscalId)
+    @Html.HiddenFor(m => m.MedicaoRelatorio.EngenheiroId)
+    @Html.HiddenFor(m => m.MedicaoRelatorio.FiscalDtAssinatura)
+    @Html.HiddenFor(m => m.MedicaoRelatorio.EngenheiroDtAssinatura)
+    
+    
+                                                                            if (Model.MedicaoRelatorio.MedicaoRelatorioId > 0)
+                                                                            {
+    @Html.HiddenFor(m => m.MedicaoRelatorio.MedicaoRelatorioId)
+                                                                            }
+    
+    <fieldset>
+        <legend>Relatório de Medição</legend>
+
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Período de Medição</label>
+                <div class="input-prepend input-append">
+                    @Html.TextBox("MedicaoRelatorio.MedicaoDtDe", @String.Format("{0:dd/MM/yyyy}", Model.MedicaoRelatorio.MedicaoDtDe), new { @class = "datepicker input-small ", value = @DateTime.Now }) @Html.TextBox("MedicaoRelatorio.MedicaoDtAte", @String.Format("{0:dd/MM/yyyy}", Model.MedicaoRelatorio.MedicaoDtAte), new { @class = "datepicker input-small ", value = @DateTime.Now })
+                    <button id="btnAdicionar" type="submit" class="btn"><i class="fa fa-calculator"></i>Calcular</button>
+                </div>
+            </div>
+        </div>
+
+
+    </fieldset>
+    }
+}
+
+@Html.Partial("~/Views/Foo/_MedicaoRelatorio.cshtml")
+
+
+
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index", new { @id = Model.DadosProjeto.ProjetoId })
+</div>
+
+@section Scripts {
+
+
+}

@@ -1,0 +1,375 @@
+﻿@model Models.Empresa
+
+@{
+    
+    var acao = "Cadastrar";
+    if (Model.EmpresaId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Empresa";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+
+
+    var logotipo = "~/Assets/img/logotipos/" + Model.EmpresaId + ".png?" + DateTime.Now.Second;
+
+    var bgHome = "~/Assets/img/bg/" + Model.EmpresaId + "Home.jpg?" + DateTime.Now.Second;
+    var bgInterna = "~/Assets/img/bg/" + Model.EmpresaId + "Interna.jpg?" + DateTime.Now.Second;
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Empresas", "Index", new { id = 0 })</li>
+}
+
+
+
+@using (Html.BeginForm("Criar", "Empresas", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    if (Model.EmpresaId > 0)
+    {
+    @Html.Hidden("EmpresaId", Model.EmpresaId);
+                                              acao = "Alterar";
+    }
+    <legende>Dados</legende>
+    
+    
+    
+    <div class="row-fluid">
+        <div class="span3">
+            @Html.LabelFor(model => model.EmpresaCnpj)
+            @Html.EditorFor(model => model.EmpresaCnpj)<br />
+            @Html.ValidationMessageFor(model => model.EmpresaCnpj)
+        </div>
+        <div class="span3">
+            @Html.LabelFor(model => model.EmpresaNome)
+            @Html.EditorFor(model => model.EmpresaNome)<br />
+            @Html.ValidationMessageFor(model => model.EmpresaNome)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.EmpresaRoute)
+            @Html.EditorFor(model => model.EmpresaRoute)<br />
+            @Html.ValidationMessageFor(model => model.EmpresaRoute)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.DocumentoProfissionalNome)
+            @Html.EditorFor(model => model.DocumentoProfissionalNome)<br />
+            @Html.ValidationMessageFor(model => model.DocumentoProfissionalNome)
+        </div>
+
+
+    </div>
+    <br />
+    
+    <div class="row-fluid">
+        <div class="span3">
+            @Html.LabelFor(model => model.sAgendaHoraIni)
+            @Html.EditorFor(model => model.sAgendaHoraIni)<br />
+            @Html.ValidationMessageFor(model => model.sAgendaHoraIni)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.sAgendaHoraFim)
+            @Html.EditorFor(model => model.sAgendaHoraFim)<br />
+            @Html.ValidationMessageFor(model => model.sAgendaHoraFim)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.AgendaIntervaloMinutos)
+            @Html.EditorFor(model => model.AgendaIntervaloMinutos)<br />
+            @Html.ValidationMessageFor(model => model.AgendaIntervaloMinutos)
+        </div>
+    </div>
+    
+     <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <label>Módulo de Plano de Contas</label>
+            <label class="checkbox">
+                @Html.EditorFor(model => model.ModuloPlanoContas, "Checkbox")
+                <label><i class="icon-ok"></i>Habilitado</label>
+
+            </label>
+        </div>
+         <div class="span3">
+             <label>Módulo de Filiais</label>
+            <label class="checkbox">
+                @Html.EditorFor(model => model.UtilizaFilial, "Checkbox")
+                <label><i class="icon-ok"></i>Habilitado</label>
+
+            </label>
+
+        </div>
+    </div>
+   <br />
+    
+    <legend>Entidades</legend>
+    
+    <div class="row-fluid">
+        <div class="span3">
+            @Html.LabelFor(model => model.EntidadeCliente)
+            @Html.EditorFor(model => model.EntidadeCliente)<br />
+            @Html.ValidationMessageFor(model => model.EntidadeCliente)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.EntidadeFornecedor)
+            @Html.EditorFor(model => model.EntidadeFornecedor)<br />
+            @Html.ValidationMessageFor(model => model.EntidadeFornecedor)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.EntidadeFuncionario)
+            @Html.EditorFor(model => model.EntidadeFuncionario)<br />
+            @Html.ValidationMessageFor(model => model.EntidadeFuncionario)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.Entidade4)
+            @Html.EditorFor(model => model.Entidade4)<br />
+            @Html.ValidationMessageFor(model => model.Entidade4)
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span3">
+            <label class="checkbox">
+                @Html.EditorFor(model => model.RegraPessoasPorFilialC, "Checkbox")
+                <label><i class="icon-ok"></i>Habilitar por filiais</label>
+            </label>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            @Html.LabelFor(model => model.EntidadeClienteSingular)
+            @Html.EditorFor(model => model.EntidadeClienteSingular)<br />
+            @Html.ValidationMessageFor(model => model.EntidadeClienteSingular)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.EntidadeFornecedorSingular)
+            @Html.EditorFor(model => model.EntidadeFornecedorSingular)<br />
+            @Html.ValidationMessageFor(model => model.EntidadeFornecedorSingular)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.EntidadeFuncionarioSingular)
+            @Html.EditorFor(model => model.EntidadeFuncionarioSingular)<br />
+            @Html.ValidationMessageFor(model => model.EntidadeFuncionarioSingular)
+        </div>
+
+        <div class="span3">
+            @Html.LabelFor(model => model.Entidade4Singular)
+            @Html.EditorFor(model => model.Entidade4Singular)<br />
+            @Html.ValidationMessageFor(model => model.Entidade4Singular)
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            @Html.LabelFor(model => model.MsgErroContato)
+            @Html.TextBoxFor(model => model.MsgErroContato, new { @class="span12" })<br />
+            @Html.ValidationMessageFor(model => model.MsgErroContato)
+        </div>
+    </div>
+    <br />
+    <legend>Configurações de Envio de Email</legend>
+    <div class="row-fluid">
+        <div class="span3">
+            @Html.LabelFor(model => model.EmpresaEmail)
+            @Html.EditorFor(model => model.EmpresaEmail)<br />
+            @Html.ValidationMessageFor(model => model.EmpresaEmail)
+        </div>
+        <div class="span3">
+            @Html.LabelFor(model => model.Remetente)
+            @Html.EditorFor(model => model.Remetente)<br />
+            @Html.ValidationMessageFor(model => model.Remetente)
+        </div>
+        <div class="span3">
+            @Html.LabelFor(model => model.Smtp)
+            @Html.EditorFor(model => model.Smtp)<br />
+            @Html.ValidationMessageFor(model => model.Smtp)
+        </div>
+        <div class="span3">
+            @Html.LabelFor(model => model.EmailSenha)
+            @Html.EditorFor(model => model.EmailSenha)<br />
+            @Html.ValidationMessageFor(model => model.EmailSenha)
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        
+        <div class="span3">
+            @Html.LabelFor(model => model.EmailHost)
+            @Html.EditorFor(model => model.EmailHost)<br />
+            @Html.ValidationMessageFor(model => model.EmailHost)
+        </div>
+        <div class="span3">
+            @Html.LabelFor(model => model.Porta)
+            @Html.EditorFor(model => model.Porta)<br />
+            @Html.ValidationMessageFor(model => model.Porta)
+        </div>
+    </div>
+    <br />
+    <legend>Outras Configurações</legend>
+    <div class="alert alert-info fade in">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Empresas Tipo 2</strong><br />
+        <ul>
+            <li>fazem agendamento com pré cadastro de clientes</li>
+            <li>Não selecionam servico nem sala no agendamento</li>
+            <li>Não possuim opção Marcar como Indisponível</li>
+            <li>Não selecionam Turma</li>
+            <li>Não registram recorrência</li>
+            <li>Visualizam só nome e celuar na agenda</li>
+            <li>Não visualizam entidade 4</li>
+        </ul>
+    </div>
+     <div class="row-fluid">
+        <div class="span3">
+            @Html.LabelFor(model => model.TipoEmpresaId)
+            @Html.EditorFor(model => model.TipoEmpresaId)<br />
+            @Html.ValidationMessageFor(model => model.TipoEmpresaId)
+        </div>
+       <div class="span3">
+            @Html.LabelFor(model => model.QtdDiasInicioCalendar)
+            @Html.EditorFor(model => model.QtdDiasInicioCalendar)<br />
+            @Html.ValidationMessageFor(model => model.QtdDiasInicioCalendar)
+        </div>
+       
+        
+    </div>
+    <br />
+    <legend>Multiplus</legend>
+    <div class="row-fluid">
+        <div class="span4">
+            @Html.LabelFor(model => model.MultiplusId)
+            @Html.EditorFor(model => model.MultiplusId)<br />
+            @Html.ValidationMessageFor(model => model.MultiplusId)
+        </div>
+        <div class="span4">
+            @Html.LabelFor(model => model.MultiplusUser)
+            @Html.EditorFor(model => model.MultiplusUser)<br />
+            @Html.ValidationMessageFor(model => model.MultiplusUser)
+        </div>
+        <div class="span4">
+            @Html.LabelFor(model => model.MultiplusPass)
+            @Html.EditorFor(model => model.MultiplusPass)<br />
+            @Html.ValidationMessageFor(model => model.MultiplusPass)
+        </div>
+        
+    </div>
+    <br />
+    <div class="row-fluid">
+                <div class="span4">
+            @Html.LabelFor(model => model.MultiplusProdutoId)
+            @Html.EditorFor(model => model.MultiplusProdutoId)<br />
+            @Html.ValidationMessageFor(model => model.MultiplusProdutoId)
+        </div>
+        <div class="span4">
+            Cotação Pontos Multiplus
+            <div class="input-prepend input-append span12">
+                <span class="add-on">R$ 1,00 = </span>
+                @Html.TextBox("MultiplusParidade", string.Format("{0:n2}", Model.MultiplusParidade), new { @class = "money span4 nosubmit" })
+                <span class="add-on">pontos</span>
+            </div>
+            @Html.ValidationMessageFor(model => model.MultiplusParidade)
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            @Html.LabelFor(model => model.MultiplusLoteAcumuloSubmeter)
+            @Html.TextBoxFor(model => model.MultiplusLoteAcumuloSubmeter, new  { @class="span12" })<br />
+            @Html.ValidationMessageFor(model => model.MultiplusLoteAcumuloSubmeter)
+        </div>
+        <div class="span6">
+            @Html.LabelFor(model => model.MultiplusLoteAcumuloConsultar)
+            @Html.TextBoxFor(model => model.MultiplusLoteAcumuloConsultar, new  { @class="span12" })<br />
+            @Html.ValidationMessageFor(model => model.MultiplusLoteAcumuloConsultar)
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            @Html.LabelFor(model => model.MultiplusVoucherAtualizar)
+            @Html.TextBoxFor(model => model.MultiplusVoucherAtualizar, new  { @class="span12" })<br />
+            @Html.ValidationMessageFor(model => model.MultiplusVoucherAtualizar)
+        </div>
+        <div class="span6">
+            @Html.LabelFor(model => model.MultiplusVoucherConsultar)
+            @Html.TextBoxFor(model => model.MultiplusVoucherConsultar, new  { @class="span12" })<br />
+            @Html.ValidationMessageFor(model => model.MultiplusVoucherConsultar)
+        </div>
+    </div>
+    <br />
+
+    <legend><i class="fa fa-trello"></i> Trello - Integração</legend>
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Key</label>
+                @Html.TextBoxFor(model => model.EmpresaTrelloKey, new { @class = "span12", maxlength = "150" })
+            </div>
+            <div class="span4">
+                <label>Token</label>
+                @Html.TextBoxFor(model => model.EmpresaTrelloToken, new { @class = "span12", maxlength = "150" })
+            </div>
+            <div class="span4">
+                <label>Organização</label>
+                @Html.TextBoxFor(model => model.EmpresaTrelloOrganization, new { @class = "span12", maxlength = "150" })
+            </div>
+
+        </div>
+        <br />
+
+    <legend>Imagens</legend>
+    <div class="row-fluid">
+         <div class="span4"><label>Logotipo</label></div>
+        <div class="span4"><label>Background Home</label></div>
+        <div class="span4"><label>Background Interno</label></div>
+    </div>
+    if (Model.EmpresaId > 0)
+    {
+    <div class="row-fluid">
+        <div class="span4"><img src="@VirtualPathUtility.ToAbsolute(logotipo)" /></div>
+        <div class="span4"><div style="width:300px;height:200px;background-image:url(@VirtualPathUtility.ToAbsolute(bgHome)) ;background-size: 100% 100%;"></div></div>
+        <div class="span4"><div style="width:300px;height:200px;background-image:url(@VirtualPathUtility.ToAbsolute(bgInterna)) ;background-size: 100% 100%;"></div></div>
+    </div>
+    <br />
+    }
+     <div class="row-fluid">
+         <div class="span4"><label>PNG - 215x54 (Exatamente)</label><input id="arquivoLogotipo" type="file" name="arquivoLogotipo" /></div>
+         <div class="span4"><label>JPG - 1500x1000 (Mínimo)</label><input id="arquivoBgHome" type="file" name="arquivoBgHome" /></div>
+         <div class="span4"><label>JPG - 1500x1000 (Mínimo)</label><input id="arquivoBgInterno" type="file" name="arquivoBgInterno" /></div>
+    </div>
+    
+    <div class="form-actions">
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  />
+    </div>
+            
+}
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Assets/js/custom.js"></script>
+
+    <script>
+        $("#EmpresaCnpj").mask("99.999.999/9999-99");
+        $("#sAgendaHoraIni").mask("99:99");
+        $("#sAgendaHoraFim").mask("99:99");
+
+    </script>
+
+}

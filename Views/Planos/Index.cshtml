@@ -1,0 +1,176 @@
+﻿@model IEnumerable<Models.Plano>
+
+@{
+    ViewBag.Title = "Matrículas";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    var status = "";
+    var pagina = Request["pagina"];
+    var paginaAtual = (pagina == "" || pagina == null) ? 1 : int.Parse(pagina);
+    var qtdPaginas = ViewBag.qtdPaginas;
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>  @Html.ActionLink("Planos", "Index", "Planos")</li>
+
+}
+<div class="row-fluid">
+    <div class="span6 cwell">
+        @using (Html.BeginForm("Index", "Planos", FormMethod.Get, new { @class = "form-inline" }))
+        {
+            <label>Pesquisar:</label> <input type="text" name="pesquisar" title="Pesquisar" class="input" />
+            <input id="Submit1" type="submit" class="btn" value="Ok" />
+        }
+    </div>
+    </div>
+    <br />
+
+    <div class="row-fluid">
+        <div class="span12">
+            @Html.ActionLink("+ Nova matrícula", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+        </div>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Visualizar Histórico
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PlanoTipoNome)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nome)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ServicoNome)
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreditoInicial)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreditoAtual)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreditoAtualData)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VencimentoPlanoData)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RegDtInicio)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td nowrap><a href="@Url.Content("~/Planos/Historico/"+item.PlanoId)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox btn"><i class="icon-ok"></i></a></td>
+                    <td nowrap>
+                        @Html.DisplayFor(modelItem => item.PlanoTipoNome)
+                    </td>
+                    <td width="100%" nowrap>
+                        <a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaId)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox">@Html.DisplayFor(modelItem => item.Nome)</a>
+                    </td>
+                    <td width="100%" nowrap>
+                        @Html.DisplayFor(modelItem => item.ServicoNome)
+                    </td>
+                    <td width="100%" nowrap>
+                        @{
+                if (item.QtdLancamentos == 0)
+                {
+
+                    <a href="@Url.Content("~/Financeiro/CriarLancamento/0/R/")?plano=@item.PlanoId&cliente=@item.PessoaId">Sem Lançamentos</a>
+                }
+
+                else
+                {
+
+                    if (item.Contador > 0)
+                    {
+
+                        status = "Inadimplente";
+                        @status
+                    }
+
+                    else
+                    {
+
+                        status = "Em dia";
+                        @status
+
+                    }
+                }
+
+                        }
+
+                    </td>
+                    <td width="100%" nowrap>
+                        @Html.DisplayFor(modelItem => item.CreditoInicial)
+                    </td>
+                    <td width="100%" nowrap>
+                        @Html.DisplayFor(modelItem => item.CreditoAtual)
+                    </td>
+                    <td width="100%" nowrap>
+                        @Html.DisplayFor(modelItem => item.CreditoAtualData)
+                    </td>
+                    <td width="100%" nowrap>
+
+                        @{
+
+                if (item.VencimentoPlanoData != null)
+                {
+                    @Convert.ToDateTime(item.VencimentoPlanoData).ToShortDateString();
+                }
+                        }
+
+
+                    </td>
+                    <td nowrap>
+                        @Html.DisplayFor(modelItem => item.RegDtInicio)
+                    </td>
+
+                    <td nowrap>
+                        @Html.ActionLink("Excluir", "Deletar", new { id = item.PlanoId }, new { @class = "btn btn-mini" })
+                    </td>
+                </tr>
+            }
+
+
+
+
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <ul>
+
+            <li class="@(paginaAtual == 1 ? " disabled " : "")"><a href="@Url.Content("~/Planos/Index/0/")?pagina=@(paginaAtual > 1 ? paginaAtual - 1 : paginaAtual)">«</a></li>
+            @for (int i = 1; i < qtdPaginas + 1; i++)
+            {
+                <li class="@(paginaAtual == i ? " active " : "")"><a href="@Url.Content("~/Planos/Index/0/")?pagina=@i">@i</a></li>
+
+            }
+
+
+            <li class="@(paginaAtual >= qtdPaginas ? " disabled " : "")"><a href="@Url.Content("~/Planos/Index/0/")?pagina=@(paginaAtual < qtdPaginas ? paginaAtual + 1 : paginaAtual)">»</a></li>
+        </ul>
+    </div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    @*<script src="~/Content/themes/base/js/Gallery.js"></script>*@
+
+    }   

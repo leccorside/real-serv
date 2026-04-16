@@ -1,0 +1,125 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório de Clientes";
+    Layout = "~/Views/Shared/_Report.cshtml";
+    
+}
+
+
+@{
+    
+    var statusaluno = Request["status"];
+
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var bllPessoas = new BLL.Pessoas();
+    var objPessoas = bllPessoas.ListarPorStatus(BLL.Pessoas.ECategoriaPessoa.Cliente, statusaluno);
+
+    var pessoas2 = new BLL.Pessoas();
+
+    var status = "";
+
+    var qtd = 0;
+
+    switch (statusaluno)
+    {
+        case"A":
+            status = "Ativo";
+            break;
+        case "I":
+            status = "Inativo";
+            break;
+        case "C":
+            status = "Congelado";
+            break;
+        case "E":
+            status = "Excluído";
+            break;
+        default:
+            status = statusaluno;
+            break;
+    }
+    
+}
+
+    <table border="0" width="100%">
+        <tr>
+            <td><h2>@BLL.Usuarios.GetEntidadeCliente() @status</h2></td>
+        </tr>
+    </table>
+
+
+
+
+    <table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="1">
+
+        <thead>
+           <tr>
+               <th>Tipo</th>
+            <th>Dados Pessoais</th>
+            <th>Dt.Nascimento</th>
+            <th>Idade</th>
+            <th>Turma</th>
+               <th>Planos</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var cli in objPessoas)
+        {
+
+            var DataNascimento = cli.DataNascimento.ToString();
+            var DtInicio = cli.RegDtInicio.ToString();
+            var DtTermino = cli.RegDtTermino.ToString();
+            <tr>
+                <td>@cli.PessoaCategoriaNome</td>
+
+                <td> @cli.Nome @(cli.Apelido != null ? " / " + cli.Apelido : "")<br />
+                @cli.Email<br />
+                @cli.Celular @(cli.Telefone != null ? " / "+cli.Telefone : "")</td>
+                <td>@if (cli.DataNascimento != null)
+                                {
+                                <span>@Convert.ToDateTime(cli.DataNascimento).ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                <i class="fa fa-frown-o"></i>
+                                }</td>
+                <td>@if (cli.DataNascimento != null)
+                                {
+                                <span>@BLL.Utils.Funcoes.CalculaIdade(cli.DataNascimento)</span>
+                                }
+                                else
+                                {
+                                <i class="fa fa-frown-o"></i>
+                                }</td>
+
+                <td>@cli.TurmaNome</td>
+                <td>@{
+                var planos = pessoas2.PlanosAtivos(cli.PessoaID);
+                var ii = 1;
+                    }
+                    <ul>
+                        @foreach (var obs in planos)
+                        { 
+                            <li>@obs</li>
+                    
+                            
+                            ii++;
+                        }
+                        </ul>
+                    </td>
+            </tr>
+                                               
+            qtd++;
+        }
+
+
+
+
+        </tbody>
+    </table>
+Quantidade -  @qtd Registros

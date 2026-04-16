@@ -1,0 +1,107 @@
+﻿@model Models.PessoaDependenteView
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+}
+
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Dependentes
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="@Url.Content("~/PessoasDependentes/Criar/0?PessoaID=" + Model.PessoaDependente.PessoaID)" class="btn btn-primary"><i class="fa fa-plus"></i>Criar</a>
+                            <div class="table-responsive">
+                                <table class="data table table-condensed table-striped">
+                                    <tr>
+                                        <th></th>
+                                        <th>Nome
+                                        </th>
+                                        <th>Sexo
+                                        </th>
+                                        <th>Data Nascimento
+                                        </th>
+                                        <th>Grau Parentesco
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+
+                                    @foreach (var item in Model.ListPessoaDependente)
+                                    {
+                                        <tr>
+                                            <td><a href="javascript:selecionado(@item.PessoaDependenteId)" class="btn btn-outline btn-primary btn-xs">Selecionar</a></td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PessoaDependenteNome)
+                                            </td>
+                                            <td>
+                                                @switch (item.Sexo)
+                                                {
+                                                    case"M":
+                                                        <span>Masculino</span>
+                                                        break;
+                                                    case "F":
+                                                        <span>Feminino</span>
+                                                        break;
+                                                    default:
+                                                    <span>-</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @string.Format("{0:dd/MM/yyyy}", item.DataNascimento)
+                                            </td>
+                                            <td>
+                                                @item.GrauParentescoNome
+                                            </td>
+                                            <td><a href="@Url.Content("~/PessoasDependentes/Criar/" + item.PessoaDependenteId)" class="btn btn-outline btn-primary btn-xs ">Editar</a>    </td>
+                                            <td>
+                                                <a href="@Url.Content("~/PessoasDependentes/Deletar/" + item.PessoaDependenteId)" class="btn btn-outline btn-danger btn-xs ">Excluir</a>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+
+    <script>
+        function selecionado(id) {
+            this.parent.UpdateElementOfParent(id);
+        }
+
+
+    </script>
+
+
+}

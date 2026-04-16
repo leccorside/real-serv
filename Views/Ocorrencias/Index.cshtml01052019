@@ -1,0 +1,286 @@
+﻿@model PetaPoco.Page<Models.Ocorrencia>
+
+
+@{
+    var user = new BLL.Usuarios();
+    ViewBag.Title = "Ocorrências";
+    Layout = "~/Views/Shared/_Layout.cshtml";  
+
+    var bllOcorrencias = new BLL.Ocorrencias();
+
+    var ocorrencias_criar = user.ControleAcesso("Inserir", "Ocorrencias");
+
+    string MinhasOcorrencias = Request["MinhasOcorrencias"];
+    string Pendente = Request["Pendente"];
+    string OcorrenciaTipoId = Request["OcorrenciaTipoId"];
+
+    string outrosCampos = "";
+    if (outrosCampos == null)
+    {
+        outrosCampos = "";
+    }
+
+    if (MinhasOcorrencias == "true")
+    {
+        outrosCampos += "&MinhasOcorrencias=" + MinhasOcorrencias;
+    }
+
+    if (Pendente != "")
+    {
+        outrosCampos += "&Pendente=" + Pendente;
+    }
+
+    if (OcorrenciaTipoId != "")
+    {
+        outrosCampos += "&OcorrenciaTipoId=" + OcorrenciaTipoId;
+    }
+
+
+    outrosCampos += "&de=" + String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe());
+    outrosCampos += "&ate=" + String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte());
+
+    String strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery;
+    String strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/");
+    strUrl = strUrl + "Ocorrencias/Index";
+
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+@if (ocorrencias_criar)
+{
+<div class="row-fluid">
+    <div class="span12">
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+
+        @*<a href="@Url.Content("~/Ocorrencias/Criar/0?lightbox[iframe]=true&lightbox[width]=800&lightbox[height]=520")" class="ui-lightbox btn btn-primary tip-top" data-toggle="tooltip" data-original-title="Criar"  title="Criar" data-placement="top">+ Criar</a>*@
+    </div>
+</div>
+<br />    
+}
+
+<div class="row-fluid">
+    <div class="span12 cwell">
+        <div class="row-fluid ">
+            <div class="span10">
+
+                @using (Html.BeginForm("Index", "Ocorrencias", FormMethod.Post, new { @class = "form-inline" }))
+                {
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <label>Pesquisar</label>
+                            <input type="text" name="pesquisar" title="Pesquisar" class="span12" placeholder="Pesquisar..." value="@Request["pesquisar"]">
+                        </div>
+                        <div class="span2"><label>Tipo</label>@Html.DropDownList("OcorrenciaTipoId", (SelectList)ViewBag.ddlOcorrenciasTipos, "--Selecione--", new { @class = "chosen-select span12 " })</div>
+                        <div class="span2"><label>Situação</label>
+                            <select class="chosen-select span12" id="Pendente" name="Pendente">
+                                <option value="">--Todos--</option>
+                                <option value="0" @(Pendente == "0" ? " selected " : "")>Pendente</option>
+                                <option value="1" @(Pendente == "1" ? " selected " : "")>Resolvido</option>
+                            </select>
+                        </div>
+                        <div class="span3"><label>Data</label><br />
+                            <input type="text" name="de" id="de" title="Data de" class="datepickerDe input-small tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+                            <input type="text" name="ate" id="ate" title="Data até" class="datepickerAte input-small tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+                        </div>
+                        <div class="span3"><label></label><br />
+                            <button class="btn" type="submit">Pesquisar</button><button class="btn" type="button" onclick="parent.location='@strUrl'">Limpar</button>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <label class="checkbox">
+                                <input type="checkbox" name="MinhasOcorrencias" @(MinhasOcorrencias == "true" ? "checked='checked'" : "")  id="MinhasOcorrencias" value="true">Minhas ocorrências</label>
+                        </div>
+                    </div>
+}
+
+            </div>
+            <div class="span2">
+                @using (Html.BeginForm("Export", "Ocorrencias", FormMethod.Post, new { @class = "form-inline " }))
+                {
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <br />
+                            <input type="hidden" name="pesquisar" value="@Request["pesquisar"]">
+                            <input type="hidden" name="OcorrenciaTipoId" value="@Request["OcorrenciaTipoId"]">
+                            <input type="hidden" name="MinhasOcorrencias" value="@Request["MinhasOcorrencias"]">
+                            <button class="btn pull-right" data-toggle="tooltip" data-original-title="Exportar" title="Exportar" data-placement="top" type="submit" onclick="return confirm('Esse processo pode demorar alguns segundos?')"><i class="fa fa-download"></i></button>
+                        </div>
+                    </div>
+}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+
+        <table class="footable table-bordered table-striped table-pequeno">
+                    <thead>
+                        <tr>
+                            <th>@Html.CampoOrdenacao(" ", "RegAtualizado")</th>
+                            <th>
+                                @Html.CampoOrdenacao("Número", "OcorrenciaId")
+                            </th>
+                            <th>
+                                @Html.CampoOrdenacao("Data", "Ocorrencias.RegDtInicio")
+                            </th>
+                            <th>@Html.CampoOrdenacao("Tipo", "OcorrenciasTipos.OcorrenciaTipoNome")</th>
+                            @*Alteração em 29/04 incluir coluna Solução*@
+                            <th>@Html.CampoOrdenacao("Ocorrência", "Ocorrencias.OcorrenciaDescricao")</th>
+                            <th>@Html.CampoOrdenacao("Solução", "Ocorrencias.Solucao")</th>
+                           
+
+
+                            <th>
+                                @Html.CampoOrdenacao("Cliente", "Pessoas.Nome")
+                            </th>
+                            <th data-hide="phone,tablet">
+                                @Html.CampoOrdenacao("Executor", "Usuarios.UsuarioNome")
+                            </th>
+                            <th data-hide="phone,tablet">
+                                @Html.CampoOrdenacao("Funcionário", "Pessoas_1.Nome")
+                            </th>
+                            <th data-hide="phone,tablet">
+                                @Html.CampoOrdenacao("Situação", "Ocorrencias.Resolvido")
+                            </th>
+                            <th data-hide="phone,tablet">@Html.CampoOrdenacao("<i class='fa fa-lock' aria-hidden='true'></i>", "Ocorrencias.Privado")</th>
+                            <th data-hide="phone,tablet"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.Items)
+                        {
+                            var IsResponsavel = bllOcorrencias.IsResponsavel(item);
+                            var tr_status = "";
+                            if (!item.Resolvido && item.Horas > 48)
+                            {
+                                tr_status = "danger";
+                            }
+                            else if (!item.Resolvido && item.Horas > 30)
+                            {
+                                tr_status = "warning";
+                            }
+                                                        
+                            <tr class="@tr_status">
+                                <td class="text-center"><a href="@Url.Content("~/Ocorrencias/Blog/" + item.OcorrenciaId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox iframe tip-top" data-toggle="tooltip" data-original-title="Visualizar histórico"  title="Visualizar histórico" data-placement="right"><i class="@(item.RegAtualizado ? "fa fa-spinner fa-spin fa-fw" : "fa fa-square-o")" aria-hidden="true"></i></a></td>
+                                <td class="text-center">@item.OcorrenciaId</td>
+                                <td>@item.RegDtInicio </td>
+                             
+                                <td>@item.OcorrenciaTipoNome</td>
+                                @*Alteração em 29/04 incluir coluna Solução*@
+                                <td>@item.OcorrenciaDescricao</td> 
+                                <td>@item.Solucao</td>   
+                                
+
+                                <td  data-hide="phone,tablet" style="display: table-cell">
+                                    @item.ClienteNome
+                                </td>
+                                <td data-hide="phone,tablet" style="display: table-cell">
+                                    @item.ExecutorNome
+                                </td>
+                                <td  data-hide="phone,tablet" style="display: table-cell">
+                                    @item.FuncionarioRE - @item.FuncionarioNome
+                                </td>
+                                <td  data-hide="phone,tablet" style="display: table-cell">
+                                    @if (item.Resolvido)
+                                    {
+                                        <span><i class="fa fa-check" aria-hidden="true"></i> Resolvido</span>
+                                    }
+                                    else
+                                    {
+                                        <span><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Pendente</span>
+                                        <br /><small><i class="fa fa-clock-o" aria-hidden="true"></i> @item.Horas hrs</small>
+                                    }
+                                    
+                                </td>
+                                <td  data-hide="phone,tablet" style="display: table-cell">
+                                    @if (item.Privado)
+                                    {
+                                        <i class="fa fa-lock" aria-hidden="true"></i>
+                                    }
+                                </td>
+                                <td  data-hide="phone,tablet" style="display: table-cell">
+                                    
+                                    
+
+                                    <div class="btn-group">
+                                <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cogs"></i><span class="caret"></span></button>
+                                <ul class="dropdown-menu pull-right">
+                                    @if (IsResponsavel)
+                                    {
+                                        <li><a href="@Url.Content("~/Ocorrencias/Criar/" + item.OcorrenciaId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Alterar"  title="Alterar" data-placement="top"><i class="fa fa-edit" aria-hidden="true"></i> Alterar</a></li>
+                                        <li><a href="@Url.Content("~/Ocorrencias/Deletar/" + item.OcorrenciaId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Excluir"  title="Excluir" data-placement="top"><i class="fa fa-trash" aria-hidden="true"></i> Excluir</a></li>
+                                    }
+                                    else { 
+                                        <li><a href="@Url.Content("~/Ocorrencias/Criar/" + item.OcorrenciaId + "?lightbox[iframe]=true&lightbox[width]=850&lightbox[height]=580&Modal=True")" class="ui-lightbox btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Visualizar"  title="Visualizar" data-placement="top"><i class="fa fa-zoom" aria-hidden="true"></i> Visualizar</a></li>
+                                    }
+
+                                </ul>
+                            </div>
+                                     
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+
+
+                </table>
+
+        @Html.Paginacao(Convert.ToInt16(Model.TotalPages),outrosCampos)
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>*@
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+
+
+            $("body").on("click", ".jquery-lightbox-overlay", function () {
+                window.location.reload(true);
+            });
+
+            $("body").on("click", ".jquery-lightbox-button-close", function () {
+                window.location.reload(true);
+            });
+
+
+            $("#OcorrenciaTipoId").val("@OcorrenciaTipoId").trigger('chosen:updated');
+
+            
+            $("#de").mask("99/99/9999");
+            $("#ate").mask("99/99/9999");
+        });
+    </script>
+
+
+
+}

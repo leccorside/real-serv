@@ -1,0 +1,184 @@
+﻿@model Models.PRCPropostaView
+
+
+<div class="row">
+    <div class="col-lg-12" style="">
+        <div class="hpanel">
+            <div class="panel-heading ">
+                <div class="panel-tools">
+                    <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                </div>
+                <i class="fa fa-calculator" aria-hidden="true"></i>Informações da Proposta
+            </div>
+            <div class="panel-body">
+
+                
+
+                <div class="row">
+
+                    @Html.HiddenFor(x => x.PRCProposta.PRCPropostaAdvHon)
+                    @Html.HiddenFor(x => x.PRCProposta.PRCPropostaIRRATipoValor)
+                    @Html.HiddenFor(x => x.PRCProposta.PRCPropostaIRRA)
+                    @Html.HiddenFor(x => x.PRCProposta.PRCPropostaIRTipoValor)
+                    @Html.HiddenFor(x => x.PRCProposta.PRCPropostaIR)
+                    @Html.HiddenFor(x => x.PRCProposta.PRCPropostaPSSTipoValor)
+                    @Html.HiddenFor(x => x.PRCProposta.PRCPropostaPSS)
+
+
+                    <!-- novos campos-->
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Principal</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaValorPrincipal", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaValorPrincipal), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Juros</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaValorJuros", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaValorJuros), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>
+                            <abbr title="Índice da DATA BASE">Índice DB</abbr></label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaIndiceDataBase", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaIndiceDataBase), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Índice de Correção</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaIndiceCorrecao", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaIndiceCorrecao), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Juros Moratórios</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">Dias</span>
+                            @Html.TextBoxFor(m => m.PRCProposta.PRCPropostaJurosMoratorios, new { @class = "number form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Principal Atualizado</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaValorPrincipalAtualizado", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaValorPrincipalAtualizado), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Juros Atualizado</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaJurosAtualizado", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaJurosAtualizado), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>
+                            <abbr title="Juros sobre principal atualizado">Juros Principal Atualizado</abbr></label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaJurosAtualizado", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaJurosAtualizado), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>
+                            <abbr title="Valor Desconto Ação">Valor Desconto</abbr></label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaValorDescontoAcao", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaValorDescontoAcao), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Saldo Mín. Pagamento</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaSaldoMinPagto", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaSaldoMinPagto), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Saldo Máx. Pagamento</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaSaldoMaxPagto", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaSaldoMaxPagto), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Saldo Máx. Pagamento</label>
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaSaldoMaxPagto", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaSaldoMaxPagto), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+                    <!-- campos velhos -->
+
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>
+                            <abbr title="Valor Bruto R$ @string.Format("{0:N2}", Model.Precatorio.TrjReqPagValorSolicitado) ">Valor Bruto</abbr></label>
+                        @*<h5 class="text-info">R$ @string.Format("{0:N2}", Model.Precatorio.TrjReqPagValorSolicitado)</h5>*@
+                        <div class="input-group m-b">
+                            <span class="input-group-addon">R$</span>
+                            @Html.TextBox("PRCProposta.PRCPropostaValorBruto", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaValorBruto), new { @class = "moeda form-control select-all" })
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>
+                            <abbr title="Valor Líquido">Vlr. Liq.</abbr></label>
+                        <div class="input-group m-b">
+                            <h2 id="lblVlLiquido">@Model.PRCProposta.PRCPropostaValorLiquido</h2>
+                            @Html.Hidden("PRCProposta.PRCPropostaValorLiquido", string.Format("{0:F2}", Model.PRCProposta.PRCPropostaValorLiquido), new { @class = "moeda form-control" })
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+                <div class="row">
+
+
+
+                    <div class="form-group col-lg-9 col-md-9 col-sm-9">
+                        <label>Cartório</label>
+                        @Html.DropDownListFor(model => model.PRCProposta.CartorioId, (SelectList)ViewBag.ddlCartorios, null, new { @class = "chosen-select-add form-control" })
+                    </div>
+
+                    <div class="form-group col-lg-3">
+                        <label>Tipo de Conversão</label>
+                        @Html.DropDownListFor(model => model.PRCProposta.TipoConversaoId, (SelectList)ViewBag.ddlTiposConversoes, null, new { @class = "chosen-select form-control" })
+                    </div>
+                    <div class="form-group col-lg-12">
+                        <label>Nome da Ação / Motivo Causa</label>
+                        @Html.TextAreaFor(model => model.PRCProposta.PRCPropostaTipoCausa, new { @class = "max form-control", maxlength = "4000" })
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,159 @@
+﻿@{
+    ViewBag.Title = "Visão Geral";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    BLL.Lancamentos lancamentos = new BLL.Lancamentos();
+
+    var listarSaldoContas = lancamentos.ListarSaldoContas();
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Financeiro", "Financeiro", "Principal")</li>
+}
+
+<div class="content">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo -->
+                    <div class="row-fluid">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Conta</th>
+                    <th>Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in listarSaldoContas)
+                {
+                    <tr>
+                        <td><a title="Ver" href="@Url.Content("~/Financeiro/Index/0/?tipo=&ContaId="+item.ContaId)">@item.ContaNome</a></td>
+                        <td><a title="Ver" href="@Url.Content("~/Financeiro/Index/0/?tipo=&ContaId="+item.ContaId)">@item.Valor.ToString("C2")</a></td>
+                    </tr>       
+             
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th><a title="Ver" href="@Url.Content("~/Financeiro/Index/0/?tipo=&ContaId=0")">Saldo Atual Geral</a></th>
+                    <th><a title="Ver" href="@Url.Content("~/Financeiro/Index/0/?tipo=&ContaId=0")">@String.Format("{0:c}", lancamentos.Saldo())</a></th>
+                </tr>
+            </tfoot>
+        </table>
+                        </div>
+                        </div>
+                    
+                    <!-- ./ conteudo -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo -->
+                    <div class="row-fluid">
+                        <div class="col-lg-6">
+                            <h5><span class="text-error">Contas a pagar</span></h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Vencimento</th>
+                    <th>Despesa</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{var totalDespesas = 0;}
+                @foreach (var item in ViewBag.listaDespesas)
+                {
+                    totalDespesas += item.Valor;
+                    <tr>
+                        <td>@String.Format("{0:dd/MM/yyyy}", item.DataVencimento)</td>
+                        <td>@item.Descricao</td>
+                        <td nowrap><span class="pull-right text-error">@String.Format("{0:c}", @item.Valor)</span></td>
+                    </tr>
+                }
+            </tbody>
+            <tr>
+                <td colspan="2"></td>
+                <td>
+                    <span class="pull-right text-error">@String.Format("{0:c}", totalDespesas)</span>
+                </td>
+            </tr>
+        </table>
+        
+            <a title="Ver" class="btn btn-outline btn-primary btn-xs" href="@Url.Content("~/Financeiro/Index/0/D")"><i class="fa fa-zoom"></i> visualizar</a>
+        
+                        </div>
+                        <div class="col-lg-6">
+                            <h5><span class="text-success">Contas a receber</span></h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Vencimento
+                    </th>
+                    <th>Receita
+                    </th>
+                    <th>Valor
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{var totalReceitas = 0;}
+                @foreach (var item in ViewBag.listaReceitas)
+                {
+                    totalReceitas += item.Valor;
+                    <tr>
+                        <td>
+                            @String.Format("{0:dd/MM/yyyy}", item.DataVencimento)
+                        </td>
+                        <td>
+                            @item.Descricao
+                        </td>
+                        <td nowrap>
+                            <span class="pull-right text-success">
+                                @String.Format("{0:c}", @item.Valor)
+                            </span>
+                        </td>
+                    </tr>
+
+                }
+
+            </tbody>
+            <tr>
+
+                <td colspan="2"></td>
+                <td>
+                    <span class="pull-right text-success">@String.Format("{0:c}", totalReceitas)</span>
+                </td>
+            </tr>
+        </table>
+            <a title="Ver" class="btn btn-outline btn-primary btn-xs" href="@Url.Content("~/Financeiro/Index/0/R")"><i class="fa fa-zoom"></i> visualizar</a>
+        
+
+                        </div>
+                    </div>
+                    <!-- ./ conteudo -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+

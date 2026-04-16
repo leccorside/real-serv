@@ -1,0 +1,77 @@
+﻿@model Models.Funcao
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.FuncaoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Função";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Funções", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "Funcoes", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.FuncaoId > 0)
+        {
+        @Html.Hidden("FuncaoId", Model.FuncaoId);
+                                            acao = "Alterar";
+        }
+    
+     
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.FuncaoNome, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.FuncaoNome)
+                @Html.ValidationMessageFor(model => model.FuncaoNome)
+            </div>
+        </div>
+        
+            
+     
+            
+            
+                       
+            
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

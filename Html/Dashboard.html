@@ -1,0 +1,628 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        RDA Solutions - Pesquisa
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gráficos para apresentação">
+    <meta name="author" content="RDA">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+    <link rel="icon" href="/Html/img/3 - logo 2-2 globe.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="/Html/img/3 - logo 2-2 globe.png" type="image/x-icon" />
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="Content/themes/base/jquery.ui.autocomplete.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <link href="/Html/css/fundo.css" rel="stylesheet" type="text/css" media="all" />
+
+    <script type="text/javascript" src="/Html/js/jquery-latest.js"></script>
+
+    <script type="text/javascript" src="/Html/js/jquery.tablesorter.min.js"></script>
+
+    <link rel="stylesheet" href="/Html/css/blue/style.css" type="text/css" media="print, projection, screen" />
+
+    <link rel="stylesheet" href="/Html/css/animate.css" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="col-lg-12 container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-left" href="">
+                    <img alt="Brand" src="img/7 - logo 2-2.png" style="width:60px; height:60px; padding:5px;text-align:left" class="img-responsive">
+                </a>
+                <a class="hidden-lg hidden-md navbar-brand" href="/HomeCliente/MenuPrincipal.html">
+                    Sair
+                    <span class="glyphicon glyphicon-log-out"></span>
+                </a>
+                <a class="hidden-lg hidden-md nav navbar-inverse" id="usuarioLogadoXS"></a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+                <ul class="nav navbar-nav" id="menuPrincipal">
+                    <li>
+                        <a href="http://sistema.gruporealserv.com.br/postosdeservicos/Index/" class="hidden-sm hidden-xs navbar-left">
+                            Central Dashboard
+                            <span class="glyphicon glyphicon-dashboard"></span>
+                        </a>
+
+                        <a href="http://sistema.gruporealserv.com.br/postosdeservicos/Index/" class="hidden-sm hidden-xs navbar-left">
+                            Voltar
+                            <span class="glyphicon glyphicon-log-out"></span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <br />
+
+    <br />
+
+    <div class="col-lg-12">
+        <div class="col-lg-12" style="background-color: white">
+            <form class='form-horizontal' id='formFiltrosTela' role='form' action=''>
+                <div class="col-lg-12">
+
+                    <h2>
+                        Dashboard pesquisa
+                        <span class="glyphicon glyphicon-dashboard"></span>
+                    </h2>
+
+
+                    <div class="row">
+                        <div class="col-form col-lg-4 col-md-4 col-sm-8">
+
+                            <div class="form-group">
+                                <div align="right">
+                                    <select class="form-control" id="cbCliente" onchange="AtualizarPesquisaPorPosto();"></select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div id="loading"></div>
+
+
+
+                    <div class="row">
+                        <div class="col-form col-lg-6 col-md-4 col-sm-8">
+
+
+                            <div class="form-group">
+                                <h4>Pesquisa Portaria</h4>
+                                <div align="right">
+                                    <div id="piechart_3d1" style="width: 600px; height: 300px;"></div> <!--Portaria-->
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-form col-lg-6 col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <h4>Pesquisa Limpeza</h4>
+                                <div align="left">
+                                    <div id="piechart_3d2" style="width: 600px; height: 300px;"></div>  <!--Limpeza-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-form col-lg-6 col-md-4 col-sm-8">
+
+
+                            <div class="form-group">
+                                <h4>Pesquisa Zeladoria</h4>
+                                <div align="right">
+                                    <div id="piechart_3d3" style="width: 600px; height: 300px;"></div>  <!--Zeladoria-->
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-form col-lg-6 col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <h4>Pesquisa Supervisão</h4>
+                                <div align="left">
+                                    <div id="piechart_3d4" style="width: 600px; height: 300px;"></div>  <!--Supervisão-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                        <div class="col-form col-lg-6 col-md-4 col-sm-8">
+
+
+                            <div class="form-group">
+                                <h4>Pesquisa Atendimento Operadores</h4>
+                                <div align="right">
+                                    <div id="piechart_3d5" style="width: 600px; height: 300px;"></div>  <!--Operadores-->
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-form col-lg-6 col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <h4>Pesquisa Atendimento Técnico    </h4>
+                                <div align="left">
+                                    <div id="piechart_3d6" style="width: 600px; height: 300px;"></div>  <!--Técnico-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                        <div class="col-form col-lg-6 col-md-4 col-sm-8">
+                            <div class="form-group">
+                                <h4>Pesquisa Atendimento Aplicativo    </h4>
+                                <div align="right">
+                                    <div id="piechart_3d7" style="width: 600px; height: 300px;"></div>  <!--Aplicativo-->
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-form col-lg-6 col-md-4 col-sm-4">
+                            <div class="form-group">
+                                <h4>Pesquisa Portaria Remota    </h4>
+                                <div align="left">
+                                    <div id="piechart_3d8" style="width: 600px; height: 300px;"></div>  <!--Remota-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-12" style="background-color: white" id="Tabela">
+            <table id="tabelaParticipantes" class="table table-striped table-dark">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Enviada em</th>
+                        <th>Respondida em</th>
+                        <th>Portaria</th>
+                        <th>Limpeza</th>
+                        <th>Zeladoria</th>
+                        <th>Supervisão</th>
+                        <th>Serviço Atendimento</th>
+                        <th>Serviço Operadores</th>
+                        <th>Aplicativo</th>
+                        <th>Serviço Portaria Remota</th>
+                        <th>Obs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan='12' align='center'>...Nenhum dado ainda...</td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+            
+        </div>
+
+
+
+
+        <script type="text/javascript" src="/Html/js/jquery-2.1.4.min.js"></script>
+
+        <script type="text/javascript" src="/Html/js/jquery-ui-1.10.3.min.js"></script>
+
+        <script type="text/javascript" src="/Html/js/jquery.maskedinput.min.js"></script>
+
+        <script type="text/javascript" src="/Html/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript" src="/Html/js/bootstrapN.js"></script>
+
+        <script type="text/javascript" src="/Html/js/bootstrap.min.js"></script>
+
+        <script src="/Html/js/UrlsDeRequisicao.js" type="text/javascript"></script>
+        <!--<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
+        <script src="js/Dashboard.js" type="text/javascript"></script>
+        <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@1.5.4/extras/loadingoverlay_progress/loadingoverlay_progress.min.js"></script>
+
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+         
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 1;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 1', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && Number(item.qtd > 0)) {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Serviço de portaria ',
+                            is3D: true
+                        };
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d1'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+            }
+        </script>
+        <!--Pergunta 2-->
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 2;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 2', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && item.pergunta != "undefined") {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Serviço de limpeza ',
+                            is3D: true
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d2'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+            }
+        </script>
+        <!--Pergunta 3-->
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 3;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 3', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && item.pergunta != "undefined") {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Serviço de zeladoria ',
+                            is3D: true
+                        };
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d3'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+            }
+        </script>
+        <!--Pergunta 4-->
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 4;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 4', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && item.pergunta != "undefined") {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Serviço de supervisão ',
+                            is3D: true
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d4'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+            }
+        </script>
+        <!--Pergunta 5-->
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 5;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 5', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && item.pergunta != "undefined") {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Atendimento operadores ',
+                            is3D: true
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d5'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+            }
+
+        </script>
+        <!--Pergunta 6-->
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 6;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 6', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && item.pergunta != "undefined") {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Atendimento técnico ',
+                            is3D: true
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d6'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+            }
+
+        </script>
+        <!--Pergunta 7-->
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 7;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 7', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && item.pergunta != "undefined") {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Atendimento aplicativo ',
+                            is3D: true
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d7'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+            }
+
+        </script>
+        <!--Pergunta 8-->
+        <script type="text/javascript">
+
+            google.charts.load("current", { packages: ["corechart"] });
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+
+                var idpergunta = 8;
+                $.ajax({
+                    type: "POST",
+                    url: UrlWsRequisicao + 'ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    //url: 'http://localhost:52327/ApiIntegracao/ObterRespostaPesquisa/?idpergunta=' + Number(idpergunta),
+                    data: JSON.stringify(),
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    beforeSend: function () {
+                        $.LoadingOverlay("show");
+                    },
+                    complete: function () {
+                        $.LoadingOverlay("hide");
+                    },
+                    success: function (resposta) {
+                        var retApi = [];
+                        retApi.push(['Pergunta 8', 'Quantidade']);
+                        resposta.forEach(item => {
+                            if (item != null && item.pergunta != null && item.pergunta != "undefined") {
+                                retApi.push([item.pergunta + ' ( ' + item.qtd + ' ) ', item.qtd])
+                            }
+                        });
+                        var data = google.visualization.arrayToDataTable(retApi);
+                        var options = {
+                            title: 'Serviço portaria remoto ',
+                            is3D: true
+                        };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d8'));
+                        chart.draw(data, options);
+                    },
+                    error: function (data) {
+                        alert(resposta);
+                    }
+                });
+
+                CarregaComboCliente();
+            }
+
+        </script>
+</body>
+
+</html>

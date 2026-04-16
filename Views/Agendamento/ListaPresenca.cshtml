@@ -1,0 +1,221 @@
+﻿@model Models.Agendamento
+
+@{
+    ViewBag.Title = "Criar";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var Agendamento_AgendamentoSeguro = user.ControleAcesso("AgendamentoSeguro", "Agendamento");
+    
+    var idx = 0;
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.AgendamentoId > 0)
+        {
+        @Html.Hidden("AgendamentoId", Model.AgendamentoId);
+
+        }
+
+
+        <div class="row-fluid">
+            <div class="span3">
+
+                <label>@Html.LabelFor(model => model.Inicio)</label>
+
+                @String.Format("{0:dd/MM/yyyy}", Model.Inicio)
+
+
+
+            </div>
+            <div class="span3">
+                <label>Hora Início</label>
+                @String.Format("{0:t}", Model.Inicio)
+
+
+
+
+
+            </div>
+
+
+
+            <div class="span3">
+                <label>Hora Fim</label>
+                @String.Format("{0:t}", Model.Fim)
+
+
+
+            </div>
+
+            <div class="span3">
+                <label>Destaque</label>
+                @if (Model.Destaque)
+                {
+		 
+                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    
+                }
+            </div>
+
+        </div>
+        <br />
+
+        <div class="row-fluid">
+            <div class="span4">
+                <label>@BLL.Usuarios.GetEntidadeFuncionarioSingular()</label>
+
+
+                @Model.FuncionarioList.Where(x => x.Value == Model.PessoaID.ToString()).First().Text
+
+
+
+            </div>
+
+            <div class="span4">
+                <label>@Html.LabelFor(model => model.ServicoId)</label>
+                @try
+                {
+                    @Model.ServicoTipos.Where(x => x.Value.ToString() == Model.ServicoId.ToString()).FirstOrDefault().Text
+                }
+                catch (Exception ex)
+                {
+                    var bllservico = new BLL.Servicos();
+                    var servico = bllservico.Carregar(Convert.ToInt16(Model.ServicoId));
+                    <p class="text-error">@servico.ServicoNome (excluído)</p>
+                }
+
+
+            </div>
+
+            @if (BLL.Usuarios.GetEmpresaTipoId() != 2)
+            {
+                <div class="span4">
+                    <label>@Html.LabelFor(model => model.SalaId)</label>
+                    @try
+                    {
+                        @Model.SalasList.Where(x => x.Value.ToString() == Model.SalaId.ToString()).FirstOrDefault().Text
+                    }
+                    catch (Exception ex)
+                    {
+                        var bllsalas = new BLL.Salas();
+                        var salas = bllsalas.Carregar(Convert.ToInt16(Model.SalaId));
+                        <p class="text-error">@salas.SalaNome (excluído) @salas.SalaId</p>
+                    }
+                </div>
+            }
+
+
+        </div>
+
+
+        @Html.Partial("~/Views/Agendamento/_ListaDePresenca.cshtml")
+
+
+
+
+
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Observações:</label>
+                @Html.Raw(Model.ObservacoesView)
+
+
+            </div>
+        </div>
+
+        <br />
+        @Html.Partial("~/Views/Agendamento/_AgendamentoHistorico.cshtml", Model.ListAgendamentoHistorico)
+
+        
+
+
+    }
+
+    @if (user.ControleAcesso("deletar", "agendamento"))
+    {
+        <div class="form-actions">
+            @if (Model.AgendamentoId > 0)
+            {
+                if (Model.AgendamentoPessoa.Where(x => x.Presenca == "P" || x.Presenca == "F").Count() > 0)
+                {
+                <small class="pull-right">Para apagar, cancele todas as presenças </small>
+                <br />
+                <button class="btn btn-danger pull-right disabled">Deletar</button>
+                }
+                else
+                {
+                @Html.ActionLink("Apagar", "Deletar", new { id = Model.AgendamentoId }, new { @class = "btn btn-danger pull-right" })
+                }
+            }
+        </div>
+    }
+    <div>
+
+        @if (user.ControleAcesso("programacaodia", "agendamento"))
+        {
+            <a href="~/Agendamento/ProgramacaoDia" class="btn"><i class="icon-calendar"></i>Voltar para Programação do dia</a>
+            
+        }
+
+
+        @if (user.ControleAcesso("calendario", "agendamento"))
+        {
+            <a href="~/Agendamento/Calendario" class="btn"><i class="icon-tasks"></i>Voltar para o seu calendário</a>
+            
+        }
+
+        @if (user.ControleAcesso("agenda", "agendamento"))
+        {
+            <a href="~/Agendamento/Agenda" class="btn"><i class="icon-tasks"></i>Voltar para agenda geral</a>
+            
+        }
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/content/themes/base/js/application.js"></script>
+    @*<script src="~/content/themes/base/js/gallery.js"></script>
+    *@
+    <script src="~/Assets/themes/metro/js/footable.js?v=2-0-1"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+        });
+    </script>
+
+
+
+}
+
+

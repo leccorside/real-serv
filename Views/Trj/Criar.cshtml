@@ -1,0 +1,460 @@
+﻿@model Models.TrjReqPag
+
+
+@{
+    
+    ViewBag.Title = "Editar Requisição";
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+
+    
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Requisições de Pagamento", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+
+                    @using (Html.BeginForm("Criar", "Trj", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+                        @Html.HiddenFor(m => m.TrjReqPagIdPai)
+                        @Html.HiddenFor(m => m.Modal)
+                        
+                        if (Model.TrjReqPagId > 0)
+                        {
+                        @Html.Hidden("TrjReqPagId", Model.TrjReqPagId);
+                        @Html.HiddenFor(m => m.RegStatus);
+                        @Html.HiddenFor(m => m.RegIdInicio);
+                        @Html.HiddenFor(m => m.EmpresaId);
+                        }
+
+                        @Html.Hidden("TrjReqPagOrigem", "MANUAL");
+                        
+                        <div class="row">
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                @Html.LabelFor(model => model.Fonte)
+                                @Html.DropDownListTrjFonte("Fonte", Model.Fonte, false, " form-control ", null)
+                            </div>
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.TrjReqPagNumero)
+                                @Html.TextBoxFor(model => model.TrjReqPagNumero, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                @Html.LabelFor(model => model.TrjReqPagProcedimento)
+                                @Html.DropDownListTrjProcedimento("TrjReqPagProcedimento", Model.TrjReqPagProcedimento, false, " form-control ")
+                            </div>
+
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                @Html.LabelFor(model => model.TrjReqPagDtProtocolo)
+                                @*@Html.TextBoxFor(model => model.TrjReqPagDtProtocolo, new { @class = "form-control" })*@
+                                @Html.TextBox("TrjReqPagDtProtocolo", String.Format("{0:dd/MM/yyyy}", Model.TrjReqPagDtProtocolo), new { @class = "datepicker maskdate form-control", value = DateTime.Now })
+                            </div>
+                        </div>
+                        
+                                                                 if (Model.TrjReqPagIdPai == 0)
+                                                                 {
+                        <div id="div_Fonte">
+                            <div class="row">
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    <label>Prioridade</label>
+                                    <div class="checkbox">
+                                        <label>@Html.CheckBoxFor(model => model.TrjReqPagPrioridade) Sim</label>
+                                    </div>
+                                </div>
+                                <div id="div_Prioridade">
+
+                                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        <label>Valor Total Prioridade Idade</label>
+                                        <div class="input-group m-b">
+                                            <span class="input-group-addon">R$</span>
+                                            @Html.TextBox("TrjReqPagPrioridadeValorTotalIdade", string.Format("{0:F2}", Model.TrjReqPagPrioridadeValorTotalIdade), new { @class = "moeda form-control select-all" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        <label>Valor Total Ação</label>
+                                        <div class="input-group m-b">
+                                            <span class="input-group-addon">R$</span>
+                                            @Html.TextBox("TrjReqPagPrioridadeValorTotalIdadeSubtracao", string.Format("{0:F2}", Model.TrjReqPagPrioridadeValorTotalIdadeSubtracao), new { @class = "moeda form-control select-all" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                                                                 }
+                        
+                        <div class="row">
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                @Html.LabelFor(model => model.TrjReqPagSituacao)
+                                @Html.TextBoxFor(model => model.TrjReqPagSituacao, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                @Html.LabelFor(model => model.TrjReqPagOficio)
+                                @Html.TextBoxFor(model => model.TrjReqPagOficio, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                @Html.LabelFor(model => model.TrjReqPagJuizoOrigem)
+                                @Html.TextBoxFor(model => model.TrjReqPagJuizoOrigem, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                @Html.LabelFor(model => model.TrjReqPagProcessosOriginarios)
+                                @Html.TextBoxFor(model => model.TrjReqPagProcessosOriginarios, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                @Html.LabelFor(model => model.TrjReqPagRequerido)
+                                @Html.TextBoxFor(model => model.TrjReqPagRequerido, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                @Html.LabelFor(model => model.TrjReqPagRequerentes)
+                                @Html.TextBoxFor(model => model.TrjReqPagRequerentes, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                @Html.LabelFor(model => model.TrjReqPagAdvogado)
+                                @Html.TextBoxFor(model => model.TrjReqPagAdvogado, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>
+                                    <abbr title="Mês / Ano da Proposta">Mês/Ano</abbr></label>
+                                @Html.TextBoxFor(model => model.TrjReqPagMesAno, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>
+                                    <abbr title="Data conta de Liquidação">Dt. Liq.</abbr></label>
+                                @*@Html.TextBoxFor(model => model.TrjReqPagDataContaLiquidacao, new { @class = "form-control" })*@
+                                @Html.TextBox("TrjReqPagDataContaLiquidacao", String.Format("{0:dd/MM/yyyy}", Model.TrjReqPagDataContaLiquidacao), new { @class = "datepicker maskdate form-control", value = DateTime.Now })
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                @Html.LabelFor(model => model.TrjReqPagValorSolicitado)
+                                @Html.TextBox("TrjReqPagValorSolicitado", string.Format("{0:F2}", Model.TrjReqPagValorSolicitado), new { @class = "moeda form-control select-all" })
+                            </div>
+
+                            <div class="form-group col-lg-5 col-md-5 col-sm-5">
+                                @Html.LabelFor(model => model.TrjReqPagSituacaoRequisicao)
+                                @Html.TextBoxFor(model => model.TrjReqPagSituacaoRequisicao, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                @Html.LabelFor(model => model.TrjReqPagNatureza)
+                                @Html.TextBoxFor(model => model.TrjReqPagNatureza, new { @class = "form-control" })
+                            </div>
+
+                            @if (Model.TrjReqPagIdPai == 0)
+                            {
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.TrjReqPagDepre)
+                                    @Html.TextBoxFor(model => model.TrjReqPagDepre, new { @class = "form-control" })
+                                </div>
+                                
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    @Html.LabelFor(model => model.TrjReqPagExec)
+                                    @Html.TextBoxFor(model => model.TrjReqPagExec, new { @class = "form-control" })
+                                </div>
+                                
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    @Html.LabelFor(model => model.TrjReqPagEp)
+                                    @Html.TextBoxFor(model => model.TrjReqPagEp, new { @class = "form-control" })
+                                </div>
+                                
+                                <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                    @Html.LabelFor(model => model.TrjReqPagOc)
+                                    @Html.TextBoxFor(model => model.TrjReqPagOc, new { @class = "form-control" })
+                                </div>
+                            }
+
+
+                        </div>
+         
+                        <br />
+
+                        <div class="row-fluid">
+                            <div class="col-lg-12">
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @if (!Model.Modal)
+                                {
+                                    @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-outline btn-primary pull-right " })    
+                                }
+                                else
+                                {
+                                    <a title="Close" class="btn btn-outline btn-primary pull-right " onclick="closeFB()" href="javascript:;">FECHAR</a>
+                                }
+
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <br />
+    @if (Model.TrjReqPagId > 0 && Model.Fonte == "TJ-SP" && Model.TrjReqPagIdPai == 0)
+    {
+
+        var bll = new BLL.TrjReqsPags();
+
+        var lista = bll.ListarTudoPorTrjReqPagIdPai(Model.TrjReqPagId);
+
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="hpanel">
+                    <div class="panel-body">
+                        <legend>Requisições Filhas</legend>
+                        @Html.ActionLink("+ Criar", "Criar", new { id = 0, TrjReqPagIdPai = Model.TrjReqPagId, Fonte = Model.Fonte, Modal = true }, new { @class = "btn btn-primary fancybox_recarrega fancybox.iframe" })
+                        <br />
+                        <div class="table-responsive">
+                            <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                                <thead>
+                                    <tr style="font-size: 12px;">
+                                        <th>Número</th>
+                                        <th>Tipo</th>
+                                        <th>Procedimento</th>
+                                        <th>Data prococolo TRF</th>
+                                        <th>Valor solicitado</th>
+                                        <th>Requerente</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (var item in lista)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="@Url.Content("~/Trj/View/0/?Protocolo=" + item.TrjReqPagNumero + "")" class="fancybox fancybox.iframe "><i class="fa fa-search"></i></a>@item.TrjReqPagNumero
+
+                                                @if (item.Fonte == "TRF4")
+                                                {
+                                                    if (item.TrjReqPagLink != null && item.TrjReqPagLink != "")
+                                                    {
+                                                    <br />
+                                                    <a href="@Url.Content("~/Content/Uploads/Precatorios/" + BLL.Utils.Formatacoes.ApenasNumeros(item.TrjReqPagNumero) + ".pdf")" class="fancybox fancybox.iframe "><i class="fa  fa-file-pdf-o"></i><small>Precatório</small></a>        
+                                                    }
+                                                }
+
+                                                @if (item.TrjReqPagHtml != null && item.TrjReqPagHtml != "")
+                                                {
+                                                    <br />
+                                                    <a href="@Url.Content("~/Trj/HtmlCode/0/?Protocolo=" + item.TrjReqPagNumero + "")" class="fancybox fancybox.iframe "><i class="fa fa-code" aria-hidden="true"></i><small>Trecho da página</small></a>
+                                                }
+
+                                            </td>
+                                            <td><span class="badge @item.Fonte">@item.Fonte</span></td>
+                                            <td>@item.TrjReqPagProcedimento</td>
+                                            <td>@item.TrjReqPagDtProtocolo</td>
+                                            <td>
+                                                @if (item.Fonte == "TRF4" && item.TrjReqPagValorSolicitado == 0)
+                                                {
+                                                    <small>Valor será captura na geração da proposta</small>
+                                                }
+                                                else
+                                                {
+                                                    <span>R$ @string.Format("{0:N2}", item.TrjReqPagValorSolicitado)</span>    
+                                                }
+
+
+                                            </td>
+                                            <td>@item.TrjReqPagRequerentes</td>
+                                            <td>
+                                                @switch (item.RegStatus)
+                                                {
+                                                    case "A":
+                                                    @:<span class="label label-success">Ok</span>
+                                                    break;
+                                                    case "P":
+                                                    @:<span class="label label-warning">Próxima requisição à consultar</span>
+                                                    break;
+                                                    case "X":
+                                                    @:<span class="label label-warning">Aguardando reprocessamento</span>        
+                                                    break;
+                                                    case "R":
+                                                    @:<span class="label label-danger">ERRO</span> <small>@item.TrjReqPagErro</small>    
+                                                break;
+                                                    default:
+                                                    <span class="label label-warning">Aguardando processamento</span>        
+                                                break;
+                                                }
+                                            </td>
+                                            <td><a href="@Url.Content("~/Trj/Criar/" + item.TrjReqPagId + "/?Modal=True")" class="btn btn-outline btn-primary btn-xs  fancybox_recarrega fancybox.iframe" >Editar</a></td>
+                                        </tr>    
+                                    
+                                    }
+
+                                </tbody>
+
+
+
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Styles{
+    @Styles.Render("~/Assets/css/chosen.css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/ladda/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+
+    <script>
+
+
+        function closeFB() {
+            console.log("FECHAR");
+            $('.fancybox-item fancybox-close').click();
+        }
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(".select-all").click(function () {
+                $(this).select();
+            });
+
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+            $('.max').maxlength({
+                alwaysShow: true,
+                threshold: 10,
+                warningClass: "label label-success",
+                limitReachedClass: "label label-danger"
+            });
+
+
+        });
+    </script>
+
+    <script>
+        $("#TrjReqPagNumero").focus();
+        $("#TrjReqPagDtProtocolo").mask("99/99/9999");
+        $("#TrjReqPagDataContaLiquidacao").mask("99/99/9999");
+        $("#TrjReqPagMesAno").mask("99/9999");
+        //$('#TrjReqPagNumero').mask(maskBehavior, options);
+
+
+    </script>
+
+    <script>
+
+        $('#TrjReqPagPrioridade').change(function () {
+            verificaPrioridade(this.checked);
+        });
+
+        verificaPrioridade($("#TrjReqPagPrioridade").is(':checked'));
+
+
+        function verificaPrioridade(checado) {
+            if (checado) {
+                $("#div_Prioridade").slideDown();
+            } else {
+                $("#div_Prioridade").slideUp();
+            }
+        }
+
+        verificaFonte($("#Fonte").find(":selected").text());
+
+        $('#Fonte').on('change', function () {
+            verificaFonte(this.value);
+        });
+
+        function verificaFonte(fonte) {
+            if (fonte == "TJ-SP") {
+                $("#div_Fonte").slideDown();
+            } else {
+                $("#div_Fonte").slideUp();
+            }
+        }
+
+    </script>
+}

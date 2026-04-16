@@ -1,0 +1,126 @@
+﻿@model List<Models.PerfilAcesso>
+
+
+@{
+    ViewBag.Title = "Definição de acesso";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+
+    var ridEmpresa = Request["idEmpresa"];
+
+    int idEmpresa = int.TryParse(ridEmpresa, out idEmpresa) ? idEmpresa : 0;
+    var perfilId = Url.RequestContext.RouteData.Values["id"];
+
+    var listaEventosGroup = Model
+    .GroupBy(u => u.Controle)
+    .Select(grp => grp.ToList())
+    .ToList();
+
+
+    int contador = 0;
+}
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Perfis", "Index", new { @id = idEmpresa })</li>
+
+
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @using (Html.BeginForm())
+                            {
+
+                                @Html.Hidden("EmpresaId", idEmpresa);
+                                @Html.Hidden("PerfilId", perfilId);
+            
+<a name="indice" id="indice"></a>
+                            <h4>Índice</h4>
+                            <ul>
+                            @foreach (var itemgroup in listaEventosGroup)
+                            {
+                                <li>
+                                    <a href="#@itemgroup.FirstOrDefault().Controle">@itemgroup.FirstOrDefault().Controle</a>
+                                </li>
+                            }
+                            </ul>
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                <div class="table-responsive">
+
+                                    @foreach (var itemgroup in listaEventosGroup)
+                                    {
+                                        <a name="@itemgroup.FirstOrDefault().Controle" id="@itemgroup.FirstOrDefault().Controle"></a>
+                                        <table class="table table-bordered table-striped">
+                                            <caption><span class="pull-left"><a href="#indice"><i class="fa fa-chevron-up"></i>topo </a></span>
+                                                <h3 class="text-center">@itemgroup.FirstOrDefault().Controle</h3>
+                                            </caption>
+                                            <thead>
+                                                <th>Ações / Regras</th>
+                                            </thead>
+
+
+
+                                            <tbody>
+
+
+
+                                                @foreach (var item in Model.Where(x => x.Controle == itemgroup.FirstOrDefault().Controle))
+                                                {
+
+                                                    @Html.Hidden("[" + contador + "].PerfilId", perfilId);
+                                                    @Html.HiddenFor(m => m[contador].AcessoId)
+                                                    <tr class="@(Model[contador].Habilitado ? "" : "warning")">
+                                                        <td>
+
+                                                            <div class="checkbox">
+                                                                <label>
+                                                                    @Html.CheckBoxFor(m => Model[contador].Habilitado, new { @id = contador + "_TipoValor" })
+                                                                    @Model[contador].Descricao<br /><small>@Model[contador].Acao</small>
+                                                                </label>
+                                                            </div>
+
+
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            
+                                                                                                         contador++;
+                                                }
+
+
+
+
+                                            </tbody>
+
+                                        </table>
+                                    
+                                    }
+
+
+                                </div>
+                                <input type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index", new { @idEmpresa = idEmpresa }, new { @class = "btn btn-outline btn-primary " })
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

@@ -1,0 +1,169 @@
+﻿@model Models.MedGuiaItemView
+
+
+@{
+    ViewBag.Title = "Excluíndo Guia";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    }
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"> @Html.ActionLink("Guias", "Index", new { id = 0 })</li>
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja apagar esse registro?
+                </div>
+            
+            <div class="hpanel">
+                <div class="panel-body">
+                           <!-- conteudo aqui -->
+                            
+
+
+     <div class="row">
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <label>Guia n.</label><br />
+                @Model.MedGuiaId
+            </div>
+
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <label>Data</label><br />
+                <small>@string.Format("{0:dd/MM/yyyy}", Model.MedGuia.RegDtInicio)</small>
+            </div>
+
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <label>Convênio / Plano</label><br />
+                @Model.MedGuia.ConvenioNome / @Model.MedGuia.ConvenioPlanoNome
+            </div>
+
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                <label>Médico</label><br />
+                @Model.MedGuia.MedicoNome
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <label>Paciente</label><br />
+                @Model.MedGuia.PacienteNome <small>@Model.MedGuia.PacienteCpf</small>
+            </div>
+        </div>
+        
+        <br />
+
+                    <div class="row">
+                        <div class="col-lg-12" style="">
+                            <div class="hpanel collapsed">
+                                <div class="panel-heading hbuilt">
+                                    <div class="panel-tools">
+                                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                                    </div>
+                                    Produtos / Exames
+                                </div>
+                                <div class="panel-body">
+
+                                    <div class="table-responsive">
+                                        <table cellpadding="1" cellspacing="1" class="data table table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Produto / Exame</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ListMedGuiaItem)
+                        {
+                    
+                            <tr>
+                                <td>
+                                    @item.MedProdutoNome
+                                </td>
+                                <td class="text-right">R$ @string.Format("{0:F2}", item.Total)</td>
+                            </tr>	 
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th class="text-right">
+                                R$ @string.Format("{0:F2}", Model.MedGuia.TotalProdutos)
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+        
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <label>Número da NF</label><br />
+                @Model.MedGuia.NotaFiscal
+
+            </div>
+        </div>
+                            <br />
+
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-lg-12">
+                @Html.HiddenFor(model => model.MedGuia.MedGuiaId)
+                <p class="pull-right">
+                    <input type="submit" value="Apagar" class="btn btn-danger" />
+                </p>
+
+                <p class="pull-left">
+                    
+    @if (Model.Modal == false)
+    {
+        <div>
+            <a href="~/MedGuias/Index" class="btn btn-default">Voltar</a>
+        </div>
+    }
+                </p>
+            </div>
+        </div>    
+    }
+
+                            <!-- ./conteudo aqui -->
+                        </div>
+                
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,668 @@
+﻿@model Models.Agendamento
+
+@{
+    ViewBag.Title = "Criar";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    }
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var idx = 0;
+
+    var regra_agenda_somenteminha = user.ControleAcesso("regra_agenda_somenteminha", "Regras");
+
+    var Agendamento_AgendamentoSeguro = user.ControleAcesso("AgendamentoSeguro", "Agendamento");
+
+    
+    SelectList _funcionarioList = (SelectList)Model.FuncionarioList;
+    
+    
+}
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.AgendamentoId > 0)
+        {
+        
+        @Html.HiddenFor(m => m.AgendamentoId);
+        @Html.HiddenFor(m => m.Situacao);
+        @Html.HiddenFor(m => m.Modal);
+        }
+        
+        @Html.HiddenFor(m => m.Origem);
+
+
+      
+        
+        <div class="row-fluid">
+            <div class="span3">
+
+                <label>@Html.LabelFor(model => model.Inicio)</label>
+
+
+                <div class="input-prepend">
+                    <span class="add-on"><i class="icon-calendar"></i></span>
+                    @Html.TextBox("Inicio", @String.Format("{0:dd/MM/yyyy}", Model.Inicio), new { @class = "datepicker input-small", value = @DateTime.Now })
+
+                    
+                </div>
+
+                <br />
+                @Html.ValidationMessageFor(model => model.Inicio)
+
+
+            </div>
+            <div class="span3">
+                <label>Hora Início</label>
+
+
+                <div class="input-prepend">
+                    <span class="add-on"><i class="icon-time"></i></span>
+
+
+                    <select class="chosen-select input-small" id="HoraInicio" name="HoraInicio">
+                        @{horario = AgendaHoraIni;
+                        }
+                        @for (int i = 0; i < horarios; i++)
+                        {
+                            idx = 0;
+                            horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+                            var shorario = String.Format("{0:t}", horario);
+                            var shorarioSelect = String.Format("{0:t}", Model.Inicio);
+                            <option value="@shorario" @(shorario == shorarioSelect ? "selected" : "")>@shorario</option>
+                        }
+                    </select>
+
+                </div>
+
+
+
+            </div>
+
+
+
+            <div class="span3">
+                <label>Hora Fim</label>
+
+
+
+                <div class="input-prepend">
+                    <span class="add-on"><i class="icon-time"></i></span>
+
+
+                    <select class="chosen-select input-small" id="HoraFim" name="HoraFim">
+                        @{horario = AgendaHoraIni;
+                        }
+                        @for (int i = 0; i < horarios; i++)
+                        {
+                            idx = 0;
+                            horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+                            var shorario = String.Format("{0:t}", horario);
+                            var shorarioSelect = String.Format("{0:t}", Model.Fim);
+                            <option value="@shorario" @(shorario == shorarioSelect ? "selected" : "")>@shorario</option>
+                        }
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="span3">
+
+                <label>Marcar como indisponível?</label>
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.Indisponivel) Sim
+                </label>
+
+            </div>
+
+        </div>
+        <br />
+        
+        <div id="painel_indisponivel">
+
+        <div class="row-fluid">
+
+            @if (regra_agenda_somenteminha)
+            {
+                <input type="hidden" name="PessoaIDs" value="@String.Join(",", Model.PessoaIDs)" />
+            }
+            else
+            {
+            <div class="span4">
+                <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+                 @if (BLL.Usuarios.GetEmpresaTipoId() == 2)
+                 {         
+                     <!--Html.ListBoxFor(model => model.PessoaIDs, (SelectList)Model.FuncionarioList, new { class = "chosen-select span12 input-block-level", data_placeholder = "Selecione os profissionais", multiple = "multiple" })-->
+                     @Html.DropDownListFor(model => model.PessoaID, (SelectList)Model.FuncionarioList, "--Selecione--", new { @class = "chosen-select " })
+                 }
+                 else
+                 {
+                 @Html.DropDownListFor(model => model.PessoaID, (SelectList)Model.FuncionarioList, "--Selecione--", new { @class = "chosen-select " })
+                 }
+            </div>    
+            }
+            
+
+            <!-- servico -->
+                <div class="span4">
+                    <label>@Html.LabelFor(model => model.ServicoId)</label>
+
+                    @Html.Hidden("hdnServicoId", "false", new { @id = "hdnServicoId" })
+
+                    @Html.DropDownListFor(model => model.ServicoId, (SelectList)Model.ServicoTipos, "--Selecione--", new { @class = "chosen-select " })
+
+                    @Html.ValidationMessageFor(model => model.ServicoId)
+                </div>
+            
+            <!-- SALA -->
+                @if (BLL.Usuarios.GetEmpresaTipoId() != 2)
+                {<div class="span4">
+                    <label>@Html.LabelFor(model => model.SalaId)</label>
+
+
+                    @Html.DropDownListFor(model => model.SalaId, (SelectList)Model.SalasList, "--Selecione--", new { @class = "chosen-select " })
+
+                    @Html.ValidationMessageFor(model => model.SalaId)
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(m => m.SalaId);
+                }
+
+            
+
+        </div>
+            <br />
+        @if (user.ControleAcesso("index", "turmas"))
+        { 
+        
+        <div class="row-fluid">
+            <div class="span4">
+
+                <label>@Html.LabelFor(model => model.TurmaID)</label>
+
+
+                @Html.DropDownListFor(model => model.TurmaID, (SelectList)Model.DdlTurmas, "--Selecione--", new { @class = "chosen-select " })
+
+
+
+                @Html.ValidationMessageFor(model => model.TurmaID)
+
+            </div>
+        </div>
+            <br />
+        }
+                
+                @if (BLL.Usuarios.GetEmpresaTipoId() == 2)
+                { 
+        
+                @Html.Hidden("ClienteId", Model.ClienteId)    
+        <div class="row-fluid">
+            <div class="span1">
+                <label>Cel. Inter. </label>
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.CelularInternacional) sim
+                </label>
+
+            </div>
+            <div class="span3">
+                <label>Celular </label>
+                @Html.TextBox("Celular", Model.Celular, new { @class = "input-large" })
+            </div>
+            <div class="span8">
+                <label>Nome do cliente</label>
+                <div class="input-append">
+                    @Html.TextBox("NomeClientePre", Model.NomeClientePre, new { @class = "input-xxlarge" })
+                    <button type="button" id="btnerrado" name="btnerrado" style="display:none" class="btn">Alterar</button>
+                </div>
+
+            </div>
+        </div>
+        
+                }
+                else
+                {
+                    <div class="row-fluid">
+            <div class="span12">
+
+                
+                <label>@BLL.Usuarios.GetEntidadeCliente()<span id="capacidade"></span></label>
+
+                 @Html.ListBoxFor(model => model.ParticipantesIds, (SelectList)Model.ClienteList, new { @class = "chosen-select-limit input-block-level", @data_placeholder = "Selecione os participantes", multiple = "multiple" })
+                     
+                
+              
+
+            </div>
+        </div>
+                }
+
+
+        
+
+            </div>
+        
+
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+
+                @Html.LabelFor(model => model.Observacoes)
+
+                @Html.TextAreaFor(model => model.Observacoes, new { @class = "input-block-level", @rows = "5" })
+                @Html.ValidationMessageFor(model => model.Observacoes)
+
+            </div>
+        </div>
+        <div class="row-flud">
+            <div class="span12">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.Destaque) Destaque
+                </label>
+            </div>
+        </div>
+        
+
+                if (Model.AgendamentoId == 0)
+                {
+        <div class="row-fluid">
+            <div class="span12">
+
+
+                @if (BLL.Usuarios.GetEmpresaTipoId() != 2)
+                {
+                    <label class="checkbox">
+                        <i class="icon-refresh"></i>@Html.CheckBoxFor(model => model.Recorrencia, new { onchange = "Select($(this).is(':checked'));" }) Recorrência
+                    </label>
+                }
+
+
+            </div>
+
+        </div>
+
+        <div id="painelRecorrencia">
+
+
+
+
+            @Html.Partial("~/Views/Recorrencia/_Recorrencia.cshtml")
+
+
+
+
+        </div>
+
+                }
+
+
+
+        if (Model.AgendamentoId > 0 && Model.Situacao != "A" && Model.Modal == false && BLL.Usuarios.GetEmpresaTipoId() != 2)
+                {
+                    //if (BLL.Usuarios.GetEmpresaTipoId() != 2)
+                    //{
+        <a href="@Url.Content("~/Agendamento/GerarListaPresenca/" + Model.AgendamentoId)" class="btn" id="btn_gerarlistapresenca"><i class="icon-list"></i>Gerar lista de presença</a>
+                    //}
+                }
+        
+                if (Agendamento_AgendamentoSeguro)
+                {
+                    @Html.Partial("~/Views/Usuarios/_ConfirmLogin.cshtml")            
+                }
+        
+        
+        <div class="form-actions">
+
+            
+
+
+            <div class="row-fluid">
+                <div class="span6">
+                    <button name="salvar" value="true" type="submit" class="btn btn-primary  btn-large ">salvar e fechar</button>
+                </div>
+                <div class="span6">
+                    <button name="salvareproxima" value="true" type="submit" class="btn btn-primary  btn-large">salvar e agendar próxima sessão</button>
+                </div>
+            </div>
+            @if (Model.AgendamentoId > 0)
+            {
+                <a href="@Url.Content("~/Agendamento/Deletar/" + Model.AgendamentoId + "?modal=" + Model.Modal + "")" class="btn btn-danger pull-right">Apagar</a>
+            }
+        </div>
+
+    }
+    @if (Model.Modal == false)
+    {
+        <div>
+        @if (user.ControleAcesso("programacaodia", "agendamento"))
+        {
+            <a href="~/Agendamento/ProgramacaoDia" class="btn"><i class="icon-calendar"></i>Voltar para Programação do dia</a>
+            
+        }
+        
+
+        @if (user.ControleAcesso("calendario", "agendamento"))
+        {
+            <a href="~/Agendamento/Calendario" class="btn"><i class="icon-tasks"></i>Voltar para o seu calendário</a>
+            
+        }
+    </div>
+    }
+    
+
+
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    
+
+
+    @*<script src="~/Assets/plugins/bootstrap-ajax-typeahead-master/bootstrap-typeahead.min.js"></script>*@
+    <script>
+
+        $(function () {
+
+
+            $(".chosen-select-limit").chosen({ max_selected_options: 1 });
+            $(".chosen-select-limit").bind("chosen:maxselected", function () { alert("Limite máximo de @BLL.Usuarios.GetEntidadeCliente() para esta sala"); });
+
+            Carrega($("#SalaId").val());
+        });
+
+
+        $(document).ready(function () {
+            select = $("#ParticipantesIds");
+
+            //select.val('').trigger('chosen:updated');
+            select.trigger('chosen:updated');
+
+            habilitaMaskCelular($("#CelularInternacional").is(':checked'));
+        });
+
+
+
+        function habilitaMaskCelular(vlr) {
+            if (vlr == true) {
+                $("#Celular").unmask();
+            } else {
+                $("#Celular").mask("(99)9999-9999?9");
+            }
+
+        }
+
+        $('#CelularInternacional').click(function () {
+            habilitaMaskCelular(this.checked);
+        });
+
+
+        function DeterminaCapacidade(capacidade) {
+            $('.chosen-select-limit').val('').trigger('chosen:updated');
+            $(".chosen-select-limit").chosen('destroy').chosen({ max_selected_options: capacidade });
+            $("#capacidade").text("(" + capacidade + ")");
+
+        }
+
+
+
+            //Turma
+            $("#TurmaID").change(function () {
+
+                var select, chosen, SalaCapacidade, ServicoIndividual;
+                select = $(".chosen-select-limit");
+
+                select.val('').trigger('chosen:updated');
+
+                // verifica servico
+                $.getJSON('@Url.Content("~/Agendamento/GetServicoDados/")', { id: $("#ServicoId").val() }, function (data) {
+                ServicoIndividual = data.ServicoIndividual;
+
+            });
+
+            // verifica capacidade
+            $.getJSON('@Url.Content("~/Agendamento/GetSalaDados/")', { id: $("#SalaId").val() }, function (data) {
+                SalaCapacidade = data.SalaCapacidade;
+
+                if (SalaCapacidade == null) {
+                    window.alert("Selecione uma sala");
+                    $('#TurmaID').val(0);
+                    return;
+                }
+
+
+            });
+
+
+
+
+            $.getJSON('@Url.Content("~/Pessoas/Turma/")', { id: $(this).val() }, function (data) {
+
+                var len = data.length;
+
+                if (ServicoIndividual && len > 1) {
+                    window.alert("Não da para selecionar uma turma quando o serviço é individual");
+                    $('#TurmaID').val(0);
+                    return;
+                }
+
+                if (len > SalaCapacidade) {
+                    window.alert("A turma é maior que a capacidade da sala");
+                    $('#TurmaID').val(0);
+                    return;
+                }
+
+                for (var i = 0; i < len; i++) {
+
+                    var option = $("<option>").val(data[i].Value).text(data[i].Text);
+                    select.prepend(option);
+                    select.find(option).prop('selected', true);
+
+                }
+
+                select.trigger("chosen:updated");
+                $('#myModal').modal('hide');
+                $('#TurmaId').val(0);
+
+            });
+        });
+
+        $("#SalaId").change(function () {
+
+            var vid = $(this).val();
+
+            console.log(vid);
+
+            if (vid != null && vid != "") {
+                $.getJSON('@Url.Content("~/Agendamento/GetSalaDados/")', { id: $(this).val() }, function (data) {
+                    var SalaCapacidade = data.SalaCapacidade;
+                    var ServicoIndividual = $("#hdnServicoId").val();
+
+                    if (ServicoIndividual != "true") {
+                        DeterminaCapacidade(SalaCapacidade);
+                    }
+
+                });
+            }
+            
+            });
+
+
+
+        function Carrega(_id) {
+
+            if (_id != null && _id != "") {
+                $.getJSON('@Url.Content("~/Agendamento/GetSalaDados/")', { id: _id }, function (data) {
+                    var SalaCapacidade = data.SalaCapacidade;
+
+                    console.log("sala capacidade" + data);
+
+
+                    $(".chosen-select-limit").chosen('destroy').chosen({ max_selected_options: SalaCapacidade });
+                    $("#capacidade").text("(" + SalaCapacidade + ")");
+
+                });
+
+            }
+        }
+
+
+
+
+
+
+
+                function Select(jtipo) {
+
+                    if (jtipo == true) {
+                        $("#painelRecorrencia").slideDown();
+
+
+                    } else {
+                        $("#painelRecorrencia").slideToggle();
+
+                    }
+
+                    //$("#Celular").mask("(99)9999-9999?9");
+                    $('#ServicoId').trigger('chosen:activate');
+
+                }
+
+
+
+                Select($('#Recorrencia').is(':checked'));
+
+          
+
+                
+
+
+
+
+        $("#Celular").focusout(function () {
+            $.getJSON('@Url.Content("~/Pessoas/GetPessoas/")', { tipo: 'c', stype: 'Celular', key: $(this).val() }, function (data) {
+
+                
+                
+
+                if (data.Objeto[0] != null) {
+                    $("#NomeClientePre").prop("readOnly", false);
+                    $("#NomeClientePre").val(data.Objeto[0].Nome);
+                    $("#ClienteId").val(data.Objeto[0].PessoaID);
+                    $("#NomeClientePre").prop("readOnly", true);
+                    $("#btnerrado").attr("style", "display:show");
+
+                    //console.log(data.Items[0].Nome);
+                } else {
+                    $("#btnerrado").attr("style", "display:none");
+                    $("#NomeClientePre").prop("readOnly", false);
+                    $("#NomeClientePre").val('');
+                    $("#ClienteId").val('0');
+                    $("#NomeClientePre").focus();
+                }
+                  });
+        });
+
+        $("#btnerrado").click(function () {
+                     $("#btnerrado").attr("style", "display:none");
+                     $("#NomeClientePre").prop("readOnly", false);
+                     $("#NomeClientePre").val('');
+                     $("#ClienteId").val('0');
+                     $("#NomeClientePre").focus();
+                     
+                     
+
+            
+         });
+
+
+                
+                //TipoRecorrencia($('#RecorrenciaObj_Tipo').val());
+
+                
+                function SelectIndisponivel(jtipo) {
+                    
+                    if (jtipo == true) {
+                        $("#painel_indisponivel").slideUp();
+                        $("#btn_gerarlistapresenca").fadeOut(0, 0);
+
+                    } else {
+                        $("#painel_indisponivel").slideDown();
+                        $("#btn_gerarlistapresenca").fadeIn(0, 0);
+                    }
+
+                }
+
+                SelectIndisponivel($('#Indisponivel').is(':checked'));
+
+
+                $('#Indisponivel').click(function () {
+                    SelectIndisponivel(this.checked);
+
+
+                });
+
+    </script>
+
+    @if (BLL.Usuarios.GetEmpresaTipoId() != 2){
+     <script>
+         $("#ServicoId").change(function () {
+
+             $.getJSON('@Url.Content("~/Agendamento/GetServicoDados/")', { id: $(this).val() }, function (data) {
+                 var ServicoIndividual = data.ServicoIndividual;
+                 if (ServicoIndividual) {
+                     $("#hdnServicoId").val(ServicoIndividual);
+                     DeterminaCapacidade(1);
+                 } else {
+                     $("#hdnServicoId").val(false);
+
+                    @if (BLL.Usuarios.GetEmpresaTipoId() != 2){
+                    @:$("#SalaId").chosen().change();
+                    }
+                    DeterminaCapacidade(1);
+                }
+            });
+
+         });
+     </script>   
+    }
+
+
+}
+
+

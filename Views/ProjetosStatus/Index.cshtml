@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Models.ProjetoStatus>
+
+
+@{
+    ViewBag.Title = "Status de Projeto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+
+@Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Status Inicial</th>
+            <th>Status Execução</th>
+            <th>Status Final</th>
+            <th nowrap>
+                @Html.DisplayNameFor(model => model.RegDtInicio)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count() == 0)
+        {
+            <tr class="info">
+                <td colspan="20"><small class="muted">Nenhum registro localizado</small></td>
+            </tr>
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProjetoStatusId</td>
+                <td width="100%">
+                    @item.ProjetoStatusNome
+                </td>
+                <td nowrap><i class="@(item.ProjetoStatusIni?"icon-ok":"")"></i></td>
+                <td nowrap><i class="@(item.ProjetoStatusExec?"icon-ok":"")"></i></td>
+                <td nowrap><i class="@(item.ProjetoStatusFim?"icon-ok":"")"></i></td>
+                <td nowrap>
+                    @item.RegDtInicio
+                </td>
+                <td nowrap>
+                    <a href="~/ProjetosStatus/Criar/@item.ProjetoStatusId" class="btn btn-mini"><i class="fa fa-pencil"></i>Alterar</a> | 
+                    <a href="~/ProjetosStatus/Deletar/@item.ProjetoStatusId" class="btn btn-mini"><i class="fa fa-times"></i>Excluir</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+@{
+    //Controles de paginação
+    int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);   
+}
+@Html.Paginacao(qtdPaginas)

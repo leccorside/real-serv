@@ -1,0 +1,58 @@
+﻿@model Models.PRCProposta
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var _copyright = BLL.Utils.Funcoes.GetWebConfigKey("copyright");
+
+
+    var agendamento_obrigado_urlredirect = BLL.Configuracoes.CarregarPorEmpresaId("agendamento.obrigado.urlredirect", Model.EmpresaId);
+
+}
+
+<div class="login-container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="text-center m-b-md">
+                <h3>Ok @BLL.Utils.Funcoes.GetPrimeiroNome(Model.RequerenteNome), entraremos em contato no dia @Convert.ToDateTime(Model.EntidadeStatusHistoricoData).ToShortDateString()</h3>
+                <h4>Obrigado!</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            @if (_copyright == "" || _copyright == "true")
+            {
+                <span><strong>Fortuna</strong> - Gestor do seu negócio<br />
+                    2017 Copyright |  E-Bee</span>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+
+        <script>
+            var delay = 8000;
+            setTimeout(function () { window.location = "@agendamento_obrigado_urlredirect"; }, delay);
+        </script>        
+
+
+
+}
+

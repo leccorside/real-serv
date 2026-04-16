@@ -1,0 +1,40 @@
+﻿@{
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+    if (!baseUrl.Contains("localhost:"))
+    {
+        baseUrl = "http://localhost/fortuna";
+    }
+
+
+    var logotipo = baseUrl + "/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png";
+    var semlogotipo = baseUrl + "/Assets/img/logotipos/semlogo.png";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<!-- Stylesheets -->
+<link href="@baseUrl/Assets/css/bootstrap.css" rel="stylesheet" />
+<link href="@baseUrl/Assets/css/bootstrap-responsive.css" rel="stylesheet" />
+     @RenderSection("Styles", false)
+<body>
+
+
+    <!-- Begin page content -->
+    <div class="container-fluid">
+        
+
+
+        @RenderBody()
+
+    </div>
+
+
+</body>
+</html>
+@RenderSection("scripts", required: false)

@@ -1,0 +1,138 @@
+﻿@model PetaPoco.Page<Models.MedProduto>
+
+@{
+    ViewBag.Title = "Produtos e Exames";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+
+        
+
+
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                @Html.FormPesquisaIndex("pull-right")
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+    
+                    <div class="row">
+                        <div class="form-group col-lg-6">
+                            
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <a href="@Url.Content("~/MedProdutos/ExportTudo")" class="btn btn-outline btn-primary btn-xs pull-right"  onclick="return confirm('Atenção, esse processo pode demorar alguns minutos.')"><i class="fa fa-download"></i> Exportar Tudo</a>
+                        </div>
+                    </div>
+
+                        
+                        
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                        <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Items[0].MedProdutoCod)
+                            </th>
+                            <th>Cód.Legado</th>
+                            <th>Categoria</th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Items[0].MedProdutoNome)
+                            </th>
+                            <th data-hide="phone,tablet">
+                                @Html.DisplayNameFor(model => model.Items[0].RegDtInicio)
+                            </th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+
+                                <td nowrap>
+                                    @Html.DisplayFor(modelItem => item.MedProdutoCod)
+                                </td>
+                                <td>@item.MedProdutoCodLegado</td>
+                                <td>@item.MedProdutoCategoriaNome</td>
+                                <td width="100%">
+                                    @Html.DisplayFor(modelItem => item.MedProdutoNome)
+                                </td>
+                                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                                    @Html.DisplayFor(modelItem => item.RegDtInicio)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Alterar", "Criar", new { id = item.MedProdutoId }, new { @class = "btn btn-outline btn-primary btn-xs" })</td>
+                                <td>
+                                    @Html.ActionLink("Excluir", "Deletar", new { id = item.MedProdutoId }, new { @class = "btn btn-outline btn-danger btn-xs" })
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+
+                        </table>
+
+                    </div>
+                        
+                     @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    
+    <script type="text/javascript">
+        $("#pesquisar").focus();
+    </script>
+
+}

@@ -1,0 +1,47 @@
+﻿@model Models.EscalaRegistroView
+
+@{
+    if (Model.Impressao == true)
+    {
+        ViewBag.Title = "ImprimirEscala";
+        Layout = "~/Views/Shared/_WindowPrint.cshtml";
+    }
+    else
+    {
+        ViewBag.Title = "ImprimirEscala";
+        Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    }
+
+    
+
+    
+}
+
+@section Styles{
+
+    <style>
+        .page-break
+        {
+            display: block;
+            page-break-before: always;
+        }
+
+        table.grade, table.grade th, table.grade td
+        {
+            border: 1px solid black;
+            padding: 1px;
+        }
+
+        table.grade
+        {
+            /*font-size:11px;*/
+        }
+
+        .td_quadro
+        {
+            border:1px solid black;
+        }
+    </style>
+
+}
+@Html.Partial("~/Views/PostosDeServicos/_ImprimirEscalaPapeletaPlan.cshtml", Model)

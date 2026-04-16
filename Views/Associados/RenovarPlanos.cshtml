@@ -1,0 +1,84 @@
+﻿@model Models.Pessoa
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+    var bllPessoasPlanos = new BLL.PessoasPlanos();
+    var lista = bllPessoasPlanos.Listar(Model.EmpresaId, 0,0,false, true).Items.Where(x=>x.PessoaCategoriaSubId==Model.PessoaCategoriaSubId && x.PessoaPlanoTipoId==2);
+
+
+
+}
+
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <legend>Renovar Plano</legend>
+            <div class="row">
+                @foreach (var item in lista.OrderBy(x => x.PessoaPlanoVlr))
+                {
+
+                    var objDesconto  = bllPessoasPlanos.PossuiDesconto(item, Model.FormacaoAnoConclusao);
+                    
+                    
+    
+                    
+                    
+                    <div class="col-sm-4" style="">
+                        <div class="hpanel plan-box hblue">
+                            <div class="panel-heading hbuilt text-center">
+                                <h4 class="font-bold">@item.PessoaPlanoTitulo</h4>
+                            </div>
+                            <div class="panel-body">
+                                <h5>@item.PessoaCategoriaSubNome</h5>
+                                <p class="text-muted">
+                                    @item.PessoaPlanoDescricao
+                                </p>
+                                
+                                
+                                <div class="text-center">
+                                    <h5>Taxa de Inscrição</h5>
+                                    <h4 class="font-bold">R$ @string.Format("{0:F2}", item.PessoaPlanoVlrInscricao)</h4>
+                                    <i class="fa fa-plus"></i>
+                                    <h5>Anuidade</h5>
+                                    <h4 class="font-bold">R$ @string.Format("{0:F2}", item.PessoaPlanoVlr)</h4>
+
+                                    <hr />
+                                    <small>Total</small>
+                                    @if (objDesconto.possuiDesconto)
+                                    {
+                                        <h4 class="font-bold" style="text-decoration:line-through">R$ @string.Format("{0:F2}", objDesconto.total)</h4>
+                                        <h2 class="font-bold">R$ @string.Format("{0:F2}", objDesconto.totalFinal)</h2>    
+                                    }
+                                    else
+                                    {
+                                    <h2 class="font-bold">R$ @string.Format("{0:F2}", objDesconto.total)</h2>    
+                                    }
+                                    
+                                </div>
+
+                                
+                                @using (Html.BeginForm("RenovarPlanos", "Associados", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges", @target="_top" }))
+                                {
+                                    @Html.HiddenFor(x => x.EmpresaId)
+                                    @Html.HiddenFor(x => x.PessoaID)
+                                    @Html.Hidden("PessoaPlanoId", item.PessoaPlanoId)
+                                    @Html.Hidden("TotalFinal", objDesconto.totalFinal)
+                                    <button type="submit" class="btn btn-warning btn-sm m-t-xs">Selecionar Plano</button>
+                                }
+
+                                @*<a href="@Url.Content("~/Associados/Renovar/" + item.EmpresaId + "/" + Model.PessoaGUID + "/?plano=" + item.PessoaPlanoGUID)" class="btn btn-warning btn-sm m-t-xs">Selecionar Plano</a>*@
+                            </div>
+                        </div>
+                    </div>    
+                }
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>

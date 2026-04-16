@@ -1,0 +1,494 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        RDA Solutions - Pesquisa
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+    <link rel="icon" href="../Pesquisas/img/3 - logo 2-2 globe.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="../Pesquisas/img/3 - logo 2-2 globe.png" type="image/x-icon" />
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <link href="Content/themes/base/jquery.ui.autocomplete.css" rel="stylesheet" />
+
+    <link href="js/fundo.css" rel="stylesheet" type="text/css" media="all" />
+   
+    <script type="text/javascript" src="js/jquery-latest.js"></script>
+
+    <script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+    
+
+    <link rel="stylesheet" href="css/blue/style.css" type="text/css" media="print, projection, screen" />
+    
+    <link rel="stylesheet" href="css/animate.css" />
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="col-lg-12 container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-left" href="">  
+                    <img alt="Brand" src="img/7 - logo 2-2.png" style="width:60px; height:60px; padding:5px;text-align:left" class="img-responsive">
+                </a>
+                <a class="hidden-lg hidden-md navbar-brand" href="/HomeCliente/MenuPrincipal.html">
+                    Sair
+                    <span class="glyphicon glyphicon-log-out"></span>
+                </a>
+                <a class="hidden-lg hidden-md nav navbar-inverse" id="usuarioLogadoXS"></a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <!--<ul class="nav navbar-nav">
+                    <li class="active">
+                        <a class="hidden-sm hidden-xs navbar-brand" href="/HomeCliente/MenuPrincipal.html">
+                            Sair
+                            <span class="glyphicon glyphicon-log-out"></span>
+                        </a>
+                    </li>
+                </ul>-->
+                <ul class="nav navbar-nav" id="menuPrincipal">
+                    <li >
+                        <a href="Dashboard.html" class="hidden-sm hidden-xs navbar-left">
+                            Central Dashboard
+                            <span class="glyphicon glyphicon-dashboard"></span>
+                        </a>
+
+                        <a href="http://sistema.gruporealserv.com.br/postosdeservicos/Index/" class="hidden-sm hidden-xs navbar-left">
+                            Voltar
+                            <span class="glyphicon glyphicon-log-out"></span>
+                        </a>
+                    </li>
+                    <!-- <li class="active">
+                        <a class="hidden-sm hidden-xs navbar-left" onclick="javascript: onFecharTela();">
+                            Sair
+                            <span class="glyphicon glyphicon-log-out"></span>
+                        </a>
+                    </li> -->
+                </ul>
+                <!--<ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class='glyphicon glyphicon-user'></i><b class='caret'></b>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li>
+                                <a href="/HomeCliente/Registrar.html"><i class="fa fa-gear fa-fw"></i>Cadastro de usuário</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>-->
+
+                <!--<ul class="hidden-xs hidden-sm nav navbar-inverse" id="usuarioLogado"></ul>-->
+            </div>
+        </div>
+    </nav>
+
+    <br />
+
+    <br />
+
+    <div class="col-lg-12">
+        <div class="col-lg-12" style="background-color: white">
+            <form class='form-horizontal' id='formFiltrosTela' role='form' action=''>
+                <div class="col-lg-12">
+
+                    <h2>
+                        Postos de Serviços
+                        <span class="glyphicon glyphicon-user"></span>
+                    </h2>
+                    <p>Esta área é destinada a manutenção dos contatos dos postos de serviço</p>
+                    <!--<div class="table-responsive">-->
+                    <br />
+                    <div id="loading"></div>
+                    <div id="TimeStart" class="input-group col-lg-6">
+                        <span class="input-group-addon">
+                            <span class=""></span>
+                        </span>
+                        <div class="icon-addon addon-lg">
+                            <label class="sr-only" for="txtPesquisa">
+                                Pesquisar
+                            </label>
+                            <input id="txtPesquisa" type="search" placeholder="Pesquisar por nome do Posto de Serviço" class="form-control">
+                        </div>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" id="btnConsultar"
+                                    type="button" value="Pesquisar" onclick="Pesquisar();">
+                                <span class='glyphicon glyphicon-search'></span>
+                            </button>
+                        </span>
+                    </div>
+                    <br />
+
+                    <!--<div class="col-lg-12">
+                        <button id="btnIncluir" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalPesquisa">
+                            Novo Contato
+                            <span class="glyphicon glyphicon-book"></span>
+                        </button>
+
+                        <button id="btnIncluir" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                            Novo Contato e
+                            <span class="glyphicon glyphicon-book"></span>
+                        </button>
+
+
+                    </div>-->
+                    
+
+                </div>
+                <br />
+            </form>
+
+            <form id="formListarCliente">
+                <div class='col-lg-12 table-responsive'> <br />
+                    <table id="tabelaParticipantes" class="table table-striped table-condensed table-bordered tablesorter">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>id</th>
+                                <th>Posto</th>
+                                <th>Endereço</th>
+                                <th>Bairro</th>
+                                <th>Cidade</th>
+                               <!-- <th>Telefone</th>-->
+                                <th>Qtd enviada</th>
+                                <th>Qtd respondida</th>
+                                <th>Qtd não respondida</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan='9' align='center'>...Nenhum dado ainda...</td>
+                            </tr>
+                            <!--<tr>
+                                <td>
+                                           <button type="button" onclick="AbrirClienteContatos(1)" title="Abrir contatos"  
+                                            class="btn btn-xs" data-toggle="modal" data-target="#myModal"> 
+                                            <span class="glyphicon glyphicon-pencil"></span></button>
+                                </td>
+                                <td>1</td>
+                                <td>Monte Alto</td>
+                                <td>Rua Grande 2040</td>
+                                <td>Saboó</td>
+                                <td>Santos</td>
+                                
+                                <td>10</td>
+                                <td>7</td>
+                                <td>3</td>
+                            </tr>-->
+
+                        </tbody>
+                    </table>
+                    <!--</div>
+                    <div class="col-lg-12">
+                        <button type='button' class='btn btn-primary btn' id="anterior" disabled>
+                            <span class='glyphicon glyphicon-triangle-left'></span>
+                        </button>
+                        <span id="numeracao"></span>
+                        <button type='button' class='btn btn-primary btn' id="proximo" disabled>
+                            <span class='glyphicon glyphicon-triangle-right'></span>
+                        </button>
+                    </div>-->
+                    <hr />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal animated bounceInUp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!--<button type="button" class="closse" data-dismiss="modal">&times;</button>-->
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title">
+                        Contatos
+                        <span class="glyphicon glyphicon-user"></span>
+                    </h4>
+                </div>
+                <!--<br />-->
+                <div id="divAlerta"></div>
+                <!--<br />-->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <label>Id</label>
+                            <input placeholder="Id do Posto" class="form-control" id="txtIDPosto" type="text" disabled>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Id Contato</label>
+                            <input placeholder="Id do contato" class="form-control" id="txtIDContato" type="text" disabled>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <label>Posto de Serviço</label>
+                            <input placeholder="Posto de Serviço" class="form-control" id="txtPosto" type="text" disabled>
+                        </div>
+                        <div class="col-lg-5">
+                            <label>Unidade</label>
+                            <input placeholder="Unidade" class="form-control" id="txtUnidade" type="text">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <label for="txtContato">Nome</label>
+                            <input placeholder="Nome do contato" class="form-control" id="txtContato" type="text" maxlength="100">
+                        </div>
+                        <div class="col-lg-5">
+                            <label for="cmbPerfil">Perfil</label>
+                            <select class="form-control" id="cmbPerfil">
+                                <option value=''>Selecione uma opção</option>
+                                <option value='Sindico'>Sindico</option>
+                                <option value='Morador'>Morador</option>
+                                <option value='Empregado'>Empregado</option>
+                                <option value='Outro'>Outro</option>
+                            </select>
+                        </div>
+                       
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <label for="txtEmail">E-mail</label>
+                            <input placeholder="E-mail" type="text" class="form-control" id="txtEmail" maxlength="300">
+                        </div>
+                        <div class="col-lg-5">
+                            <label for="txtTelefone">Telefone</label>
+                            <input placeholder="Telefone" type="text" class="form-control" id="txtTelefone" maxlength="15">
+                            <br />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 pull-right">
+                            <button id="btnSalvar" name="btnSalvar" type="button" onclick="GravarContato();" class="btn btn-primary left">
+                                Gravar Contato
+                                <span class="glyphicon glyphicon-saved"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div> 
+
+                <form id="formListarClienteContato">
+                    <div class='col-lg-12 table-responsive'>
+                        <br />
+                        <table id="tabelaClienteContatos" class="table table-striped table-condensed table-bordered tablesorter">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>#</th>
+                                    <th>#</th>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Telefone</th>
+                                    <th>Perfil</th>
+                                    <th>Unidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan='8' align='center'>...Nenhum dado ainda...</td>
+                                </tr>
+                                <!--<tr>
+                                    <td> 
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </td>
+                                    <td>
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </td>
+                                    <td>
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </td>
+                                    <td>Ricardo Costa</td>
+                                    <td>ricardo@rdahost.com.br</td>
+                                    <td>13 99107-6730</td>
+                                    <td>Morador</td>
+                                    <td>Bloco A</td>
+                                </tr>-->
+                            </tbody>
+                        </table>
+                        <!--</div>
+            <div class="col-lg-12">
+                <button type='button' class='btn btn-primary btn' id="anterior" disabled>
+                    <span class='glyphicon glyphicon-triangle-left'></span>
+                </button>
+                <span id="numeracao"></span>
+                <button type='button' class='btn btn-primary btn' id="proximo" disabled>
+                    <span class='glyphicon glyphicon-triangle-right'></span>
+                </button>
+            </div>-->
+                        <hr />
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <!--<button id="btnSalvar" name="btnSalvar" type="button" onclick="GravarContato();" class="btn btn-primary left">
+                        Salvar
+                        <span class="glyphicon glyphicon-saved"></span>
+                    </button>-->
+                    <button id="btnEnviarPesquisaTodos" name="btnEnviarPesquisaTodos" type="button" onclick="EnviarPesquisaTodos();" class="btn btn-primary left">
+                        Enviar Pesquisa
+                        <span class="glyphicon glyphicon-saved"></span>
+                    </button>
+
+                    <button type="button" id="btnFechar" class="btn btn-default" data-dismiss="modal">
+                        Fechar
+                        <span class="glyphicon glyphicon-log-out"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!--Modal Pesquisa-->
+    <div id="myModalPesquisa" class="modal animated bounceInUp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title">
+                        Pesquisa
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                    </h4>
+                </div>
+                <!--<br />-->
+                <div id="divAlerta"></div>
+                <!--<br />-->
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <label>ID Posto</label>
+                            <input placeholder="Id Posto" class="form-control" id="txtIdPostoPesquisa" type="text" disabled>
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Posto de Serviço</label>
+                            <input placeholder="Posto de Serviço" class="form-control" id="txtPostoPesquisa" type="text" disabled>
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Nome</label>
+                            <input placeholder="Nome" class="form-control" id="txtNomePesquisa" type="text" disabled>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>Pesquisa enviada em</label>
+                            <input placeholder="Data do envio da pesquisa" class="form-control" id="txtEnviadaEm" type="text" disabled>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Pesquisa respondida em</label>
+                            <input placeholder="Data da resposta da pesquisa" class="form-control" id="txRespondidaEm" type="text" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="formRespostasPesquisa">
+                    <div class='col-lg-12 table-responsive'>
+                        <br />
+                        <table id="tabelaPesquisaUsuario" class="table table-striped table-condensed table-bordered tablesorter">
+                            <thead>
+                                <tr>
+                                    <th>Portaria</th>
+                                    <th>Limpeza</th>
+                                    <th>Zeladoria</th>
+                                    <th>Supervisão</th>
+                                    <th>Obs</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan='5' align='center'>...Nenhum dado ainda...</td>
+                                </tr>
+                                <!--<tr>
+                                    <td>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        Regular
+                                    </td>
+                                    <td>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        Boa
+                                    </td>
+                                    <td>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        Regular
+                                    </td>
+                                    <td>
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        Ótimo
+                                    </td>
+                                    <td>
+                                        Os funcionários poderiam usar uniforme
+                                    </td>-->
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!--</div>
+                        <div class="col-lg-12">
+                            <button type='button' class='btn btn-primary btn' id="anterior" disabled>
+                                <span class='glyphicon glyphicon-triangle-left'></span>
+                            </button>
+                            <span id="numeracao"></span>
+                            <button type='button' class='btn btn-primary btn' id="proximo" disabled>
+                                <span class='glyphicon glyphicon-triangle-right'></span>
+                            </button>
+                        </div>-->
+                        <hr />
+                    </div>
+                </form>
+
+
+
+                <div class="modal-footer">
+                    <button type="button" id="btnFechar" class="btn btn-default" data-dismiss="modal">
+                        Fechar
+                        <span class="glyphicon glyphicon-log-out"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+
+    <script type="text/javascript" src="js/jquery-ui-1.10.3.min.js"></script>
+
+    <script type="text/javascript" src="js/jquery.maskedinput.min.js"></script>
+
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="js/bootstrapN.js"></script>
+
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
+    <!--<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@1.5.4/src/loadingoverlay.min.js"></script>-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@1.5.4/extras/loadingoverlay_progress/loadingoverlay_progress.min.js"></script>
+
+
+    <script src="js/UrlsDeRequisicao.js" type="text/javascript"></script>
+
+    <script src="js/CentralPostosPesquisa.js" type="text/javascript"></script>
+     
+
+</body>
+
+</html>

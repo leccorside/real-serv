@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Models.Medicao>
+
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var bllMedicoesRelatorios = new Bll.MedicoesRelatorios();
+
+    var medicoesRelatorios = bllMedicoesRelatorios.ListarMedicoesRelatoriosNaoAssinadas(1, null, null, null).Where(m => m.MotivoCancelamentoId == null);
+
+}
+@section Breadcrumb{
+
+}
+<div class="row-fluid">
+    <div class="span12">
+        <div id="accordion2" class="accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a href="#widget-tabs1" data-toggle="collapse" class="accordion-toggle in">
+                        <i class="fa fa-calculator "></i><span class="divider-vertical"></span>Relatórios Diários Não Assinados <i class="icon-chevron-down  pull-right"></i>
+                    </a>
+                </div>
+                <div class="accordion-body collapse in" id="widget-tabs1">
+                    <div class="accordion-inner">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Projeto</th>
+                                    <th>#</th>
+                                    <th>BE</th>
+                                    <th>Medição</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="@(item.MotivoCancelamentoId != null ? " muted error disabled " : "")">
+                                        <td>@item.ProjetoNome</td>
+                                        <td>@item.Contador</td>
+                                        <td>@item.EquipamentoNome</td>
+                                        <td>@Convert.ToDateTime(item.EquipamentoDtEntrada).ToShortDateString()</td>
+                                        <td><a data-toggle="tooltip" data-placement="top" title="Assinar" class="btn btn-small " href="~/Medicoes/Assinar/@item.MedicaoId?ProjetoId=@item.ProjetoId">
+                                            <i class="icon-share-alt"></i>
+                                        </a>
+                                        </td>
+                                    </tr>    
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5"><a href="~/Principal/Medicoes" class="pull-right">Visualizar todos</a></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<br />
+
+<div class="row-fluid">
+    <div class="span12">
+        <div id="accordion2" class="accordion">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a href="#widget-tabs1" data-toggle="collapse" class="accordion-toggle in">
+                        <i class="fa fa-bar-chart"></i><span class="divider-vertical"></span>Relatórios Medição Não Assinados <i class="icon-chevron-down  pull-right"></i>
+                    </a>
+                </div>
+                <div class="accordion-body collapse in" id="widget-tabs1">
+                    <div class="accordion-inner">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Projeto</th>
+                                    <th>#</th>
+                                    <th>Período</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in medicoesRelatorios)
+                                {
+                                    <tr class="@(item.MotivoCancelamentoId != null ? " muted error disabled " : "")">
+                                        <td>@item.ProjetoNome</td>
+                                        <td>@item.MedicaoRelatorioId</td>
+                                        <td>@Convert.ToDateTime(item.MedicaoDtDe).ToShortDateString() até @Convert.ToDateTime(item.MedicaoDtAte).ToShortDateString()</td>
+                                        <td><a data-toggle="tooltip" data-placement="top" title="Assinar" class="btn btn-small " href="~/MedicoesRelatorios/Assinar/@item.MedicaoRelatorioId?ProjetoId=@item.ProjetoId">
+                                            <i class="icon-share-alt"></i>
+                                        </a>
+                                        </td>
+                                    </tr>    
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5"><a href="~/Principal/MedicoesRelatorios" class="pull-right">Visualizar todos</a></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

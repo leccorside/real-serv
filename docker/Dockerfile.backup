@@ -1,0 +1,18 @@
+# Dockerfile.backup
+# Imagem para realizar backups automáticos do SQL Server
+
+FROM mcr.microsoft.com/mssql/server:2019-latest
+
+ENV BACKUP_INTERVAL=3600 \
+    BACKUP_LOCATION=/var/opt/mssql/backup \
+    BACKUP_RETENTION_DAYS=7
+
+# Copiar script de backup
+COPY backup-script.sh /backup-script.sh
+RUN chmod +x /backup-script.sh
+
+# Volume para backups
+VOLUME ["/var/opt/mssql/backup"]
+
+# Executar script de backup
+CMD ["/bin/bash", "-c", "/backup-script.sh"]

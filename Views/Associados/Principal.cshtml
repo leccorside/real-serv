@@ -1,0 +1,578 @@
+﻿@model Models.Pessoa
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.EmpresaId);
+
+    var associado_link_perfil = BLL.Configuracoes.CarregarPorEmpresaId("associado_link_perfil", Model.EmpresaId);
+    associado_link_perfil = associado_link_perfil.Replace("#guid#", Model.PessoaGUID);
+
+    var bllPessoasPlanosInscricoes = new BLL.PessoasPlanosInscricoes();
+    var listaInscricoes = bllPessoasPlanosInscricoes.ListarPorPessoaID(Model.PessoaID);
+
+    var JaTeveInscricaoAtiva = bllPessoasPlanosInscricoes.JaTeveInscricaoAtiva(Model.PessoaID, Model.EmpresaId);
+
+    var possuiInscricaoAtivo = bllPessoasPlanosInscricoes.PossuiInscricaoAtiva(Model.PessoaID, Model.EmpresaId);
+
+    var InscricaoAtivo = bllPessoasPlanosInscricoes.GetUltInscricaoAtiva(Model.PessoaID, Model.EmpresaId);
+
+    var tab = Request["tab"] as string ?? "";
+
+    var bllGaleriasArquivos = new BLL.GaleriasArquivos();
+    var listaGaleriasArquivos = bllGaleriasArquivos.ListarPorTipoAcessoPerfil(BLL.Galerias.EnumAcessoTipoNome.SomenteAssociados, BLL.Usuarios.GetPerfilId());
+
+
+    var bllPessoasProjetosCabecalhos = new BLL.PessoasProjetosCabecalhos();
+    var listaProjetos = bllPessoasProjetosCabecalhos.ListarPorPessoaId(Model.PessoaID);
+}
+
+<div class="normalheader transition animated fadeIn">
+    <div class="hpanel">
+        <div class="panel-body">
+            <a class="small-header-action" href="">
+                <div class="clip-header">
+                    <i class="fa fa-arrow-up"></i>
+                </div>
+            </a>
+
+            @*<div id="hbreadcrumb" class="pull-right m-t-lg">
+                <ol class="hbreadcrumb breadcrumb">
+                    <li><a href="index.html">Dashboard</a></li>
+                    <li>
+                        <span>Painel do Associado</span>
+                    </li>
+                    <li class="active">
+                        <span>Profile </span>
+                    </li>
+                </ol>
+            </div>*@
+            <h2 class="font-light m-b-xs">Painel do Associado
+            </h2>
+            <small>Inclua seus projetos, renove sua carteirinha e mantenha seus dados atualizados</small>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="content animate-panel">
+
+    <div class="row">
+        <div class="col-lg-12">
+            @if (!possuiInscricaoAtivo)
+            {
+             
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Sua inscrição não está ativa
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4" style="">
+            <div class="hpanel hgreen">
+                <div class="panel-body text-center">
+                    @*<div class="pull-right text-right">
+                    <div class="btn-group">
+                        <i class="fa fa-facebook btn btn-default btn-xs"></i>
+                        <i class="fa fa-twitter btn btn-default btn-xs"></i>
+                        <i class="fa fa-linkedin btn btn-default btn-xs"></i>
+                    </div>
+                </div>*@
+                    <a href="@Url.Content("~/Associados/Foto/" + Model.EmpresaId + "/" + Model.PessoaGUID)" class="fancybox_pq fancybox.iframe">
+                        @if (Model.FotoPessoa != null && Model.FotoPessoa != "")
+                        {
+                            <img class="img-circle img-responsive m-b m-t-md" src="@Url.Content(Model.FotoPessoa.Replace(".jpg", "thumb.jpg"))?@DateTime.Now.Second" alt="Foto">
+                        }
+                        else
+                        {
+                            <img class="img-circle m-b m-t-md" src="~/Content/images/YourPhotoHere.png" alt="Foto" width="100" height="100" />       
+                        }</a>
+
+                    <h3>@Model.Nome</h3>
+                    <div class="text-muted font-bold m-b-xs">@Model.Cidade, @Model.Estado</div>
+                    <br />
+                    <a href="#!" class="btn btn-outline btn-primary btn-xs sair">Sair <i class="fa fa-times" aria-hidden="true"></i></a>
+
+
+
+                </div>
+                <div class="panel-body">
+                    <dl>
+                        <dt>Código de Associado</dt>
+                        <dd>@Model.PessoaCodigo</dd>
+                        <dt>Situação Inscrição</dt>
+                        <dd>@Html.GetLegendaPessoaInscricaoSituacao(Model.InscricaoSituacao) <i class="fa @(Model.InscricaoSituacao == 1 ? "fa-unlock" : "fa-lock")" aria-hidden="true"></i></dd>
+                        <dt>Vencimento</dt>
+                        @if (Model.InscricaoSituacaoDtVencimento != null)
+                        {
+                            <dd>@Convert.ToDateTime(Model.InscricaoSituacaoDtVencimento).ToShortDateString()</dd>    
+                        }
+
+
+                    </dl>
+                </div>
+                <div class="panel-footer contact-footer">
+                    <div class="row">
+                        <div class="col-md-4 border-right" style="">
+                            <div class="contact-stat"><span>Projetos: </span><strong>@listaProjetos.Count()</strong></div>
+                        </div>
+                        <div class="col-md-4 border-right" style="">
+                            <div class="contact-stat"><span>Mensagens: </span><strong>-</strong></div>
+                        </div>
+                        <div class="col-md-4" style="">
+                            <div class="contact-stat"><span>Associado desde: </span><strong>@Convert.ToDateTime(Model.RegDtInicio).ToShortDateString()</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-8" style="">
+            <div class="hpanel">
+                <div class="hpanel">
+
+                    <ul class="nav nav-tabs">
+                        <li class=" @(tab == "" ? " active " : "") "><a data-toggle="tab" href="#tab-1">Inscrições</a></li>
+                        <li class=" @(tab == "documentos" ? " active " : "") "><a class="fancybox fancybox.iframe" href="@Url.Content("~/Associados/SeusDocumentos/" + Model.EmpresaId + "/" + Model.PessoaGUID)">Documentos</a></li>
+                        <li class=" @(tab == "seusdados" ? " active " : "") "><a data-toggle="tab" href="#tab-3">Seus Dados</a></li>
+
+                        @if (Model.InscricaoSituacao == 1)
+                        {
+                            <li class=" @(tab == "documentosapoio" ? " active " : "")  "><a data-toggle="tab" href="#tab-5">Benefícios <i class="fa fa-unlock" aria-hidden="true"></i></a></li>
+
+                            if (Model.PessoaCategoriaSubId.ToString() == BLL.Configuracoes.CarregarPorEmpresaId("associados_libera_projetos_categoriasubid", Model.EmpresaId))
+                            {
+                            <li class=" @(tab == "projetos" ? " active " : "")  "><a data-toggle="tab" href="#tab-4">Projetos <i class="fa fa-unlock" aria-hidden="true"></i></a></li>    
+                            }
+                        }
+                        else
+                        {
+                            <li class=" disabled "><a class="disabled" data-toggle="tab" href="#tab-99">Benefícios <i class="fa fa-lock" aria-hidden="true"></i></a></li>    
+                            <li class=" disabled "><a class="disabled" data-toggle="tab" href="#tab-99">Projetos <i class="fa fa-lock" aria-hidden="true"></i></a></li>    
+                        }
+
+
+
+
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane @(tab == "" ? " active " : "") ">
+                            <div class="panel-body">
+
+                                @if (JaTeveInscricaoAtiva && InscricaoAtivo.MesesParaRenovacao <= 1)
+                                {
+                                    <a class="btn btn-outline btn-primary fancybox fancybox.iframe" href="@Url.Content("~/Associados/RenovarPlanos/" + Model.EmpresaId + "/" + Model.PessoaGUID)" class="btn btn-outline btn-primary btn-sm">Renovar</a>    
+                                }
+
+
+                                @if (BLL.Configuracoes.CarregarPorEmpresaId("bcash_test", Model.EmpresaId) == "true")
+                                {
+                                    <a class="btn btn-outline btn-primary fancybox fancybox.iframe" href="@Url.Content("~/Associados/RenovarPlanos/" + Model.EmpresaId + "/" + Model.PessoaGUID)" class="btn btn-outline btn-primary btn-sm">Renovar Teste</a>    
+                                }
+
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+
+                                                <th>#</th>
+                                                <th>Tipo</th>
+                                                <th>Dt. Validade </th>
+                                                <th>Tipo Pagto. </th>
+                                                <th>Status </th>
+                                                <th>Dt. Pagto. </th>
+                                                <th>Total.</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in listaInscricoes.Items.OrderByDescending(x => x.PessoaPlanoInscricaoDtValidade))
+                                            {
+                                                <tr>
+                                                    <td>@item.PessoaPlanoInscricaoId</td>
+                                                    <td><small>@item.PessoaPlanoGrupoNome</small><br />@item.PessoaPlanoTitulo </td>
+                                                    <td>
+                                                        @if (item.PessoaPlanoGrupoTipoId == 0)
+                                                        {
+                                                            if (item.PessoaPlanoPagtoStatus == "AguardandoPagamento")
+                                                            {
+                                                            <small>Válido até @DateTime.Now.AddMonths(12).ToShortDateString() se pago em @DateTime.Now.ToShortDateString().</small>
+                                                            }
+                                                            else
+                                                            {
+
+                                                                if (item.PessoaPlanoInscricaoDtValidade != null)
+                                                                {
+                                                            <span>@Convert.ToDateTime(item.PessoaPlanoInscricaoDtValidade).ToShortDateString()</span>
+                                                                }
+
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>-</span>
+                                                        }
+
+
+                                                    </td>
+                                                    <td>@item.GatewayTipoPagamento</td>
+                                                    <td>
+                                                        @if (item.PessoaPlanoPagtoStatus == "AguardandoPagamento")
+                                                        {
+                                                            <a class="btn btn-outline btn-primary btn-xs" target="_blank" href="@Url.Content("~/Associados/GateWayPagamento/" + Model.EmpresaId + "/" + item.PessoaPlanoGUID)">Realizar Pagamento</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.PessoaPlanoPagtoStatus    
+                                                        }
+
+
+                                                    </td>
+                                                    <td>
+                                                        @if (item.PessoaPlanoInscricaoDtPagto != null)
+                                                        {
+                                                            <span>@Convert.ToDateTime(item.PessoaPlanoInscricaoDtPagto).ToShortDateString()</span>
+                                                        }
+                                                    </td>
+                                                    <td>@string.Format("{0:c}", item.PessoaPlanoVlrTotal)</td>
+                                                    <td>
+                                                        @if (item.PlanoAtivo)
+                                                        {
+                                                            <i class="fa fa-check text-success"></i>    
+                                                        }
+
+
+                                                    </td>
+                                                </tr>
+                                            }
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-3" class="tab-pane @(tab == "seusdados" ? " active " : "")">
+                            <div class="panel-body">
+                                Seus Dados
+                                @Html.Partial("~/Views/Associados/_SeusDados.cshtml", Model)
+
+                            </div>
+                        </div>
+                        <div id="tab-4" class="tab-pane @(tab == "projetos" ? " active " : "")">
+                            <div class="panel-body">
+                                <h5>Você têm @listaProjetos.Count() projetos cadastrados</h5>
+
+                                
+                                @Html.Raw(associado_link_perfil)
+
+                                @if (Model.InscricaoSituacao == 1)
+                                {
+                                    <br /><a href="@Url.Content("~/Associados/ProjetosCabecalhos/0/null/?PessoaId=" + Model.PessoaID)" class="fancybox_projeto fancybox.iframe btn btn-primary btn-xs">Cadastrar</a>
+                                }
+
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+
+                                                <th>#</th>
+                                                <th>Projeto</th>
+                                                <th>Qtd. Fotos</th>
+                                                <th>Data Cadastro</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in listaProjetos)
+                                            {
+                                                <tr>
+                                                    <td>@item.PessoaProjetoCabecalhoId</td>
+                                                    <td>@item.PessoaProjetoCabecalhoNome <small>@item.PessoaProjetoCabecalhoDescricao</small></td>
+                                                    <td>@item.QtdFotos</td>
+                                                    <td>@item.RegDtInicio</td>
+                                                    <td>
+                                                        <a href="@Url.Content("~/Associados/ProjetosCabecalhos/" + item.PessoaProjetoCabecalhoId + "/" + item.PessoaProjetoCabecalhoGuid + "/?PessoaId=" + Model.PessoaID)" class="fancybox_projeto fancybox.iframe btn btn-xs btn-outline btn-primary">Editar</a>
+                                                        <a href="#" class="btn btn-outline btn-danger btn-xs pull-right" onclick="return cubeeConfirm('Atenção','Confirma a exclusão desse projeto?','@Url.Content("~/Associados/ProjetosCabecalhosDelete/" + item.PessoaProjetoCabecalhoId + "/" + item.PessoaProjetoCabecalhoGuid + "/?PessoaId=" + Model.PessoaID)')" ><i class="icon-trash"></i>Apagar</a>
+                                                    </td>
+                                                </tr>    
+                                            }
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-5" class="tab-pane @(tab == "documentosapoio" ? " active " : "") ">
+                            <br />
+                            <div class="row">
+
+                                <div class="col-md-12" style="">
+                                    <div class="row">
+                                        <ul style="list-style: none; margin: 0px !important; padding: 0px !important;">
+                                            @foreach (var item in listaGaleriasArquivos)
+                                            {
+                                                var urlDownload = Url.Content("~/ApiIntegracao/GaleriaArquivosDownload/?guid=" + item.GaleriaArquivoGuid + "");
+                                    
+                                                <li class="col-lg-3" style="">
+                                                    <div class="hpanel">
+                                                        <div class="panel-body file-body">
+                                                            <a href="@urlDownload">
+                                                                <i class="fa @BLL.GaleriasArquivos.TipoIcone(item.GaleriaArquivoContentType)"></i>
+                                                                <br />
+                                                                @item.GaleriaArquivoFileName
+                                                                <br />
+                                                                <small>@item.GaleriaArquivoContentType</small>
+                                                                <br /><br />
+                                                                @if (BLL.Utils.Validacoes.ToStringNullSafe(item.GaleriaArquivoBadges) != "")
+                                                                    {
+                                                                        List<string> badges = item.GaleriaArquivoBadges.Split(',').ToList();
+                                                                        foreach (var badge in badges)
+                                                                        {
+                                                                        <span class="label label-info">@badge</span>
+                                                                        }
+                                                                    }
+                                                            </a>
+                                                        </div>
+                                                        <div class="panel-footer">
+                                                            <a href="@urlDownload">@item.GaleriaArquivoNome</a>
+                                                        </div>
+                                                    </div>
+
+
+                                                </li>
+                                            }
+                                        </ul>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                        <div id="tab-99" class="tab-pane @(tab == "bloqueado" ? " active " : "") ">
+                            <div class="panel-body text-center">
+
+                                <i class="pe-7s-lock big-icon text-success"></i>
+                                <br>
+                                <h4>Atenção</h4>
+                                <p>Sua inscrição não está ativa</p>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+    </div>
+
+</div>
+
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+    <style>
+        span.input-group-addon {
+    font-size: 10px;
+}
+    </style>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+@Scripts.Render("~/bundles/maxlenght/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+    <script type="text/javascript">
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+
+
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+
+
+        $(".fancybox_projeto").fancybox({
+            fitToView: false,
+            width: '80%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                parent.location = "@Url.Content("~/Associados/Principal/" + Model.PessoaID + "/" + Model.PessoaGUID + "/?tab=projetos")";
+            },
+        });
+
+
+        $(".fancybox_pq").fancybox({
+            fitToView: false,
+            width: '60%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '60%',
+            autoSize: false,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+
+
+
+
+
+        $(".fancybox_full").fancybox({
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+
+    </script>
+    <script>
+        $("#Documento").mask("999.999.999-99");
+        $('#Celular').mask(maskBehavior, options);
+        $("#Cep").mask("99999-999");
+
+        $('.max').maxlength({
+            alwaysShow: true,
+            threshold: 10,
+            warningClass: "label label-success",
+            limitReachedClass: "label label-danger"
+        });
+
+        //cep
+        $('#buscar-cep').click(function () {
+            $('#Cep').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading_cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading_cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                },
+                success: function (data) {
+                    $('#Endereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                    $('#Bairro').val(data.bairro);
+                    $('#Estado').val(data.estado);
+                    $('#Cidade').val(data.cidade);
+                    $('#Pais').val('Brasil');
+                    $('#Numero').focus();
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+
+
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $('.ano').mask('0000');
+
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+        $("#Pessoa_FormacaoAnoInicio").mask("99/99/9999");
+        $("#Pessoa_FormacaoAnoConclusao").mask("99/99/9999");
+    </script>
+
+
+    <script>
+        $(".sair").click(function () {
+            swal({ title: "Logoff", text: "Deseja realmente sair do sistema?", type: "warning", showCancelButton: true, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Sim", closeOnConfirm: false }, function () { parent.location = "@Url.Content("~/Associados/Logoff/" + Model.EmpresaId)"; });
+        });
+    </script>
+
+}
+

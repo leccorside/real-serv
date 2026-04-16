@@ -1,0 +1,138 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Lista Presença";
+    Layout = "~/Views/Shared/_Report.cshtml";
+    
+}
+
+
+@{
+    
+    var aula = "";
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var obJagendamentos = new BLL.Agendamentos();
+
+    var pessoas = new BLL.Pessoas();
+    var objPessoas = pessoas.Carregar(ViewBag.PessoaId);
+
+    List<int> listAgendamentoIds = new List<int>();
+    var rowspan = 0;
+    var criaTd = false;
+
+
+
+    int control = 1;
+
+
+
+    int controlRemove = 1;
+    
+}
+    <table border="0" width="100%">
+        <tr>
+            <td >@objPessoas.Nome</td>
+            <td align="right">Lista de presença do dia @ViewBag.DataConsulta</td>
+        </tr>
+        <tr><td colspan="2"><br /><br /></td></tr>
+    </table>
+
+
+
+
+@for (int i = 0; i < horarios; i++)
+{
+    horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+    var novaDataConsulta = Convert.ToDateTime(DataConsulta.ToShortDateString() + " " + String.Format("{0:t}", horario));
+    var agendamento = obJagendamentos.Carregar(ViewBag.PessoaId, novaDataConsulta);
+
+
+    if (agendamento != null)
+    {
+        //horario ocupado
+        criaTd = (listAgendamentoIds.Contains(agendamento.AgendamentoId)) ? false : true;
+
+
+        agendamento.AgendamentoPessoa = obJagendamentos.PresencaListar(agendamento.AgendamentoId);
+
+
+        TimeSpan tdintervalo = agendamento.Fim - agendamento.Inicio;
+
+        var tdhorarios = (tdintervalo.TotalMinutes / AgendaIntervaloMinutos);
+
+
+        if (criaTd)
+        {
+            control += ((int)tdhorarios);
+            controlRemove = ((int)tdhorarios);
+
+
+
+            if (!agendamento.Indisponivel)
+            {
+                
+    
+                
+    <table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="0">
+        
+       
+        <thead>
+            <tr>
+                <td colspan="5" valign="bottom"><label><strong>Horário:</strong> @String.Format("{0:t}", agendamento.Inicio) até @String.Format("{0:t}", agendamento.Fim) &nbsp;&nbsp;&nbsp; <strong>Sala:</strong> @agendamento.SalaNome &nbsp;&nbsp;&nbsp; <strong>Serviço:</strong> @agendamento.ServicoNome</label></td>
+            </tr>
+            <tr>
+                <td colspan="5"></td>
+            </tr>
+            <tr>
+                <th width="100%">@BLL.Usuarios.GetEntidadeCliente()</th>
+                <th width="120px" nowrap>Presença</th>
+                <th width="120px" nowrap>Faltou</th>
+                <th width="120px" nowrap>Cancelou</th>
+                <th width="180px" nowrap>Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cli in agendamento.AgendamentoPessoa)
+            {   
+                
+                <tr>
+                    <td>@cli.Nome</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    @if (cli.Creditos == null)
+                    {
+
+                        aula = "Sem Créditos";
+                        
+                        
+                    }
+                    
+                    else{
+
+                        aula = cli.Creditos;
+                    
+                    }
+                    <td nowrap>@aula</td>
+                </tr>
+                                               
+                       
+            }
+        </tbody>
+    </table>
+            }
+        }
+    }
+}
+

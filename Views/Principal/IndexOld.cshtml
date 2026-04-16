@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = new BLL.Usuarios();
+
+   
+    
+}
+
+
+@section Breadcrumb{
+
+
+
+}
+
+
+
+
+<div class="color-blocks">
+    <div class="row-fluid">
+
+        <div class="span6">
+
+            <div class="c-block">
+
+
+                @if (user.ControleAcesso("index", "agendamento"))
+                {
+                   
+                    <div class="col-l b-orange">
+                        <a href="@Url.Content("~/Agendamento/ProgramacaoDia")">
+                            <i class="icon-calendar"></i>
+                            Agenda
+                        </a>
+                    </div>
+                }
+
+                @if (user.ControleAcesso("calendario", "agendamento"))
+                {
+
+                    <div class="col-r b-purple">
+                        <a href="@Url.Content("~/Agendamento/Calendario")">
+                            <i class="icon-tasks"></i>
+                            Minha Agenda
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-r b-black muted">
+                        <a href="#" class="disabled" onclick="return confirm('O módulo minha agenda não está habilitado. Utilize o módulo Agenda')">
+                            <i class="icon-tasks muted"></i>
+                            <span class="muted">Minha Agenda</span>
+                        </a>
+                    </div>
+                }
+
+
+
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                @if (user.ControleAcesso("index", "financeiro"))
+                {
+                    <div class="col-l b-green">
+                        <!-- Link -->
+                        <a href="@Url.Content("~/Principal/Financeiro")">
+                            <!-- Icon -->
+                            <i class="icon-money"></i>
+                            <!-- Text -->
+                            Financeiro
+                        </a>
+                    </div>
+                }
+
+                @if (user.ControleAcesso("configuracoes", "principal"))
+                {
+                    <div class="col-r b-lblue">
+                        <!-- Link -->
+                        <a href="@Url.Content("~/Principal/Configuracoes/")">
+                            <!-- Icon -->
+                            <i class=" icon-cogs"></i>
+                            <!-- Text -->
+                            Configurações
+                        </a>
+                    </div>}
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+    </div>
+    <br />
+
+
+
+
+
+
+
+
+
+    <div class="row-fluid">
+
+
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                <!-- Left column with color background -->
+                <!-- Left column with color background -->
+                @if (user.ControleAcesso("index", "pessoas"))
+                {
+                    <div class="col-l b-blue">
+                        <!-- Link -->
+                        <a href="@Url.Content("~/Pessoas/Index/0/C")">
+                            <!-- Icon -->
+                            <i class="icon-group"></i>
+                            <!-- Text -->
+                            @Html.Raw(@BLL.Usuarios.GetEntidadeCliente())
+                        </a>
+                    </div>
+
+                    <div class="col-r b-lblue">
+                        <a href="@Url.Content("~/Pessoas/Index/0/F")">
+                            <i class="icon-truck"></i>
+                            @Html.Raw(BLL.Usuarios.GetEntidadeFornecedor())
+                        </a>
+                    </div>
+                }
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                @if (user.ControleAcesso("index", "pessoas"))
+                {
+                    <div class="col-l b-red">
+                        <a href="@Url.Content("~/Pessoas/Index/0/O")">
+                            <i class="icon-briefcase"></i>
+                            @Html.Raw(BLL.Usuarios.GetEntidadeFuncionario())
+
+                        </a>
+                    </div>
+                }
+
+                @if (user.ControleAcesso("perfil", "principal"))
+                {
+                    <div class="col-r b-purple">
+                        <a href="@Url.Content("~/Principal/Perfil")">
+                            <i class=" icon-user"></i>
+                            @Html.Raw(@BLL.Usuarios.GetUsuarioNome())
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+
+
+        <div class="span6">
+
+            <div class="c-block">
+
+                <div class="col-l b-lblue">
+                    <a href="@Url.Content("~/Principal/Relatorios")">
+                        <i class="icon-list-alt"></i>
+                        Relatórios
+                    </a>
+                </div>
+
+
+                <div class="col-r b-black">
+                    <a href="@Url.Content("~/Home/Logoff/")" onclick="return confirm('Deseja realmente sair do sistema?')">
+                        <i class="icon-off"></i>
+                        Sair
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </div>
+
+    <br />
+
+</div>

@@ -1,0 +1,65 @@
+﻿@model Models.PerfilTipo
+
+@{
+    ViewBag.Title = "Excluíndo Tipos de Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Tipos de Perfil", "Index")</li>
+}
+
+
+<div class="alert">
+    
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+
+            <th>Nome
+            </th>
+
+            
+
+            <th nowrap>Criado em
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Html.DisplayFor(model => model.PerfilTipoNome)</td>
+
+          
+
+            <td>@Html.DisplayFor(model => model.RegDtInicio)  </td>
+        </tr>
+
+
+
+    </tbody>
+</table>
+
+
+
+@using (Html.BeginForm())
+{
+    
+    @Html.HiddenFor(model => model.PerfilTipoId)
+
+    <p class="pull-right">
+        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+    </p>
+
+    <p class="pull-left">
+        @Html.ActionLink("Voltar", "Index")
+    </p>
+}
+
+

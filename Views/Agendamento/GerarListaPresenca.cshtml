@@ -1,0 +1,185 @@
+﻿@model Models.Agendamento
+
+@{
+    ViewBag.Title = "Criar";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+@{
+    
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var idx = 0;
+}
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja gerar lista de presença para esse agendamento?
+    Não será possível alterar a lista de participantes.
+</div>
+
+<div class="cwell">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.AgendamentoId > 0)
+        {
+        @Html.Hidden("AgendamentoId", Model.AgendamentoId);
+
+        }
+    
+                
+        <div class="row-fluid">
+            <div class="span4">
+
+                <label>@Html.LabelFor(model => model.Inicio)</label>
+
+                @String.Format("{0:dd/MM/yyyy}", Model.Inicio)
+
+
+
+            </div>
+            <div class="span4">
+                <label>Hora Início</label>
+                @String.Format("{0:t}", Model.Inicio)
+
+
+
+
+
+            </div>
+
+
+
+            <div class="span4">
+                <label>Hora Fim</label>
+                @String.Format("{0:t}", Model.Fim)
+
+
+
+            </div>
+
+        </div>
+        <br />
+                
+        <div class="row-fluid">
+            <div class="span4">
+                <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+
+
+                @Model.FuncionarioList.Where(x => x.Value == Model.PessoaID.ToString()).First().Text
+
+
+
+            </div>
+
+            <div class="span4">
+                <label>@Html.LabelFor(model => model.ServicoId)</label>
+
+                @try
+                {
+                    @Model.ServicoTipos.Where(x => x.Value.ToString() == Model.ServicoId.ToString()).FirstOrDefault().Text
+                }
+                catch (Exception ex)
+                {
+                    var bllservico = new BLL.Servicos();
+                    var servico = bllservico.Carregar(Convert.ToInt16(Model.ServicoId));
+                    <p class="text-error">@servico.ServicoNome (excluído)</p>
+                }
+
+
+            </div>
+
+
+            <div class="span4">
+
+                <label>@Html.LabelFor(model => model.SalaId)</label>
+                @try
+                {
+                    @Model.SalasList.Where(x => x.Value.ToString() == Model.SalaId.ToString()).FirstOrDefault().Text
+                }
+                catch (Exception ex)
+                {
+                    var bllsalas = new BLL.Salas();
+                    var salas = bllsalas.Carregar(Convert.ToInt16(Model.SalaId));
+                    <p class="text-error">@salas.SalaNome (excluído) @salas.SalaId</p>
+                }
+
+
+
+            </div>
+
+        </div>
+          
+        <br />
+        
+        <div class="row-fluid">
+            <div class="span12">
+
+                <label>Participantes  (@BLL.Usuarios.GetEntidadeCliente())</label>
+                <ul>
+                    @foreach (var item in Model.AgendamentoPessoa)
+                    {
+                        <li>@item.Nome</li>
+                    }
+                </ul>
+
+            </div>
+        </div>
+
+            
+    
+               
+         
+                
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Observações:</label>
+                @Model.Observacoes
+
+
+            </div>
+        </div>
+
+                      
+           
+        <div class="form-actions">
+
+
+            <input type="submit" value="Gerar" class="btn btn-primary  btn-large" />
+
+
+
+
+
+
+        </div>
+            
+    }
+    <div>
+        <a href="@Url.Content("~/Agendamento/ProgramacaoDia")">Voltar</a>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
+
+

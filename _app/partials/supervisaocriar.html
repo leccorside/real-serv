@@ -1,0 +1,142 @@
+<style>
+    label {
+        margin-left: 0px;
+        text-align: left;
+        font-size: 15px;
+        text-transform: uppercase;
+    }
+    
+    input[type="checkbox"] {
+        margin-right: 10px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #a70c0c;
+        border-radius: 1px;
+        box-sizing: border-box;
+        position: relative;
+        box-sizing: content-box;
+        border-width: 0;
+        transition: all .3s linear;
+    }
+    
+    input[type="checkbox"]:checked {
+        background-color: #2ECC71;
+    }
+    
+    input[type="checkbox"]:focus {
+        outline: 0 none;
+        box-shadow: none;
+    }
+
+</style>
+<div id="divtopo"></div>
+<div class="header-clear">
+</div>
+<div class="content-strip">
+    <div class="strip-content">
+        <h1>Supervisão</h1>
+    </div>
+    <div class="overlay"></div> <img src="images/pictures/Sobre.png" alt="img"> </div>
+<div class="content">
+    
+    <!-- erro -->
+    <div ng-show="error" class="static-notification bg-red-dark">
+        <h6><i class="fa fa-times-circle static-notification-icon"></i>Ooops!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{ errormsg }}
+        </p>
+    </div>
+
+
+    <!-- sucesso -->
+    <div ng-show="sucesso" class="static-notification bg-green-dark">
+        <h6><i class="fa fa-check static-notification-icon"></i>Tudo certo!</h6>
+        <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+        <p>
+            {{sucessomsg}}
+        </p>
+    </div>
+
+
+
+    <div ng-show="!ListSupervisaoItemView"> <i class="fa fa-refresh fa-spin"></i> Carregando Formulário</div>
+
+    <div ng-show="ListSupervisaoItemView">
+
+        <form name="supervisaoForm" role="form" novalidate ng-show="showTheForm" >
+
+            <div class="formFieldWrap">
+                <small>Posto de Serviço</small>
+                <h1>{{PostoDeServicoNome}}</h1>
+            </div>
+            
+            <br />
+            
+            <small>Checklist</small>
+            <h1>Serviços/Pessoas</h1>
+            <div class="formFieldWrap" ng-repeat="item in ListCompactoPostoDeServicoServico">
+                <label><strong><input class="checklist-square" type="checkbox" value="{{item.PostoDeServicoServicoId}}" ng-model="item.selected"  name="group" id="{{item.PostoDeServicoServicoId}}" /> <i class="fa fa-id-card-o" aria-hidden="true"></i> {{item.ServicoNome}}</strong></label>
+                <small>Observações</small>
+                <input class="text-field green-field" type="text" ng-model="item.Observacoes">
+
+                <div class="decoration hide-if-responsive"></div>
+                
+                <div class="formFieldWrap" ng-repeat="sub in item.ListCompactoPostoDeServicoPessoa">
+                    <label><input class="checklist-square" type="checkbox" value="{{sub.PostoDeServicoPessoaId}}" ng-model="sub.selected"  name="group" id="{{sub.PostoDeServicoPessoaId}}" /> <i class="fa fa-user-circle" aria-hidden="true"></i> {{sub.PessoaNome}} <br><small>Re: {{sub.RE}}</small></label>
+                    <small>Observações</small>
+                    <input class="text-field green-field" type="text" ng-model="sub.Observacoes">
+                    <div class="decoration hide-if-responsive"></div>
+                </div>
+
+                
+            </div>
+
+            <hr>
+
+            <small>Checklist</small>
+            <h1>Itens Gerais</h1>
+            <div class="formFieldWrap" ng-repeat="item in ListSupervisaoItemView">
+                <label><input class="checklist-square" type="checkbox" value="{{item.SupervisaoTipoId}}" ng-model="item.selected"  name="group" id="{{item.SupervisaoTipoId}}" /> <i class="fa fa-tag" aria-hidden="true"></i> {{item.SupervisaoTipoNome}}</label>
+                <small>Observações</small>
+                <input class="text-field green-field" type="text" ng-model="item.Observacoes">
+                <div class="decoration hide-if-responsive"></div>
+            </div>
+
+            <hr>
+            
+            <div class="formFieldWrap">
+                <h1>Observações Gerais</h1>
+                <!--<input class="text-field green-field" type="text" ng-model="SupervisaoDescricao">-->
+                <textarea class="textarea-field green-field" rows="8"  ng-model="SupervisaoDescricao"></textarea>
+            </div>
+
+            
+            <div  class="formFieldWrap">
+                <small>Campos de preenchimento obrigatório *</small>
+                <h3>* Horário Checkin</h3>
+            <input class="text-field green-field" type="time" ng-model="PontoInicio" placeholder="HH:mm:ss" min="00:00:00" max="23:59:59" required />
+            </div>
+            
+            <div  class="formFieldWrap">
+                <h3>* Horário Checkout</h3>
+                <input class="text-field green-field" type="time" ng-model="PontoFim" placeholder="HH:mm:ss" min="00:00:00" max="23:59:59" required />
+            </div>            
+            
+            <br>
+            <div class="form-actions">
+                <button type="submit" class="login-button button button-l button-green button-fullscreen full-bottom" ng-click="Registrar()">Registrar</button>
+                <!--<button type="submit" class="login-button button button-l button-green button-fullscreen full-bottom" ng-click="RegistrarTeste()">Teste</button>-->
+            </div>
+
+        </form>
+        <div ng-show="showTheButtons">
+            <a href="#!/supervisao" class="button button-icon button-green"><i class="fa fa-plus"></i> Nova supervisão</a>
+            <a href="#!/supervisaoindex" class="button button-icon button-dark" ><i class="fa fa-angle-left"></i> Lista de Supervisões</a>
+        </div>
+
+
+    </div>
+
+</div>

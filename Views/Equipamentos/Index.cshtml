@@ -1,0 +1,108 @@
+﻿@model IEnumerable<Models.Equipamento>
+
+
+@{
+    ViewBag.Title = "Equipamentos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var bllProjetosEquipamentos = new Bll.ProjetosEquipamentos();
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+@section Styles{
+    <style>
+        .table tbody tr.info td
+        {
+            background-color: #d9edf7;
+        }
+    </style>
+}
+
+
+@Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+
+
+<div class="pull-right">@Html.FormPesquisaIndex()</div>
+<br /><br />
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+
+            <th>@Html.CampoOrdenacao("Nome", "EquipamentoNome")</th>
+            <th>Ativo</th>
+            <th>Medida entre trilhos</th>
+            <th>Torre (m)</th>
+            <th>N. Martelo Principal</th>
+            <th>Peso Martelo</th>
+            <th>Guincho</th>
+            <th nowrap>
+                @Html.DisplayNameFor(model => model.RegDtInicio)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count() == 0)
+        {
+            <tr class="info">
+                <td colspan="20"><small class="muted">Nenhum registro localizado</small></td>
+            </tr>
+        }
+        @foreach (var item in Model)
+        {
+            var localEquipamento = bllProjetosEquipamentos.ListarEquipamentoLocal(item.EquipamentoId);
+            
+            <tr class="@(localEquipamento.Count()>0?" info ":"")">
+
+                <td width="100%">
+                    @item.EquipamentoNome 
+                </td>
+                <td nowrap>
+                    @if (localEquipamento.Count() > 0)
+                    {
+                        string slocal="O equipamento encontra-se na Obra:<br>";
+                        foreach (var local in localEquipamento)
+                        {
+                            slocal += "- "+local.ProjetoNome + "<br>";
+                        }
+                        
+                        <span data-toggle='tooltip' class='tip-top pull-top' data-placement='top' title='@slocal'><i class="fa fa-lg fa-toggle-on"></i></span>
+                        
+                        
+                    }
+                    else
+                    {
+                        <i class="fa fa-lg fa-toggle-off"></i>    
+                    }
+                </td>
+                <td nowrap>@string.Format("{0:n2}", item.EquipamentoMedidaTrilhos) m</td>
+                <td nowrap>@string.Format("{0:n2}", item.EquipamentoTorre) m</td>
+                <td nowrap>@item.EquipamentoMarteloNumero</td>
+                <td nowrap>@string.Format("{0:n2}", item.EquipamentoMarteloPeso) kg</td>
+                <td nowrap>@string.Format("{0:n2}", item.EquipamentoGuincho) kg</td>
+                <td nowrap>
+                    @item.RegDtInicio
+                </td>
+                <td nowrap>
+                    <a href="~/Equipamentos/Criar/@item.EquipamentoId" class="btn btn-mini"><i class="fa fa-pencil"></i>Alterar</a> | 
+                    <a href="~/Equipamentos/Deletar/@item.EquipamentoId" class="btn btn-mini"><i class="fa fa-times"></i>Excluir</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+@{
+    //Controles de paginação
+    int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);   
+}
+@Html.Paginacao(qtdPaginas)

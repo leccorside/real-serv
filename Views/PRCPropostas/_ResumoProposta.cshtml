@@ -1,0 +1,146 @@
+﻿@model Models.PRCPropostaView
+
+
+
+<div class="row">
+    <div class="col-lg-7" style="">
+        <div class="hpanel ">
+            <div class="panel-heading ">
+                <div class="panel-tools">
+                    <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                </div>
+                <i class="fa fa-user-circle-o" aria-hidden="true"></i>Dados Requerente
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                        <label>Requerente</label>
+                        <p class="form-control-static">@Model.Requerente.Nome</p>
+                    </div>
+                    <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                        <label>CPF</label>
+                        <p class="form-control-static">@Model.Requerente.Documento</p>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                        <label>E-Mail</label>
+                        <p class="form-control-static">@Model.Requerente.Email</p>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>Sexo</label>
+                        <p class="form-control-static">@Model.Requerente.Sexo</p>
+                    </div>
+                    <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                        <label>
+                            <abbr title="Data de Nascimento">Dt.Nasc.</abbr></label>
+                        <p class="form-control-static">@Model.Requerente.DataNascimento</p>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                        <label>Celular</label>
+                        <p class="form-control-static">@Model.Requerente.Celular</p>
+                    </div>
+                    <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                        <label>Telefone</label>
+                        <p class="form-control-static">@Model.Requerente.Telefone</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingOne">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="collapsed">Dados Complementares e Endereço
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" aria-expanded="false" style="height: 0px;">
+                                <div class="panel-body">
+
+                                    <div class="row-fluid">
+                                        <legend>Dados complementares</legend>
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                            <label>RG</label>
+                                            <p class="form-control-static">@Model.Requerente.Rg</p>
+                                        </div>
+
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                            <label>Estado Civil</label>
+                                            <p class="form-control-static">@Model.Requerente.EstadoCivl</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row-fluid">
+                                        <legend>Endereço</legend>
+                                        <div class="form-group col-lg-4">
+                                            <label>CEP</label>
+                                            <p class="form-control-static">@Model.Requerente.Cep</p>
+
+
+                                        </div>
+                                        <div class="form-group col-lg-5">
+                                            <label>Endereço</label>
+                                            <p class="form-control-static">@Model.Requerente.Endereco</p>
+                                        </div>
+                                        <div class="form-group col-lg-3">
+                                            <label>Número</label>
+                                            <p class="form-control-static">@Model.Requerente.Numero</p>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label>Complemento</label>
+                                            <p class="form-control-static">@Model.Requerente.Complemento</p>
+                                        </div>
+
+                                        <div class="form-group col-lg-6">
+                                            <label>Bairro</label>
+                                            <p class="form-control-static">@Model.Requerente.Bairro</p>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label>Cidade</label>
+                                            <p class="form-control-static">@Model.Requerente.Cidade</p>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label>Estado</label>
+                                            <p class="form-control-static">@Model.Requerente.Estado</p>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="row-fluid">
+                                        <legend>Dados bancários</legend>
+                                        <div class="form-group col-lg-4">
+                                            <label>Código do Banco</label>
+                                            <p class="form-control-static">@Model.Requerente.BancoCod</p>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label>Nome do Banco</label>
+                                            <p class="form-control-static">@Model.Requerente.BancoNome</p>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label>Agência</label>
+                                            <p class="form-control-static">@Model.Requerente.BancoAgencia</p>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label>Conta</label>
+                                            <p class="form-control-static">@Model.Requerente.BancoConta</p>
+
+                                        </div>
+                                        <div class="form-group col-lg-8">
+                                            <label>Observações</label>
+                                            <p class="form-control-static">@Model.Requerente.BancoObservacoes</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-5" style="">
+        @Html.Partial("~/Views/PRCPropostas/_ResumoPropostaInfoPRC.cshtml", Model)
+    </div>
+</div>

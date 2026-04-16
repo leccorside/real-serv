@@ -1,0 +1,359 @@
+﻿@model Models.PessoaPlanoInscricaoView
+@{
+    
+    ViewBag.Title = "Inscrição";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+    var bllPessoasCategoriasSubs = new BLL.PessoasCategoriasSubs();
+    var categoriaSub = bllPessoasCategoriasSubs.Carregar(Model.Pessoa.PessoaCategoriaSubId, Model.EmpresaId);
+
+    
+}
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div>
+                @Html.Partial("~/Views/PessoasPlanosInscricoes/_detalheInscricao.cshtml", Model.PessoaPlanoInscricao)
+            </div>
+
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Documentos
+                </div>
+                @Html.CubeeAnexos("Pessoas", Model.Pessoa.PessoaID, categoriaSub.DocumentosPadrao, "col-lg-12 col-md-12 col-sm-12", true, true, true, true, false, categoriaSub.DocumentosObrigatorios, Model.EmpresaId)
+
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Edição Rápida de Dados
+                </div>
+                <div class="panel-body">
+                    <a href="@Url.Content("~/Pessoas/Criar/" + Model.Pessoa.PessoaID + "/" + Model.Pessoa.PessoaCategoria + "/?modal=true")" class="fancybox_recarrega fancybox.iframe btn btn-outline btn-primary btn-xs"><i class=" fa fa-edit"></i>Editar Completo</a>
+                </div>
+                <div class="panel-body">
+                    
+
+                    @using (Html.BeginForm("EditarPessoaJSON", "PessoasPlanosInscricoes", FormMethod.Post, new { @id = "form-criar", @class = "alertChanges" }))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.Pessoa.PessoaID);
+                        @Html.HiddenFor(m => m.Pessoa.PessoaGUID);
+
+                        <div class="row">
+                            <div class="form-group col-lg-1 col-md-1 col-sm-1">
+                                <label>Cód.</label>
+                                <p class="form-control-static">@Model.Pessoa.PessoaCodigo</p>
+                            </div>
+                            <div class="form-group col-lg-7 col-md-7 col-sm-7">
+                                <label>Nome</label>
+                                @Html.TextBoxFor(m => m.Pessoa.Nome, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>CPF/CNPJ</label>
+                                @Html.TextBoxFor(m => m.Pessoa.Documento, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>RG</label>
+                                @Html.TextBoxFor(m => m.Pessoa.Rg, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group col-lg-`5 col-md-5 col-sm-5">
+                                <label>E-Mail</label>
+                                <i class="fa fa-commenting" aria-hidden="true"></i><small>recebe notificações</small> <a class="btn btn-outline btn-primary btn-xs" href="mailto:@Model.Pessoa.Email">enviar email</a>
+                                @Html.TextBoxFor(m => m.Pessoa.Email, new { @class = "form-control importante" })
+                            </div>
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>Celular</label>
+                                <i class="fa fa-commenting" aria-hidden="true"></i><small>notificações</small>
+                                @Html.TextBoxFor(m => m.Pessoa.Celular, new { @class = "form-control importante" })
+                            </div>
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>Telefone</label>
+                                @Html.TextBoxFor(m => m.Pessoa.Telefone, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>
+                                    <abbr title="Data de Nascimento">Dt.Nasc.</abbr></label>
+                                @Html.TextBoxFor(m => m.Pessoa.DataNascimento, new { @class = "form-control datepicker_year" })
+                            </div>
+                            
+                            <div class="form-group col-lg-1 col-md-1 col-sm-1">
+                                <label>Sexo</label>
+                                @Html.DropDownListSexo("Pessoa.Sexo", Model.Pessoa.Sexo, true, " form-control chosen-select ")
+                            </div>
+                            
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>CEP</label><label id="loading_cep" style="display: none"><i class="fa fa-spinner fa-spin"></i></label>
+
+                                <div class="input-group">
+                                    @Html.TextBoxFor(model => model.Pessoa.Cep, new { @class = "form-control" })
+                                    <span class="input-group-btn">
+                                        <button type="button" id="buscar-cep" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </span>
+                                </div>
+
+
+                            </div>
+                            <div class="form-group col-lg-5">
+                                <label>Endereço</label>
+                                @Html.TextBoxFor(model => model.Pessoa.Endereco, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-1">
+                                <label>Número</label>
+                                @Html.TextBoxFor(model => model.Pessoa.Numero, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label>Complemento</label>
+                                @Html.TextBoxFor(model => model.Pessoa.Complemento, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label>Bairro</label>
+                                @Html.TextBoxFor(model => model.Pessoa.Bairro, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-4">
+                                <label>Cidade</label>
+                                @Html.TextBoxFor(model => model.Pessoa.Cidade, new { @class = "  form-control " })
+                            </div>
+                            <div class="form-group col-lg-1">
+                                <label>Estado</label>
+                                @Html.TextBoxFor(model => model.Pessoa.Estado, new { @class = "  form-control " })
+                            </div>
+
+
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12" style="">
+            <div class="hpanel collapsed">
+                <div class="panel-heading hbuilt">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <a class="showhide">Dados confidenciais</a>
+                </div>
+                <div class="panel-body">
+                    <p>
+                        <strong>Senha:</strong> @Model.Pessoa.ContraSenha
+                    </p>
+                </div>
+                
+            </div>
+        </div>
+                        </div>
+                                        
+                    }
+                </div>
+                
+            </div>
+
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Status
+                </div>
+
+                <div class="panel-body">
+                    @Html.CubeeStatus("PessoasPlanosInscricoes", Model.PessoaPlanoInscricao.PessoaPlanoInscricaoId, "chosen-select form-control", BLL.Usuarios.GetUsuarioId(), true, 0, true, -1, "", true)
+                </div>
+            </div>
+
+            <br />
+            <div class="hpanel">
+                <div class="panel-body">
+                    <a target="_top" href="@Url.Content("~/PessoasPlanosInscricoes/Deletar/" + Model.PessoaPlanoInscricao.PessoaPlanoInscricaoId + "/" + Model.PessoaPlanoInscricao.PessoaPlanoGUID + "")" class="btn btn-outline btn-danger pull-right">Excluir</a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+@section Styles{
+
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/ladda/css")
+}
+
+
+
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+@Scripts.Render("~/bundles/ladda/js")
+    <script type="text/javascript">
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+
+
+        $(".datepicker_year").datepicker({
+            startView: 2,
+            language: 'pt-BR', format: 'dd/mm/yyyy',
+
+        });
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+        $(".fancybox_full").fancybox({
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+
+    </script>
+
+    <script>
+
+        $("#Pessoa_Documento").mask("999.999.999-99");
+        $('#Pessoa_Celular').mask(maskBehavior, options);
+        $('#Pessoa_Telefone').mask(maskBehavior, options);
+        $("#Pessoa_DataNascimento").mask("99/99/9999");
+        $("#Pessoa_Cep").mask("99999-999");
+
+
+
+        //cep
+        $('#buscar-cep').click(function () {
+            $('#Pessoa_Cep').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading.cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading.cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                },
+                success: function (data) {
+                    $('#Pessoa_Endereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                    $('#Pessoa_Bairro').val(data.bairro);
+                    $('#Pessoa_Estado').val(data.estado);
+                    $('#Pessoa_Cidade').val(data.cidade);
+                    $('#Pessoa_Numero').focus();
+                }
+            });
+        });
+
+        function atualiza() {
+            var url = "@Url.Content("~/PessoasPlanosInscricoes/EditarPessoaJSON")"; // the script where you handle the form input.
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#form-criar").serialize(),
+                success: function (result) {
+
+                    console.log(result);
+
+                    if (result.NUMERO == 999) {
+                        swal({ title: "Atencão!", text: result.MENSAGEM, type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                    } else if (result.NUMERO == 10) {
+
+                        toastr.options = {
+                            "debug": false,
+                            "newestOnTop": false,
+                            "positionClass": "toast-bottom-right",
+                            "closeButton": true,
+                            "toastClass": "animated fadeInDown",
+                        };
+
+
+
+                        toastr.warning(result.MENSAGEM)
+
+
+                    }
+
+                },
+                error: function (result) {
+                    console.log(result);
+                    swal({ title: "Atencão!", text: "Ocorreu um erro ao tentar salvar os dados", type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                }
+            });
+
+
+        }
+
+
+        $("input[type=text], textarea, select, :checkbox").change(function () {
+            atualiza();
+
+        });
+
+
+
+
+        $("input[type=text]").on("change paste keyup", function () {
+            $("#detalhe_" + this.id).text($(this).val());
+        });
+
+
+    </script>
+
+}

@@ -1,0 +1,82 @@
+﻿@model Models.Agendamento
+@{
+    
+    var user = new BLL.Usuarios();
+
+    var agenda_presenca_cancelar = user.ControleAcesso("agenda_presenca_cancelar", "Regras");
+
+    var agenda_alterar_lista = user.ControleAcesso("agenda_alterar_lista", "Regras");
+
+    var agenda_alterar_agendamento = user.ControleAcesso("agenda_alterar_agendamento", "Regras");
+    
+}
+
+<br />
+<div class="row-fluid">
+
+    <div class="span12">
+        <label>Lista de presença</label>
+        @if (agenda_alterar_lista)
+        {
+            @Html.ActionLink("Alterar lista de presença", "AlterarListaPresenca", new { id = Model.AgendamentoId }, new { @class = "btn btn-primary" })
+        }
+
+
+
+        <table class="footable table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th data-hide="phone,tablet">Presente</th>
+                    <th data-hide="phone,tablet">Faltou</th>
+                    <th data-hide="phone,tablet">Cancelou</th>
+                    <th data-hide="phone,tablet">Assinatura</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.AgendamentoPessoa)
+                {
+                    var urlPresente = Url.Content("~/Agendamento/Presenca/" + item.AgendamentoID + "?i=" + item.AgendamentoPessoaID + "&p=P&s=" + item.ServicoId + "&a=" + item.PessoaID + "&del=" + item.Presenca);
+                    var urlFaltou = Url.Content("~/Agendamento/Presenca/" + item.AgendamentoID + "?i=" + item.AgendamentoPessoaID + "&p=F&s=" + item.ServicoId + "&a=" + item.PessoaID + "&del=" + item.Presenca);
+                    var urlCancelou = Url.Content("~/Agendamento/Presenca/" + item.AgendamentoID + "?i=" + item.AgendamentoPessoaID + "&p=C&s=" + item.ServicoId + "&a=" + item.PessoaID + "&del=" + item.Presenca);
+                    
+                    <tr>
+
+                        @if (agenda_presenca_cancelar)
+                        {
+                            <td style="width: auto" class><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox">@item.Nome</a><br />@item.Email @item.Celular @item.Telefone</td>
+                            <td data-hide="phone,tablet" style="display: table-cell"><a href="@urlPresente" class="btn btn-mini @(item.Presenca == "P" ? "btn-success" : "")"><i class="@(item.Presenca == "P" ? "icon-ok" : "icon-stop")"></i></a></td>
+                            <td data-hide="phone,tablet" style="display: table-cell"><a href="@urlFaltou" class="btn btn-mini @(item.Presenca == "F" ? "btn-warning" : "")"><i class="@(item.Presenca == "F" ? "icon-ok" : "icon-stop")"></i></a></td>
+                            <td data-hide="phone,tablet" style="display: table-cell"><a href="@urlCancelou" class="btn btn-mini @(item.Presenca == "C" ? "btn-danger" : "")"><i class="@(item.Presenca == "C" ? "icon-ok" : "icon-stop")"></i></a></td>
+                        }
+                        else
+                        {
+                            urlCancelou = "#";
+                            if (item.Presenca=="C")
+	                        {
+		                        urlPresente="#";
+                                urlFaltou="#";
+                                    
+	                        }
+                            
+                            <td style="width: auto" class><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox">@item.Nome</a><br />@item.Email @item.Celular @item.Telefone</td>
+                            <td data-hide="phone,tablet" style="display: table-cell"><a href="@urlPresente" class="btn btn-mini @(item.Presenca == "P" ? "btn-success" : "")"><i class="@(item.Presenca == "P" ? "icon-ok" : "icon-stop")"></i></a></td>
+                            <td data-hide="phone,tablet" style="display: table-cell"><a href="@urlFaltou" class="btn btn-mini @(item.Presenca == "F" ? "btn-warning" : "")"><i class="@(item.Presenca == "F" ? "icon-ok" : "icon-stop")"></i></a></td>
+                            <td data-hide="phone,tablet" style="display: table-cell"><a href="@urlCancelou" class="btn btn-mini @(item.Presenca == "C" ? "btn-danger" : "")"><i class="@(item.Presenca == "C" ? "icon-ok" : "icon-stop")"></i></a></td>
+                        }
+                        <td data-hide="phone,tablet" style="display: table-cell" class="footable-last-column" nowrap>@item.UsuarioNome<br />
+                            <small>@item.RegDtPresenca</small></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}

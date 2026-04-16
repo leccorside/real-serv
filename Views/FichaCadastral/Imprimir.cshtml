@@ -1,0 +1,233 @@
+﻿@model Models.FichaCadastral
+
+@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Ficha Cadastral";
+    Layout = "~/Views/Shared/_Report.cshtml";
+
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority) + "/Fortuna";
+
+    var assin = Url.Content(baseUrl + "/Content/Uploads/Assinaturas/" + Model.PessoaDadoClinico.PessoaDadoClinicoId + ".png");
+    var assin2 = Server.MapPath("~/Content/Uploads/Assinaturas/" + Model.PessoaDadoClinico.PessoaDadoClinicoId + ".png");
+    
+    //Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    
+}
+
+
+@section Styles{
+
+    <style>
+        label
+        {
+            font-size: smaller;
+        }
+
+        small
+        {
+            font-size: 10px;
+        }
+    </style>
+
+}
+
+<strong>Dados Pessoais</strong>
+<table width="100%">
+    <tr>
+        <td width="33%" valign="top">
+            <label>Nome Completo</label><br />
+            @Model.Pessoa.Nome</td>
+
+        <td width="33%" valign="top">
+            <label>Documento</label><br />
+            @Model.Pessoa.Documento</td>
+        <td width="33%" valign="top">
+            <label>RG</label><br />
+            @Model.Pessoa.Rg</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <br />
+            <br />
+        </td>
+    </tr>
+
+    <tr>
+        <td width="33%" valign="top">
+            <label>Sexo</label><br />
+            @Model.Pessoa.Sexo</td>
+        <td width="33%" valign="top">
+            <label>Estado Civil</label><br />@Model.Pessoa.EstadoCivlNome</td>
+        <td width="33%" valign="top">
+            <label>Profissão</label><br />@Model.Pessoa.Profissao</td>
+
+    </tr>
+
+    <tr>
+        <td colspan="3">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td width="33%" valign="top">
+            <label>Data de Nascimento</label><br />@String.Format("{0:dd/MM/yyyy}", Model.Pessoa.DataNascimento)</td>
+        <td width="33%" valign="top">
+            <label>Idade</label><br />@BLL.Utils.Funcoes.CalculaIdade(Model.Pessoa.DataNascimento)</td>
+        <td width="33%" valign="top">
+            <label>Como nos conheceu?</label><br />@Model.Pessoa.MidiaNome</td>
+    </tr>
+</table>
+
+<strong>Contato</strong>
+<table width="100%">
+
+    <tr>
+        <td width="33%" colspan="2" valign="top">
+            <label>E-Mail</label><br />@Model.Pessoa.Email</td>
+        <td width="33%" valign="top">
+            <label>Telefone</label><br />@Model.Pessoa.Telefone</td>
+        <td width="33%" valign="top">
+            <label>Celular</label><br />@Model.Pessoa.Celular</td>
+    </tr>
+
+</table>
+
+<strong>Endereço</strong>
+<table width="100%">
+    <tr>
+        <td width="25%" valign="top">
+            <label>Cep</label><br />@Model.Pessoa.Cep</td>
+        <td width="25%" valign="top">
+            <label>Endereço</label><br />@Model.Pessoa.Endereco</td>
+        <td width="25%" valign="top">
+            <label>Número</label><br />@Model.Pessoa.Numero</td>
+        <td width="25%" valign="top">
+            <label>Complemento</label><br />@Model.Pessoa.Complemento</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td width="25%" valign="top">
+            <label>Bairro</label><br />@Model.Pessoa.Bairro</td>
+        <td width="25%" valign="top">
+            <label>Estado / Cidade</label><br />@Model.Pessoa.Estado / @Model.Pessoa.Cidade</td>
+        <td width="50%" valign="top" colspan="2">
+            <label>Referência</label><br />@Model.Pessoa.Observacao</td>
+    </tr>
+
+</table>
+
+
+
+<strong>Dados Clínicos</strong>
+<table width="100%">
+    <tr>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Diabetes)<br />@(Model.PessoaDadoClinico.Diabetes ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Hepatite)<br />@(Model.PessoaDadoClinico.Hepatite ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.HepatiteTipo)<br />@Model.PessoaDadoClinico.HepatiteTipo</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.HepatiteData)<br />@String.Format("{0:dd/MM/yyyy}", Model.PessoaDadoClinico.HepatiteData)</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.HIV)<br />@(Model.PessoaDadoClinico.HIV ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Cicatrizacao)<br />@(Model.PessoaDadoClinico.Cicatrizacao ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Anemia)<br />@(Model.PessoaDadoClinico.Anemia ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Desmaios)<br />@(Model.PessoaDadoClinico.Desmaios ? "Sim" : "Não")</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Eplepsia)<br />@(Model.PessoaDadoClinico.Eplepsia ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.PressaoArterial)<br />@Model.PessoaDadoClinico.PressaoArterial</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Alergia)<br />@(Model.PessoaDadoClinico.Alergia ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.AlergiaTipos)<br />@Model.PessoaDadoClinico.AlergiaTipos</td>
+    </tr>
+
+    <tr>
+        <td colspan="4">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecente)<br />@(Model.PessoaDadoClinico.TratamentoRecente ? "Sim" : "Não")</td>
+        <td width="25%" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecenteTipos)<br />@Model.PessoaDadoClinico.TratamentoRecenteTipos</td>
+        <td width="50%" colspan="2" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecenteDrugs)<br />@Model.PessoaDadoClinico.TratamentoRecenteDrugs</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td width="50%" colspan="2" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.PessoaDadoClinicoMedico)<br />@Model.PessoaDadoClinico.PessoaDadoClinicoMedico</td>
+        <td width="50%" colspan="2" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.PessoaDadoClinicoMedicoTel)<br />@Model.PessoaDadoClinico.PessoaDadoClinicoMedicoTel</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td width="50%" colspan="2" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.Gestante)<br />@(Model.PessoaDadoClinico.Gestante ? "Sim" : "Não")</td>
+        <td width="50%" colspan="2" valign="top">@Html.LabelFor(model => model.PessoaDadoClinico.ConsumoDrugsUlt4Horas)<br />@(Model.PessoaDadoClinico.ConsumoDrugsUlt4Horas ? "Sim" : "Não")</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <br />
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            @Html.LabelFor(model => model.PessoaDadoClinico.ObservacaoMedica)<br />@Model.PessoaDadoClinico.ObservacaoMedica
+        </td>
+    </tr>
+</table>
+
+<label>Serviço</label><br />
+@Model.PessoaDadoClinico.ServicoNome<br />
+
+@if (Model.PessoaDadoClinico.LocalCorpoServico != "" && Model.PessoaDadoClinico.LocalCorpoServico != null)
+{
+    <label>Local do serviço no corpo</label><br />
+    @Model.PessoaDadoClinico.LocalCorpoServico<br />    
+}
+
+<label>Profissional</label><br />
+@Model.PessoaDadoClinico.PessoaIDIndicacaoNome<br />
+
+
+
+<table width="100%">
+    <tr>
+        <td>
+            <label>Aceite dos Termos</label><br />
+            <small>@Model.PessoaDadoClinico.ServicoTermos</small>
+
+            <img src="@assin2"  height="150" /><br />
+            <small>
+                @Model.Pessoa.Nome<br />
+                @Model.PessoaDadoClinico.RegDtInicio
+            </small>
+
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,64 @@
+﻿@model Models.Projeto
+
+@{
+    ViewBag.Title = "Excluíndo Obras";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Breadcrumb{
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Obras", "Index")</li>
+}
+
+
+<div class="alert">
+    
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            <th nowrap>#</th>
+            <th Width="100%">Obras</th>
+            <th nowrap>Status</th>
+            <th nowrap>Data Início</th>
+            <th nowrap>Data Fim</th>
+            <th nowrap>Criado em</th>
+        </tr>
+    </thead>
+    <tbody>
+           <tr>
+               <td>@Model.ProjetoId</td>
+                <td width="100%">
+                    @Model.ProjetoNome
+                </td>
+                <td nowrap>@Model.ProjetoStatusNome</td>
+                <td nowrap>@Model.ProjetoDtIni.ToString("dd/MM/yyyy")</td>
+                <td nowrap>@Model.ProjetoDtFim.ToString("dd/MM/yyyy")</td>
+                <td nowrap>@Model.RegDtInicio</td>
+            </tr>
+
+
+    </tbody>
+</table>
+
+
+
+@using (Html.BeginForm())
+{
+    
+    @Html.HiddenFor(model => model.ProjetoId)
+
+    <p class="pull-right">
+        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+    </p>
+
+    <p class="pull-left">
+        @Html.ActionLink("Voltar", "Index")
+    </p>
+}
+
+

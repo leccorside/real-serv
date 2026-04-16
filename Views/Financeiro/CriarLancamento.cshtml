@@ -1,0 +1,389 @@
+﻿@model Models.Lancamento
+
+
+
+
+@{
+    var vtipo = (string)Model.LancamentoTipo;
+    var vname = "";
+    switch (vtipo)
+    {
+        case "D":
+            vname = "Despesa";
+            break;
+        case "R":
+            vname = "Receita";
+            break;
+        case "T":
+            vname = "Transferência";
+            break;
+        default:
+            vname = "";
+            break;
+
+    }
+
+
+    
+}
+
+@{
+    ViewBag.Title = "Lançamento de " + vname;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";      
+}
+
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Financeiro", "Financeiro", "Principal")</li>
+    <li>@Html.ActionLink("Extrato", "Index", "Financeiro")</li>
+}
+
+
+
+@{
+    var valor = Model.Valor;
+
+    if (Model.LancamentoTipo == "D")
+    {
+        valor = valor * -1;
+    }
+    
+}
+
+
+<div class="content">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- conteudo -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <!--formulario-->
+
+                            @using (Html.BeginForm("CriarLancamento", "Financeiro", FormMethod.Post, new { @class = "" }))
+                            {
+                                @Html.ValidationSummary(true)
+    
+                                if (Model.LancamentoId > 0)
+                                {
+                                @Html.HiddenFor(m => m.LancamentoId);
+                                @Html.HiddenFor(m => m.Entidade);
+                                @Html.HiddenFor(m => m.EntidadeId);
+                                @Html.HiddenFor(m => m.RecorrenciaGUID);
+                                @Html.HiddenFor(m => m.Recorrencia);
+                                @Html.HiddenFor(m => m.LancamentoTipo);
+                                }
+                                else
+                                {
+                                @Html.Hidden("LancamentoTipo", vtipo)
+                                }
+
+                                if (Model.PlanoId > 0)
+                                {
+                                @Html.Hidden("PlanoId", Model.PlanoId);
+                                @Html.Hidden("PessoaId", Model.PessoaID);
+                                }
+
+
+
+
+                                if (BLL.Usuarios.GetUtilizaFilial() == true && BLL.Usuarios.GetFilialIDMaster() == 0)
+                                { <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                        <label class="control-label">@BLL.Usuarios.GetEntidadeFilial()</label>
+                                        <div class="controls">
+
+                                            @Html.DropDownListFor(model => model.FilialID, (SelectList)ViewBag.DdlFiliais, "--Selecione--", new { @class = "chosen-select form-control " })
+
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                <input type="hidden" name="FilialID" value="@BLL.Usuarios.GetFilialIDMaster()"/>
+                                }
+
+
+
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.ContaId)
+
+                                    @Html.DropDownListFor(model => model.ContaId, (SelectList)ViewBag.DdlContas, "--Selecione--", new { @class = "chosen-select form-control" })
+                                    @Html.ValidationMessageFor(model => model.ContaId)
+
+                                </div>
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.CategoriaId)
+
+                                    @Html.DropDownListFor(model => model.CategoriaId, (SelectList)ViewBag.DdlCategorias, "--Selecione--", new { @class = "chosen-select form-control" })
+                                    @Html.ValidationMessageFor(model => model.CategoriaId)
+
+                                </div>
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+
+                                    @if (vtipo == "R")
+                                    {
+                    
+                                        <label>Cliente</label>
+
+                                        if (Model.PlanoId > 0)
+                                        { 
+                    
+                                        @Html.DropDownListFor(model => model.PessoaID, (SelectList)ViewBag.DdlClientes, new { @class = "chosen-select form-control", disabled = "disabled" })
+                                        }
+
+                                        else
+                                        { 
+                                        @Html.DropDownListFor(model => model.PessoaID, (SelectList)ViewBag.DdlClientes, "Nenhum cliente", new { @class = "chosen-select form-control" })
+                                        @Html.ValidationMessageFor(model => model.PessoaID)
+                    
+                                        }
+
+                                    }
+
+                                    @if (vtipo == "D")
+                                    {
+                    
+                                        <label>@BLL.Usuarios.GetEntidadeFornecedor() / @BLL.Usuarios.GetEntidadeFuncionario()</label>
+
+                    
+                                        @Html.DropDownListFor(model => model.PessoaID, (SelectList)ViewBag.DdlFornecedores, "Nenhum", new { @class = "chosen-select form-control" })
+                                        @Html.ValidationMessageFor(model => model.PessoaID)
+                    
+                    
+                                    }
+
+                                </div>
+                            
+            
+        
+
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">@Html.LabelFor(model => model.DataVencimento)
+
+                                    @Html.TextBox("DataVencimento", @String.Format("{0:dd/MM/yyyy}", Model.DataVencimento), new { @class = "datepicker input-small form-control", value = @DateTime.Now })
+                                    @Html.ValidationMessageFor(model => model.DataVencimento)
+                                </div>
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">@Html.LabelFor(model => model.DataCompetencia)
+
+                                    @Html.TextBox("DataCompetencia", @String.Format("{0:dd/MM/yyyy}", Model.DataCompetencia), new { @class = "datepicker input-small form-control", value = @DateTime.Now })
+                                    @Html.ValidationMessageFor(model => model.DataCompetencia)
+                                </div>
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+
+                                    @if (vtipo == "R")
+                                    { <label>Data de Recebimento</label> }
+                                    else
+                                    {
+                                        <label>Data de Pagamento</label>
+                                    }
+
+                                    @Html.TextBox("DataPagamento", @String.Format("{0:dd/MM/yyyy}", Model.DataPagamento), new { @class = "datepicker input-small form-control", value = @DateTime.Now })
+                                    @Html.ValidationMessageFor(model => model.DataPagamento)
+                                </div>
+                            
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    @if (vtipo == "R")
+                                    { <label>Tipo de Recebimento</label> }
+                                    else
+                                    {
+                                        <label>Tipo de Pagamento</label>
+                                    }
+                                    @Html.DropDownListFor(model => model.PagamentoTipoId, (SelectList)ViewBag.DdlPagamentoTipos, "Nenhum", new { @class = "chosen-select form-control" })
+                                    @Html.ValidationMessageFor(model => model.PagamentoTipoId)
+                                </div>
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    @Html.LabelFor(model => model.Valor)
+                                    @Html.TextBox("Valor", string.Format("{0:n2}", valor), new { @class = "money form-control select-all" })
+                                    @Html.ValidationMessageFor(model => model.Valor)
+                                </div>
+                                    if (BLL.Usuarios.GetModuloPlanoContas())
+                                    {
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    <label>Plano de conta</label>
+                                    @Html.DropDownListFor(model => model.PlanoContaId, (SelectList)ViewBag.DdlPlanoContas, "Nenhum", new { @class = "chosen-select form-control" })
+                                    @Html.ValidationMessageFor(model => model.PlanoContaId)
+                                </div>        
+                                    }
+
+
+
+                                <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                                    <br />
+                                    <div class="checkbox">
+                                        <label>
+                                            @Html.EditorFor(model => model.Baixado, "Checkbox")  @if (vtipo == "R")
+                                                                                                 { <span><i class="icon-ok"></i>Recebido</span> }
+                                                                                                 else
+                                                                                                 {
+                                                <span><i class="fa fa-check"></i>Pago</span>
+                                                                                                 }
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                                    @Html.LabelFor(model => model.Descricao)
+
+                                    @Html.TextAreaFor(model => model.Descricao, new { @class = "input-xlarge form-control" })
+                                    @Html.ValidationMessageFor(model => model.Descricao)
+
+                                </div>
+                                <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                                    @Html.LabelFor(model => model.Observacao)
+
+
+                                    @Html.TextAreaFor(model => model.Observacao, new { @class = "input-xxlarge form-control" })
+                                    @Html.ValidationMessageFor(model => model.Observacao)
+                                </div>
+                            
+                                                                                                 if (Model.LancamentoId == 0)
+                                                                                                 {           
+                      
+                                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+
+
+
+                                    <div class="checkbox">
+                                        <label>@Html.CheckBoxFor(model => model.Recorrencia, new { onchange = "Select($(this).is(':checked'));" }) <i class="fa fa-refresh"></i>Recorrência
+                                        </label>
+                                    </div>
+
+
+                                </div>
+
+       
+                                <div id="painelRecorrencia">
+
+
+
+
+                                    @Html.Partial("~/Views/Recorrencia/_RecorrenciaLancamento.cshtml")
+
+
+
+
+                                </div>
+        
+                                                                                                 }
+                                <br />
+
+
+
+                                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                    <input type="submit" value="Salvar @vname" class="btn btn-primary btn-large" />
+
+
+                                    @{
+             
+                                                                                                 var vaction = "DeletarLancamento";
+                                                                                                 var vroute = "Financeiro";
+                                                                                                 var vid = Model.LancamentoId;
+
+
+                                                                                                 if (Model.LancamentoTipo == "I")
+                                                                                                 {
+                                                                                                     vaction = "Editar";
+                                                                                                     vroute = "Contas";
+                                                                                                     vid = Model.ContaId;
+                                                                                                 }
+                
+                
+                                    }
+
+                                    @if (Model.LancamentoId > 0)
+                                    {
+                                        @Html.ActionLink("Apagar", vaction, vroute, new { id = vid }, new { @class = "btn btn-danger pull-right" })    
+                                    }
+
+                                </div>
+
+
+
+                            }
+
+
+                            <!--./ formulario-->
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class=""></div>
+                    </div>
+                    <!-- ./ conteudo -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/Assets/css/chosen.css")
+    @Styles.Render("~/bundles/datepicker/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.extend.js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+    <script>
+        $('#ContaId').val(@BLL.Usuarios.GetContaId());
+    </script>
+    <script>
+        ChosenAddNewItem("ContaId", "Contas", "ContaNome");
+        ChosenAddNewItem("CategoriaId", "Categorias", "CategoriaNome");
+        ChosenAddNewItem("PagamentoTipoId", "PagamentoTipos", "PagamentoNome");
+    </script>
+
+    <script>
+        $("#DataCompetencia").mask("99/99/9999");
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $('.max').maxlength();
+        $('.chosen-select').chosen({ search_contains: true });
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+
+    </script>
+    <script>
+        function Select(jtipo) {
+            if (jtipo == true) {
+                $("#painelRecorrencia").slideDown();
+            } else {
+                $("#painelRecorrencia").slideToggle();
+            }
+        }
+
+        Select($('#Recorrencia').is(':checked'));
+
+        TipoRecorrencia($('#RecorrenciaObj_Tipo').val());
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

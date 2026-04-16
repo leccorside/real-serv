@@ -1,0 +1,128 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Agenda Profissional";
+    Layout = "~/Views/Shared/_Report.cshtml";
+    
+}
+
+
+@{
+    
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var obJagendamentos = new BLL.Agendamentos();
+
+    var pessoas = new BLL.Pessoas();
+    var objPessoas = pessoas.Carregar(ViewBag.PessoaId);
+
+    List<int> listAgendamentoIds = new List<int>();
+    var rowspan = 0;
+    var criaTd = false;
+
+
+
+    int control = 1;
+
+
+
+    int controlRemove = 1;
+    
+}
+
+    <table border="0" width="100%">
+        <tr>
+            <td>@objPessoas.Nome</td>
+            <td align="right">Agenda do dia @ViewBag.DataConsulta</td>
+        </tr>
+    </table>
+
+
+
+
+<table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="1">
+    <thead>
+        <tr>
+            <th nowrap>Horários</th>
+
+            <th nowrap>Sala</th>
+            <th nowrap>Serviço</th>
+            <th width="60%">@BLL.Usuarios.GetEntidadeCliente()</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < horarios; i++)
+        {
+            horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+            var novaDataConsulta = Convert.ToDateTime(DataConsulta.ToShortDateString() + " " + String.Format("{0:t}", horario));
+            var agendamento = obJagendamentos.Carregar(ViewBag.PessoaId, novaDataConsulta);
+            
+            <tr>
+                <td nowrap><i class="icon-time"></i>@String.Format("{0:t}", horario)</td>
+
+                @if (agendamento != null)
+                {
+                    //horario ocupado
+                    criaTd = (listAgendamentoIds.Contains(agendamento.AgendamentoId)) ? false : true;
+
+
+                    agendamento.AgendamentoPessoa = obJagendamentos.PresencaListar(agendamento.AgendamentoId);
+
+
+                    TimeSpan tdintervalo = agendamento.Fim - agendamento.Inicio;
+
+                    var tdhorarios = (tdintervalo.TotalMinutes / AgendaIntervaloMinutos);
+
+
+                    if (criaTd)
+                    {
+                        control += ((int)tdhorarios);
+                        controlRemove = ((int)tdhorarios);
+                               
+                        if (agendamento.Indisponivel)
+                        {
+                    <td  rowspan="@(tdhorarios)"  colspan="3" bgcolor="#eaeaea" style="background-color:#eaeaea">
+                        <p><i>HORÁRIO INDISPONÍVEL - @agendamento.ServicoNome</i></p>
+                    </td>
+                        }
+                        else
+                        {
+                    <td rowspan="@(tdhorarios)"  nowrap>@agendamento.SalaNome</td>
+                    <td rowspan="@(tdhorarios)"  nowrap>@agendamento.ServicoNome</td>
+                    <td rowspan="@(tdhorarios)"  width="60%">
+                        @foreach (var cli in agendamento.AgendamentoPessoa)
+                        {                                         
+                            @cli.Nome<br />
+                        }</td>
+    
+                        }
+
+                    }
+                }
+                else
+                {
+                    controlRemove--;
+                    if ((control) <= horarios && controlRemove < 1)
+                    {
+                        control++;
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    }
+                }
+
+
+            </tr>
+        }
+    </tbody>
+</table>

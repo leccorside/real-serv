@@ -1,0 +1,24 @@
+﻿@model Models.DocumentoArquivo
+
+
+@{
+    ViewBag.Title = "ImprimirGuia";
+    Layout = "~/Views/Shared/_WindowBlank.cshtml";
+
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+    //var bllPessoa = new BLL.Pessoas();
+    //var medico = bllPessoa.Carregar(Model.MedGuia.MedicoId);
+
+
+    //var logotipo = baseUrl + "/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png";
+    //medico.FotoPessoa = (medico.FotoPessoa == null) ? "" : medico.FotoPessoa;
+    //var logotipoMedico = baseUrl + medico.FotoPessoa.Replace("~", "");
+    //var semlogotipo = baseUrl + "/Assets/img/logotipos/semlogo.png";
+
+    ViewBag.RegistrarImpressao = Model.DocumentoArquivoId;
+    
+}
+
+@Html.Raw(Model.DocumentoArquivoConteudo)

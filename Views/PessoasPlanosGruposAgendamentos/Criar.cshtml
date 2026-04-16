@@ -1,0 +1,158 @@
+﻿@model Models.PessoaPlanoGrupoAgendamento
+
+@{
+    
+    ViewBag.Title = "Cadastro de Programação";
+
+
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+
+}
+
+
+
+<div class="content animate-panel">
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel ">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Cadastro de Programação
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+
+                    <br />
+                    @using (Html.BeginForm("Criar", "PessoasPlanosGruposAgendamentos", FormMethod.Post))
+                    {
+                        @Html.ValidationSummary(true)
+
+                        @Html.HiddenFor(m => m.PessoaPlanoGrupoId)
+
+                        if (Model.PessoaPlanoGrupoAgendamentoId > 0)
+                        {
+                        @Html.HiddenFor(m => m.PessoaPlanoGrupoAgendamentoId);
+                        }
+                        
+                            
+
+        
+                        <div class="row">
+
+
+
+
+                            <div class="form-group col-lg-6">
+                                <label>Título</label>
+                                @Html.TextBoxFor(m => m.PessoaPlanoGrupoAgendamentoTitulo, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6">
+                                <label>Descrição</label>
+                                @Html.TextBoxFor(m => m.PessoaPlanoGrupoAgendamentoDescricao, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                                <label>Palestrante ou Responsável</label>
+                                @Html.TextBoxFor(m => m.PessoaPlanoGrupoAgendamentoNome, new { @class = "form-control" })
+                            </div>
+
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>Data</label>
+                                @Html.TextBox("PessoaPlanoGrupoAgendamentoDt", String.Format("{0:dd/MM/yyyy}", Model.PessoaPlanoGrupoAgendamentoDt), new { @class = "datepicker select-all maskdate form-control", value = DateTime.Now })
+                            </div>
+
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>Hora Início</label>
+                                @Html.TextBoxFor(m => m.PessoaPlanoGrupoAgendamentoHrIni, new { @class = "form-control hourpicker select-all timepicker" })
+                            </div>
+
+                            <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                                <label>Hora Início</label>
+                                @Html.TextBoxFor(m => m.PessoaPlanoGrupoAgendamentoHrFim, new { @class = "form-control hourpicker select-all timepicker" })
+                            </div>
+                            
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                                <a href="@Url.Content("~/PessoasPlanosGruposAgendamentos/Index/" + Model.PessoaPlanoGrupoId)" class="btn btn-outline btn-primary ">Voltar</a>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- ./ dados aqui-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/clockpicker/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+@Scripts.Render("~/bundles/clockpicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+
+
+    <script>
+
+        $('.max').maxlength();
+        $("#PessoaPlanoGrupoAgendamentoDt").mask("99/99/9999");
+        $("#sAgendaHoraIni").mask("99:99");
+        $("#sAgendaHoraFim").mask("99:99");
+
+        $(".hourpicker").mask("99:99");
+
+        $('.timepicker').clockpicker({ donetext: 'Ok', placement: 'top', });
+
+
+        $(document).ready(function () {
+
+            $(".fancybox").fancybox({ fitToView: false, width: '80%', autoSize: true });
+            $(".fancybox_full").fancybox({
+                fitToView: false,
+                width: '100%',
+                autoSize: false,
+                closeClick: false,
+                openEffect: 'none',
+                closeEffect: 'none'
+            });
+        });
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+}
+

@@ -1,0 +1,129 @@
+﻿@model Models.Acesso
+
+
+
+@{
+    
+
+
+    ViewBag.Title = "Alterar acesso";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@section Breadcrumb{
+      
+<li class="active"><span class="divider">/</span>    @Html.ActionLink("Acessos", "Index", new { id = 0 })</li>
+}
+
+
+
+        @using (Html.BeginForm("Alterar", "Acessos", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+
+            
+            @Html.Hidden("AcessoId", Model.AcessoId);
+                                                          
+            
+            
+            
+            
+            <div class="control-group">
+                @Html.LabelFor(model => model.AcessoId, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.AcessoId, new { disabled = "disabled"})
+                    @*@Html.ValidationMessageFor(model => model.AcessoId)*@
+                </div>
+            </div>
+     
+            <div class="control-group">
+                @Html.LabelFor(model => model.Controle, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.Controle)
+                    @*@Html.ValidationMessageFor(model => model.Controle)*@
+                </div>
+            </div>
+        
+    
+            <div class="control-group">
+                @Html.LabelFor(model => model.Acao, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(model => model.Acao)
+                    @*@Html.ValidationMessageFor(model => model.Acao)*@
+                </div>
+            </div>
+            
+            <div class="control-group">
+                @Html.LabelFor(model => model.Descricao, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.TextAreaFor(model => model.Descricao)
+                    @*@Html.ValidationMessageFor(model => model.Descricao)*@
+                </div>
+            </div>
+            
+            
+        <div class="control-group">
+            <div class="controls">
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.MenuExibir) Exibir no menu
+                </label>
+            </div>
+        </div>
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.Menu, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.Menu)
+                @*@Html.ValidationMessageFor(model => model.Menu)*@
+            </div>
+        </div>
+            
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.Icone, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.Icone)
+                @*@Html.ValidationMessageFor(model => model.Icone)*@
+            </div>
+        </div>
+           
+        <div class="control-group">
+            @Html.LabelFor(model => model.MenuOrdem, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.MenuOrdem)
+                @*@Html.ValidationMessageFor(model => model.MenuOrdem)*@
+            </div>
+        </div>
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.AcessoIdPai, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.AcessoIdPai)
+                @*@Html.ValidationMessageFor(model => model.AcessoIdPai)*@
+            </div>
+        </div>
+      
+
+            <div class="form-actions">
+
+
+                <input type="submit" value="Alterar" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+            </div>
+            
+        }
+    
+     @Html.ActionLink("Voltar", "Index", new { id = 0 })
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,52 @@
+﻿ @media (max-width: 767px) { 
+
+
+      .fc-slats
+        {
+            display: none;
+        }
+
+        td.fc-widget-header
+        {
+            display: none;
+        }
+
+        .fc-content-skeleton td
+        {
+            /* height: auto; */
+            /* min-height: 100%; */
+            display: block;
+        }
+
+        a.fc-time-grid-event.fc-event.fc-start.fc-end.fancybox.AGENDAMENTO_A.destaque_False
+        {
+            top: inherit !important;
+            bottom: inherit !important;
+            display: block;
+            position: relative;
+            left: inherit !important;
+            right: inherit !important;
+            margin: 0 !important;
+            background-color: #dfdfdf;
+            color: #222 !important;
+        }
+
+        .fc-content
+        {
+            /* display: block; */
+            /* position: absolute !important; */
+            /* top: 0; */
+            border-bottom: solid 2px #222 !important;
+        }
+
+        .fc-ltr .fc-time-grid .fc-event-container
+        {
+            margin: 0 !important;
+        }
+        
+        .fc-title {
+    font-size: large !important;
+}
+
+ }
+       

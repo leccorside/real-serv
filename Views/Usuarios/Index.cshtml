@@ -1,0 +1,99 @@
+@model IEnumerable<Models.Usuario>
+
+@{
+    ViewBag.Title = "Usu&aacute;rios";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var _Metas_Criar = BLL.Usuarios.VerificaAcesso("Criar", "Metas");
+}
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configura&ccedil;&otilde;es", "Configuracoes", "Principal")</li>
+}
+
+@section styles {
+    @Html.Partial("_TableStyles")
+    @Styles.Render("~/bundles/datatables/css")
+    @Styles.Render("~/bundles/fancybox/css") @Styles.Render("~/bundles/select2/css")
+
+    <style>
+        .hcontact { min-height: 280px; }
+    </style>
+}
+
+<div class="content xanimate-xpanel">
+    <div class="row">
+        <div class="col-lg-12">
+            @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+        </div>
+    </div>
+
+    <div class="row">
+        <ul data-pagination-limit="12" style="list-style: none; margin: 0px !important; padding: 0px !important;">
+            @foreach (var item in Model)
+            {
+                <li class="col-lg-4">
+                    <div class="hpanel hblue contact-panel hcontact">
+                        <div class="panel-body">
+                            <h3><a href="@Url.Content("~/Usuarios/Criar/" + item.UsuarioId)">@item.UsuarioNome </a></h3>
+
+                            <div class="text-muted font-bold m-b-xs">@item.UsuarioEmail</div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <p><i class="fa fa-user-circle" aria-hidden="true"></i>@item.UsuarioLogin</p>
+                                </div>
+                                <div class="col-lg-6">
+                                    <p><i class="fa fa-shield" aria-hidden="true"></i>@item.PerfilNome </p>
+                                </div>
+                            </div>
+
+                            <div class="project-action m-t-md pull-right">
+                                <div class="btn-group">
+                                    @Html.ActionLink("Alterar", "Criar", new { id = item.UsuarioId }, new { @class = "btn btn-outline btn-primary btn-xs" })
+                                    @if (_Metas_Criar)
+                                    {
+                                        <a href="@Url.Content("~/Metas/Entidades/?UsuarioId="+item.UsuarioId+"&Modal=true")" class="btn btn-outline btn-primary btn-xs fancybox fancybox.iframe">Metas</a>
+                                    }
+                                    @Html.ActionLink("Senha", "RedefinirSenha", new { id = item.UsuarioId }, new { @class = "btn btn-outline btn-primary btn-xs" })
+                                    @Html.ActionLink("Excluir", "Deletar", new { id = item.UsuarioId }, new { @class = "btn btn-outline btn-danger btn-xs" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    @if (item.PRCPropostaRegraMetaFUP > 0 || item.PRCPropostaRegraMetaTeto > 0)
+                                    {
+                                        <small>Quantidade de atendimentos configurado.</small>
+                                    }
+                                    @if (item.PRCPropostaRegraRange)
+                                    {
+                                        <br /><small>Intevalo R$ @string.Format("{0:N2}", item.PRCPropostaRegraVlrDe) at&eacute; @string.Format("{0:N2}", item.PRCPropostaRegraVlrAte)</small>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer contact-footer">
+                            <div class="row">
+                                <div class="col-md-3  border-right">
+                                    <div class="contact-stat"><span>@BLL.Usuarios.GetEntidadeFilial() #: </span><small>@item.FilialID</small></div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="contact-stat"><span>HashKey: </span><small style="font-size: 8px">@item.HashKey</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    <script type="text/javascript">
+        $(".fancybox").fancybox({
+            toolbar: false, padding: 0, fitToView: false, width: '80%', autoSize: true,
+            helpers: { overlay: { locked: true } }
+        });
+    </script>
+}

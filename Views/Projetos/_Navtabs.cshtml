@@ -1,0 +1,30 @@
+﻿@model Models.Projeto
+
+@{
+    
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+    
+    
+    
+}
+
+<ul class="nav nav-tabs">
+    <li class="@(currentAction == "criar" ? " active " : "")"><a href="~/Projetos/Criar/@Model.ProjetoId">Dados</a></li>
+    @if (Model.ProjetoId > 0)
+    {
+        <li class="@(currentAction == "equipamentos" ? " active " : "")"><a href="~/Projetos/Equipamentos/@Model.ProjetoId">Equipamentos</a></li>
+        <li class="@(currentAction == "fiscais" ? " active " : "")"><a href="~/Projetos/Fiscais/@Model.ProjetoId">Fiscais</a></li>
+        <li class="@(currentAction == "engenheiros" ? " active " : "")"><a href="~/Projetos/Engenheiros/@Model.ProjetoId">Engenheiros</a></li>
+        <li class="@(currentAction == "produtos" ? " active " : "")"><a href="~/Projetos/Produtos/@Model.ProjetoId">Produtos</a></li>
+        <li class="@(currentAction.IndexOf("enviados") == 0 ? " active " : "")"><a href="~/Projetos/Enviados/@Model.ProjetoId">Enviados @(currentAction=="enviadoscriar"?"+":"")</a></li>
+        <li class="@(currentAction == "ocorrencias" ? " active " : "")"><a href="~/Projetos/Ocorrencias/@Model.ProjetoId">Ocorrências</a></li>
+        <li class="pull-right"><a data-toggle="tooltip" data-placement="left" title="Relatórios Medição"  href="~/MedicoesRelatorios/Index/@Model.ProjetoId" class="btn btn-mini"><i class="fa fa-bar-chart"></i></a></li>
+        <li class="pull-right"><a data-toggle="tooltip" data-placement="left" title="Relatórios Diários"  href="~/Medicoes/Index/@Model.ProjetoId" class="btn btn-mini"><i class="fa fa-calculator"></i></a></li>
+        
+    }
+</ul>
+
+

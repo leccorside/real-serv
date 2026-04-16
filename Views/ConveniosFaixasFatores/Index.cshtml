@@ -1,0 +1,105 @@
+﻿@model Models.ConvenioFaixaFatorView
+
+@{
+    ViewBag.Title = "Fatores";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var user = new BLL.Usuarios();
+    var ConveniosFaixasFatoresFiliais_index = user.ControleAcesso("index", "ConveniosFaixasFatoresFiliais");
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Convênios", "Index", "Convenios", new { @id = Model.ConvenioPlanoId }, null)</li>
+    <li class="active">@Model.ConvenioPlano.ConvenioNome</li>
+    <li class="active"><a href="@Url.Content("~/ConveniosPlanos/Index/?ConvenioId="+Model.ConvenioPlano.ConvenioId)">Planos</a></li>
+    <li class="active">@Model.ConvenioPlano.ConvenioPlanoNome</li>
+
+
+}
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0, ConvenioPlanoId=Model.ConvenioPlanoId }, new { @class = "btn btn-primary" })
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                @if (ConveniosFaixasFatoresFiliais_index)
+                                {
+                                    <a href="@Url.Content("~/ConveniosFaixasFatoresFiliais/index")" class="btn btn-outline btn-primary pull-right"><i class="fa fa-check-square-o"></i>Definição de Fatores por @BLL.Usuarios.GetEntidadeFilial()</a>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="row">
+
+                        <div class="form-group col-lg-6">
+                            <label>Convênio</label>
+                            <p class="form-control-static">@Model.ConvenioPlano.ConvenioNome</p>
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <label>Plano</label>
+                            <p class="form-control-static">@Model.ConvenioPlano.ConvenioPlanoNome</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                <tr>
+                    <th>
+                        Faixa (R$)
+                    </th>
+                    <th>Fator (%)</th>
+                    <th data-hide="phone,tablet">
+                        Data de Início
+                    </th>
+                    <th data-hide="phone,tablet">Alterar</th>
+                    <th data-hide="phone,tablet">Excluir</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.PageConvenioFaixaFator.Items)
+                {
+                    var possui = Model.PageConvenioFaixaFator.Items.Where(x => x.ValorDe == item.ValorDe && x.ValorAte == item.ValorAte && x.ConvenioFaixaFatorId != item.ConvenioFaixaFatorId);
+                    <tr class="@(possui.Count()>0? " active ":"")">
+                        <td><i class="fa @(possui.Count()>0? " fa-exclamation-circle ":"")" aria-hidden="true"></i> @string.Format("{0:F2}", item.ValorDe) até @string.Format("{0:F2}", item.ValorAte)</td>
+                        <td>% @string.Format("{0:F2}",item.Fator)</td>
+                        <td>@Html.DisplayFor(modelItem => item.RegDtInicio)</td>
+                        <td>@Html.ActionLink("Alterar", "Criar", new { id = item.ConvenioFaixaFatorId, @ConvenioPlanoId=item.ConvenioPlanoId }, new { @class = "btn btn-outline btn-primary btn-xs" })</td>
+                        <td>@Html.ActionLink("Excluir", "Deletar", new { id = item.ConvenioFaixaFatorId, @ConvenioPlanoId = item.ConvenioPlanoId }, new { @class = "btn btn-outline btn-primary btn-xs" })</td>
+                    </tr>
+                }
+
+            </tbody>
+
+
+                        </table>
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.PageConvenioFaixaFator.TotalPages), "&ConvenioPlanoId=" + Model.ConvenioPlanoId.ToString())
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

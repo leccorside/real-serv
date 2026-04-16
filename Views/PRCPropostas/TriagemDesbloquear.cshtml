@@ -1,0 +1,605 @@
+﻿@model Models.PRCPropostaView
+
+@{
+    ViewBag.Title = "Proposta n. " + Model.PRCProposta.PRCPropostaId;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var _EntidadeStatus_ViewAll = BLL.Usuarios.VerificaAcesso("ViewAll", "EntidadesStatus");
+}
+
+
+
+@section Breadcrumb{
+
+}
+
+
+
+
+
+
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="hpanel">
+                @Html.Partial("~/Views/PRCPropostas/_tabstriagem.cshtml", Model)
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="hpanel">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="alert alert-warning">
+                                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você tem certeza que deseja liberar essa proposta para negociação?
+                            </div>
+
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        @using (Html.BeginForm())
+                        {
+                            @Html.HiddenFor(model => model.PRCProposta.PRCPropostaId)
+                            @Html.HiddenFor(model => model.PRCProposta.PRCPropostaGUID)
+
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label>Status</label>
+                                @Html.CubeeStatusDdl("PRCPropostas", Model.PRCProposta.PRCPropostaId, "chosen-select form-control", BLL.Usuarios.GetUsuarioId(), true, 0, (!_EntidadeStatus_ViewAll), -1, "PRCProposta.EntidadeStatusId")
+                            </div>
+                            
+                        
+                            
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label>Observação</label>
+                                @Html.TextAreaFor(m => m.PRCProposta.TriagemRetornoObservacao, new { @class = "form-control" })
+                            </div>
+                    
+                            <div class="col-lg-12">
+                                <a href="@Url.Content("~/PRCPropostas/TriagemEditar/" + Model.PRCProposta.PRCPropostaId + "/" + Model.PRCProposta.PRCPropostaGUID)" class="btn btn-danger pull-right">Não, não desbloquear</a>
+                                <button type="submit" class="btn btn-primary ">Sim, desbloquear</button>
+                            </div>}
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-7" style="">
+            <div class="hpanel">
+                <div class="panel-heading ">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <i class="fa fa-user-circle-o" aria-hidden="true"></i>Dados Requerente
+                </div>
+
+
+                <div class="panel-body">
+
+
+                    <div class="row">
+                        <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                            <label>Nome</label>
+                            <h6>@Model.Requerente.Nome</h6>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                            <label>CPF</label>
+                            <h6>@Model.Requerente.Documento</h6>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>E-Mail</label>
+                            <h6>@Model.Requerente.Email</h6>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                            <label>Sexo</label>
+                            <h6>@Model.Requerente.Sexo</h6>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                            <label>
+                                <abbr title="Data de Nascimento">Dt.Nasc.</abbr>
+                            </label>
+                            <h6>@Model.Requerente.DataNascimento</h6>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>Celular</label>
+                            <h6>@Model.Requerente.Celular</h6>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>Telefone</label>
+                            <h6>@Model.Requerente.Telefone</h6>
+                        </div>
+
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>Óbito</label>
+                            <h6>@Model.Requerente.Obito</h6>
+
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <table id="tableContatos" cellpadding="1" cellspacing="1" class="table table-condensed table-striped">
+                                <caption class="">
+                                </caption>
+                                <tbody></tbody>
+                            </table>
+
+                            <table id="tableEnderecos" cellpadding="1" cellspacing="1" class="table table-condensed table-striped">
+                                <caption class="">
+                                </caption>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-5" style="">
+            <div class="hpanel ">
+                <div class="panel-heading ">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <i class="fa fa-diamond" aria-hidden="true"></i>Informações Precatório
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                            <label>Número</label>
+                            <p class="form-control-static"><a href="@Url.Content("~/Trj/View/0/?Protocolo=" + Model.Precatorio.TrjReqPagNumero + "")" class="fancybox fancybox.iframe "><i class="fa fa-search"></i>@Model.Precatorio.TrjReqPagNumero</a></p>
+                        </div>
+                        <div class="form-group col-lg-2 col-md-2 col-sm-2">
+                            <label>
+                                <abbr title="Ano Proposta">Ano</abbr>
+                            </label>
+                            <p class="form-control-static">@Model.Precatorio.TrjReqPagMesAno</p>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>
+                                <abbr title="Data Protocolo">Dt.Protoc.</abbr>
+                            </label>
+                            <p class="form-control-static"><small>@Model.Precatorio.TrjReqPagDtProtocolo</small></p>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label>Requerido</label>
+                            <p class="form-control-static"><small>@Model.Precatorio.TrjReqPagRequerido</small></p>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label>Valor Solicitado</label>
+                            <h5 class="text-info">R$ @string.Format("{0:N2}", Model.Precatorio.TrjReqPagValorSolicitado)</h5>
+                        </div>
+
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label>Motivo Triagem</label>
+                            @Model.PRCProposta.TriagemObservacao
+                        </div>
+
+
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-7" style="">
+            <div class="hpanel">
+                <div class="panel-heading ">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <i class="fa fa-balance-scale" aria-hidden="true"></i>Dados Advogado
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                            <label>Nome</label>
+                            <h6>@Model.Advogado.Nome</h6>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                            <label>CPF</label>
+                            <h6>@Model.Advogado.Documento</h6>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>E-Mail</label>
+                            <h6>@Model.Advogado.Email</h6>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                            <label>Sexo</label>
+                            <h6>@Model.Advogado.Sexo</h6>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-3 col-sm-3">
+                            <label>
+                                <abbr title="Data de Nascimento">Dt.Nasc.</abbr>
+                            </label>
+                            <h6>@Model.Advogado.DataNascimento</h6>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>Celular</label>
+                            <h6>@Model.Advogado.Celular</h6>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-6">
+                            <label>Telefone</label>
+                            <h6>@Model.Advogado.Telefone</h6>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-5" style="">
+            <div class="hpanel">
+                <div class="panel-heading ">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    <i class="fa fa-user-secret" aria-hidden="true"></i>Dados Negociador
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label>
+                                <abbr title="Procedimento">Nome</abbr>
+                            </label>
+                            <p class="form-control-static">@Model.Negociador.UsuarioNome</p>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label>
+                                <abbr title="Procedimento">E-Mail</abbr>
+                            </label>
+                            <p class="form-control-static">@Model.Negociador.UsuarioEmail</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</div>
+
+
+@section Styles{
+    @Styles.Render("~/Assets/css/chosen.css")
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/ladda/css")
+    <style>
+        .form-group-mini .checkbox
+        {
+            margin-top: -10px !important;
+            margin-bottom: 15px !important;
+        }
+
+        .my-group .select
+        {
+            width: 30%;
+        }
+
+        .my-group .input
+        {
+            width: 70%;
+        }
+
+        tr.E
+        {
+            text-decoration: line-through;
+            color: gray;
+            font-style: italic;
+        }
+
+            tr.E a
+            {
+                display: none;
+            }
+
+        a.like:before
+        {
+            content: "\f004";
+            font-family: "FontAwesome";
+            font-size: 18px;
+            color: red;
+        }
+
+        a.unlike:before
+        {
+            content: "\f08a";
+            font-family: "FontAwesome";
+            font-size: 18px;
+            color: #cccccc;
+        }
+
+
+        a.errado:before
+        {
+            content: "\f02e";
+            font-family: "FontAwesome";
+            font-size: 18px;
+            color: #000;
+        }
+
+        a.certo:before
+        {
+            content: "\f097";
+            font-family: "FontAwesome";
+            font-size: 18px;
+            color: #cccccc;
+        }
+
+        tr.A.errado
+        {
+        }
+    </style>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.js")
+    @Scripts.Render("~/Assets/js/chosen.jquery.extend.js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+    @Scripts.Render("~/bundles/ladda/js")
+    <script>
+        //ChosenAddNewItem("PRCProposta_CartorioId", "Cartorios", "CartorioNome");
+        function UpdateElementOfParent(id) {
+            carregaContatos($("#Requerente_PessoaID").val());
+            carregaEnderecos($("#Requerente_PessoaID").val());
+            $.fancybox.close();
+        }
+
+        function callFancyBoxContatos() {
+            var Requerente_PessoaID = $("#Requerente_PessoaID").val();
+            $("#hiddenclickerContatos").attr("href", "@(Url.Content("~/PessoasContatos/Criar/0?PessoaID="))" + Requerente_PessoaID)
+            $('#hiddenclickerContatos').trigger('click');
+        }
+
+        function callFancyBoxEnderecos() {
+            var Requerente_PessoaID = $("#Requerente_PessoaID").val();
+            $("#hiddenclickerEnderecos").attr("href", "@(Url.Content("~/PessoasEnderecos/Criar/0?PessoaID="))" + Requerente_PessoaID)
+            $('#hiddenclickerEnderecos').trigger('click');
+        }
+
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        $(".fancybox_reload").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                carregaContatos($("#Requerente_PessoaID").val());
+                carregaEnderecos($("#Requerente_PessoaID").val());
+            },
+        });
+
+
+    </script>
+
+    <script>
+
+        $('#PRCProposta_Triagem').click(function () {
+            var checked = $(this).is(':checked');
+            if (checked) {
+                alert("Essa proposta continua bloqueada para triagem");
+            } else {
+                alert("Proposta disponibilizada para negociação");
+            }
+        });
+
+
+
+
+        $("#Requerente_Documento").mask("999.999.999-99");
+        $('#Requerente_Celular').mask(maskBehavior, options);
+        $('#Requerente_Telefone').mask(maskBehavior, options);
+        $("#Requerente_DataNascimento").mask("99/99/9999");
+        $("#Requerente_Cep").mask("99999-999");
+
+
+
+        //cep
+        $('#buscar-cep').click(function () {
+            $('#Requerente_Cep').cep({
+                load: function () {
+                    //Exibe a div loading
+                    $('#loading.cep').css('display', 'inline');
+                },
+                complete: function () {
+                    //Esconde a div loading
+                    $('#loading.cep').css('display', 'none');
+                },
+                error: function (msg) {
+                    //Exibe em alert a mensagem de erro retornada
+                    alert(msg);
+                },
+                success: function (data) {
+                    $('#Requerente_Endereco').val(data.tipoLogradouro + ' ' + data.logradouro);
+                    $('#Requerente_Bairro').val(data.bairro);
+                    $('#Requerente_Estado').val(data.estado);
+                    $('#Requerente_Cidade').val(data.cidade);
+                    $('#Requerente_Numero').focus();
+                }
+            });
+        });
+
+
+
+    </script>
+    <script>
+
+        function carregaContatos(PessoaId) {
+            $.getJSON("@Url.Content("~/ApiIntegracao/GetPessoasContatos/")", { id: PessoaId }, function (result) {
+
+
+
+                var tr = [];
+                for (var i = 0; i < result.length; i++) {
+                    tr.push("<tr class='" + result[i].RegStatus + " " + (result[i].PessoaContatoErrado ? "errado" : "certo") + " ' >");
+                    tr.push("<td><a class=\"" + (result[i].PessoaContatoFavorito ? "like" : "unlike") + "\" href=\"#/\" onclick=\"like(" + result[i].PessoaContatoId + ",'contato','" + (result[i].PessoaContatoFavorito ? "false" : "true") + "')\"></a></td>");
+                    tr.push("<td><a class=\"" + (result[i].PessoaContatoErrado ? "errado" : "certo") + "\" href=\"#/\" onclick=\"errado(" + result[i].PessoaContatoId + ",'contato','" + (result[i].PessoaContatoErrado ? "false" : "true") + "')\"></a></td>");
+                    tr.push("<td>" + result[i].PessoaContatoTipo + "</td>");
+                    tr.push("<td>" + result[i].PessoaContatoCategoria + "</td>");
+                    tr.push("<td>" + $.trim(result[i].PessoaContatoValor) + "</td>");
+                    tr.push("<td>" + $.trim(result[i].PessoaContatoDescricao) + "</td>");
+                    tr.push("<td><a class='btn btn-outline btn-primary btn-xs fancybox_reload fancybox.iframe' href='@(Url.Content("~/PessoasContatos/Criar/"))" + result[i].PessoaContatoId + "'><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i></a></td>");
+                   tr.push("<td><a class='btn btn-outline btn-danger btn-xs fancybox_reload fancybox.iframe' href='@(Url.Content("~/PessoasContatos/Deletar/"))" + result[i].PessoaContatoId + "'><i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i></a></td>");
+                   tr.push('</tr>');
+               }
+                $("#tableContatos tbody tr").remove();
+                $("#tableContatos tbody").append($(tr.join('')));
+
+
+            });
+       }
+
+       carregaContatos($("#Requerente_PessoaID").val());
+
+
+       function carregaEnderecos(PessoaId) {
+           $.getJSON("@Url.Content("~/ApiIntegracao/GetPessoasEnderecos/")", { id: PessoaId }, function (result) {
+
+
+
+                var tr = [];
+                for (var i = 0; i < result.length; i++) {
+                    tr.push("<tr class='" + result[i].RegStatus + " " + (result[i].PessoaEnderecoErrado ? "errado" : "certo") + " ' >");
+                    tr.push("<td><a class=\"" + (result[i].PessoaEnderecoFavorito ? "like" : "unlike") + "\" href=\"#/\" onclick=\"like(" + result[i].PessoaEnderecoId + ",'endereco','" + (result[i].PessoaEnderecoFavorito ? "false" : "true") + "')\"></a></td>");
+                    tr.push("<td><a class=\"" + (result[i].PessoaEnderecoErrado ? "errado" : "certo") + "\" href=\"#/\" onclick=\"errado(" + result[i].PessoaEnderecoId + ",'endereco','" + (result[i].PessoaEnderecoErrado ? "false" : "true") + "')\"></a></td>");
+                    tr.push("<td>" + $.trim(result[i].PessoaEnderecoEndereco) + " " + $.trim(result[i].PessoaEnderecoNumero) + " " + $.trim(result[i].PessoaEnderecoComplemento) + " " + $.trim(result[i].PessoaEnderecoCep) + " " + $.trim(result[i].PessoaEnderecoBairro) + " " + $.trim(result[i].PessoaEnderecoCidade) + " " + $.trim(result[i].PessoaEnderecoEstado) + " " + "</td>");
+                    tr.push("<td>" + $.trim(result[i].PessoaEnderecoTipo) + "</td>");
+                    tr.push("<td><a class='btn btn-outline btn-primary btn-xs fancybox_reload fancybox.iframe' href='@(Url.Content("~/PessoasEnderecos/Criar/"))" + result[i].PessoaEnderecoId + "'><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i></a></td>");
+                    tr.push("<td><a class='btn btn-outline btn-danger btn-xs fancybox_reload fancybox.iframe' href='@(Url.Content("~/PessoasEnderecos/Deletar/"))" + result[i].PessoaEnderecoId + "'><i class=\"fa fa-trash-o\" aria-hidden=\"true\"></i></a></td>");
+                    tr.push('</tr>');
+                }
+                $("#tableEnderecos tbody tr").remove();
+                $("#tableEnderecos tbody").append($(tr.join('')));
+
+
+            });
+        }
+
+        carregaEnderecos($("#Requerente_PessoaID").val());
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.chosen-select').select2();
+
+            $('.chosen-select-add').chosen().trigger("chosen:updated");
+            $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+            $('.max').maxlength({
+                alwaysShow: true,
+                threshold: 10,
+                warningClass: "label label-success",
+                limitReachedClass: "label label-danger"
+            });
+        });
+    </script>
+    <script>
+
+        function like(id, tipo, favorito) {
+            $.getJSON('@Url.Content("~/ApiIntegracao/SetRegistraContatoEnderecoFavorito/")', { id: id, tipo: tipo, favorito: favorito }, function (data) {
+
+                switch (tipo) {
+                    case "contato":
+                        carregaContatos($("#Requerente_PessoaID").val());
+                        break;
+                    case "endereco":
+                        carregaEnderecos($("#Requerente_PessoaID").val());
+                        break;
+                }
+                console.log(data);
+            });
+        }
+
+
+    </script>
+    <script>
+
+        function atualiza() {
+            var url = "@Url.Content("~/PRCPropostas/TriagemEditarJSON")"; // the script where you handle the form input.
+
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#form-criar").serialize(),
+                success: function (result) {
+                    if (result.NUMERO != 0) {
+                        swal({ title: "Atencão!", text: result.MENSAGEM, type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                    }
+
+                },
+                error: function (result) {
+                    swal({ title: "Atencão!", text: "Ocorreu um erro ao tentar salvar os dados da proposta", type: "error", showCancelButton: false, cancelButtonText: "Não", confirmButtonColor: "#DD6B55", confirmButtonText: "Ok", closeOnConfirm: true }, function () { });
+                }
+            });
+
+
+        }
+
+
+        //$("input[type=text], textarea, select, :checkbox").change(function () {
+
+        //    atualiza();
+
+        //});
+
+
+
+    </script>
+
+}
+

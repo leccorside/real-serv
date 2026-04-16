@@ -1,0 +1,140 @@
+﻿@model Models.PessoaPlanoInscricaoView
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.PessoaPlanoInscricao.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.PessoaPlanoInscricao.EmpresaId);
+
+
+
+    var bll = new BLL.BCASH(Model.PessoaPlanoInscricao.EmpresaId);
+
+    var nome = BLL.Utils.Funcoes.GetPrimeiroNome(Model.Pessoa.Nome).ToLower();
+
+    var descricao = Model.PessoaPlano.PessoaPlanoTitulo ?? Model.PessoaPlano.PessoaPlanoGrupoNome;
+    
+}
+
+
+
+<div class="content-boxed">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho)
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <h3><span style="text-transform: capitalize">@nome</span>, selecione como deseja pagar!<br />
+                            </h3>
+
+                            
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3" style=""></div>
+                        <div class="col-lg-3" style="">
+                            <div class="hpanel plan-box hgreen">
+                                <div class="panel-heading hbuilt text-center">
+                                    <img src="https://ecommerce.payulatam.com/logos/PayU_151x70.png" style="max-height:70px; height:70px;"  class="img-responsive" alt="PayU" border="0" />
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>Meios de Pagamento
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <i class="fa fa-check-square-o"></i>Cartão de Crédito
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <i class="fa fa-check-square-o"></i>Cartão de Débito
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                    </table>
+                                    
+                                    <a href="@Url.Content("~/Eventos/GateWayPagamento_PayU/" + Model.PessoaPlano.EmpresaId + "/" + Model.PessoaPlanoInscricao.PessoaPlanoGUID)" class="btn btn-success btn-sm m-t-xs">Pagar via PayU</a>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-3" style="">
+                            <div class="hpanel plan-box hgreen">
+                                <div class="panel-heading hbuilt text-center">
+                                    <img src="~/Assets/img/imgBoleto2.png" class="img-responsive" style="max-height:70px; height:70px;" alt="Boleto" border="0" />
+                                    
+                                    <h4 class="font-bold">Boleto Bancário</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <p class="text-muted">
+                                        Pagável em qualquer banco
+                                    </p>
+                                    
+                                    <a href="@Url.Content("~/Eventos/GateWayPagamento_Boleto/" + Model.PessoaPlano.EmpresaId + "/" + Model.PessoaPlanoInscricao.PessoaPlanoGUID)" class="btn btn-success btn-sm m-t-xs">Pagar com Boleto</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style=""></div>
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            @Html.Raw(associe_rodape)
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+    <style>
+        input.btn-enviar
+        {
+            display: none;
+        }
+    </style>
+
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+}
+

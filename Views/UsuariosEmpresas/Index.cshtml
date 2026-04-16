@@ -1,0 +1,76 @@
+@model IEnumerable<Models.UsuarioEmpresa>
+
+
+@{
+    ViewBag.Title = "Clientes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+
+@Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+
+<div class="pull-right">@Html.FormPesquisaIndex()</div>
+<br /><br />
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+            
+            <th nowrap>@Html.CampoOrdenacao(Bll.Configuracoes.Carregar("label.codigo.legado"), "UsuarioEmpresaCodigoLegado")</th>
+            <th>@Html.CampoOrdenacao("Nome", "UsuarioEmpresaNomeFantasia")</th>
+
+            <th>Telefone</th>
+
+            <th nowrap>
+                @Html.DisplayNameFor(model => model.RegDtInicio)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count() == 0)
+        {
+            <tr class="info">
+                <td colspan="20"><small class="muted">Nenhum registro localizado</small></td>
+            </tr>
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UsuarioEmpresaCodigoLegado</td>
+                <td width="100%">
+                    @item.UsuarioEmpresaNomeFantasia
+                </td>
+                <td nowrap>(@item.UsuarioEmpresaCttTelDDD) - @item.UsuarioEmpresaCttTel
+                </td>
+
+                <td nowrap>
+                    @item.RegDtInicio
+                </td>
+                <td nowrap>
+                    <a href="~/Clientes/Index/@item.UsuarioEmpresaId" class="btn btn-mini"><i class="icon-user"></i>Usu&aacute;rios</a> |
+                    <a href="~/UsuariosEmpresas/Criar/@item.UsuarioEmpresaId" class="btn btn-mini"><i class="fa fa-pencil"></i>Alterar</a> | 
+                    <a href="~/UsuariosEmpresas/Deletar/@item.UsuarioEmpresaId" class="btn btn-mini"><i class="fa fa-times"></i>Excluir</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+
+
+@{
+    //Controles de pagina&ccedil;&atilde;o
+    int qtdPaginas = Convert.ToInt16(ViewBag.qtdPaginas);   
+}
+@Html.Paginacao(qtdPaginas)

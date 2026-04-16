@@ -1,0 +1,70 @@
+﻿@model Models.AnexoTipo
+
+@{
+    
+    
+    var acao = "Cadastrar";
+    if (Model.AnexoTipoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+
+    ViewBag.Title = acao + " " + "Tipos de Anexos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Breadcrumb{
+    
+        <li class="active"><span class="divider">/</span>    @Html.ActionLink("Tipos de Anexos", "Index")</li>
+    
+}
+
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    
+    if (Model.AnexoTipoId > 0)
+    {
+    @Html.Hidden("AnexoTipoId", Model.AnexoTipoId);
+    }
+    <legend>Dados do AnexoTipo</legend>
+    
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.AnexoTipoNome)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.AnexoTipoNome, new { @class = "span12" })
+                @*@Html.ValidationMessageFor(model => model.AnexoTipoNome)*@
+            </div>
+        </div>
+
+        
+    </div>
+    
+    
+    
+    
+    <div class="form-actions">
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+    </div>
+}
+
+
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+@section Scripts {
+
+
+
+}

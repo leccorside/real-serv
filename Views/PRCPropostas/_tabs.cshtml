@@ -1,0 +1,35 @@
+﻿@model Models.PRCPropostaView
+
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "Principal";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    currentController = currentController.ToLower();
+    currentAction = currentAction.ToLower();
+
+    
+}
+
+
+
+<ul class="nav nav-tabs">
+
+
+    <li class="@(currentAction == "editar" ? " active " : "")">
+        @Html.ActionLink("Dados Gerais", "Editar", new { id = Model.PRCProposta.PRCPropostaId, tipo = Model.PRCProposta.PRCPropostaGUID }, new { @class = "" })
+    </li>
+
+    <li class="@(currentAction == "status" ? " active " : "")">@Html.ActionLink("Status", "status", new { id = Model.PRCProposta.PRCPropostaId, tipo = Model.PRCProposta.PRCPropostaGUID }, new { @class = "" })</li>
+
+    <li class="@(currentAction == "historico" ? " active " : "")">@Html.ActionLink("Histórico", "historico", new { id = Model.PRCProposta.PRCPropostaId, tipo = Model.PRCProposta.PRCPropostaGUID }, new { @class = "" })</li>
+
+    <li class="@(currentAction == "anexos" ? " active " : "")">@Html.ActionLink("Documentos", "anexos", new { id = Model.PRCProposta.PRCPropostaId, tipo = Model.PRCProposta.PRCPropostaGUID }, new { @class = "" })</li>
+
+
+    
+
+    
+
+</ul>
+
+
+

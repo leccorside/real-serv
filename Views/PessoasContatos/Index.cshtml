@@ -1,0 +1,114 @@
+﻿@model Models.PessoaContatoView
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+
+}
+
+
+<div class="content ">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                    </div>
+                    Contatos
+                </div>
+                <div class="panel-body">
+                    <!-- dados aqui-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="@Url.Content("~/PessoasContatos/Criar/0?PessoaID=" + Model.PessoaContato.Pessoa.PessoaID)" class="btn btn-primary"><i class="fa fa-plus"></i>Criar</a>
+                            <div class="table-responsive">
+                                <table class="data table table-condensed table-striped">
+                                    <tr>
+                                        <th>Tipo
+                                        </th>
+                                        <th>Categoria
+                                        </th>
+                                        <th>Valor
+                                        </th>
+                                        <th>Descrição
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+
+                                    @foreach (var item in Model.ListPessoaContato)
+                                    {
+                                        <tr class="@item.RegStatus">
+                                            <td>
+                                                @item.PessoaContatoCategoria
+                                            </td>
+                                            <td>
+                                                @item.PessoaContatoTipo
+                                            </td>
+                                            <td>
+                                                @item.PessoaContatoValor
+                                            </td>
+                                            <td>
+                                                @item.PessoaContatoDescricao
+                                            </td>
+                                            @if (item.RegStatus=="A")
+                                            {
+                                                <td><a href="@Url.Content("~/PessoasContatos/Criar/" + item.PessoaContatoId)" class="btn btn-outline btn-primary btn-xs ">Editar</a>    </td>
+                                            <td>
+                                                <a href="@Url.Content("~/PessoasContatos/Deletar/" + item.PessoaContatoId)" class="btn btn-outline btn-danger btn-xs ">Excluir</a>
+                                            </td>
+                                            }
+                                            else
+                                            {
+                                                <td colspan="2"></td>
+                                            }
+                                            
+                                        </tr>
+                                    }
+
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section Styles{
+    <style>
+        tr.E
+        {
+            text-decoration: line-through;
+            color: gray;
+            font-style: italic;
+        }
+    </style>
+
+    }
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+
+    <script>
+        function selecionado(id) {
+            this.parent.UpdateElementOfParent(id);
+        }
+
+
+    </script>
+
+
+}

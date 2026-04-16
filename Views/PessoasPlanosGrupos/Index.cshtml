@@ -1,0 +1,208 @@
+﻿@model PetaPoco.Page<Models.PessoaPlanoGrupo>
+
+@{
+    ViewBag.Title = "Grupos de Planos e Eventos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority) + "/Eventos/Identifique_se/";
+    var baseUrl_associe = url.GetLeftPart(UriPartial.Authority) + "/Associe_se/SeusDados/";
+
+    var bllPessoasCategoriasSubs = new BLL.PessoasCategoriasSubs();
+    var listaPessoasCategoriasSubs = bllPessoasCategoriasSubs.Listar();
+
+}
+
+
+
+
+@section Breadcrumb{
+
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+                            </div>
+                            <div class="col-lg-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+
+                                    <th>#</th>
+                                    <th>Ações</th>
+                                    <th>Nome / Período / Valores</th>
+                                    <th>@BLL.Usuarios.GetEntidadeFilial()</th>
+                                    <th>Campanha</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.Items)
+                                {
+                                    var dtDe = (item.PessoaPlanoGrupoDtInicio == null ? "" : Convert.ToDateTime(item.PessoaPlanoGrupoDtInicio).ToShortDateString());
+                                    var dtAte = (item.PessoaPlanoGrupoDtFim == null ? "" : Convert.ToDateTime(item.PessoaPlanoGrupoDtFim).ToShortDateString());
+
+
+                                    var erro = "";
+                                    foreach (var item_b in listaPessoasCategoriasSubs.Items)
+                                    {
+                                        var match = item.ListPessoaPlano.Select(x => x.PessoaCategoriaSubId).Contains(item_b.PessoaCategoriaSubId);
+                                        if (!match)
+                                        {
+                                            erro += "<li>" + item_b.PessoaCategoriaSubNome+"</li>";
+                                        }
+                                        
+                                    }
+                                    
+                                        
+                                    <tr>
+                                        <td>@item.PessoaPlanoGrupoId</td>
+                                        <td>
+                                            <div class="input-group">
+                                                <div class="input-group-btn">
+                                                    <button class=" btn btn-outline btn-primary dropdown-toggle" data-toggle="dropdown" type="button" aria-expanded="true"><i class="pe-7s-tools fa-x"></i><span class="caretx"></span></button>
+                                                    <ul class="dropdown-menu ">
+
+                                                        <li><a href="@Url.Content("~/PessoasPlanosInscricoes/Index/?PessoaPlanoGrupoTipoId=" + item.PessoaPlanoGrupoTipoId + "&PessoaPlanoGrupoId=" + item.PessoaPlanoGrupoId)" class=""><i class="fa fa-search"></i>Visualizar Inscrições</a></li>
+                                                        <li><a href="@Url.Content("~/PessoasPlanos/Index/" + item.PessoaPlanoGrupoId)" class=""><i class="fa fa-money"></i>Definir Valores</a></li>
+                                                        <li class="divider"></li>
+                                                        <li><a class="copy btncopy" data-clipboard-text="@(baseUrl + "" + item.PessoaPlanoGrupoId + "/" + item.PessoaPlanoGrupoGUID + "/?eid=" + item.EmpresaId)"><i class="fa fa-cut"></i>Copiar Link para este @Html.GetLegendaPlanoGrupoTipo(item.PessoaPlanoGrupoTipoId)</a></li>
+                                                        <li class="divider"></li>
+                                                        <li><a href="@Url.Content("~/PessoasPlanosGrupos/Criar/" + item.PessoaPlanoGrupoId)" class=""><i class="fa fa-edit"></i>Alterar</a></li>
+                                                        <li class="divider"></li>
+                                                        <li><a href="@Url.Content("~/PessoasPlanosGrupos/Deletar/" + item.PessoaPlanoGrupoId)" class="text-danger"><i class="fa fa-trash"></i>Excluir</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+
+
+
+
+                                        </td>
+
+                                        <td>
+
+                                               @if (erro != "")
+                                                {
+                                                    <div class="alert alert-warning">
+                                                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> valores não definidos para os seguintes:
+                                                        <ul>
+                                                            @Html.Raw(erro)
+                                                        </ul>
+                                                    </div>
+                                                }
+
+                                            <h4>@Html.GetLegendaPlanoGrupoTipo(item.PessoaPlanoGrupoTipoId) <small>/ @item.PessoaPlanoGrupoNome</small></h4>
+
+
+                                            <ul>
+                                                <li><i class="fa fa-calendar"></i>Período</li>
+                                                <ul>
+                                                    @if (item.PessoaPlanoGrupoDtIndeterminado)
+                                                    {
+                                                        <li>Indeterminado</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li>@dtDe até @dtAte</li>
+                                                    }
+                                                </ul>
+                                                <li><i class="fa fa-money"></i>Valores</li>
+                                                <ul>
+                                                    @foreach (var item_b in item.ListPessoaPlano)
+                                                    {
+                                                        <a href="@Url.Content("~/PessoasPlanos/Index/" + item.PessoaPlanoGrupoId)" class="">
+                                                            <li>
+                                                                @item_b.PessoaPlanoTipoNome @item_b.PessoaCategoriaSubNome : R$ @string.Format("{0:N2}", item_b.PessoaPlanoVlrInscricao)
+                                                                @if (item_b.PessoaPlanoGrupoTipoId == 0)
+                                                                {<span> / (Valor Plano: @string.Format("{0:N2}", item_b.PessoaPlanoVlr) )</span>
+                                                                    <a class="copy btncopy btn btn-outline btn-xs btn-primary" data-clipboard-text="@(baseUrl_associe + "" + item.PessoaPlanoGrupoId + "/?plano=" + item_b.PessoaPlanoGUID)"><i class="fa fa-cut"></i> copiar link</a>
+                                                                }
+                                                            </li>
+                                                        </a>
+                                                    }
+                                                </ul>
+                                             
+                                                
+                                            </ul>
+                                        </td>
+                                        <td>@item.FilialNome</td>
+                                        <td>@item.CampanhaNome</td>
+
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+                    @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/clipboard/js")
+
+    <script>
+
+
+        // copiar e colar
+        var clipboard = new Clipboard('.copy');
+
+        clipboard.on('success', function (e) {
+            e.clearSelection();
+            toastr.options = {
+                "debug": false,
+                "newestOnTop": false,
+                "positionClass": "toast-top-center",
+                "closeButton": true,
+                "toastClass": "animated fadeInDown",
+            };
+            toastr.success('Link copiado')
+        });
+
+        $('.copy').click(function (e) {
+            e.preventDefault();
+        });
+        // ./ copiar e colar
+
+
+    </script>
+}
+

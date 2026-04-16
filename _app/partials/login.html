@@ -1,0 +1,58 @@
+<style>
+    .content-strip.ng-scope {
+        padding-top: 10px;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+
+</style>
+<div class="header-clear"></div>
+
+<div class="content-strip">
+    <div class="strip-content">
+        <h4>Autenticação</h4>
+        <p>Faça o seu login</p>
+        <i class="fa fa-user"></i>
+    </div>
+    <div class="overlay"></div>
+    <img class="preload-image" data-original="images/pictures/3.jpg" alt="img">
+</div>
+
+<div class="content">
+    <div class="decoration"></div>
+    <div class="page-login full-bottom">
+
+
+        <div ng-show="error" class="static-notification bg-red-dark">
+            <h6><i class="fa fa-times-circle static-notification-icon"></i>Atenção</h6>
+            <a class="static-notification-close" href="#"><i class="fa fa-times"></i></a>
+            <p>
+                {{ errormsg }}
+            </p>
+        </div>
+
+
+
+
+        <form name="loginForm">
+
+
+
+            <div class="login-input">
+                <i class="fa fa-user"></i>
+                <input type="text" ng-model="uName" value="Username" name="uName" id="uName" onfocus="if (this.value=='Username') this.value = ''" onblur="if (this.value=='') this.value = 'Username'">
+            </div>
+            <div class="login-password">
+                <i class="fa fa-lock"></i>
+                <input type="password" ng-model="uPass" value="password" name="uPass" id="uPass" onfocus="if (this.value=='password') this.value = ''" onblur="if (this.value=='') this.value = 'password'">
+            </div>
+
+            <button type="submit" class="login-button button button-l button-green button-fullscreen full-bottom" ng-click="LoginCheck()">Login</button>
+
+            <a href="#!/registroponto" class="pageapp-login-button button tumblr-color"><i class="fa fa-clock-o"></i>Registro de Ponto</a>
+
+
+        </form>
+    </div>
+
+</div>

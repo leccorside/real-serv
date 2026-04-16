@@ -1,0 +1,75 @@
+﻿@model Models.SupervisaoTipo
+
+
+
+@{
+    var user = new BLL.Usuarios();
+
+
+    var acao = "Cadastrar";
+    if (Model.SupervisaoTipoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Tipo de Supervisão";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Tipos de Supervisão", "Index", new { id = 0 })</li>
+}
+
+
+<div class="cwell">
+    @using (Html.BeginForm("Criar", "SupervisoesTipos", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        if (Model.SupervisaoTipoId > 0)
+        {
+        @Html.Hidden("SupervisaoTipoId", Model.SupervisaoTipoId);
+                                                  acao = "Alterar";
+        }
+
+            
+        <div class="control-group">
+            @Html.LabelFor(model => model.SupervisaoTipoNome, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.SupervisaoTipoNome)
+                @Html.ValidationMessageFor(model => model.SupervisaoTipoNome)
+            </div>
+        </div>
+        
+
+        <div class="form-actions">
+
+
+            <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+        </div>
+            
+    }
+    <div>
+        @Html.ActionLink("Voltar", "Index")
+    </div>
+</div>
+
+
+<br />
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

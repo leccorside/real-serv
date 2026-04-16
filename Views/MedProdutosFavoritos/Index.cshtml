@@ -1,0 +1,129 @@
+﻿@model PetaPoco.Page<Models.MedProdutoFavorito>
+
+
+@{
+    var user = new BLL.Usuarios();
+    ViewBag.Title = "Produtos & Exames Favoritos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    //var bllMedGuias = new BLL.MedGuias();
+
+    //var _MedGuiasAdministrador = BLL.Usuarios.VerificaAcesso("Administrador", "MedGuias");
+
+    
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+
+
+
+<div class="content ">
+    <div class="row">
+
+        
+
+
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+                            </div>
+                            
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+    
+                        
+                        
+                    <div class="table-responsive">
+                   <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.CampoOrdenacao("Número", "MedGuiaId")
+                            </th>
+                            <th>
+                                @Html.CampoOrdenacao("Nome", "MedProdutosFavoritos.MedProdutoFavoritoNome")
+                            </th>
+                            <th>
+                                @Html.CampoOrdenacao("Data", "MedProdutosFavoritos.RegDtInicio")
+                            </th>
+                            <th data-hide="phone,tablet"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.Items)
+                        {
+                            var tr_status = "";
+                            
+                            
+                            <tr class="@tr_status">
+                                <td class="text-center">@item.MedProdutoFavoritoId</td>
+                                <td>@item.MedProdutoFavoritoNome</td>
+                                <td>@item.RegDtInicio </td>
+                                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                                    <a href="@Url.Content("~/MedProdutosFavoritos/Criar/" + item.MedProdutoFavoritoId)" class="btn btn-outline btn-primary btn-xs" data-toggle="tooltip" data-original-title="Alterar"  title="Alterar" data-placement="top">Alterar</a>
+                                    <a href="@Url.Content("~/MedProdutosFavoritos/Deletar/" + item.MedProdutoFavoritoId)" class="btn btn-outline btn-primary btn-xs" data-toggle="tooltip" data-original-title="Excluir"  title="Excluir" data-placement="top">Excluir</a>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+
+
+                </table>
+                    </div>
+                        
+                     @Html.FortunaPaginacao(Convert.ToInt16(Model.TotalPages))
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+ 
+
+}

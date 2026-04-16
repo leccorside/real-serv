@@ -1,0 +1,174 @@
+﻿@model Models.MedGuiaItemView
+
+
+@{
+    ViewBag.Title = "ImprimirGuia";
+    Layout = "~/Views/Shared/_WindowPrint.cshtml";
+
+    var url = Request.Url;
+    var baseUrl = url.GetLeftPart(UriPartial.Authority);
+
+    var bllPessoa = new BLL.Pessoas();
+    var medico = bllPessoa.Carregar(Model.MedGuia.MedicoId);
+
+
+    //var logotipo = Server.MapPath("~/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png");
+    //var logotipoMedico = Server.MapPath(medico.FotoPessoa);
+    //var semlogotipo = Server.MapPath("~/Assets/img/logotipos/semlogo.png");
+
+    var logotipo = baseUrl + "/Assets/img/logotipos/" + BLL.Usuarios.GetEmpresaId() + ".png";
+    medico.FotoPessoa = (medico.FotoPessoa == null) ? "" : medico.FotoPessoa;
+    var logotipoMedico = baseUrl + medico.FotoPessoa.Replace("~", "");
+    var semlogotipo = baseUrl + "/Assets/img/logotipos/semlogo.png";
+    
+}
+
+@section Styles{
+
+    <style>
+        body
+        {
+            font-size: 12px;
+        }
+
+        table, th, td
+        {
+            line-height: 12px;
+        }
+
+        pre
+        {
+            background-color: transparent !important;
+            border: none !important;
+            font-size: 12px;
+            margin: 0px;
+            padding: 0px;
+        }
+
+
+        @@media screen
+        {
+            div.divFooter
+            {
+                display: none;
+            }
+        }
+
+        @@media print
+        {
+            div.divFooter
+        {
+            position: fixed;
+            bottom: 0;
+            text-align: center;
+            width: 100%;
+            border-top: 1px solid #808080;
+        }
+        }
+
+        
+    </style>
+
+
+
+}
+
+<table border="0" width="100%">
+    <tr>
+        <td>
+            @if (Model.MedGuia.PacienteResponsavel)
+            {
+                @Model.MedGuia.PessoaDependenteNome
+            }
+            else
+            {
+                @Model.MedGuia.PacienteNome
+            }
+
+            <br />
+            Ref.: @Model.MedGuia.MedGuiaId / NF: @Model.MedGuia.NotaFiscal / Data: @Model.MedGuia.MedGuiaData.ToShortDateString()
+        </td>
+        <td align="right">
+            <!--<img src="@logotipoMedico" onerror="this.src='@logotipo'" style="max-height:50px;" height="50"  />--></td>
+    </tr>
+</table>
+
+<div class="page-header">
+
+
+    <table width="100%" cellspacing="5" cellpading="5">
+        <tr>
+            <td colspan="2">
+                <table width="100%">
+                    <thead>
+                        <tr>
+                            <th align="left">Descrição</th>
+                            <th align="left">AMB/TUSS</th>
+                            <th align="right">VALOR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ListMedGuiaItem)
+                        {
+                            <tr style="font-size: 12px">
+                                <td>
+                                    @item.MedProdutoNome
+                                </td>
+                                <td>@item.MedProdutoCod</td>
+                                <td class="text-right" align="right">@string.Format("{0:F2}", item.Total)</td>
+                            </tr>	 
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th align="right" colspan="2"><b>Total</b></th>
+                            <th align="right"><b>@string.Format("{0:F2}", Model.MedGuia.TotalProdutos)</b></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" valign="top">
+                <strong>(@BLL.Utils.Formatacoes.EscreverExtenso((decimal)Model.MedGuia.TotalProdutos)) </strong>
+            </td>
+        </tr>
+    </table>
+
+
+
+</div>
+
+<div class="divFooter">
+    <span class="text-center">
+        Ref.: @Model.MedGuia.MedGuiaId
+        <!--<center>@medico.Endereco, @medico.Numero @medico.Complemento - @medico.Cep - @medico.Bairro - @medico.Cidade / @medico.Estado</center>-->
+    </span>
+</div>
+
+@section scripts{
+    @*    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="~/Assets/plugins/jsPDF/dist/jspdf.min.js"></script>
+<script>
+    var doc = new jsPDF();
+    var specialElementHandlers = {
+        '#editor': function (element, renderer) {
+            return true;
+        }
+    };
+
+    $('#cmd').click(function () {
+        doc.fromHTML($('#report').html(), 15, 15, {
+            'width': 100,
+            'elementHandlers': specialElementHandlers
+        });
+        doc.save('sample-file.pdf');
+
+    });
+
+    $(document).ready(function () {
+        $('#cmd').text('Imprimir');
+        $('#cmd').prop('disabled', false);
+    });
+</script>*@
+}

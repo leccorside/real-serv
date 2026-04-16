@@ -1,0 +1,80 @@
+﻿@model Models.CupomTipo
+
+@{
+    ViewBag.Title = "Excluíndo Tipo de Cupom";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+
+@section Breadcrumb{
+      <li class="active"><span class="divider">/</span> @Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+ <li class="active"><span class="divider">/</span>   @Html.ActionLink("Tipos de Cupom", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+
+
+
+
+<div class="cwell">
+        <fieldset>
+
+            <legend>Tipo de Cupom</legend>
+            <div class="row-fluid">
+
+                <div class="span4">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.CupomTipoNome)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.CupomTipoNome)
+                    </div>
+                </div>
+                  <div class="span4">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.CupomCodigoComplementar)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.CupomCodigoComplementar)
+                    </div>
+                </div>
+                <div class="span4">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.CupomTipoDescricao)
+                    </div>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.CupomTipoDescricao)
+                    </div>
+                </div>
+            </div>
+
+
+        </fieldset>
+        <br />
+
+        @using (Html.BeginForm())
+        {
+            <div class="row-fluid">
+                <div class="span12">
+                    @Html.HiddenFor(model => model.CupomTipoId)
+                    <p class="pull-right">
+                        <input type="submit" value="Apagar" class="btn btn-large btn-danger" />
+                    </p>
+
+                    <p class="pull-left">
+                        @Html.ActionLink("Voltar", "Index")
+                    </p>
+                </div>
+            </div>    
+        }
+
+
+
+    </div>

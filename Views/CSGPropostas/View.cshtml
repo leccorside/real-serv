@@ -1,0 +1,721 @@
+﻿@model Models.CSGProposta
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_FortunaLayoutModal.cshtml";
+}
+
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            <div class="hpanel">
+                <div class="hpanel">
+
+                    <fieldset>
+                        <legend>Proposta @Model.CSGPropostaId</legend>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGPropostaGUID)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGPropostaGUID)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGPropostaProcessamentoStatusId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGPropostaProcessamentoStatusId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.RegStatus)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.RegStatus)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.RegIdInicio)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.RegIdInicio)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.RegDtInicio)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.RegDtInicio)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.EmpresaId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.EmpresaId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.RegIdTermino)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.RegIdTermino)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.RegDtTermino)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.RegDtTermino)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGSigla)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGSigla)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLogin)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLogin)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGSenha)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGSenha)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGEmpregadorCodigo)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGEmpregadorCodigo)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGFuncionarioTipo)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGFuncionarioTipo)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTipo)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTipo)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGPromotoraVenda)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGPromotoraVenda)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGPromotoraCodigo)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGPromotoraCodigo)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGProfissionalCPF)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGProfissionalCPF)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGTabelaRegraCodigo)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGTabelaRegraCodigo)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteCPF)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteCPF)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteMatricula)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteMatricula)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDataNascimento)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDataNascimento)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDataAdmissao)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDataAdmissao)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteSalario)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteSalario)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDescontoCompulsorio)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDescontoCompulsorio)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDescontoVariavel)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDescontoVariavel)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteOutroBancoParcelaValor)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteOutroBancoParcelaValor)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteContratoRefinAgenciaCod)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteContratoRefinAgenciaCod)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGlienteContratoRefinAgenciaPAB)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGlienteContratoRefinAgenciaPAB)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanBeneficiarioTipo)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanBeneficiarioTipo)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanLiberacaoFormaId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanLiberacaoFormaId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanLiberacaoData)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanLiberacaoData)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanLiberacaoVencimento)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanLiberacaoVencimento)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGSimulaValorTotal)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGSimulaValorTotal)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGSimulaQtdParcelas)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGSimulaQtdParcelas)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGSimulaValorParcela)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGSimulaValorParcela)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanParcelaQtd)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanParcelaQtd)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanParcelaValor)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanParcelaValor)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoValorBruto)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoValorBruto)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoValorLiquido)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoValorLiquido)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoIOF)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoIOF)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoValorSeguro)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoValorSeguro)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoValorReoc)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoValorReoc)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoValorCMS)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoValorCMS)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoValorTotal)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoValorTotal)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoTaxaAM)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoTaxaAM)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGCondFinanOperacaoTaxaCET)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGCondFinanOperacaoTaxaCET)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteNome)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteNome)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDocTipoId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDocTipoId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDocNumero)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDocNumero)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDocOrgaoEmissor)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDocOrgaoEmissor)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteUFId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteUFId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteDocEmissaoData)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteDocEmissaoData)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteUFNaturalidadeId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteUFNaturalidadeId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteNaturalidadeId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteNaturalidadeId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteNascimentoPaisId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteNascimentoPaisId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteNomeMae)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteNomeMae)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteNomePai)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteNomePai)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteProfissao)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteProfissao)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteExpostoPoliticoId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteExpostoPoliticoId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteNomeCojuge)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteNomeCojuge)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClientePatrimonioValor)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClientePatrimonioValor)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteCEP)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteCEP)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteEndereco)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteEndereco)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteNumero)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteNumero)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComplemento)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComplemento)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteMunicipioId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteMunicipioId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteBairro)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteBairro)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteResidenciaTipoId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteResidenciaTipoId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComercialCEP)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComercialCEP)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComercialEndereco)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComercialEndereco)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComercialNumero)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComercialNumero)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComercialComplemento)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComercialComplemento)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComercialUFId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComercialUFId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComercialMunicipioId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComercialMunicipioId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteComercialBairro)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteComercialBairro)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone1ClasseId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone1ClasseId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone1TipoId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone1TipoId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone1DDD)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone1DDD)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone1Numero)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone1Numero)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone1Ramal)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone1Ramal)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone2ClasseId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone2ClasseId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone2TipoId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone2TipoId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone2DDD)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone2DDD)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone2Numero)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone2Numero)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone2Ramal)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone2Ramal)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone3ClasseId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone3ClasseId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone3TipoId)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone3TipoId)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone3DDD)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone3DDD)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone3Numero)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone3Numero)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteTelefone3Ramal)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteTelefone3Ramal)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGClienteEmail)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGClienteEmail)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLiberacaoBenefDocumento)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLiberacaoBenefDocumento)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLiberacaoBenefNome)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLiberacaoBenefNome)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLiberacaoBenefBancoCod)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLiberacaoBenefBancoCod)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLiberacaoBenefAgencia)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLiberacaoBenefAgencia)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLiberacaoBenefConta)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLiberacaoBenefConta)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLiberacaoBenefDV)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLiberacaoBenefDV)
+                        </div>
+
+                        <div class="display-label">
+                            @Html.DisplayNameFor(model => model.CSGLiberacaoBenefContaTipo)
+                        </div>
+                        <div class="display-field">
+                            @Html.DisplayFor(model => model.CSGLiberacaoBenefContaTipo)
+                        </div>
+                    </fieldset>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+@section Styles{
+    <style>
+
+.display-label {
+    font-weight: bold;
+    margin-top: 13px;
+}</style>
+    }

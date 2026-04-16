@@ -1,0 +1,63 @@
+﻿@model List<Models.PerfilAcesso>
+
+
+@{
+    ViewBag.Title = "Definição de acesso";
+    Layout = "~/Areas/manager/Views/Shared/_Layout.cshtml";
+
+
+    var ridEmpresa = Request["idEmpresa"];
+
+    int idEmpresa = int.TryParse(ridEmpresa, out idEmpresa) ? idEmpresa : 0;
+    var perfilId = Url.RequestContext.RouteData.Values["id"];
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Empresas", "Index", "Empresas")</li>
+
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Perfis", "Index", new { @id = idEmpresa })</li>
+
+
+}
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+        @using (Html.BeginForm())
+        {
+
+            @Html.Hidden("EmpresaId", idEmpresa);
+            @Html.Hidden("PerfilId", perfilId);
+            
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <th></th>
+                    <th>Controle</th>
+                    <th>Ação</th>
+                    <th>Descrição</th>
+                </thead>
+                @for (var i = 0; i < Model.Count(); i++)
+                {   
+                    
+                    @Html.Hidden("[" + i + "].PerfilId", perfilId);
+                    @Html.HiddenFor(m => m[i].AcessoId)
+                    <tr class="@(Model[i].Habilitado ? "" : "warning")">
+                        <td>@Html.CheckBoxFor(m => Model[i].Habilitado, new { @id = i + "_TipoValor" })</td>
+                        <td>@Model[i].Controle</td>
+                        <td>@Model[i].Acao</td>
+                        <td>@Model[i].Descricao</td>
+                    </tr>
+                }
+            </table>
+            <input type="submit" value="Alterar perfil acesso" class="btn btn-primary btn-large" />   
+        }
+    </div>
+</div>
+
+
+
+
+
+

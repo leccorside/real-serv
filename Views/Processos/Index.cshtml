@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Processos";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+}
+
+@section Breadcrumb{
+
+
+
+}
+
+<div class="row-fluid">
+    <div class="span6">
+        @Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+    </div>
+
+    <div class="span6 cwell">
+        @using (Html.BeginForm("Index", "Processos", FormMethod.Get, new { @class = "form-inline" }))
+        {
+            <input type="hidden" name="tipo" value="@ViewBag.tipo" />
+            <label>Pesquisar:</label> <input type="text" name="pesquisar" title="Pesquisar" class="input" />   
+            <input id="Submit1" type="submit" class="btn" value="Ok" />
+        }
+    </div>
+
+</div>
+
+
+
+<div class="row-fluid">
+
+    <div class="span12">
+
+
+        <h6>40 Ativos / 10 Inativos</h6>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                <th nowrap><a href="@Url.Content("~/Processos/Index/0/")?pagina=0&ordenacao=x&tipoordenacao=x">Processo</a></th>
+                <th width="100%"><a href="@Url.Content("~/Processos/Index/0/")?pagina=0&ordenacao=x&tipoordenacao=x">Projeto</a></th>
+                <th nowrap><a href="@Url.Content("~/Processos/Index/0/")?pagina=0&ordenacao=x&tipoordenacao=x">Última Consulta</a></th>
+                <th nowrap><a href="@Url.Content("~/Processos/Index/0/")?pagina=0&ordenacao=x&tipoordenacao=x">Última Atualização</a></th>
+                <th nowrap></th>
+                    </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < 20; i++)
+                {
+                    <tr>
+                <td nowrap>xxxx-yyyyyy-@i</td>    
+                    <td>Projeto @i</td>    
+                    <td nowrap>@DateTime.Now</td>    
+                    <td nowrap>@DateTime.Now</td>    
+                        <td nowrap>  @Html.ActionLink("Visualizar", "Detalhes", new { id = 0 }, new { @class = "btn btn-mini" }) | @Html.ActionLink("Alterar", "Criar", new { id = 0 }, new { @class = "btn btn-mini" }) |
+            @Html.ActionLink("Excluir", "Deletar", new { id = 0 }, new { @class = "btn btn-mini" })</td>
+                        </tr>
+                }
+                
+
+            </tbody>
+        </table>
+
+    </div>
+</div>

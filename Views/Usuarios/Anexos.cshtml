@@ -1,0 +1,207 @@
+﻿@model Models.UsuarioAnexoView
+
+@{
+    string _entidadeS = Bll.Configuracoes.Carregar("label.entidade.usuario.singular");
+    string _entidadeP = Bll.Configuracoes.Carregar("label.entidade.usuario.plural");
+
+    
+
+    ViewBag.Title = "Anexos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+
+    <link href="~/Assets/plugins/fancybox/jquery.fancybox.css" rel="stylesheet" />
+    <link href="~/Assets/plugins/fancybox/helpers/jquery.fancybox-buttons.css" rel="stylesheet" />
+}
+
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink(_entidadeP, "Index")</li>
+}
+
+<ul class="nav nav-tabs">
+    <li><a href="~/Usuarios/Criar/@Model.Usuario.UsuarioId">Dados</a></li>
+    <li class="active"><a href="#tab1" data-toggle="tab">Anexos</a></li>
+</ul>
+
+@using (Html.BeginForm("Anexos", "Usuarios", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.Hidden("UsuarioAnexo.UsuarioId", Model.Usuario.UsuarioId);
+    
+    <div>
+        <legend>Dados básicos</legend>
+    <div class="row-fluid">
+        <div class="span9">
+            <div class="control-group">
+                <label>@Bll.Configuracoes.Carregar("label.usuario.codigo")</label>
+                @Model.Usuario.UsuarioCodigo
+            </div>
+
+            <div class="control-group">
+                <label>Nome</label>
+                @Model.Usuario.UsuarioNome
+            </div>
+
+            <div class="control-group">
+                <label>E-mail</label>
+                @Model.Usuario.UsuarioEmail
+            </div>
+
+
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                @if (Model.Usuario.UsuarioFoto != null && Model.Usuario.UsuarioFoto != "")
+                {
+              
+                    <ul class="thumbnails">
+                        <li class="span12">
+                            <div class="thumbnail">
+                                <img src="@Url.Content(Model.Usuario.UsuarioFoto.Replace(".jpg", "thumb.jpg"))?@DateTime.Now.Second" alt="Foto de Divulgação">
+                            </div>
+                        </li>
+                    </ul>
+                }
+                else
+                {  
+                    <ul class="thumbnails">
+                        <li class="span12">
+                            <div class="thumbnail">
+                                <img src="~/Content/images/YourPhotoHere.png" alt="Foto de Divulgação" width="100" height="100" />
+                            </div>
+                        </li>
+                    </ul>
+                }
+            </div>
+
+        </div>
+
+    </div>
+
+
+        <legend><i class="icon-attachment"></i>Anexos</legend>
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Tipo de arquivo</label>
+                @Html.DropDownList("UsuarioAnexo.AnexoTipoId", (SelectList)ViewBag.dllAnexosTipos, "--Selecione--", new { @class="span11" })
+            </div>
+            <div class="span2">
+                <label>Validade</label>
+                @Html.TextBoxFor(m => m.UsuarioAnexo.Validade, new { @class="span12 datepicker datamask" })
+            </div>
+            <div class="span6">
+                <label>Arquivo</label>
+
+                <div class="input-append">
+                    <input id="arquivo" type="file" name="arquivo" class="span9" />
+                    <button class="btn btn-primary " type="submit" name="submitButton"><i class="fa fa-upload"></i>Upload</button>
+                </div>
+
+                
+            </div>
+        </div>
+
+        <br />
+        <legend>Arquivos</legend>
+        <small>@Model.ListaUsuarioAnexo.Count() arquivos.</small>
+
+        <table class="table table-bordered table-striped table-highlight">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Validade</th>
+                    <th>Tipo</th>
+                    <th>Nome</th>
+                    <th>Peso</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var itemAnexo in Model.ListaUsuarioAnexo)
+                {
+
+
+                    int dias_critico = 10;
+                    int dias_alerta = 20;
+
+                    int.TryParse(Bll.Configuracoes.Carregar("anexos.validade.critico"), out dias_critico);
+                    int.TryParse(Bll.Configuracoes.Carregar("anexos.validade.alerta"), out dias_alerta);
+
+                    int total_dias = (int)(itemAnexo.Validade - DateTime.Now.Date).TotalDays;
+
+                    var classe = "success";
+
+                    if (total_dias <= dias_alerta)
+                    {
+                        classe = "warning";
+                    }
+
+                    if (total_dias <= dias_critico)
+                    {
+                        classe = "important";
+                    }
+                    <tr>
+                        <td nowrap><a href="@Url.Content("~/Usuarios/AnexosDownload/" + itemAnexo.UsuarioAnexoId)" class="btn btn-mini"><i class="fa fa-download"></i></a></td>
+                        <td nowrap>
+                            @if (itemAnexo.PathThumb != null)
+                            {
+                                <a href="@Url.Content(itemAnexo.Path)" class="fancybox" >
+                                    <img  style="height: 40px; max-height:40px; width:40px; max-width:40px;" src="@Url.Content(itemAnexo.PathThumb)" alt="@itemAnexo.FileName" />
+                                </a>
+                            }
+                            else
+                            {
+                                <i class="fa fa-file fa-2x"></i>
+                            }
+                        </td>
+                        <td nowrap><span class="label label-@classe">@itemAnexo.Validade.ToShortDateString()</span></td>
+                        <td nowrap>@itemAnexo.AnexoTipoNome.ToString()<p><small>@itemAnexo.ContentType.ToString()</small></p>
+                        </td>
+                        <td width="100%">@itemAnexo.FileName.ToString()</td>
+                        <td nowrap>@(itemAnexo.ContentLength / 1000) kb</td>
+                        <td nowrap><a href="@Url.Content("~/Usuarios/AnexosRemove/" + itemAnexo.UsuarioAnexoId)" class="btn btn-mini" onclick="return confirm('Deseja realmente excluir esse anexo?')">Excluir</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+}
+
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+
+
+
+
+@section Scripts {
+    <script src="~/Assets/plugins/fancybox/lib/jquery-1.10.1.min.js"></script>
+    <script src="~/Assets/plugins/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script src="~/Assets/plugins/fancybox/jquery.fancybox.js"></script>
+    <script src="~/Assets/plugins/fancybox/helpers/jquery.fancybox-buttons.js"></script>
+    
+    <script>
+
+
+
+        $(document).ready(function () {
+            $(".fancybox").fancybox({
+                fitToView: true,
+                autoSize: true,
+                closeClick: false,
+                openEffect: 'elastic',
+                closeEffect: 'elastic'
+            });
+        });
+
+
+
+    </script>
+
+}

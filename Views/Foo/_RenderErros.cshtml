@@ -1,0 +1,48 @@
+﻿@if (!@Html.ViewData.ModelState.IsValid)
+{
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="alert alert-error msgbox-error" id="alert-error">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4>Os seguintes erros ocorreram:</h4>
+                <br />
+                @Html.ValidationSummary("", new { @class = "unstyled" })
+            </div>
+        </div>
+    </div>
+            
+}
+@if (TempData["message"] != null)
+{ <div class="row-fluid">
+    <div class="span12">
+        <div class="alert alert-success" id="alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4>Sucesso!</h4>
+            @Html.Raw(TempData["message"])
+        </div>
+    </div>
+    </div>
+}
+@if (TempData["error"] != null)
+{ <div class="row-fluid">
+    <div class="span12">
+        <div class="alert alert-danger msgbox-error" id="alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4>Atenção!</h4>
+            @Html.Raw(TempData["error"])
+        </div>
+    </div>
+    </div>
+}
+
+@if (TempData["alert"] != null)
+{ <div class="row-fluid">
+    <div class="span12">
+        <div class="alert alert-block" id="alert-block">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4>Atenção!</h4>
+            @Html.Raw(TempData["alert"])
+        </div>
+    </div>
+    </div>
+}

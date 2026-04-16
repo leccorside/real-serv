@@ -1,0 +1,96 @@
+﻿(function () {
+    window.onload = init;
+})();
+
+function init() {
+    var token = location.search.substring(1, location.search.length);
+     
+    if(!token)
+        return false;
+
+    requestAPI(token);    
+}
+
+function requestAPI(token) {
+    return Promise.all([  
+        $.ajax({
+            type: "GET",
+            //url: 'http://localhost:52327/ApiIntegracao/BuscaClientPorToken/?token=' + token,
+            url:  UrlWsRequisicao + 'BuscaClientPorToken/?token=' + token,
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            async: true
+        }).then((res) => {
+            montaDadosPesquisa(res[0]);
+            montaDadosCliente(res[1]);
+        })      
+    ]);
+}
+
+function montaDadosCliente(dadosCliente) {
+    $('#condominio').val(dadosCliente.PostoDeServicoNome);
+    $('#endereco').val(dadosCliente.PostoDeServicoEndereco + ", nro " + dadosCliente.PostoDeServicoNumero + " / " + dadosCliente.PostoDeServicoBairro);
+    $('#cidade').val(dadosCliente.PostoDeServicoCidade + " / " + dadosCliente.PostoDeServicoEstado);
+    window.sessionStorage.setItem("PostoDeServicoId", dadosCliente.PostoDeServicoId);
+    
+}
+
+function montaDadosPesquisa(dadosPesquisa) {
+    $('#email').val(dadosPesquisa.Destinatario);
+    window.sessionStorage.setItem("idpesquisa", dadosPesquisa.IdPesquisa);
+    window.sessionStorage.setItem("idcontato", dadosPesquisa.idcontato);
+    window.sessionStorage.setItem("Respondida", dadosPesquisa.Respondida);
+    
+    var concluida = dadosPesquisa.Concluida;
+
+    if (concluida === "S") {
+        $("#upload-button").attr("disabled", true);
+        $('#obs').val(dadosPesquisa.Observacao);
+        alert("Pesquisa já respondida.");
+    }
+
+    
+
+
+}
+
+function enviarFileFromStream(){
+
+    var email     = $('#email').val();
+    var pergunta1 = $("input[name='optradio1']:checked").val();
+    var pergunta2 = $("input[name='optradio2']:checked").val();
+    var pergunta3 = $("input[name='optradio3']:checked").val();
+    var pergunta4 = $("input[name='optradio4']:checked").val();
+    var obs = $('#obs').val();
+
+    var idpesquisa = window.sessionStorage.getItem("idpesquisa");
+    var idcontato = window.sessionStorage.getItem("idcontato");
+    var idcliente = window.sessionStorage.getItem("PostoDeServicoId");
+
+      
+
+    $.ajax({
+        type: "POST",
+        //url: 'http://localhost:52327/ApiIntegracao/AtualizarPesquisa/?idcliente=' + idcliente + '&idpesquisa=' + idpesquisa + '&idcontato=' + idcontato + '&pergunta1=' + pergunta1 + '&pergunta2=' + pergunta2 + '&pergunta3=' + pergunta3 + '&pergunta4=' + pergunta4 + '&obs=' + obs,       
+        url: UrlWsRequisicao +  'AtualizarPesquisa/?idcliente=' + idcliente + '&idpesquisa=' + idpesquisa + '&idcontato=' + idcontato + '&pergunta1=' + pergunta1 + '&pergunta2=' + pergunta2 + '&pergunta3=' + pergunta3 + '&pergunta4=' + pergunta4 + '&obs=' + obs,
+        data: JSON.stringify(),
+        cache: false,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        beforeSend: function () {
+            $.LoadingOverlay("show");
+        },
+        complete: function () {
+            $.LoadingOverlay("hide");
+        },
+        success: function (resposta) {
+            alert(resposta);            
+        },
+        error: function (data) {
+            alert(resposta);
+        }
+    });
+
+
+}

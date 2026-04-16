@@ -1,0 +1,428 @@
+﻿@model Models.FichaCadastral
+@{
+    ViewBag.Title = "Confirme seus dados e assine digitalmente";
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    
+    //http://thomasjbradley.ca/lab/signature-pad/#regenerate
+
+}
+@section Styles {
+
+
+    <link href="~/Assets/plugins/signature-pad/jquery.signaturepad.css" rel="stylesheet" />
+    <style>
+        small {
+            font-size: 10px;
+            line-height: 0px;
+    }
+    </style>
+}
+
+<div class="cwell">
+    <legend>Dados Pessoais</legend>
+    <div class="row-fluid">
+        <div class="span9">
+            <label>Nome Completo</label>
+            @Model.Pessoa.Nome
+            
+        </div>
+        <div class="span3">
+            <label>Como nos conheceu?</label>
+            @Model.Pessoa.MidiaNome
+            
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <label>Documento</label>
+            @Model.Pessoa.Documento
+        </div>
+        <div class="span3">
+            <label>RG</label>
+            @Model.Pessoa.Rg
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                Data de Nascimento
+            </div>
+            <div class="editor-field">
+                @String.Format("{0:dd/MM/yyyy}", Model.Pessoa.DataNascimento)
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Sexo)
+            </div>
+            <div class="editor-field">
+                @Model.Pessoa.Sexo
+                
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3" id="div_ecivil">
+            <div class="editor-label">
+                Estado Civil
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.EstadoCivlNome
+            </div>
+        </div>
+        <div class="span3" id="div_profissao">
+            <label>Profissão</label>
+            @Model.Pessoa.Profissao
+        </div>
+        <div class="span3">
+            <label>Idade</label>
+            @BLL.Utils.Funcoes.CalculaIdade(Model.Pessoa.DataNascimento)
+        </div>
+    </div>
+
+    <legend>Contato</legend>
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Email)
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Email
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Telefone)
+            </div>
+            <div class="editor-field">
+                @Model.Pessoa.Telefone
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Celular)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Celular
+            </div>
+        </div>
+    </div>
+
+    <legend>Endereço</legend>
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Cep)
+            </div>
+            <div class="editor-field">
+                  @Model.Pessoa.Cep
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Endereco)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Endereco
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Numero)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Numero
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Complemento)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Complemento
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Bairro)
+            </div>
+            <div class="editor-field">
+               @Model.Pessoa.Bairro
+            </div>
+        </div>
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Cidade)
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Cidade
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span4">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Pessoa.Estado)
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Estado
+            </div>
+        </div>
+        <div class="span8">
+            <div class="editor-label">
+                <label>Referência</label>
+            </div>
+            <div class="editor-field">
+              @Model.Pessoa.Observacao
+            </div>
+        </div>
+    </div>
+
+
+
+    <legend>Dados Clínicos</legend>
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Diabetes)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Diabetes?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Hepatite)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Hepatite?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.HepatiteTipo)
+            </div>
+            <div class="editor-field">
+                @Model.PessoaDadoClinico.HepatiteTipo
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.HepatiteData)
+            </div>
+            <div class="editor-field">
+                @String.Format("{0:dd/MM/yyyy}", Model.PessoaDadoClinico.HepatiteData)
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.HIV)
+            </div>
+            <div class="editor-field">
+               <i class="@(Model.PessoaDadoClinico.HIV?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Cicatrizacao)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Cicatrizacao?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Anemia)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Anemia?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Desmaios)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Desmaios?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Eplepsia)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Eplepsia?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.PressaoArterial)
+            </div>
+            <div class="editor-field">
+               @Model.PessoaDadoClinico.PressaoArterial
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Alergia)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.Alergia?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.AlergiaTipos)
+            </div>
+            <div class="editor-field">
+                @Model.PessoaDadoClinico.AlergiaTipos
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecente)
+            </div>
+            <div class="editor-field">
+               <i class="@(Model.PessoaDadoClinico.TratamentoRecente?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecenteTipos)
+            </div>
+            <div class="editor-field">
+            @Model.PessoaDadoClinico.TratamentoRecenteTipos
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.TratamentoRecenteDrugs)
+            </div>
+            <div class="editor-field">
+               @Model.PessoaDadoClinico.TratamentoRecenteDrugs
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.PessoaDadoClinicoMedico)
+            </div>
+            <div class="editor-field">
+              @Model.PessoaDadoClinico.PessoaDadoClinicoMedico
+            </div>
+        </div>
+        <div class="span6">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.PessoaDadoClinicoMedicoTel)
+            </div>
+            <div class="editor-field">
+             @Model.PessoaDadoClinico.PessoaDadoClinicoMedicoTel
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.Gestante)
+            </div>
+            <div class="editor-field">
+               <i class="@(Model.PessoaDadoClinico.Gestante?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.ConsumoDrugsUlt4Horas)
+            </div>
+            <div class="editor-field">
+                <i class="@(Model.PessoaDadoClinico.ConsumoDrugsUlt4Horas?"fa fa-check-square-o":"fa fa-square-o")"></i>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.PessoaDadoClinico.ObservacaoMedica)
+            </div>
+            <div class="editor-field">
+                @Model.PessoaDadoClinico.ObservacaoMedica
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+        <div class="span12 cwell">
+            <div class="editor-field">
+                <label>Serviço</label>
+                @Model.PessoaDadoClinico.ServicoNome<br />
+                
+                @if (Model.PessoaDadoClinico.LocalCorpoServico != "" && Model.PessoaDadoClinico.LocalCorpoServico !=null)
+                {
+                <label>Local do serviço no corpo</label>
+                @Model.PessoaDadoClinico.LocalCorpoServico<br />    
+                }
+                
+                <label>Profissional</label>
+                @Model.PessoaDadoClinico.PessoaIDIndicacaoNome<br />
+
+                <label>Termos</label>
+                <small>@Model.PessoaDadoClinico.ServicoTermos</small>
+                
+                    
+                
+            </div>
+        </div>
+    </div><br />
+     <i class="fa fa-check-square-o"></i> Aceito os termos<br />
+    <img alt="@Model.Pessoa.Nome"  onerror="this.src='http://1x1px.me/FFFFFF-0.8.png'" src="@Url.Content("~/Content/Uploads/Signs/"+Model.PessoaDadoClinico.PessoaDadoClinicoId+"_"+Model.PessoaDadoClinico.PessoaId+".png")" style="border:1px solid;background-color:#fff;" />
+
+    @*<img alt="@Model.Pessoa.Nome" onerror="this.src='http://1x1px.me/FFFFFF-0.8.png'" src="data:image/png;base64,@Model.PessoaDadoClinico.PessoaAssinatura" style="border:1px solid;background-color:#fff;" />
+
+    <div class="assinado signed"> <div class="sigWrapper"> <div class="typed" style="display: none;">@Model.Pessoa.Nome</div> <canvas class="pad"  width="400" height="120"></canvas> </div> <p>@Model.Pessoa.Nome<br /><small>@Model.Pessoa.Documento</small><br>@String.Format("{0:d MMMM, yyyy}", Model.PessoaDadoClinico.RegDtInicio)</p> </div>*@
+
+     
+
+    
+
+
+</div>
+
+
+<br />
+
+
+
+@section Scripts {
+    <!--[if lt IE 9]><script src="~/Assets/plugins/signature-pad/flashcanvas.js"></script><![endif]-->
+    <script src="~/Assets/plugins/signature-pad/jquery.signaturepad.min.js"></script>
+
+    <script>
+        //$(document).ready(function () {
+        //    $('.sigPad').signaturePad({ drawOnly: true, lineTop: 50, errorMessageDraw: 'Por favor, assine o formulário' });
+        //});
+
+        //para ver a assinatura
+        
+        @*var sig = '@Html.Raw(@Model.PessoaDadoClinico.PessoaAssinatura)';
+        $(document).ready(function () {
+            $('.assinado').signaturePad({ displayOnly: true }).regenerate(sig);
+        });*@
+    </script>
+
+    <script src="~/Assets/plugins/signature-pad/json2.min.js"></script>
+}

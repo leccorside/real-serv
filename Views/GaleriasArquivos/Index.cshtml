@@ -1,0 +1,158 @@
+﻿@model Models.GaleriaArquivoView
+
+@{
+    ViewBag.Title = "Galeria / " + Model.Galeria.GaleriaNome;
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";    
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @Html.ActionLink("+ Criar", "Criar", new { id = 0, @GaleriaId=Model.Galeria.GaleriaId }, new { @class = "btn btn-primary" })
+                            </div>
+                            <div class="col-lg-6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <table cellpadding="1" cellspacing="1" class="table dataTable" id="table_produtos">
+                            <thead>
+                                <tr style="font-size: 12px;">
+
+                                    <th>
+                                        Nome do Arquivo
+                                    </th>
+                                    <th>Tipo</th>
+                                    <th>Ordem</th>
+                                    <th data-hide="phone,tablet">
+                                        Dt. Início
+                                    </th>
+
+                                    <th data-hide="phone,tablet">Alterar / Excluir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.ListGaleriaArquivo)
+                                {
+
+                                    var urlDownload = Url.Content("~/ApiIntegracao/GaleriaArquivosDownload/?guid=" + item.GaleriaArquivoGuid + "");
+                                    
+                                    <tr>
+
+                                        <td width="100%">
+                                            @Html.DisplayFor(modelItem => item.GaleriaArquivoNome)<br /><a class="btn btn-xs btn-outline btn-primary" href="@urlDownload" data-toggle="tooltip" data-original-title="Download @item.GaleriaArquivoNome" title="" data-placement="top"><i class="fa fa-download"></i> Download</a>
+                                        </td>
+                                        <td>@item.GaleriaArquivoContentType</td>
+                                        <td>@item.GaleriaArquivoOrdem</td>
+                                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                                            @Html.DisplayFor(modelItem => item.RegDtInicio)
+                                        </td>
+
+                                        <td nowrap data-hide="phone,tablet" style="display: table-cell">
+
+                                            @Html.ActionLink("Alterar", "Criar", new { id = item.GaleriaArquivoId }, new { @class = "btn btn-outline btn-primary btn-xs" })&nbsp;
+                                    @Html.ActionLink("Excluir", "Deletar", new { id = item.GaleriaArquivoId }, new { @class = "btn btn-outline btn-danger btn-xs" })
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+
+                        </table>
+
+
+                    </div>
+
+                    
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section css{
+    @Styles.Render("~/bundles/datatables/css")
+    
+}
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/datatables/js")
+    @Scripts.Render("~/bundles/datatablesBootstrap/js")
+    @Scripts.Render("~/bundles/datatablesPlugins/js")
+
+    
+
+    <script>
+
+        // Initialize Example 2
+        $('.dataTable').dataTable({
+            "pageLength": 50,
+            "paging": true,
+            "ordering": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "info": true,
+            "language": {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar ",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                }
+            }
+        });
+
+
+
+
+
+
+    </script>
+
+
+
+    
+
+}

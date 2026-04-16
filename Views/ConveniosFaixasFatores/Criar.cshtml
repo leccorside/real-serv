@@ -1,0 +1,123 @@
+﻿@model Models.ConvenioFaixaFator
+
+
+@{
+    
+
+    
+    var acao = "Cadastrar";
+    if (Model.ConvenioFaixaFatorId > 0)
+    {
+        acao = "Alterar";
+    }
+
+
+    ViewBag.Title = acao + " Fatores";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";   
+}
+
+
+
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Convênios", "Index", "Convenios", new { id = 0 },null)</li>
+    <li class="active"><span class="divider">/</span>@Model.ConvenioPlano.ConvenioNome</li>
+    <li class="active">@Html.ActionLink("Planos", "Index", new { id = 0, ConvenioPlanoId=Model.ConvenioPlanoId },null)</li>
+}
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+
+            <div class="hpanel">
+
+                <div class="panel-body">
+                    <!-- conteudo aqui -->
+
+                     <div class="row">
+
+                                <div class="form-group col-lg-6">
+                                    <label>Convênio</label>
+                                    <p class="form-control-static">@Model.ConvenioPlano.ConvenioNome</p>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>Plano</label>
+                                    <p class="form-control-static">@Model.ConvenioPlano.ConvenioPlanoNome</p>
+                                </div>
+
+                    </div>
+
+
+                    @using (Html.BeginForm("Criar", "ConveniosFaixasFatores", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(m => m.ConvenioPlanoId);
+        
+        if (Model.ConvenioFaixaFatorId > 0)
+        {
+        @Html.Hidden("ConvenioFaixaFatorId", Model.ConvenioFaixaFatorId);
+                                            acao = "Alterar";
+        }
+    
+       
+                        <div class="row">
+
+                               <div class="col-form col-lg-4 col-md-4 col-sm-4">
+            @Html.LabelFor(model => model.ValorDe) R$
+                @Html.TextBox("ValorDe", string.Format("{0:F2}", Model.ValorDe), new {  @class = "moeda  form-control" })
+                
+        </div>    
+        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+            @Html.LabelFor(model => model.ValorAte) R$
+                @Html.TextBox("ValorAte", string.Format("{0:F2}", Model.ValorAte), new {  @class = "moeda  form-control" })
+            
+        </div>     
+        <div class="col-form col-lg-4 col-md-4 col-sm-4">
+            @Html.LabelFor(model => model.Fator) %
+                @Html.TextBox("Fator", string.Format("{0:F2}", Model.Fator), new {  @class = "moeda  form-control" })
+                
+        </div>         
+            
+                       
+            
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <input  type="submit" value="Salvar" class="btn btn-primary btn-large" tabindex="11" />
+                                @Html.ActionLink("Voltar", "Index",  new { id = 0, ConvenioPlanoId=Model.ConvenioPlanoId }, new {@class="btn btn-outline btn-primary " })
+
+                            </div>
+
+                        </div>
+            
+                    }
+
+                    <!-- ./conteudo aqui -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    
+@Scripts.Render("~/bundles/mask/js")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+}

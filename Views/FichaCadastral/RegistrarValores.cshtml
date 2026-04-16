@@ -1,0 +1,331 @@
+﻿@model IEnumerable<Models.PessoaDadoClinico>
+
+@{
+    ViewBag.Title = "RegistrarValores";
+
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";     
+}
+
+
+@section Styles{
+    <style>
+
+        .api_error
+        {
+            color: red;
+            background-color: #000;
+            font-size: 11px;
+            padding: 5px;
+        }
+
+        .api_success
+        {
+            color: black;
+            background-color: #cae4c1;
+            font-size: 11px;
+            padding: 5px;
+        }
+
+        .money
+        {
+            width:110px !important;
+        }
+
+    </style>
+}
+
+<div class="row-fluid">
+    <div class="span12">
+        @using (Html.BeginForm("RegistrarValores", "FichaCadastral", FormMethod.Post, new { @class = "form-inline pull-right" }))
+        {
+            
+           
+            <i class="icon-filter icon-white tip-top" title="Filtros de pesquisa"></i>            
+            <input type="text" name="de" id="de" title="Data de" class="datepickerDe input-small tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+            <input type="text" name="ate" id="ate" title="Data até" class="datepickerAte input-small tip-bottom" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+            <input id="Submit1" type="submit" class="btn" value="Filtrar" />
+            
+
+            
+        }
+    </div>
+</div>
+
+
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>Data</th>
+                <th>Profissional</th>
+                <th>Cliente</th>
+                <th>Cupom</th>
+                <th>Vlr.Profissional</th>
+                <th>Vlr.@BLL.Usuarios.GetEmpresaNome()</th>
+                <th>Observação</th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                using (Html.BeginForm("RegistrarValoresRegistrar", "FichaCadastral", FormMethod.Post, new { @class = "form-inline pull-right" }))
+                {
+                @Html.Hidden("PessoaDadoClinicoId", item.PessoaDadoClinicoId)
+                @Html.Hidden("EmpresaId", item.EmpresaId)
+                @Html.Hidden("Documento", item.ClienteDocumento)
+
+                    //bool registrado = (item.ValorEmpresa != null) ? true : false;
+                    string class_arquivado = (item.Arquivado) ? " muted " : "";
+                
+                <tr class="@class_arquivado">
+                    <td nowrap><small>@item.RegDtInicio</small><br /> <a href="@Url.Content("~/FichaCadastral/Visualizar/" + item.PessoaDadoClinicoId + "?lightbox[iframe]=true&lightbox[width]=" + BLL.Utils.Funcoes.GetMaxWidth() + "&lightbox[height]=460")" class="ui-lightbox btn btn-default btn-mini pull-right "><i class="fa fa-search-plus"></i></a> <br /><br /><small style="font-size:9px; color:#fff">@item.PessoaDadoClinicoGuid</small></td>
+                    <td>@item.PessoaApelido<br /><a href="@Url.Content("~/FichaCadastral/AlterarDados/" + item.PessoaDadoClinicoId + "?lightbox[iframe]=true&lightbox[width]=" + BLL.Utils.Funcoes.GetMaxWidth() + "&lightbox[height]=460")" class="ui-lightbox btn btn-default btn-mini tip-top pull-right" data-toggle="tooltip" data-original-title="Alterar profissional"  title="Alterar profissional" data-placement="top"><i class="fa fa-pencil-square-o"></i></td>
+                    <td>@item.ClienteNome<br /><small>@item.ClienteDocumento</small><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaId + "?lightbox[iframe]=true&lightbox[width]=" + BLL.Utils.Funcoes.GetMaxWidth() + "&lightbox[height]=460")" class="ui-lightbox btn btn-default btn-mini pull-right"><i class="fa fa-search-plus"></i></a></td>
+
+                    @if (item.ValorRegistrado)
+                    {
+                        <td>
+                            <label>Voucher Multiplus<img src="~/Assets/img/icoMultiplus16_16.png" /></label>
+                            @Html.TextBox("Multiplus-"+item.PessoaDadoClinicoId, item.MultiplusNumber, new { @class = "input-small", @disabled="disabled" })
+
+                            <label>Cupom Tattooyou</label>
+                            @Html.TextBox("Cupom-"+item.PessoaDadoClinicoId, item.CupomNumber, new { @class = "input-small", @disabled="disabled" })
+
+                        </td>
+                        <td>@Html.TextBox("ValorProfissional", string.Format("{0:n2}", item.ValorProfissional), new { @class = "money span12", @disabled="disabled" })</td>
+                        <td>@Html.TextBox("ValorEmpresa", string.Format("{0:n2}", item.ValorEmpresa), new { @class = "money span12", @disabled="disabled" })</td>
+                        <td nowrap>@Html.TextArea("Observacao", item.Observacao, new {@class=" span12" , @disabled="disabled" , @style="font-size:11px;"})
+                    
+                            <br />
+                    @if (item.Integrar)
+                    {
+                        if (item.LoteId > 0)
+                        {
+                            <small><i class="fa fa-cloud-upload" aria-hidden="true"></i> Enviado Multiplus <img src="~/Assets/img/icoMultiplus16_16.png" /><br />(Lote: @item.LoteId)</small>
+                        }
+                        else
+                        {
+                            <small><i class="fa fa-check-square-o" aria-hidden="true"></i> Integrar Multiplus <img src="~/Assets/img/icoMultiplus16_16.png" /></small>
+                        }
+
+                    }
+                    else
+                    {
+                        <small><i class="fa fa-square-o" aria-hidden="true"></i> Integrar Multiplus <img src="~/Assets/img/icoMultiplus16_16.png" /></small>
+                    }
+
+                    <br /><br />
+                            <small>Valor registrado em:<br />@item.RegistraValorData</small>
+
+
+
+                    </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <label>Voucher Multiplus <img src="~/Assets/img/icoMultiplus16_16.png" /></label>
+                            <div class="input-append">
+                                <input class="input-small nosubmit" id="Multiplus-@item.PessoaDadoClinicoId" name="Multiplus-@item.PessoaDadoClinicoId" type="text" value="" onchange="valida_multiplus(@item.EmpresaId, '@item.ClienteDocumento',this.value,@item.PessoaDadoClinicoId)">
+                                <button type="button" id="btn-validar-multiplus" data-val="@item.PessoaDadoClinicoId" class="btn" ><i class="fa fa-search"></i></button>
+                            </div><br />
+                            <label id="@("Multiplus-" + item.PessoaDadoClinicoId + "-lbl")" name="@("Multiplus-" + item.PessoaDadoClinicoId + "-lbl")" style="display: none" ><i class="fa fa-check fa-2x text-success" aria-hidden="true"></i></label>
+                            <label id="@("Multiplus-" + item.PessoaDadoClinicoId + "-err")" name="@("Multiplus-" + item.PessoaDadoClinicoId + "-err")" style="display: none" ><i class="fa fa-exclamation-circle fa-2x text-error" aria-hidden="true"></i></label>
+                            <label>Cupom Tattooyou</label>
+                            <div class="input-append">
+                                <input class="input-small nosubmit" id="Cupom-@item.PessoaDadoClinicoId" name="Cupom-@item.PessoaDadoClinicoId" type="text" value="" onchange="valida_voucher(this.value,@item.PessoaDadoClinicoId)">
+                                <button type="button" id="btn-validar-voucher" data-val="@item.PessoaDadoClinicoId" class="btn" ><i class="fa fa-search"></i></button>
+                            </div><br />
+                            <label id="@("Cupom-" + item.PessoaDadoClinicoId + "-lbl")" name="@("Cupom-" + item.PessoaDadoClinicoId + "-lbl")" style="display: none" ><i class="fa fa-check fa-2x text-success" aria-hidden="true"></i></label>
+                            <label id="@("Cupom-" + item.PessoaDadoClinicoId + "-err")" name="@("Cupom-" + item.PessoaDadoClinicoId + "-err")" style="display: none" ><i class="fa fa-exclamation-circle fa-2x text-error" aria-hidden="true"></i></label>
+                        </td>
+                        <td>@Html.TextBox("ValorProfissional", string.Format("{0:n2}", item.ValorProfissional), new { @class = "money span12 nosubmit" })</td>
+                        <td>@Html.TextBox("ValorEmpresa", string.Format("{0:n2}", item.ValorEmpresa), new { @class = "money span12 nosubmit" })</td>
+                        <td>
+                    @Html.TextArea("Observacao", item.Observacao, new { @class=" span12 ", @style="font-size:11px;" })<br />
+                            <label class="checkbox">
+                                <input type="checkbox" name="Integrar" id="Integrar" value="true" /> <small>Acumular pontos Multiplus <img src="~/Assets/img/icoMultiplus16_16.png" /></small>
+                            </label>
+                        </td>
+                    }
+                    <td nowrap>
+                        @if (item.ValorRegistrado)
+                        {
+                            if (item.LoteId > 0)
+                            {
+                                <button class="btn btn-default btn-mini tip-top disabled" disabled="disabled" data-toggle="tooltip" data-original-title="Corrigir valor" title="Corrigir valor" data-placement="top" name="not" id="not" value="not" type="button" ><i class="fa fa-undo"></i></button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Corrigir valor" title="Corrigir valor" data-placement="top" name="registrar" id="corrigir" value="corrigir" type="submit" onclick="return confirm('Deseja corrigir o valor?')"><i class="fa fa-undo"></i></button>
+                            }
+
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary btn-mini " name="registrar" id="registar" value="registrar" type="submit"><i class="fa fa-usd"></i> Lançar Valor</button>    
+                        }
+
+                        @if (item.Arquivado)
+                        {
+                            <button class="btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Desarquivar"  title="Desarquivar" data-placement="top" name="registrar" id="desarquivar" value="desarquivar" type="submit" onclick="return confirm('Deseja realmente Desarquivar esse registro?')"><i class="fa fa-folder-open-o"></i></button>    
+                        }
+                        else
+                        {
+                        <button class="btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Arquivar"  title="Arquivar" data-placement="top" name="registrar" id="arquivar" value="arquivar" type="submit" onclick="return confirm('Deseja realmente Arquivar esse registro?')"><i class="fa fa-folder-o" ></i></button>        
+                        }
+
+                        
+
+                        <button class="btn btn-default btn-mini tip-top" data-toggle="tooltip" data-original-title="Excluir registro"  title="Excluir registro" data-placement="top" name="registrar" id="excluir" value="excluir" type="submit" onclick="return confirm('Deseja realmente excluir essa ficha?')"><i class="fa fa-trash"></i></button>    
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td colspan="10"><center><span id="@("Cupom-" + item.PessoaDadoClinicoId + "-txt")" name="@("Cupom-" + item.PessoaDadoClinicoId + "-txt")" ></span><span id="@("Multiplus-" + item.PessoaDadoClinicoId + "-txt")" name="@("Multiplus-" + item.PessoaDadoClinicoId + "-txt")" ></span></center></td>
+                </tr>
+                
+                }
+            }
+
+        </table>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>*@
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    @*<script src="~/Content/themes/base/js/Gallery.js"></script>*@
+    
+    <script src="~/Assets/themes/metro/js/footable.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.footable').footable({
+                breakpoints: {
+                    phone: 400,
+                    tablet: 800
+                }
+            });
+        });
+        
+        $("#de").mask("99/99/9999");
+        $("#ate").mask("99/99/9999");
+
+        $("body").on("click", ".jquery-lightbox-overlay", function () {
+            window.location.reload(true);
+        });
+
+        $("body").on("click", ".jquery-lightbox-button-close", function () {
+            window.location.reload(true);
+        });
+
+        
+        $('.imprimir').on('click', function () {
+            var $this = $(this);
+            $this.button('loading');
+            setTimeout(function () {
+                $this.button('reset');
+            }, 8000);
+        });
+
+
+
+        $("#btn-validar-voucher").click(function () {
+
+            var id = $(this).data('val');
+
+            var numero = $("#Cupom-" + id).val();
+            
+            valida_voucher(numero,id);
+
+        });
+
+
+        $("#btn-validar-multiplus").click(function () {
+
+            var id = $(this).data('val');
+
+            var voucher = $("#Multiplus-" + id).val();
+            var documento = $("#Documento-" + id).val();
+            var idempresa = $("#EmpresaId").val();
+
+            valida_multiplus(idempresa, documento, voucher, id);
+
+        });
+
+        function valida_voucher(numero,nid) {
+            $.getJSON('@Url.Content("~/ApiIntegracao/ValidarVoucher/")', { number: numero }, function (data) {
+
+                
+
+                console.log(data);
+                
+                $("#Cupom-" + nid + "-txt").html("");
+                $("#Cupom-" + nid + "-lbl").css("display", "none");
+                $("#Cupom-" + nid + "-err").css("display", "none");
+                $("#Cupom-" + nid + "-txt").removeClass("api_success");
+                $("#Cupom-" + nid + "-txt").removeClass("api_error");
+
+                if (data.codigo == 200) {
+                    $("#Cupom-" + nid + "-txt").html(data.mensagem + "<br />");
+                    $("#Cupom-" + nid + "-lbl").css("display", "block");
+                    $("#Cupom-" + nid + "-txt").addClass("api_success");
+                } else {
+                    $("#Cupom-" + nid + "-txt").html(data.mensagem + "<br />");
+                    $("#Cupom-" + nid).val("");
+                    $("#Cupom-" + nid).focus();
+                    $("#Cupom-" + nid + "-err").css("display", "block");
+                    $("#Cupom-" + nid + "-txt").addClass("api_error");
+                }
+
+
+
+            });
+        }
+
+
+        function valida_multiplus(_id, _documento, _voucher, nid) {
+
+
+
+            $.getJSON('@Url.Content("~/ApiIntegracao/MultiplusVoucherConsultar/")', { voucher: _voucher, documento: _documento, id:_id }, function (data) {
+
+
+
+                console.log(data);
+
+                $("#Multiplus-" + nid + "-txt").html(data.mensagem);
+                $("#Multiplus-" + nid + "-lbl").css("display", "none");
+                $("#Multiplus-" + nid + "-err").css("display", "none");
+                $("#Multiplus-" + nid + "-txt").removeClass("api_success");
+                $("#Multiplus-" + nid + "-txt").removeClass("api_error");
+
+                if (data.codigo == 200) {
+                    $("#Multiplus-" + nid + "-txt").html(data.mensagem + "<br />");
+                    $("#Multiplus-" + nid + "-lbl").css("display", "block");
+                    $("#Multiplus-" + nid + "-txt").addClass("api_success");
+                    
+
+                } else {
+                    $("#Multiplus-" + nid + "-txt").addClass("api_error");
+                    $("#Multiplus-" + nid + "-txt").html(data.mensagem + "<br />");
+                    $("#Multiplus-" + nid).val("");
+                    $("#Multiplus-" + nid).focus();
+                    $("#Multiplus-" + nid + "-err").css("display", "block");
+                }
+
+                
+
+            });
+        }
+
+    </script>
+
+
+
+}

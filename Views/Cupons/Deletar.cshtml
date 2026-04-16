@@ -1,0 +1,133 @@
+﻿@model Models.Cupom
+
+@{
+    ViewBag.Title = "Excluíndo Cupom";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    var bllCupons = new BLL.Cupons();
+    var qtdCuponsAtivos = bllCupons.GetQtdCuponsAtivosPorLote(Model.CupomCabecalhoId);
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Cupons", "Index", new { id = 0 })</li>
+}
+
+
+
+
+<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h2>Atencão!</h2>
+    Você tem certeza que deseja apagar esse registro?
+</div>
+
+
+
+
+<div class="cwell">
+
+
+    <table class="footable table-bordered table-striped table-pequeno">
+        <thead>
+            <tr>
+                <th>Programa</th>
+                <th>Cupom</th>
+                <th>Valor</th>
+                <th data-hide="phone,tablet">Cliente
+                </th>
+                <th>Gerado
+                </th>
+                <th>Vencimento
+                </th>
+                <th>Utilizado
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr class="">
+                <td>@Model.CupomTipoNome</td>
+                <td class="text-center">@Model.CupomNumber</td>
+
+                <td class="text-center">
+                    @if (Model.CupomTipo == 0)
+                    {
+                        <span>@Model.CupomValor.ToString("C")</span>
+                    }
+                    else
+                    {
+                        <span>@Model.CupomValor.ToString("P")</span>
+                    }
+
+                </td>
+
+                <td nowrap data-hide="phone,tablet" style="display: table-cell">
+                    @Model.Nome
+                </td>
+                <td>@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</td>
+                <td>@string.Format("{0:dd/MM/yyyy}", Model.CupomVencimento)</td>
+                <td>
+                    @if (Model.Utilizado)
+                    {
+                        <span>Sim - @Model.UtilizadoData</span>
+                    }
+                    else
+                    {
+                        <span>Não</span>
+                    }
+
+
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+
+    <br />
+
+    @using (Html.BeginForm())
+    {
+        
+        
+        
+        <div class="row-fluid">
+        
+            <div class="span6">
+                  <p class="pull-left">
+                    <br /><br />
+                    @Html.ActionLink("Voltar", "Index")
+                </p>
+            </div>
+            
+            
+                <div class="span6">
+
+                
+                @if (qtdCuponsAtivos > 1)
+                {
+                    <small>Esse cupom pertence ao lote que possui @qtdCuponsAtivos cupons ativos. Deseja apagar esse e todos os outros registros do lote?</small>
+                    <label class="checkbox">
+                <input type="checkbox" name="apagar_lote" id="apagar_lote" value="true" >Apagar Lote</label>
+                    
+                    
+                
+                }
+
+
+                @Html.HiddenFor(model => model.CupomId)
+                @Html.HiddenFor(model => model.CupomCabecalhoId)
+                <p class="pull-right">
+                    <input type="submit" value="Apagar" class="btn btn-large btn-danger" onclick="return confirm('Deseja realmente apagar os dados?')" />
+                </p>
+
+              
+                
+            </div>
+        </div>    
+    }
+
+
+
+</div>

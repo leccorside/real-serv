@@ -1,0 +1,266 @@
+﻿@model Models.Ocorrencia
+
+@{
+    ViewBag.Title = "Criar Ocorrência";
+
+
+    if (Model.Modal)
+    {
+        Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";  
+    }
+
+    //Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+    
+}
+@{
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+    var bllAnexos = new BLL.OcorrenciasAnexos();
+    var listaAnexos = bllAnexos.Listar(Model.OcorrenciaId);
+
+    var bllDocumentosArquivos = new BLL.DocumentosArquivos();
+
+    var listaDocumentos = bllDocumentosArquivos.Listar(null, "", "", "", "ocorrencias", Model.OcorrenciaId);
+    
+}
+
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span> @Html.ActionLink("Ocorrências", "Index", new { id = 0 })</li>
+}
+
+<div class="cwell">
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">Dados Gerais</a></li>
+        <li><a href="#" id="btn-blog">Histórico</a></li>
+    </ul>
+
+
+
+    @using (Html.BeginForm("Criar", "Ocorrencias", FormMethod.Post, new { @id = "form-criar", enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+
+        @Html.HiddenFor(m => m.OcorrenciaId);
+        @Html.HiddenFor(m => m.Modal);
+        @Html.HiddenFor(m => m.RegStatus);
+        
+        <input type="hidden" value="criar" id="destino" name="destino" />
+        
+        <div class="row-fluid">
+            <div class="span2">
+                <label>Ocorrência n.</label>
+                <span class="black">@Model.OcorrenciaId</span>
+            </div>
+
+            <div class="span2">
+                <label>Data</label>
+                <span class="black">@string.Format("{0:dd/MM/yyyy}", Model.RegDtInicio)</span>
+            </div>
+
+            <div class="span2">
+                <label>Data</label>
+                <span class="black">@string.Format("{0:HH:mm}", Model.RegDtInicio)</span>
+            </div>
+
+            <div class="span3">
+                <label>Situação</label>
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.Resolvido) <i class="fa fa-check" aria-hidden="true"></i>Resolvido
+                </label>
+            </div>
+
+            <div class="span3">
+                <label>Privado</label>
+                <label class="checkbox">
+                    @Html.CheckBoxFor(model => model.Privado) <i class="fa fa-lock" aria-hidden="true"></i>Privado
+                </label>
+            </div>
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Cliente</label>
+                @Html.DropDownListFor(model => model.PessoaId, (SelectList)ViewBag.ddlClientes, "--Selecione--", new { @class = "chosen-select span12 " })
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span4">
+                <label>Atendente</label>
+                @Html.TextBoxFor(m => m.Atendente, new { @class = "span12" })
+            </div>
+            <div class="span4">
+                <label>Solicitante</label>
+                @Html.TextBoxFor(m => m.Solicitante, new { @class = "span12" })
+            </div>
+            <div class="span4">
+                <label>Executor</label>
+                @Html.DropDownListFor(model => model.UsuarioId, (SelectList)ViewBag.ddlExecutor, "--Selecione--", new { @class = "chosen-select span12 " })
+            </div>
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span6">
+                <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+                @Html.DropDownListFor(model => model.FuncionarioId, (SelectList)ViewBag.ddlFuncionarios, "--Selecione--", new { @class = "chosen-select span12 " })
+            </div>
+            <div class="span6">
+                <label>Tipo de Ocorrência</label>
+                @Html.DropDownListFor(model => model.OcorrenciaTipoId, (SelectList)ViewBag.ddlOcorrenciasTipos, "--Selecione--", new { @class = "chosen-select span12 " })
+            </div>
+
+        </div>
+        <br />
+        <div class="row-fluid">
+            <div class="span6">
+                <label>Ocorrência</label>
+                @Html.TextAreaFor(m => m.OcorrenciaDescricao, new { @class = "span12", @rows = "5" })
+                @if (Model.RefExtEntidade == "Supervisoes")
+                {
+                    <a href="@Url.Content("~/Supervisoes/View/" + Model.RefExtEntidadeId + "?lightbox[iframe]=true&lightbox[width]=650&lightbox[height]=440&Modal=True")" class="ui-lightbox tip-top" data-toggle="tooltip" data-original-title="Visualizar"  title="Visualizar" data-placement="top"><i class="fa fa-search-plus"></i> Clique aqui para visualizar a supervisão @Model.RefExtEntidadeId</a>
+                }
+            </div>
+            <div class="span6">
+                <label>Solução Tomada</label>
+                @Html.TextAreaFor(m => m.Solucao, new { @class = "span12", @rows = "5" })
+            </div>
+        </div>
+        <br />
+        
+        
+        <div class="row-fluid">
+            <div class="span12">
+                <legend><i class="fa fa-paperclip"></i>Anexos</legend>
+                <input id="arquivo" type="file" multiple="multiple" name="arquivo" />
+
+                <ul class="gallery-container">
+
+                    @foreach (var itemAnexo in listaAnexos)
+                    {
+                        var total_dias = (itemAnexo.Validade - DateTime.Now.Date).TotalDays;
+                        var classe = (total_dias < 1) ? "text-error" : "text-success";      
+                        <li>
+
+
+                            @if (itemAnexo.PathThumb != null)
+                            {
+                                <a href="@Url.Content(itemAnexo.Path)" class="ui-lightbox">
+                                    <img style="height: 146px; max-height:146px;" src="@Url.Content(itemAnexo.PathThumb)" alt="@itemAnexo.FileName" />
+                                </a><a href="@Url.Content(itemAnexo.Path)" class="preview"></a>
+                                <br />
+                            }
+                            else
+                            {
+                                <div style="height: 146px; max-height: 146px;">@itemAnexo.ContentType.ToString()<br />
+                                    <br />
+                                    <br />
+                                    <small>Sem visualização</small>
+                                </div>
+                            }
+
+
+                            <small>Formato: @itemAnexo.ContentType.ToString()</small><br />
+                            <small>Nome: @itemAnexo.FileName.ToString()</small><br />
+                            <small>Peso: @(itemAnexo.ContentLength / 1000) kb</small><br />
+                            <a href="@Url.Content("~/Ocorrencias/DownloadAnexo/0/0/?Guid=" + itemAnexo.Guid)" class="btn btn-mini pull-left">Download</a>&nbsp;
+                        <a href="@Url.Content("~/Ocorrencias/RemoveAnexo/" + Model.OcorrenciaId + "/?Guid=" + itemAnexo.Guid)" class="btn btn-mini pull-right" onclick="return confirm('Deseja realmente excluir esse anexo?')">Excluir</a>
+
+                        </li>                            
+                    }
+
+
+
+
+                </ul>
+            </div>
+        </div>
+
+        
+        
+                        @*<li><a href="Url.Content("~/Ocorrencias/ImprimirAdvertencia/" + Model.OcorrenciaId)" class="btn "><i class="fa fa-print"></i>Imprimir Advertência</a></li>
+                        <li><a href="Url.Content("~/Ocorrencias/ImprimirSuspensao/" + Model.OcorrenciaId)" class="btn "><i class="fa fa-print"></i>Imprimir Suspensão</a></li>*@
+
+        
+        <br />
+        <div class="row-fluid">
+            <div class="span12">
+                <strong>Gerar relatório</strong>
+            <br />
+            <a href="@Url.Content("~/DocumentosArquivos/Index/" + Model.OcorrenciaId + "/ocorrencias/?lightbox[iframe]=true&lightbox[width]=740&lightbox[height]=460")" class="btn btn-mini ui-lightbox" data-toggle="tooltip" data-original-title="Status"  title="Status" data-placement="top"><i class="fa fa-file-o" aria-hidden="true"></i> Documentos</a>
+            <br />
+            @Html.Partial("~/Views/DocumentosArquivos/_ListDocumentos.cshtml", listaDocumentos)
+
+            </div>    
+        </div>
+        
+    
+        <div class="form-actions">
+
+            <div class="row-fluid">
+                <div class="span6">
+                    @if (!Model.Modal)
+                    {
+                        <button name="salvarfechar" value="true" type="submit" class="btn btn-primary  btn-large ">Salvar e fechar</button>    
+                    }
+
+
+                    <button name="salvar" value="true" type="submit" class="btn btn-primary  btn-large ">Salvar</button>
+
+
+                </div>
+                <div class="span6">
+                    @if (Model.Modal)
+                    {
+                        <a href="@Url.Content("~/Ocorrencias/Deletar/" + Model.OcorrenciaId + "?modal=" + Model.Modal + "")" class="btn btn-danger pull-right">Apagar</a>    
+                    }
+
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+    }
+
+    @if (Model.Modal == false)
+    {
+        <div>
+            <a href="~/Ocorrencias/Index" class="btn">Voltar</a>
+        </div>
+    }
+
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#btn-blog').click(function () {
+                $('#destino').val("Blog");
+                $('#form-criar').submit();
+            });
+        });
+    </script>
+}
+
+

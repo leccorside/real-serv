@@ -1,0 +1,175 @@
+﻿@model  IEnumerable<Models.Remessa>
+
+
+@{
+    ViewBag.Title = "Remessa";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+
+    BLL.Lancamentos lancamentos = new BLL.Lancamentos();
+    var qtdBoletos = lancamentos.BoletosPossui();
+}
+
+
+@section Breadcrumb{
+    <li class="active">@Html.ActionLink("Integrações", "Integracoes", "Principal")</li>
+
+}
+
+
+
+<div class="content ">
+    <div class="row">
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+                        
+@using (Html.BeginForm())
+{
+    
+    <div class="row">
+        <div class="col-lg-4">
+            <label>Selecione a data</label>
+            @Html.TextBox("DataCompetencia",  String.Format("{0:dd/MM/yyyy}", DateTime.Now), new { @class = "datepicker input-small form-control", value = DateTime.Now })
+        </div>
+        <div class="col-lg-4">
+            <label>Informe a conta</label>
+
+            <div class="input-group">
+                @Html.DropDownList("ContaId", (SelectList)ViewBag.listarcontas, "--Selecione--", new { @class = "chosen-select form-control  tip-top", @Value = ViewBag.ContaId, @title = "Conta" })
+                <span class="input-group-btn">
+                    <button type="submit"  onclick="return confirm('Confirma geração do arquivo Remessa?')" class="btn btn-primary" @(qtdBoletos > 0 ? "" : " disabled=\"disabled\" ") >Gerar Arquivo</button>
+                </span>
+            </div>
+
+            
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+    
+                    
+            
+}
+
+
+
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="table-responsive">
+                        <a href="@Url.Content("~/Integracoes/Remessa")" class=" btn btn-outline btn-primary "><i class="fa fa-refresh"></i> Atualizar</a>
+                        <table cellpadding="1" cellspacing="1" class="table dataTable" id="table_produtos">
+                             <thead>
+                        <tr>
+
+                            <th>
+                               #
+                            </th>
+                            <th nowrap>Sequencial</th>
+                            <th nowrap>Qtd.Boletos</th>
+                            <th nowrap>Valor</th>
+                            <th nowrap>Dt.Geração</th>
+                            <th></th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RemessaId)
+                                </td>
+                                 <td>
+                                    @Html.DisplayFor(modelItem => item.RemessaSq)
+                                </td>
+                                 <td>
+                                    @Html.DisplayFor(modelItem => item.QtdBoletos)
+                                </td>
+                                 <td>
+                                    @Html.DisplayFor(modelItem => item.Valor)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RegDtInicio)
+                                </td>
+
+                                <td>
+                                    <a href="~/Integracoes/Download/@item.RemessaId" class="btn btn-outline btn-primary"><i class="fa fa-download"></i> Download Remessa</a> 
+
+                                   
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+                    
+
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+   @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")ev
+    @Scripts.Render("~/bundles/clipboard/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/maxlenght/js")
+    
+    <script>
+        $("#DataCompetencia").mask("99/99/9999");
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+        $('.moeda').mask('000000000000000,00', { reverse: true });
+        $('.max').maxlength();
+        $('.chosen-select').select2();
+        $(".select-all").click(function () {
+            $(this).select();
+        });
+
+
+    </script>
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

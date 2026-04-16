@@ -1,0 +1,105 @@
+﻿@{
+    DateTime DataConsulta = Convert.ToDateTime(ViewBag.DataConsulta);
+    ViewBag.Title = "Relatório de Presença";
+    Layout = "~/Views/Shared/_Report.cshtml";
+    
+}
+
+
+@{
+    
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+    var qtd = 0;
+    
+    var PessoaId = ViewBag.ClienteId;
+    var DataInicio = ViewBag.dataDe ;
+    DataInicio = Convert.ToDateTime(DataInicio);
+    var DataFim = ViewBag.dataAte ;
+    DataFim = Convert.ToDateTime(DataFim);
+    var pessoas = new BLL.Pessoas();
+    var objPessoas = pessoas.Carregar(PessoaId);
+
+    var presencas = new BLL.PresencaRelatorio();
+    var objpresencas = presencas.ListaPresencaAluno(PessoaId, DataInicio, DataFim);
+
+    var DataPlano = "";
+    var CodigoPlano = 0;
+
+
+    DataInicio = Convert.ToString(DataInicio);
+    DataInicio = DataInicio.Substring(0, DataInicio.Length - 9);
+
+    DataFim = Convert.ToString(DataFim);
+    DataFim = DataFim.Substring(0, DataFim.Length - 9);
+    
+    var pessoas2 = new BLL.Pessoas();
+    var objplanos = pessoas2.PlanosAtivos(PessoaId);
+}
+
+
+
+<table border="0" width="100%">
+    <tr>
+        <td>
+            @BLL.Usuarios.GetEntidadeClienteSingular() - @objPessoas.Nome / Data de: @DataInicio até @DataFim
+            <br />
+            @foreach (var obs in objplanos)
+            {
+                <br />
+                @obs
+            }
+            <br />
+        </td>
+    </tr>
+</table>
+                
+                    
+    <table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="1">
+        
+      
+
+        <tbody>
+            <tr>
+                <td>Serviço </td>
+                <td>Registro de Presença</td>
+                <td>Data de Registro</td>
+                <td>Credito Inicial do Plano</td>
+                <td>Presença Registrada por</td>
+                <td>Data de Cadastro do Plano</td>
+                <td>Código do Plano</td>
+                </tr>
+
+                @foreach( var presenca in objpresencas) {
+
+                    qtd = qtd + 1;
+                <tr>
+                    <td>@presenca.ServicoNome </td>
+                    <td>@presenca.Presenca</td>
+                    <td>@presenca.DataPresenca</td>
+                    <td>@presenca.CreditoInicial</td>
+                    <td>@presenca.UsuarioNome</td>
+                    @if (presenca.PlanoId == 0) {
+
+                         DataPlano = "Sem Plano";
+                         CodigoPlano = 0 ; 
+                    
+                    }
+                    
+                    else{
+
+                        DataPlano = Convert.ToString(presenca.DataPlano);
+                        CodigoPlano = presenca.PlanoId;
+                        
+                    }
+                    <td>@DataPlano</td>
+                    <td>@CodigoPlano</td>
+
+                </tr>
+                }
+                                               
+                       
+                    </tbody>
+    </table>
+        Quantidade de Registros: @qtd

@@ -1,0 +1,271 @@
+﻿@model IEnumerable<Models.Lancamento>
+
+@{
+    ViewBag.Title = "Extrato de " + String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe()) + " até " + String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte());
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";  
+    BLL.Lancamentos lancamento = new BLL.Lancamentos();
+    var colspan = 4;
+}
+
+@section Breadcrumb{
+    <li>@Html.ActionLink("Financeiro", "Financeiro", "Principal")</li>
+}
+<div class="content">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- FORM -->
+
+<!-- adicionar -->
+        <div class="btn-group pull-left">
+            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><i class="icon-plus icon-white"></i>Adicionar <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="@Url.Action("CriarLancamento", "Financeiro", new { id = 0, tipo = "R" })" role="button" data-toggle="modal"><span class="badge badge-success">R</span> Receita</a></li>
+                <li><a href="@Url.Action("CriarLancamento", "Financeiro", new { id = 0, tipo = "D" })" role="button" data-toggle="modal"><span class="badge badge-important">D</span> Despesa</a></li>
+                <li><a href="@Url.Action("Transferencia", "Financeiro", new { id = 0, tipo = "T" })" role="button" data-toggle="modal"><span class="badge badge-info">T</span> Transferência</a></li>
+            </ul>
+        </div>
+        <!-- ./adicionar-->
+
+        @using (Html.BeginForm("Index", "Financeiro", FormMethod.Post, new { @class = "form-inline pull-right" }))
+        {
+            
+           
+            <i class="icon-filter icon-white tip-top" title="Filtros de pesquisa"></i>
+            
+            @Html.DropDownList("ContaId", (SelectList)ViewBag.DdlContas, "Todas as contas", new { @class = "chosen-select form-control tip-top", @Value = BLL.Usuarios.GetContaId(), @title = "Conta" })<span>&nbsp;</span>
+            
+            @Html.DropDownList("tipo", (SelectList)ViewBag.DdlLancamentoTipos, "Todos os lançamentos", new { @class = "chosen-select form-control tip-top", @Value = BLL.Usuarios.GetTipoLancamento(), @title = "Tipo de lançamento" })
+            
+            
+            <input type="text" name="dataDe" title="Data de" class="datepickerDe form-control tip-top" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe())" />
+            <input type="text" name="dataAte" title="Data até" class="datepickerAte form-control tip-top" value="@String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())" />
+            <input id="Submit1" type="submit" class="btn" value="Filtrar" />
+            
+
+            
+        }
+                    <!--./ FORM-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+            <div class="hpanel">
+                <div class="panel-body">
+                    <!-- LANCAMENTOS -->
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th nowrap>Vencimento
+                                </th>
+                                <th nowrap>Conta</th>
+                                <th nowrap></th>
+                                <th width="100%">
+                                    @Html.DisplayNameFor(model => model.Descricao)
+                                </th>
+
+                                <th></th>
+                                <th nowrap>
+                                    <span class="pull-right">
+                                        @Html.DisplayNameFor(model => model.Valor)
+                                    </span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                var vencido = (item.Vencido) ? "error" : "";
+                                var vurl = "";
+                                if (item.LancamentoTipo == "I")
+                                { vurl = Url.Action("Editar", "Contas", new { id = item.ContaId, tipo = "extrato" }); }
+                                else if (item.LancamentoTipo == "T")
+                                { vurl = Url.Action("Transferencia", "Financeiro", new { id = item.LancamentoIdPai }); }
+                                else
+                                { vurl = Url.Action("CriarLancamento", "Financeiro", new { id = item.LancamentoId }); }
+        
+                                <tr class="tr-edit @vencido">
+                                    <td nowrap onclick="location.href = '@vurl'">
+                                        @Html.DisplayFor(modelItem => item.DataVencimento)
+                                    </td>
+                                    <td nowrap  onclick="location.href = '@vurl'">
+                                        <small>@item.ContaNome</small>
+                                    </td>
+                                    <td  onclick="location.href = '@vurl'">
+                                        @if (item.LancamentoTipo == "R")
+                                        {
+                                            <span title="Receita" class="badge badge-success tip-top">R</span>
+
+                            }
+                                        @if (item.LancamentoTipo == "D")
+                                        {
+                                            <span title="Despesa" class="badge badge-important tip-top">D</span>
+                            }
+                                        @if (item.LancamentoTipo == "T")
+                                        {
+                                            <span title="Transferência" class="badge badge-info tip-top">T</span>
+                            }
+                                        @if (item.LancamentoTipo == "I")
+                                        {
+                                            <span title="Início de Saldo" class="badge  tip-top">I</span>
+                            }
+
+
+                                    </td>
+
+                                    <td width="100%">
+                                        @if (item.LancamentoTipo == "T")
+                                        {
+                                            <a href="@vurl"><small class="text-info">Transferência - </small></a>
+                            }
+                                        <a href="@vurl"><small class="text-info">@(item.CategoriaNome != null ? item.CategoriaNome + " - " : "")</small> <small>@item.Descricao</small></a> @if (item.PessoaNome != null)
+                                                                                                                                                                                            {<small><a href="@Url.Content("~/Pessoas/DadosAluno/" + item.PessoaID)?lightbox[iframe]=true&lightbox[width]=770&lightbox[height]=460" class="ui-lightbox">@item.PessoaNome</a></small> } </td>
+
+                                    <td  onclick="location.href = '@vurl'">@if (item.Baixado)
+                                                                           {
+                                        <i title="Ok (Baixado)" class="icon-ok  tip-top"></i>
+                                                               }</td>
+                                    <td nowrap onclick="location.href = '@vurl'">
+                                        <span class="pull-right">
+                                            @Html.DisplayFor(modelItem => item.Valor)
+
+
+                                        </span>
+                                    </td>
+
+                                </tr>
+                }
+
+
+                        </tbody>
+
+                        <!-- totais -->
+                        <tfoot>
+
+
+
+
+                            <tr>
+                                <td colspan="3" rowspan="2">
+                                    <h2 class="pull-right text-success">Receitas</h2>
+                                </td>
+                                <td>
+                                    <span class="pull-right text-success">Recebido</span>
+                                </td>
+                                <td><i class="icon-ok  tip-top"></i></td>
+                                <td nowrap>
+                                    <span class="pull-right text-success">@String.Format("{0:c}", @Model.Where(x => x.LancamentoTipo == "R" && x.Baixado == true).Sum(x => x.Valor))</span>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <span class="pull-right text-success">À receber</span>
+                                </td>
+                                <td></td>
+                                <td nowrap>
+                                    <span class="pull-right text-success">@String.Format("{0:c}", @Model.Where(x => x.LancamentoTipo == "R" && x.Baixado == false).Sum(x => x.Valor))</span>
+                                </td>
+
+                            </tr>
+
+
+
+                            <tr>
+                                <td colspan="3" rowspan="2">
+                                    <h2 class="pull-right text-error">Despesas</h2>
+                                </td>
+                                <td>
+                                    <span class="pull-right text-error">Pago</span>
+                                </td>
+                                <td><i class="icon-ok  tip-top"></i></td>
+                                <td nowrap>
+                                    <span class="pull-right text-error">@String.Format("{0:c}", @Model.Where(x => x.LancamentoTipo == "D" && x.Baixado == true).Sum(x => x.Valor))</span>
+                                </td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td>
+                                    <span class="pull-right text-error">À pagar</span>
+                                </td>
+                                <td></td>
+                                <td nowrap>
+                                    <span class="pull-right text-error">@String.Format("{0:c}", @Model.Where(x => x.LancamentoTipo == "D" && x.Baixado == false).Sum(x => x.Valor))</span>
+                                </td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td colspan="3" rowspan="2">
+                                    <h2 class="pull-right text" style="color: #000;">Saldo</h2>
+                                </td>
+                                <td nowrap>
+                                    <span class="pull-right text">Total do Período de @String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateDe()) - @String.Format("{0:dd/MM/yyyy}", @BLL.Usuarios.GetDateAte())</span>
+                                </td>
+                                <td colspan="2" nowrap>
+                                    <span class="pull-right text">@String.Format("{0:c}", Model.Where(x => x.Baixado == true).Sum(item => item.Valor))</span>
+                                </td>
+                            </tr>
+
+                            <!-- ./totais -->
+
+                            <tr>
+
+                                <td nowrap>
+                                    <span class="pull-right text">Total Geral</span>
+                                </td>
+                                <td colspan="2" nowrap>
+                                    <span class="pull-right text">@String.Format("{0:c}", lancamento.Saldo(BLL.Usuarios.GetContaId()))</span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td nowrap colspan="4">
+                                    <span class="pull-right text">
+                                        <h5 style="color: #000;">Todas as Contas - Saldo Total Geral</h5>
+                                    </span>
+                                </td>
+                                <td colspan="2" nowrap>
+                                    <span class="pull-right text">
+                                        <h5 style="color: #000;">@String.Format("{0:c}", lancamento.Saldo())</h5>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <!-- ./LANCAMENTOS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script src="~/Content/themes/base/js/plugins/lightbox/jquery.lightbox.min.js"></script>
+    <script src="~/Content/themes/base/js/Application.js"></script>
+    @*<script src="~/Content/themes/base/js/Gallery.js"></script>*@
+
+
+    <script>
+        $('#ContaId').val(@BLL.Usuarios.GetContaId());
+        $('#tipo').val('@BLL.Usuarios.GetTipoLancamento()');
+    </script>
+
+}

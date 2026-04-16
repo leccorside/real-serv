@@ -1,0 +1,205 @@
+﻿@model Models.ConvenioMedProdutoView
+
+@{
+    ViewBag.Title = "Produtos & Exames";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+
+    var bllMedProdutosCategorias = new BLL.MedProdutosCategorias();
+    var listaCategorias = bllMedProdutosCategorias.ListarTipos(false);
+    
+}
+
+
+
+
+@section Breadcrumb{
+
+    <li class="active">@Html.ActionLink("Configurações", "Configuracoes", "Principal")</li>
+    <li class="active">@Html.ActionLink("Convênios", "Index", new { id = 0 })</li>
+
+}
+
+
+<div class="content ">
+    <div class="row">
+
+
+
+
+        <div class="col-md-12" style="">
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class=" p-xs font-normal">
+
+                        <div class="row">
+
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                @Html.FormPesquisaIndex("pull-right")
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- tirei daqui-->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <legend>@Model.Convenio.ConvenioNome</legend>
+
+                            <div class="hpanel collapsed">
+                                <div class="panel-heading ">
+                                    <a class="showhide"><i class="fa fa-cogs"></i>Opções</a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            @using (Html.BeginForm("Zerar", "Convenios", FormMethod.Post, new { @class = "form-inline" }))
+                                            {                           
+                                                @Html.Hidden("id", Model.ConvenioId);  
+                                                <label>Categoria</label><br />
+                                                foreach (var item in listaCategorias)
+                                                {
+                                                <div class="checkbox">
+                                                   <label><input type="checkbox" value="@item.Value" name="MedProdutoCategoriaIds" id="MedProdutoCategoriaIds[@item.Value]" /> @item.Text</label>
+                                                </div><br />
+                                                    
+                                                }
+                                                <br />
+                                                
+                                                <button class="btn btn-outline btn-xs btn-primary">Zerar Categoria</button>
+                                            }
+                                        </div>
+                                        <div class="col-lg-6"><a href="@Url.Content("~/Convenios/ProdutosCopiarValor/" + Model.ConvenioId + "/?")" class="fancybox.iframe fancybox_recarrega btn btn-outline btn-primary btn-xs pull-right" data-toggle="tooltip" data-original-title="Copiar valor de tabela de outro convênio"  title="Copiar valor de tabela de outro convênio" data-placement="top"><i class="fa fa-calculator"></i>Copiar de outro convênio</a></div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    @using (Html.BeginForm("Produtos", "Convenios", FormMethod.Post))
+                    { 
+
+                        @Html.HiddenFor(m => m.ConvenioId)
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <button name="salvar" value="true" type="submit" class="btn btn-primary pull-right  ">Atualizar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table cellpadding="1" cellspacing="1" class="table" id="table_produtos">
+                                <caption class="text-center">@Model.ListConvenioMedProduto.Count() registros</caption>
+                                <thead>
+                                    <tr>
+                                        <th>Código
+                                        </th>
+                                        <th>Categoria</th>
+                                        <th width="70%">Produto
+                                        </th>
+                                        <th width="15%" data-hide="phone,tablet">Valor Atual</th>
+                                        <th width="15%">Valor</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @for (int i = 0; i < Model.ListConvenioMedProduto.Count(); i++)
+                                    {
+                                        <tr>
+                                            <td nowrap>
+                                                @Model.ListConvenioMedProduto[i].MedProdutoCod
+                                            </td>
+                                            <td>@Model.ListConvenioMedProduto[i].MedProdutoCategoriaNome</td>
+                                            <td>
+                                                @Model.ListConvenioMedProduto[i].MedProdutoNome
+                                            </td>
+                                            <td>@string.Format("{0:F2}", Model.ListConvenioMedProduto[i].Valor)</td>
+                                            <td>
+                                                @Html.TextBox("ListConvenioMedProduto[" + i + "].Valor", string.Format("{0:F2}", Model.ListConvenioMedProduto[i].Valor), new { id = "ListConvenioMedProduto_" + i + "__Valor", @class = "moeda form-control" })
+                                                @Html.HiddenFor(model => Model.ListConvenioMedProduto[i].MedProdutoId)
+                                                @Html.HiddenFor(model => Model.ListConvenioMedProduto[i].ConvenioMedProdutoId)
+                                                @Html.Hidden("ListConvenioMedProduto[" + i + "].ConvenioId", Model.ConvenioId, new { id = "ListConvenioMedProduto_" + i + "__ConvenioId" })
+                                            </td>
+
+                                        </tr>
+                                    }
+
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <button name="salvar" value="true" type="submit" class="btn btn-primary pull-right  ">Atualizar</button>
+                            </div>
+                        </div>
+
+                    }
+                    <!-- ./tirei daqui-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/fancybox/css")
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/mask/js")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.moeda').mask('000000000000000,00', { reverse: true });
+        });
+    </script>
+
+    <script>
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+    </script>
+
+}
+

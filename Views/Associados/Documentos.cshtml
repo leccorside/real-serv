@@ -1,0 +1,203 @@
+﻿@model Models.PessoaPlanoInscricaoView
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.EmpresaId);
+
+
+    var bllPessoasCategoriasSubs = new BLL.PessoasCategoriasSubs();
+    var categoriaSub = bllPessoasCategoriasSubs.Carregar(Model.Pessoa.PessoaCategoriaSubId, Model.Pessoa.EmpresaId);
+
+
+    //tudo isso para verificar se pode alterar
+    var bllPessoasPlanosInscricoes = new BLL.PessoasPlanosInscricoes();
+    var ultInscricaoAtiva = bllPessoasPlanosInscricoes.GetUltInscricaoAtiva(Model.Pessoa.PessoaID, Model.Pessoa.EmpresaId);
+
+    var podeAlterar = true;
+    if (ultInscricaoAtiva.EntidadeStatusId > 0)
+    {
+        var bllEntidadesStatus = new BLL.EntidadesStatus();
+        var status = bllEntidadesStatus.Carregar(ultInscricaoAtiva.EntidadeStatusId, Model.Pessoa.EmpresaId);
+        if (status.StatusTipo == 2)
+        {
+            podeAlterar = false;
+        }
+    }
+    
+}
+
+
+
+<div class="content-boxed">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho) @Model.Pessoa.EmpresaId
+            </div></div>
+    </div>
+
+    @if (Model.Pessoa.ContraSenha == null && Model.Pessoa.ContraSenha == "")
+    {
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><strong>Atenção</strong> Você ainda não definiu uma senha de acesso.  <a class="fancybox fancybox.iframe" href="@Url.Content("~/Associados/SuaSenha/" + Model.Pessoa.EmpresaId + "/" + Model.Pessoa.PessoaGUID)">Clique aqui para resolver isso</a>
+                </div>
+            
+        </div>
+    </div>    
+    }
+    
+
+    <div class="row">
+    <div class="col-lg-3" style="">
+        <div class="hpanel hgreen">
+            <div class="panel-body">
+                <a  href="@Url.Content("~/Associados/Principal/" + Model.Pessoa.EmpresaId + "/" + Model.Pessoa.PessoaGUID+"?tab=")"><h3>@Model.Pessoa.Nome</h3></a>
+                <div class="text-muted font-bold m-b-xs">@Model.Pessoa.Cidade, @Model.Pessoa.Estado</div>
+                
+                <ul class="mailbox-list">
+                        <li>
+                            <a class="fancybox fancybox.iframe" href="@Url.Content("~/Associados/SuaSenha/" + Model.Pessoa.EmpresaId + "/" + Model.Pessoa.PessoaGUID)"><i class="fa fa-key text-danger"></i> Alterar Senha</a>
+                        </li>
+                        @*<li>
+                            <a class="fancybox fancybox.iframe" href="@Url.Content("~/Associados/SeusDados/" + Model.Pessoa.EmpresaId + "/" + Model.Pessoa.PessoaGUID)"><i class="fa fa-user"></i> Alterar Dados</a>
+                        </li>
+                        *@
+                    </ul>
+
+            </div>
+            
+            
+
+        </div>
+    </div>
+    <div class="col-lg-9" style="">
+        <div class="hpanel hgreen">
+            
+            <div class="panel-body">
+                <dl>
+                    <dt>Status da Inscrição</dt>
+                    <dd>@Model.PessoaPlanoInscricao.PessoaPlanoPagtoDescricao</dd>
+                    
+                </dl>
+
+                @if (Model.PessoaPlanoInscricao.PessoaPlanoInscricaoStatusId != (int)BLL.PessoasPlanosInscricoes.EnumSituacaoPlano.Paga)
+                {
+                    <a class="btn btn-outline btn-primary btn-sm" target="_blank" href="@Url.Content("~/Associados/GateWayPagamento/" + Model.Pessoa.EmpresaId + "/" + Model.PessoaPlanoInscricao.PessoaPlanoGUID)"> Realizar Pagamento</a>
+                }
+                else
+                {
+                    <small>Vencimento</small>
+                    <h4>@Convert.ToDateTime(Model.PessoaPlanoInscricao.PessoaPlanoInscricaoDtValidade).ToShortDateString()</h4>
+                }
+            </div>
+            
+
+        </div>
+    </div>
+</div>
+
+
+    <legend>Documentos</legend>
+    @*@Html.CubeeAnexos("Pessoas", Model.Pessoa.PessoaID, "Rg, Cpf ou CNH|Diploma (reconhecido MEC)", "form-control", true, false, true, true, true)*@
+    @Html.CubeeAnexos("Pessoas", Model.Pessoa.PessoaID, categoriaSub.DocumentosPadrao, "col-lg-12 col-md-12 col-sm-12", true, podeAlterar, podeAlterar, podeAlterar, false, categoriaSub.DocumentosObrigatorios, Model.Pessoa.EmpresaId)
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_rodape)
+            </div></div>
+    </div>
+
+</div>
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+    <script type="text/javascript">
+        $('.chosen-select').select2();
+        $('.datepicker').datepicker({ language: 'pt-BR', format: 'dd/mm/yyyy', todayHighlight: true, todayBtn: true });
+
+
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '60%',
+            autoSize: false,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        
+     
+
+        $(".fancybox_full").fancybox({
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+
+
+    </script>
+
+
+}
+

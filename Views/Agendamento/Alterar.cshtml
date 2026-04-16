@@ -1,0 +1,109 @@
+﻿@model Models.Agendamento
+
+@{
+
+    ViewBag.Title = " Dados do Aluno";
+    Layout = "~/Views/Shared/_LayoutBranco.cshtml";
+
+    var user = new BLL.Usuarios();
+    var objEmpresas = new BLL.Empresas();
+    var empresa = objEmpresas.Carregar(BLL.Usuarios.GetEmpresaId());
+
+
+
+    var AgendaHoraIni = empresa.AgendaHoraIni;
+    var AgendaHoraFim = empresa.AgendaHoraFim;
+    var AgendaIntervaloMinutos = empresa.AgendaIntervaloMinutos;
+
+    TimeSpan intervalo = AgendaHoraFim - AgendaHoraIni;
+
+    var horarios = (intervalo.TotalMinutes / AgendaIntervaloMinutos) + 1;
+    var horario = AgendaHoraIni;
+
+    var Agendamento_AgendamentoSeguro = user.ControleAcesso("AgendamentoSeguro", "Agendamento");
+    
+    var idx = 0;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.Hidden("AgendamentoId", Model.AgendamentoId);
+    <div class="cwell">
+
+
+        <div class="row-fluid">
+            <div class="span3">
+                <label>Data</label>
+                @Html.TextBox("Inicio", @String.Format("{0:dd/MM/yyyy}", Model.Inicio), new { @class = "maskdate input-small", value = @DateTime.Now })
+            </div>
+            <div class="span9">
+                <label>Horário Início</label>
+                <select class="chosen-select input-small" id="HoraInicio" name="HoraInicio">
+                    @{horario = AgendaHoraIni;
+                    }
+                    @for (int i = 0; i < horarios; i++)
+                    {
+                        idx = 0;
+                        horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+                        var shorario = String.Format("{0:t}", horario);
+                        var shorarioSelect = String.Format("{0:t}", Model.Inicio);
+                        <option value="@shorario" @(shorario == shorarioSelect ? "selected" : "")>@shorario</option>
+                    }
+                </select>
+
+                <select class="chosen-select input-small" id="HoraFim" name="HoraFim">
+                    @{horario = AgendaHoraIni;
+                    }
+                    @for (int i = 0; i < horarios; i++)
+                    {
+                        idx = 0;
+                        horario = (i > 0) ? horario.AddMinutes(AgendaIntervaloMinutos) : horario;
+                        var shorario = String.Format("{0:t}", horario);
+                        var shorarioSelect = String.Format("{0:t}", Model.Fim);
+                        <option value="@shorario" @(shorario == shorarioSelect ? "selected" : "")>@shorario</option>
+                    }
+                </select>
+            </div>
+            
+        </div>
+
+        <div class="row-fluid">
+              <div class="span12">
+
+                @Html.LabelFor(model => model.Observacoes)
+
+                @Html.TextAreaFor(model => model.Observacoes, new { @class = "input-block-level", @rows = "8" })
+                @Html.ValidationMessageFor(model => model.Observacoes)
+
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="span6">
+                <label>@Html.LabelFor(model => model.ServicoId)</label>
+                @Html.DropDownListFor(model => model.ServicoId, (SelectList)Model.ServicoTipos, "--Selecione--", new { @class = "chosen-select " })
+            </div>
+            <div class="span6">
+                <label>@BLL.Usuarios.GetEntidadeFuncionario()</label>
+                @Html.DropDownListFor(model => model.PessoaID, (SelectList)Model.FuncionarioList, "--Selecione--", new { @class = "chosen-select " })
+            </div>
+
+        </div>
+
+        @if (Agendamento_AgendamentoSeguro)
+        {
+            @Html.Partial("~/Views/Usuarios/_ConfirmLogin.cshtml")            
+        }
+        
+
+        <div class="row-fluid">
+            
+                <div class="span12">
+                    <button name="salvar" value="true" type="submit" class="btn btn-primary  btn-large pull-right">Salvar</button>
+                </div>
+            
+        </div>
+
+    </div>
+      
+}

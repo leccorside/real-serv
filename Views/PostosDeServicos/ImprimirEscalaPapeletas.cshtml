@@ -1,0 +1,337 @@
+﻿@model Models.EscalaRegistroView
+
+@{
+    if (Model.Impressao == true)
+    {
+        ViewBag.Title = "ImprimirEscala";
+        Layout = "~/Views/Shared/_WindowPrint.cshtml";
+    }
+    else
+    {
+        ViewBag.Title = "ImprimirEscala";
+        Layout = "~/Views/Shared/_LayoutOpen.cshtml";
+    }
+
+    var bllPessoas = new BLL.Pessoas();
+
+    var listaPessoas = Model.ListaEscalaRegistro.Select(x => x.PessoaId).Distinct();
+
+    var dias = (Model.Escala.DataAte - Model.Escala.DataDe).TotalDays; dias++;
+
+
+}
+
+@section Styles{
+
+    <style>
+        .page-break {
+            display: block;
+            page-break-before: always;
+        }
+
+        table.grade, table.grade th, table.grade td {
+            border: 1px solid black;
+            padding: 1px;
+        }
+
+        table.grade {
+            /*font-size:11px;*/
+        }
+
+        .td_quadro {
+            border: 1px solid black;
+        }
+    </style>
+
+}
+
+@foreach (var pessoaId in listaPessoas)
+{
+
+    var escala = from items in Model.ListaEscalaRegistro
+                 where items.PessoaId == pessoaId
+                 select items;
+
+    decimal totalHoraExtra = 0;
+    decimal totalDescontoHora = 0 ; @*Alteracao Ricardo 20/06/2021*@
+
+    decimal totalHoras = escala.Sum(m => m.PontoHoras);
+
+
+
+    var escala1 = escala.Take(16);
+    var escala2 = escala.Skip(16).Take(16);
+
+    var TipoEscalaJornada = escala.ElementAt(0).TipoEscalaJornada;
+
+    var totDiasJornada = escala.Where(m => m.Situacao == "J").Count();
+
+    var pessoa = bllPessoas.Carregar(escala.ElementAt(0).PessoaId);
+
+    decimal totalVT = (pessoa.ValeTransporteDia * Convert.ToDecimal(totDiasJornada));
+
+
+    <div class="page-header">
+        <table width="100%">
+            <tr>
+                <td>
+                    <h4>PAPELETA DE SERVIÇO EXTERNO INDIVIDUAL MENSAL (FIXO)</h4>
+                    ART. 74 &sect; 2&bdquo; da C.L.T. - MODELO CONFORME PORTARIA N&bdquo; 3.626, DE 13/11/19
+                </td>
+                <td align="right">
+                    <h4>@BLL.Usuarios.GetEmpresaNome()</h4>
+                    <p class="pull-right muted credit">
+                        Gerado em: @DateTime.Now por: @BLL.Usuarios.GetUsuarioNome()
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+
+
+        <table width="100%">
+            <tr>
+                <td nowrap>Nome do Empregado:</td>
+                <td nowrap width="25%"><strong>@pessoa.Nome</strong></td>
+                <td nowrap>RE:</td>
+                <td nowrap width="25%"><strong>@pessoa.RE</strong></td>
+                <td nowrap>CTPS:</td>
+                <td nowrap width="25%"><strong>@pessoa.CTPS</strong></td>
+                <td nowrap>Função:</td>
+                <td nowrap width="25%"><strong>@escala.ElementAt(0).ServicoNome</strong></td>
+            </tr>
+        </table>
+        <table width="100%">
+            <tr>
+                <td nowrap>Local do Serviço:</td>
+                <td nowrap width="25%"><strong>@Model.PostoDeServico.PostoDeServicoNome</strong></td>
+                <td nowrap>Período:</td>
+                <td nowrap width="25%"><strong>@Model.Escala.DataDe.ToShortDateString() até @Model.Escala.DataAte.ToShortDateString()</strong></td>
+                <td nowrap>Ano:</td>
+                <td nowrap width="25%"><strong>@Model.Escala.DataAte.Year</strong></td>
+                <td nowrap width="25%" align="right"><small>(Demais documentos encontram-se no escritório da empresa)</small></td>
+            </tr>
+        </table>
+
+        <table width="100%">
+            <tr>
+                <td valign="top">
+                    <table width="100%" class="grade">
+                        <thead>
+                            <tr>
+                                <th>Dia</th>
+                                <th>Entrada</th>
+                                <th colspan="2">Intervalo</th>
+                                <th>Saída</th>
+                                <th>Total Extra</th>
+                                <th>Total horas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in escala1)
+                            {
+                                var qtdHorasExtra = item.PontoHoras - item.Horas;
+                                var qtdHorasNegativaDia = qtdHorasExtra;
+                                if (qtdHorasExtra < 0)
+                                {
+                                    if (item.PontoHoras > 0)
+                                    {
+                                        totalDescontoHora += (qtdHorasExtra * -1);
+                                        qtdHorasNegativaDia = qtdHorasExtra;
+                                    }
+
+                                    qtdHorasExtra = 0;
+                                }
+                                totalHoraExtra += qtdHorasExtra;
+                            <tr>
+                                <td>@item.EscalaRegistroData.ToShortDateString()</td>
+                                @if (item.Situacao == "J")
+                                {
+                                    <td>@item.PontoInicio</td>
+                                    <td>@item.PontoIntervalInicio</td>
+                                    <td>@item.PontoIntervalFim</td>
+                                    <td>@item.PontoFim</td>
+
+                                }
+                                else
+                                {
+                                    <td colspan="4">@item.Jornada</td>
+                                }
+                                @if (qtdHorasExtra > 0)
+                                {
+                                    <td>&nbsp; @BLL.Utils.Funcoes.ConvertDecimalToHour(qtdHorasExtra)</td>
+
+                                }
+                                else
+                                {
+                                    if (item.PontoHoras > 0 && @qtdHorasNegativaDia < 0)
+                                    {
+                                        <td>&nbsp; @BLL.Utils.Funcoes.ConvertDecimalToHour(@qtdHorasNegativaDia * -1) (-)</td>
+                                    }
+                                    else
+                                    {
+                                        <td>&nbsp; </td>
+                                    }
+                                 }
+
+                                <td>@BLL.Utils.Funcoes.ConvertDecimalToHour(item.PontoHoras)</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </td>
+                <td valign="top">
+                    <table width="100%" class="grade">
+                        <thead>
+                            <tr>
+                                <th>Dia</th>
+                                <th>Entrada</th>
+                                <th colspan="2">Intervalo</th>
+                                <th>Saída</th>
+                                <th>Total Extra</th>
+                                <th>Total horas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in escala2)
+                            {
+                                var qtdHorasExtra = item.PontoHoras - item.Horas;
+                                var qtdHorasNegativaDia = qtdHorasExtra;
+                                if (qtdHorasExtra < 0)
+                                {
+                                    if (item.PontoHoras > 0)
+                                    {
+                                        totalDescontoHora += (qtdHorasExtra * -1);
+                                        qtdHorasNegativaDia = qtdHorasExtra;
+                                    }
+
+                                    qtdHorasExtra = 0;
+                                }
+
+                                totalHoraExtra += qtdHorasExtra;
+                            <tr>
+                                <td>@item.EscalaRegistroData.ToShortDateString()</td>
+
+                                @if (item.Situacao == "J")
+                                {
+                                    <td>@item.PontoInicio</td>
+                                    <td>@item.PontoIntervalInicio</td>
+                                    <td>@item.PontoIntervalFim</td>
+                                    <td>@item.PontoFim</td>
+                                }
+                                else
+                                {
+                                    <td colspan="4">@item.Jornada</td>
+                                }
+
+                                @if (qtdHorasExtra > 0)
+                                {
+                                    <td>&nbsp; @BLL.Utils.Funcoes.ConvertDecimalToHour(qtdHorasExtra)</td>
+
+                                }
+                                else
+                                {
+                                    if (item.PontoHoras > 0 && @qtdHorasNegativaDia < 0)
+                                    {
+                                        <td>&nbsp; @BLL.Utils.Funcoes.ConvertDecimalToHour(@qtdHorasNegativaDia * -1) (-)</td>
+                                    }
+                                    else
+                                    {
+                                        <td>&nbsp; </td>
+                                    }
+                                }
+
+                                <td>@BLL.Utils.Funcoes.ConvertDecimalToHour(item.PontoHoras)</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+
+        <table width="100%">
+            <tr>
+                <td width="50%" valign="top">
+                    <table>
+                        <tr>
+                            <td width="16%">Salário Base</td>
+                            <td width="16%" class="td_quadro">&nbsp;</td>
+                            <td width="16%">Adc.Noturno</td>
+                            <td width="16%" class="td_quadro">&nbsp;</td>
+                            <td width="16%">DSR FALTAS</td>
+                            <td width="16%" class="td_quadro">&nbsp;</td>
+                        </tr>
+                        <tr>
+
+                            <td>Farmácia</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td>Total hora</td>
+                            <td class="td_quadro">@totalHoras</td>
+                            <td>Plano Saúde</td>
+                            <td class="td_quadro">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>Adiamento</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td>Vale Transporte</td>
+                            <td class="td_quadro">&nbsp;@totalVT.ToString("C")</td>
+                            <td>Farmácia</td>
+                            <td class="td_quadro">&nbsp;</td>                            
+                        </tr>
+                        <tr>
+                            <td>Adc.Noturno</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td>Art. 71 / 4 CLT</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td>Total extra</td>
+                            <td class="td_quadro">&nbsp;@BLL.Utils.Funcoes.ConvertDecimalToHour(totalHoraExtra)  </td>  @*Alteracao Ricardo 20/06/2021*@
+                             
+                        </tr>
+                        <tr>
+                            <td>DSR</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td>Art. 66 - CLT</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td> Desconto</td>
+                            <td class="td_quadro"> @BLL.Utils.Funcoes.ConvertDecimalToHour(totalDescontoHora) </td>
+                        </tr>
+                        <tr>
+                            <td>Acúmulo Função</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td>Faltas</td>
+                            <td class="td_quadro">&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+
+                        <tr>
+                        </tr>
+
+                    </table>
+                </td>
+                <td width="50%" valign="top">
+                    <br /><br /><br />
+                    <table width="100%">
+                        <tr>
+                            <td><h6 style="border-top:1px solid black">Assinatura do Funcionário</h6></td>
+                            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                            <td><h6 style="border-top:1px solid black">Assinatura do Supervisor</h6></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>Confirmo a Frequência</strong></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+
+
+    </div>
+
+    <div class="page-break"></div>
+}
+
+

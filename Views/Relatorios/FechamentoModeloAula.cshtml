@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Models.Simulacao>
+
+
+@{
+    
+    
+    DateTime DataConsultaDe = Convert.ToDateTime(ViewBag.DataConsultaDe);
+    DateTime DataConsultaAte = Convert.ToDateTime(ViewBag.DataConsultaAte);
+    ViewBag.Title = "Lista Presença";
+    Layout = "~/Views/Shared/_Report.cshtml";
+
+    string dt = DateTime.MinValue.ToShortDateString();
+
+    var i = 0;
+    decimal vlDia = 0;
+    double vlTotal = 0;
+    int TotalAulas = 0;
+
+    var pessoas = new BLL.Pessoas();
+    var objPessoas = pessoas.Carregar(ViewBag.PessoaId);
+
+    var fechamento = ViewBag.fechaula;
+    
+    var contador = Model.Count();
+    
+}
+    <table border="0" width="100%">
+        <tr>
+            <td><h6>@objPessoas.Nome</h6></td>
+            <td align="right"><h4>Relatório de Fechamento</h4></td>
+        </tr>
+    </table>
+
+<table width="100%">
+    <tr>
+        <td><strong>Número do fechamento:</strong> @ViewBag.IdSimulacao</td>
+        <td align="right"><strong>Período:</strong> @ViewBag.DataConsultaDe até @ViewBag.DataConsultaAte</td>
+    </tr>
+
+</table>
+
+
+<table class="table table-hover table-condensed table-bordered" cellspacing="0" cellpadding="1">
+   <tr>
+       <td>Serviço</td>
+       <td>Turma</td>
+       <td>Quantidade de Aulas</td>
+       <td>Total a ser pago</td>
+   </tr>
+
+
+    @foreach (var item in fechamento) { 
+    <tr>
+        <td>@item.ServicoNome</td>
+        <td>@item.TurmaNome</td>
+        <td>@item.Qtd</td>
+        <td>@string.Format("{0:C}", item.ValorPagar)</td>
+    </tr>
+        vlTotal = vlTotal+ item.ValorPagar;
+        TotalAulas = TotalAulas + item.Qtd;
+    }
+    <tr>
+        <td colspan="3"><span class="pull-right">TOTAL GERAL</span></td>
+        <td><span class="pull-right">@string.Format("{0:C}", vlTotal)</span></td>
+    </tr>
+    <tr>
+        <td colspan="3"><span class="pull-right">TOTAL DE AULAS</span></td>
+        <td><span class="pull-right">@TotalAulas</span></td>
+    </tr>
+
+</table>

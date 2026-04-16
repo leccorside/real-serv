@@ -1,0 +1,143 @@
+﻿@model Models.PessoaPlanoInscricaoView
+
+@{
+    ViewBag.Title = "Associe_se";
+    Layout = "~/Views/Shared/_FortunaHome.cshtml";
+
+    var associe_cabecalho = BLL.Configuracoes.CarregarPorEmpresaId("associe_cabecalho", Model.PessoaPlanoInscricao.EmpresaId);
+    var associe_rodape = BLL.Configuracoes.CarregarPorEmpresaId("associe_rodape", Model.PessoaPlanoInscricao.EmpresaId);
+
+
+    //var associe_obrigado_texto = BLL.Configuracoes.CarregarPorEmpresaId("associe_obrigado_texto", Model.EmpresaId);
+    var associe_obrigado_urlredirect = BLL.Configuracoes.CarregarPorEmpresaId("associe_obrigado_urlredirect", Model.PessoaPlanoInscricao.EmpresaId);
+
+    var bll = new BLL.BCASH(Model.PessoaPlanoInscricao.EmpresaId);
+
+    var nome = BLL.Utils.Funcoes.GetPrimeiroNome(Model.Pessoa.Nome).ToLower();
+
+    var descricao = Model.PessoaPlano.PessoaPlanoTitulo ?? Model.PessoaPlano.PessoaPlanoGrupoNome;
+
+    var urlsistema = BLL.Configuracoes.CarregarPorEmpresaId("url.sistema", Model.PessoaPlanoInscricao.EmpresaId);
+
+    var linkboleto = urlsistema + "/boletos/Index/" + Model.Boleto.BoletoId;
+                   
+}
+
+
+
+<div class="content-boxed">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center m-b-md">
+                @Html.Raw(associe_cabecalho)
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <h3><span style="text-transform:capitalize">@nome</span>, clique no link abaixo para abrir o boleto!<br /></h3>
+                            <br /><br /><br />
+                            <a class="fancybox fancybox.iframe btn  btn-primary btn-lg" href="@linkboleto"><i class="fa fa-barcode"></i> Abrir Boleto</a> <a class=" btn btn-outline btn-primary btn-lg" href="@associe_obrigado_urlredirect"><i class="fa fa-globe"></i> Voltar para Site</a>
+                            @associe_obrigado_urlredirect
+                        </div>
+                    </div>
+                    
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            @Html.Raw(associe_rodape)
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Styles{
+    @Styles.Render("~/bundles/select2/css")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Styles.Render("~/bundles/fancybox/css")
+    @Styles.Render("~/bundles/toastr/css")
+<style>
+    input.btn-enviar {
+    display: none;
+}
+</style>
+
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/fancybox/js")
+    @Scripts.Render("~/bundles/select2/js")
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Scripts.Render("~/bundles/mask/js")
+    @Scripts.Render("~/bundles/jquery-cep/js")
+    @Scripts.Render("~/bundles/toastr/js")
+
+
+    <script type="text/javascript">
+        
+
+        $(".fancybox_recarrega").fancybox({
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            padding: 0,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            },
+            beforeClose: function () {
+                RecarregaPagina();
+            },
+        });
+        $(".fancybox").fancybox({
+            toolbar: false,
+            padding: 0,
+            fitToView: false,
+            width: '80%',
+            autoSize: true,
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+        $(".fancybox_full").fancybox({
+            padding: 0,
+            fitToView: false,
+            width: '98%',
+            autoSize: false,
+            closeClick: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            helpers: {
+                overlay: {
+                    locked: true
+                }
+            }
+        });
+
+
+
+
+        function RecarregaPagina() {
+            window.location.reload(true);
+        }
+
+        
+    </script>
+    
+}
+

@@ -1,0 +1,55 @@
+﻿@model Models.UsuarioFuncao
+
+@{
+    var acao = "Cadastrar";
+    if (Model.UsuarioFuncaoId > 0)
+    {
+        acao = "Alterar";
+    }
+
+    ViewBag.Title = acao + " Função";
+}
+
+@section Breadcrumb{
+    <li class="active"><span class="divider">/</span>    @Html.ActionLink("Funções", "Index")</li>
+}
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+         
+    if (Model.UsuarioFuncaoId > 0)
+    {
+    @Html.Hidden("UsuarioFuncaoId", Model.UsuarioFuncaoId);
+    }
+    
+
+        
+
+    <div class="editor-label">
+        <label>Nome</label>
+    </div>
+    <div class="editor-field">
+        @Html.EditorFor(model => model.UsuarioFuncaoNome)
+        @*@Html.ValidationMessageFor(model => model.UsuarioFuncaoNome)*@
+    </div>
+
+
+    
+
+    <div class="form-actions">
+
+
+        <input type="submit" value="@acao" class="btn btn-primary  btn-large"  TabIndex=10 />
+
+    </div>
+    
+}
+
+<div>
+    @Html.ActionLink("Voltar", "Index")
+</div>
+

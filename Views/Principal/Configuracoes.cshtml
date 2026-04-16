@@ -1,0 +1,250 @@
+﻿@{
+    ViewBag.Title = "Configurações";
+    Layout = "~/Views/Shared/_FortunaLayout.cshtml";
+    var user = new BLL.Usuarios();
+
+
+    var lista = new List<Models.Menu>();
+    var contador = 0;
+    var contadorMaster = 1;
+    var orientacao = "col-l";
+    var click = "";
+
+    //monta o menu de acordo com o perfil 
+    //cores: Orange, Purple, lblue, Red, Green and Blue
+    //icones: http://fortawesome.github.io/Font-Awesome/icons/
+
+    lista.Add(new Models.Menu { Cor = "black", Icone = "fa fa-home", Link = "~/Principal/Index", Nome = "Home", OnClick = "" });
+
+    if (user.ControleAcesso("entidades", "metas"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-bullseye", Link = "~/metas/entidades/", Nome = "Metas", OnClick = "" });
+    }
+    
+    if (user.ControleAcesso("index", "contas"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-credit-card", Link = "~/Contas/Index/", Nome = "Contas bancárias", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "contatipos"))
+    {
+        lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-tag", Link = "~/ContaTipos/Index/", Nome = "Tipos de contas", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "servicos"))
+    {
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-tasks", Link = "~/Servicos/Index/", Nome = "Serviços", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "categorias"))
+    {
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-list-ul", Link = "~/Categorias/Index/", Nome = "Categorias", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "convenios"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-hospital-o", Link = "~/Convenios/Index/", Nome = "Convênios", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "medprodutos"))
+    {
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-heartbeat", Link = "~/MedProdutos/Index/", Nome = "Produtos & Exames", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "medprodutoscategorias"))
+    {
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-heartbeat", Link = "~/medprodutoscategorias/Index/", Nome = "Categorias de Produtos", OnClick = "" });
+    }
+
+    
+    if (user.ControleAcesso("index", "MedProdutosFavoritos"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-star", Link = "~/MedProdutosFavoritos/Index/", Nome = "Produtos & Exames Favoritos", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "salas"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-pushpin", Link = "~/Salas/Index/", Nome = "Salas", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "pagamentotipos"))
+    {
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-qrcode", Link = "~/PagamentoTipos/Index/", Nome = "Tipos de pagamento", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "midias"))
+    {
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-comments", Link = "~/Midias/Index/", Nome = "Mídias", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "usuarios"))
+    {
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-group", Link = "~/Usuarios/Index/", Nome = "Usuários", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("index", "turmas"))
+    {
+        lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-group", Link = "~/Turmas/Index/0/", Nome = "Turmas", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "planocontas"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-align-left", Link = "~/PlanoContas/Index/", Nome = "Plano de Contas", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "tiposanexos"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-paperclip", Link = "~/TiposAnexos/Index/", Nome = "Tipos de Anexos", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "filiais"))
+    {
+        lista.Add(new Models.Menu { Cor = "green", Icone = "fa fa-sitemap", Link = "~/Filiais/Index/", Nome = "Filiais", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "sindicatos"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-users", Link = "~/Sindicatos/Index/", Nome = "Sindicatos", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "cartorios"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-bank", Link = "~/Cartorios/Index/", Nome = "Cartórios", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "tiposconversoes"))
+    {
+        lista.Add(new Models.Menu { Cor = "purple", Icone = "fa fa-bank", Link = "~/TiposConversoes/Index/", Nome = "Tipos de Conversões", OnClick = "" });
+    }
+    
+    if (user.ControleAcesso("index", "companhias"))
+    {
+        lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-building", Link = "~/Companhias/Index/", Nome = "Companhias", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "Funcoes"))
+    {
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-user-plus", Link = "~/Funcoes/Index/", Nome = "Funções", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("index", "Feriados"))
+    {
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-bed", Link = "~/Feriados/Index/", Nome = "Feriados", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("index", "OcorrenciasTipos"))
+    {
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-file-code-o", Link = "~/OcorrenciasTipos/Index/", Nome = "Tipos de Ocorrências", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "cuponstipos"))
+    {
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-credit-card", Link = "~/CuponsTipos/Index/", Nome = "Tipos de Cupons", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("index", "Perfis"))
+    {
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-puzzle-piece", Link = "~/Perfis/Index/", Nome = "Perfis de Acesso", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("index", "EntidadesNomes"))
+    {
+        lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-cubes", Link = "~/EntidadesNomes/Index/", Nome = "Entidades", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("entidades", "EntidadesStatus"))
+    {
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-flag", Link = "~/EntidadesStatus/Entidades/", Nome = "Status", OnClick = "" });
+    }
+
+
+    if (user.ControleAcesso("index", "SupervisoesTipos"))
+    {
+        lista.Add(new Models.Menu { Cor = "orange", Icone = "fa fa-th-list", Link = "~/SupervisoesTipos/Index/", Nome = "Itens Supervisão", OnClick = "" });
+    }
+
+
+
+    if (user.ControleAcesso("index", "DocumentosLayouts"))
+    {
+        lista.Add(new Models.Menu { Cor = "blue", Icone = "fa fa-paint-brush", Link = "~/DocumentosLayouts/Index/", Nome = "Layout Base de Documentos", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "DocumentosTemplates"))
+    {
+        lista.Add(new Models.Menu { Cor = "lblue", Icone = "fa fa-file-image-o", Link = "~/DocumentosTemplates/Index/", Nome = "Templates de Documentos", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "ConveniosFaixasFatoresFiliais"))
+    {
+        lista.Add(new Models.Menu { Cor = "red", Icone = "fa fa-check-square-o", Link = "~/ConveniosFaixasFatoresFiliais/Index/", Nome = "Definição de Fatores por Filial", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "Configuracoes"))
+    {
+        lista.Add(new Models.Menu { Cor = "black", Icone = "fa fa-slack", Link = "~/Configuracoes/Index/", Nome = "Variáveis do Sistema", OnClick = "" });
+    }
+
+    if (user.ControleAcesso("index", "Logs"))
+    {
+        lista.Add(new Models.Menu { Cor = "black", Icone = "fa fa-history", Link = "~/Logs/Index/", Nome = "Logs do Sistema", OnClick = "" });
+    }
+}
+
+
+@section Breadcrumb{
+
+}
+
+
+
+<div class="content animate-panel">
+
+
+    <div class="row">
+
+        <div class="col-md-6 col-md-offset-3" style="">
+
+
+            <div class="hpanel">
+                <div class="panel-heading hbuilt">
+                    <div class="panel-tools">
+                        <a class="showhide"><i class="fa fa-chevron-up"></i></a>
+                        <a class="closebox"><i class="fa fa-times"></i></a>
+                    </div>
+                    Todas as configurações
+                </div>
+                <div class="panel-body no-padding">
+
+
+                    <ul class="list-group">
+
+                        @foreach (var item in lista)
+                        {
+                            click = (item.OnClick != "onclick=\"return confirm('" + item.OnClick + "')\"") ? "" : "";
+                            <li class="list-group-item">
+                                <a href="@Url.Content(item.Link)" @click><i class="@item.Icone"></i> @item.Nome</a>
+                            </li> 
+                        }
+
+
+                    </ul>
+                </div>
+                <div class="panel-footer">
+                    @(lista.Count()-1) configurações
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+
+</div>
+
+
+

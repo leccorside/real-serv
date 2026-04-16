@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Models.Perfil>
+
+
+@{
+    ViewBag.Title = "Perfis";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+
+
+@section Breadcrumb{
+
+
+}
+
+
+
+@Html.ActionLink("+ Criar", "Criar", new { id = 0 }, new { @class = "btn btn-primary" })
+
+
+
+
+
+
+<table class="table table-bordered table-striped table-highlight">
+    <thead>
+        <tr>
+             <th width="100%">
+                @Html.DisplayNameFor(model => model.PerfilNome)
+            </th>
+            <th>Entidade</th>
+            <th>Home</th>
+            <th nowrap>
+                @Html.DisplayNameFor(model => model.RegDtInicio)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    @if (Model.Count() == 0)
+    {
+        <tr class="info">
+            <td colspan="20"><small class="muted">Nenhum registro localizado</small></td>
+        </tr>
+    }
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PerfilNome)
+            </td>
+            <td>
+                @item.EntidadeId
+            </td>
+            <td>@item.HomeAction</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegDtInicio)
+            </td>
+            <td nowrap>
+                <a href="~/Perfil/Acessos/@item.PerfilId" class="btn btn-mini"><i class="icon-lock"></i>Acessos</a> |
+            
+                 <a href="~/Perfil/Criar/@item.PerfilId" class="btn btn-mini"><i class="fa fa-pencil"></i>Alterar</a> | 
+                            <a href="~/Perfil/Deletar/@item.PerfilId" class="btn btn-mini"><i class="fa fa-times"></i>Excluir</a>
+
+            </td>
+
+        </tr>
+    }
+
+</table>
+
+
+
+

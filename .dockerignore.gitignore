@@ -1,0 +1,68 @@
+# Git ignore for Docker and sensitive files
+
+# Environment variables (SENSÍVEL - não commitar!)
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# Docker volumes and data
+.docker/
+docker/volumes/
+database/backups/*
+!database/backups/.gitkeep
+
+# Build artifacts específicos do Docker
+docker-build/
+docker-dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Node modules (se usado)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python (caso usado)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build outputs
+bin/
+obj/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+Logs/*
+!Logs/.gitkeep
+
+# Backups (manter estrutura de pasta apenas)
+*.bak
+*.backup
+database/init/*.bak
+!database/.gitkeep
+
+# Temporal files
+tmp/
+temp/
+*.tmp
+
+# OS specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Docker cache
+.buildx/
